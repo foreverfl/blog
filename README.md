@@ -104,16 +104,95 @@ npm run dev
   > - **문서(Document)**: 컬렉션은 개별 문서들로 구성됨. 문서는 BSON(Binary JSON) 형식으로 저장되며, JSON과 유사한 구조를 가지고 있음. 각 문서는 필드와 값의 쌍으로 구성되며, 문서는 유일한 \_id 필드를 가짐. 문서는 중첩된 문서(nested documents)와 배열을 포함할 수 있어, 복잡한 데이터 구조를 표현할 수 있음.
 
 - **구조적 특징**
+
   > - **스키마 없음(No fixed schema)**: MongoDB의 컬렉션은 고정된 스키마를 갖지 않음. 이는 컬렉션 내의 각 문서가 서로 다른 구조를 가질 수 있음을 의미함. 이러한 특징은 데이터 구조가 시간에 따라 변할 수 있는 애플리케이션에 유연성을 제공함.
   > - **중첩 문서(Nested documents)와 배열**: 문서는 다른 문서를 포함하거나 배열을 포함할 수 있음. 이를 통해 관계형 데이터베이스에서 여러 테이블에 걸쳐 저장되는 데이터를 하나의 문서에 포함시켜 관리할 수 있음.
   > - **문서 지향적(Document-oriented)**: MongoDB는 문서를 데이터 저장의 기본 단위로 사용함. 이는 개발자가 애플리케이션에서 사용하는 객체나 데이터 구조를 데이터베이스에 직접 매핑할 수 있게 해, 데이터 모델링이 더 직관적이고 효율적이 됨.
+
+- **collection 간의 관계 맺기**
+  > - **참조(Reference)**: SQL의 외래키와 유사하게, 다른 컬렉션의 문서를 가리키는 방식. 이를 통해 관계를 맺으며, 일반적으로 \_id 필드를 사용하여 다른 컬렉션의 문서 ID를 저장. 참조는 정규화된 데이터 모델을 선호할 때 유용하며, 데이터 중복을 최소화하고 데이터 일관성을 유지하는 데 도움이 됨.
+
+```javascript
+// pages/api/posts.js
+import { MongoClient, ObjectId } from "mongodb";
+
+const client = new MongoClient(process.env.MONGODB_URI);
+
+async function getPosts() {
+  try {
+    await client.connect();
+    const database = client.db("blog");
+    const posts = database.collection("posts");
+
+    // posts 컬렉션에서 모든 포스트를 가져옴
+    const postsData = await posts.find({}).toArray();
+
+    // 각 포스트에 대해 userId를 사용하여 users 컬렉션에서 사용자 정보를 조회함
+    const users = database.collection("users");
+    const postsWithUser = await Promise.all(
+      postsData.map(async (post) => {
+        const user = await users.findOne({ _id: post.userId });
+        return { ...post, user };
+      })
+    );
+
+    return postsWithUser;
+  } finally {
+    await client.close();
+  }
+}
+```
+
+> - **내장(Embedded)**: 한 문서 내에 다른 문서를 직접 포함시키는 방식. 이 방법은 빠른 읽기 작업을 위해 최적화된 비정규화된 데이터 모델을 선호할 때 유용함. 내장 문서 방식은 관련 데이터를 한 번의 쿼리로 쉽게 가져올 수 있으며, 네트워크 비용이 감소하고, 쿼리 성능이 향상될 수 있음.
+
+- **$lookup 연산자**
+  MongoDB의 $lookup 연산자를 사용하는 집계 쿼리는 다른 컬렉션에서 문서를 "조인"하는 데 사용됩니다. 이를 통해 관련 데이터를 한 번의 쿼리로 함께 가져올 수 있으므로, N+1 문제를 해결할 수 있습니다. N+1 문제는 단일 쿼리(N)로 필요한 모든 정보를 가져오는 대신, 하나의 주 쿼리(1)와 그 결과로 반환된 각 항목(N)에 대해 추가 쿼리를 실행해야 하는 상황을 말합니다.
+
+```javascript
+// api/posts.js 또는 pages/api/posts.js 내에 위치할 수 있습니다.
+
+import { MongoClient } from "mongodb";
+
+async function getPostsAndUsers() {
+  // MongoDB 클라이언트 생성 및 연결
+  const uri = "your_mongodb_connection_string";
+  const client = new MongoClient(uri);
+  await client.connect();
+
+  // 'posts' 컬렉션에서 집계 쿼리 실행
+  const aggregation = [
+    {
+      $lookup: {
+        from: "users", // '조인'할 컬렉션 이름
+        localField: "userId", // 'posts' 컬렉션에서 매칭시킬 필드
+        foreignField: "_id", // 'users' 컬렉션에서 매칭시킬 필드
+        as: "userDetails", // 결과를 추가할 필드 이름
+      },
+    },
+  ];
+
+  const posts = await client
+    .db("your_db_name")
+    .collection("posts")
+    .aggregate(aggregation)
+    .toArray();
+
+  // 연결 해제
+  await client.close();
+
+  return posts;
+}
+
+// API 또는 getServerSideProps/getStaticProps 내에서 이 함수를 사용할 수 있습니다.
+```
 
 ## TypeScript
 
 - **개념**: 타입스크립트는 자바스크립트(JavaScript)에 타입(type)을 추가한 언어. 자바스크립트는 동적 타입 언어로서, 변수의 타입이 실행 시점에 결정되며, 변경될 수 있음. 반면, 타입스크립트는 정적 타입 언어의 특성을 추가하여, 개발 시점에 변수의 타입을 지정해줌으로써 보다 안정적인 코드를 작성할 수 있도록 도움. 타입스크립트는 결국 자바스크립트로 컴파일되어 실행되므로, 모든 자바스크립트 코드는 유효한 타입스크립트 코드가 될 수 있음. 타입스크립트는 대규모 애플리케이션 개발에 적합하며, 개발자들이 더욱 안정적이고 관리하기 쉬운 코드를 작성할 수 있도록 도와줌.
 
 - **특징**
-  > - **타입 주석(Type Annotations)**: 변수나 함수의 반환 값에 타입을 명시적으로 선언함. 이를 통해 컴파일 시 타입 체크를 할 수 있어, 오류를 미리 방지할 수 있음.
+
+1. **타입 주석(Type Annotations)**: 변수나 함수의 반환 값에 타입을 명시적으로 선언함. 이를 통해 컴파일 시 타입 체크를 할 수 있어, 오류를 미리 방지할 수 있음.
 
 ```javascript
 let message: string = "Hello, TypeScript";
@@ -122,7 +201,7 @@ function greet(name: string): string {
 }
 ```
 
-> - **인터페이스(Interfaces)**: 객체의 형태를 정의할 수 있는 방법으로, 타입 체킹을 위해 사용됨. 인터페이스를 통해 객체가 특정 구조를 충족하도록 강제할 수 있음.
+2. **인터페이스(Interfaces)**: 객체의 형태를 정의할 수 있는 방법으로, 타입 체킹을 위해 사용됨. 인터페이스를 통해 객체가 특정 구조를 충족하도록 강제할 수 있음.
 
 ```javascript
 interface User {
@@ -135,7 +214,7 @@ function registerUser(user: User) {
 }
 ```
 
-> - **제네릭(Generics)**: 타입을 매개변수로 받아서 사용할 수 있는 기능으로, 다양한 타입에 대해 호환성을 유지하면서 코드를 재사용할 수 있게 함.
+3.  **제네릭(Generics)**: 타입을 매개변수로 받아서 사용할 수 있는 기능으로, 다양한 타입에 대해 호환성을 유지하면서 코드를 재사용할 수 있게 함.
 
 ```javascript
 function identity<T>(arg: T): T {
@@ -143,7 +222,7 @@ function identity<T>(arg: T): T {
 }
 ```
 
-> - **유니언 타입(Union Types)과 인터섹션 타입(Intersection Types)**: 유니언 타입은 변수가 여러 타입 중 하나일 수 있음을 의미하고, 인터섹션 타입은 여러 타입을 모두 만족하는 타입을 의미함.
+4. **유니언 타입(Union Types)과 인터섹션 타입(Intersection Types)**: 유니언 타입은 변수가 여러 타입 중 하나일 수 있음을 의미하고, 인터섹션 타입은 여러 타입을 모두 만족하는 타입을 의미함. 유니온 타입은 타입들을 |로 연결하여 사용.
 
 ```javascript
 // 유니언 타입
@@ -163,6 +242,25 @@ interface Identity {
 }
 
 type Employee = BusinessPartner & Identity;
+```
+
+5. **옵셔널 체이닝(Optional Chaining)**: ?. 연산자를 사용하여 객체의 프로퍼티에 접근할 때 해당 객체나 프로퍼티가 null 또는 undefined일 경우에 에러를 발생시키지 않고 undefined를 반환하도록 할 수 있음.
+
+```javascript
+const email = profile?.email;
+```
+
+6. **널 병합 연산자 (Nullish Coalescing)**: ?? 연산자를 사용하여 왼쪽 피연산자가 null 또는 undefined일 경우 오른쪽 피연산자의 값을 사용할 수 있음.
+
+```javascript
+const email = profile?.email ?? "";
+```
+
+7. **타입 단언 (Type Assertions)**: 특정 값의 타입을 명시적으로 지정하고 싶을 때 사용. as 키워드를 사용.
+
+```javascript
+const myCanvas = document.getElementById("main_canvas") as HTMLCanvasElement;
+
 ```
 
 - **js와의 차이점**
@@ -269,3 +367,31 @@ export default function handler(req, res) {
   > - **Spacing**: 패딩과 마진을 조절하여 요소 간의 공간을 제어함.
   > - **Sizing**: 너비와 높이를 설정함.
   > - **Vertical Alignment**: 인라인 또는 인라인-블록 요소의 수직 정렬을 조정함.
+
+## 라이브러리
+
+### @types/jsonwebtoken
+
+- **개념**: 이 패키지는 jsonwebtoken 라이브러리를 TypeScript에서 사용할 때 필요한 타입 정의를 제공. jsonwebtoken은 JWT(JSON Web Tokens)를 생성하고 검증하기 위한 라이브러리. @types/jsonwebtoken는 이 라이브러리의 함수와 객체에 대한 타입 정보를 포함하고 있어 TypeScript 프로젝트에서 jsonwebtoken을 타입 안전하게 사용할 수 있게 해줌.
+
+### @types/cookie
+
+- **개념**: 서버 측에서 HTTP 쿠키를 파싱하고 직렬화하기 위한 cookie 라이브러리의 타입 정의를 제공함. 이 타입 정의는 cookie 라이브러리에서 사용되는 함수와 객체의 타입 정보를 포함하고 있으며, 주로 Node.js 환경에서 쿠키를 다룰 때 사용됨.
+
+### @types/js-cookie
+
+- **개념**: js-cookie 라이브러리는 클라이언트 측에서 쿠키를 쉽게 생성, 읽기, 삭제할 수 있도록 해주는 JavaScript 라이브러리. @types/js-cookie는 js-cookie의 TypeScript 타입 정의를 제공하며, 이를 통해 TypeScript 프로젝트에서 js-cookie를 타입 안전하게 사용할 수 있음.
+
+### jwt-decode
+
+- **개념**: jwt-decode는 npm에서 제공하는 경량 라이브러리로, JSON Web Tokens(JWT)를 디코딩하고, 토큰 내의 페이로드 정보를 추출하기 위해 사용됨. 이 라이브러리는 서명을 검증하지 않으므로, 보안이 중요한 용도로는 사용될 수 없음. 주로 클라이언트 사이드에서 토큰의 페이로드를 읽어 사용자 정보나 토큰의 유효 기간 등을 확인하는 데 사용됨.
+
+```javascript
+import jwtDecode from "jwt-decode";
+
+const token = "여기에.JWT.토큰";
+const decoded = jwtDecode(token);
+
+console.log(decoded);
+javascript;
+```

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import jwt from "jsonwebtoken";
+import { serialize } from "cookie";
 import { connectDB } from "../../../lib/mongodb";
-import { redirect } from "next/navigation";
 
 export default async function handler(
   req: NextApiRequest,
@@ -47,6 +48,27 @@ export default async function handler(
       { id: userData.id },
       { $set: userData },
       { upsert: true }
+    );
+
+    // JWT 토큰 생성
+    const jwtToken = jwt.sign(
+      { userId: userData.id }, // 페이로드에 사용자 ID 포함
+      process.env.JWT_SECRET!, // Non-null assertion operator
+      { expiresIn: "2h" } // 토큰 만료 시간
+    );
+
+    // JWT 내부 확인
+    const decoded = jwt.decode(jwtToken);
+    console.log(decoded);
+
+    // 쿠키에 JWT 토큰 저장
+    res.setHeader(
+      "Set-Cookie",
+      serialize("auth", jwtToken, {
+        secure: process.env.NODE_ENV !== "development",
+        maxAge: 7200, // 2시간
+        path: "/",
+      })
     );
 
     // 클라이언트에 사용자 데이터 응답

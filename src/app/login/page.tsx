@@ -7,7 +7,7 @@ const Login: React.FC = () => {
   const handleGithubLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
     const redirectUri = encodeURIComponent(
-      "http://localhost:3000/api/callback/github"
+      "http://localhost:3000/api/auth/github"
     );
     const loginUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
     window.location.href = loginUrl;
