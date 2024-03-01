@@ -19,7 +19,6 @@ async function connectDB() {
     );
     return client.db("blog");
   } finally {
-    // 이 예시에서는 연결을 즉시 닫지 않음
     // await client.close();
   }
 }

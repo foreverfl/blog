@@ -23,6 +23,7 @@
 }
 
 /* fonts */
+/* navbar */
 @font-face {
   font-family: "Sacramento";
   src: url("../../public/fonts/Sacramento-Regular.ttf") format("truetype");
@@ -30,8 +31,20 @@
   font-style: normal;
 }
 
+/* footer */
+@font-face {
+  font-family: "Caveat";
+  src: url("../../public/fonts/Caveat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 @layer utilities {
   .font-sacramento {
     font-family: "Sacramento", cursive;
+  }
+
+  .font-caveat {
+    font-family: "Caveat", cursive;
   }
 }
