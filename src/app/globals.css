@@ -8,6 +8,10 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+html {
+  font-size: 0.9rem;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -20,6 +24,27 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* scroll bar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+  border: 2px solid transparent; /* 핸들의 테두리를 투명하게 설정 */
+  background-clip: padding-box; /* 배경색이 테두리 영역을 넘어서지 않도록 설정 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #646464;
 }
 
 /* fonts */

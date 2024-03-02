@@ -62,7 +62,12 @@ const Main: React.FC = () => {
   return (
     <div className="min-h-screen">
       {isLoggedOut ? (
-        <p>로그인을 진행해주세요.</p>
+        <>
+          <p>로그인을 진행해주세요.</p>
+          <button className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300">
+            Save Changes
+          </button>
+        </>
       ) : userName ? ( // userName이 실제로 존재하는지 여부를 체크
         <>
           <p>안녕하세요!! {userName}님</p>
@@ -72,7 +77,9 @@ const Main: React.FC = () => {
         </>
       ) : (
         // userName이 없을 경우 로그인 상태가 아니라고 가정하고 메시지 출력
-        <p>로그인을 진행해주세요.</p>
+        <>
+          <p>로그인을 진행해주세요.</p>
+        </>
       )}
     </div>
   );
