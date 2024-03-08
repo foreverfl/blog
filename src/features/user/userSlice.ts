@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// 액션 타입
+// 상태의 타입
 interface UserState {
   userName: string | null;
   userId: string | null;
@@ -9,6 +9,7 @@ interface UserState {
   isLoggedOut: boolean;
 }
 
+// 상태의 초기 상태
 const initialState: UserState = {
   userName: null,
   userId: null,
@@ -17,19 +18,15 @@ const initialState: UserState = {
   isLoggedOut: false,
 };
 
-// 액션 정의
-export const initializeAuth = (userName: string | null) => ({
-  type: "user/initializeAuth",
-  payload: userName,
-});
-
-// 리듀서 함수
+// 슬라이스(Redux 상태 관리 로직)
 const userSlice = createSlice({
-  name: "user",
-  initialState,
+  name: "user", // 슬라이스 이름
+  initialState, // 슬라이스 초기 상태
+  // 리듀서(상태를 업데이트 하는 함수)
   reducers: {
     loginSuccess(
       state,
+      // 액션 객체의 타입을 정의하는 데 사용되는 제네릭 타입
       action: PayloadAction<{
         userId: string;
         username: string;

@@ -64,9 +64,6 @@ const Main: React.FC = () => {
       {isLoggedOut ? (
         <>
           <p>로그인을 진행해주세요.</p>
-          <button className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300">
-            Save Changes
-          </button>
         </>
       ) : userName ? ( // userName이 실제로 존재하는지 여부를 체크
         <>
