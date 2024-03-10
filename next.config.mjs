@@ -1,14 +1,20 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                protocol: 'https', // 이미지 URL의 프로토콜
-                hostname: 'avatars.githubusercontent.com', // 허용할 외부 이미지 호스트 명
-            }
-        ],
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-    },
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export const images = {
+    remotePatterns: [
+        {
+            protocol: 'https',
+            hostname: 'avatars.githubusercontent.com',
+        },
+    ],
 };
 
-export default nextConfig;
+export function webpack(config) {
+    config.resolve.alias['@'] = join(__dirname, 'src');
+    return config;
+}
