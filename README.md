@@ -83,6 +83,22 @@ export default clientPromise;
 npm run dev
 ```
 
+## 배포 주의사항
+
+### Linux에서의 대소문자 구분 및 Github Cache 문제
+
+1. git이 대소문자를 구분할 수 있도록 설정. 대/소문자 설정을 했는데도 오류가 난다면 아마 캐시가 있어서 그런 것임
+
+```bash
+git config core.ignorecase false
+```
+
+2. 캐시 제거하기
+
+```bash
+git rm -r --cached .
+```
+
 ## 프로젝트 기본 구조
 
 - **layout.tsx**: Next.js의 Root Layout을 정의하는 역할. Root Layout은 애플리케이션의 모든 페이지에 공통적으로 적용되는 최상위 레이아웃. 글로벌 CSS를 적용하고, 페이지의 기본 구조를 정의하는 역할을 함.

@@ -26,7 +26,7 @@ const Login: React.FC = () => {
     github: {
       clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
       redirectUri: encodeURIComponent(
-        "http://localhost:3000/api/auth/providers/github"
+        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI!
       ),
       loginUrl: (clientId, redirectUri) =>
         `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`,
