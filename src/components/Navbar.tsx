@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { logout, loginSuccess } from "@/features/user/userSlice";
 import Link from "next/link";
 import NavbarSub from "./NavbarSub";
 import Menu from "./navbar/Menu";
@@ -15,6 +16,37 @@ const Navbar: React.FC = () => {
   const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
     (state) => state.user
   );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchAuthStatus = async () => {
+      try {
+        let response;
+
+        response = await fetch("/api/auth/status");
+        const data = await response.json();
+
+        if (response.ok) {
+          if (data.isAuthenticated) {
+            dispatch(
+              loginSuccess({
+                userId: data.user.userId,
+                username: data.user.username,
+                email: data.user.email,
+                photo: data.user.photo,
+              })
+            );
+          } else {
+            dispatch(logout());
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch auth status", error);
+      }
+    };
+
+    fetchAuthStatus();
+  }, [dispatch, isLoggedOut]);
 
   // 메뉴
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -76,7 +108,7 @@ const Navbar: React.FC = () => {
             isMenuOpen={isMenuOpen}
             toggleProfile={() => setIsProfileOpen(!isProfileOpen)}
             userName={userName || ""}
-            photo={photo || "/images/smile.png"}
+            photo={photo!}
             email={email || ""}
             isLoggedOut={isLoggedOut}
           />

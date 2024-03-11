@@ -1,16 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
-import { connectDB } from "../../../../lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { code } = req.query;
+export async function GET(req: NextRequest) {
+  const code = req.nextUrl.searchParams.get("code");
 
   if (!code) {
-    return res.status(400).send("Code is required");
+    return new NextResponse("Code is required", { status: 400 });
   }
 
   try {
@@ -81,22 +78,27 @@ export default async function handler(
     const decoded = jwt.decode(jwtToken);
     console.log(decoded);
 
-    // 쿠키에 JWT 토큰 저장
-    res.setHeader(
-      "Set-Cookie",
-      serialize("auth", jwtToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        maxAge: 7200, // 2시간
-        path: "/",
-      })
-    );
+    // JSON 데이터를 응답으로 보내기
+    // const response = new NextResponse(JSON.stringify(userData), {
+    //   // HTTP 상태 코드 설정
+    //   status: 200,
+    //   // 응답 헤더 설정
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
 
-    // 클라이언트에 사용자 데이터 응답
-    // res.status(200).json(userData);
-    res.writeHead(307, { Location: "/" }).end();
+    // 쿠키에 JWT 토큰 저장
+    const response = NextResponse.redirect(new URL("/", req.url));
+    response.cookies.set("auth", jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 7200, // 2시간
+      path: "/",
+    });
+
+    return response;
   } catch (error) {
-    console.error("Authentication failed:", error);
-    res.status(500).send("Internal Server Error");
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

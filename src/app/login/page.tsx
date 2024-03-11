@@ -84,8 +84,9 @@ const Login: React.FC = () => {
         <Image
           src={socialLogins[provider].imageUrl}
           alt={socialLogins[provider].imageAlt}
-          width={24}
-          height={24}
+          width={0}
+          height={0}
+          className="w-5 h-5 object-cover"
         />
         {children}
       </button>

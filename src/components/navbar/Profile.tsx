@@ -25,40 +25,6 @@ const Profile: React.FC<ProfileProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const fetchAuthStatus = async () => {
-      try {
-        let response;
-
-        if (isLoggedOut) {
-          return;
-        }
-
-        response = await fetch("/api/auth/status");
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.isAuthenticated) {
-            dispatch(
-              loginSuccess({
-                userId: data.user.userId,
-                username: data.user.username,
-                email: data.user.email,
-                photo: data.user.photo,
-              })
-            );
-          } else {
-            dispatch(logout());
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch auth status", error);
-      }
-    };
-
-    fetchAuthStatus();
-  }, [dispatch, isLoggedOut]);
-
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/auth/logout", {
@@ -69,35 +35,34 @@ const Profile: React.FC<ProfileProps> = ({
         toggleProfile(); // 프로필 창 닫기
       } else {
         console.error("로그아웃 실패");
-        toggleProfile(); // 프로필 창 닫기
       }
     } catch (error) {
       console.error("로그아웃 시도 중 오류 발생", error);
     }
   };
 
+  // 렌더링 이전에 보여줄 요소
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      setIsReady(true); // 상태가 확정되면 준비 상태를 true로 설정
+    };
+
+    checkAuthStatus();
+  }, []); // 의존성 배열이 비어 있으므로 컴포넌트 마운트 시 한 번만 실행
+
+  if (!isReady) {
+    return (
+      <div className="rounded-full p-2 border overflow-hidden">
+        <div className="h-6 w-6"></div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {!isLoggedOut ? (
-        <button
-          onClick={() => toggleProfile()}
-          className={`rounded-full border overflow-hidden transition-opacity duration-300 ${
-            isMenuOpen || isProfileOpen ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          {photo ? (
-            <Image
-              src={photo}
-              alt="Profile Image"
-              width={30}
-              height={30}
-              className="w-full h-auto"
-            />
-          ) : (
-            <div className="w-7 h-7 flex justify-center items-center"></div>
-          )}
-        </button>
-      ) : (
+      {isLoggedOut ? (
         <Link href="/login">
           <button className="rounded-full p-2 border overflow-hidden">
             <svg
@@ -116,6 +81,25 @@ const Profile: React.FC<ProfileProps> = ({
             </svg>
           </button>
         </Link>
+      ) : (
+        <button
+          onClick={() => toggleProfile()}
+          className={`rounded-full border overflow-hidden transition-opacity duration-300 ${
+            isMenuOpen || isProfileOpen ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {photo ? (
+            <Image
+              src={photo}
+              alt="Profile Image"
+              width={100}
+              height={100}
+              className="w-10 h-10 object-cover"
+            />
+          ) : (
+            <div className="w-7 h-7 flex justify-center items-center"></div>
+          )}
+        </button>
       )}
 
       {/* 프로필 */}
@@ -168,10 +152,11 @@ const Profile: React.FC<ProfileProps> = ({
                 <div className="absolute">
                   <Image
                     src={photo || "/images/smile.png"}
-                    alt="Profile"
-                    width={96}
-                    height={96}
-                    className="rounded-full w-full h-auto"
+                    alt="Inner Profile"
+                    width={100}
+                    height={100}
+                    priority={true}
+                    className="w-full h-auto object-cover rounded-full"
                   />
                 </div>
                 {/* 사용자 이름 */}

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectDB } from "../../../lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import { Collection, Document } from "mongodb";
 
 export default async function handler(

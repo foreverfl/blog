@@ -15,7 +15,7 @@ const initialState: UserState = {
   userId: null,
   email: null,
   photo: null,
-  isLoggedOut: false,
+  isLoggedOut: true,
 };
 
 // 슬라이스(Redux 상태 관리 로직)
