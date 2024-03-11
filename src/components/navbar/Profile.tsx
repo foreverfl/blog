@@ -76,10 +76,10 @@ const Profile: React.FC<ProfileProps> = ({
     <>
       {isLoggedOut ? (
         <Link href="/login">
-          <button className="rounded-full p-2 border overflow-hidden">
+          <button className="border border-gray-300 dark:border-neutral-50 rounded-full p-2 overflow-hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-6 w-6 dark:fill-current dark:text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -96,7 +96,7 @@ const Profile: React.FC<ProfileProps> = ({
       ) : (
         <button
           onClick={() => toggleProfile()}
-          className={`rounded-full border overflow-hidden transition-opacity duration-300 ${
+          className={`rounded-full overflow-hidden transition-opacity duration-300 ${
             isMenuOpen || isProfileOpen ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -116,7 +116,7 @@ const Profile: React.FC<ProfileProps> = ({
 
       {/* 프로필 */}
       <div
-        className={`h-screen overflow-y-auto fixed inset-0 flex justify-end bg-gradient-to-l from-neutral-800 to-transparent z-10 transition-opacity duration-500 ease-in-out ${
+        className={`h-screen overflow-y-auto fixed inset-0 flex justify-end bg-gradient-to-l from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
           isProfileOpen ? "opacity-100" : "opacity-0"
         } ${isProfileOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >

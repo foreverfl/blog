@@ -44,7 +44,7 @@ const Menu: React.FC<MenuProps> = ({
         }`}
       >
         <svg
-          className="w-6 h-6"
+          className="w-6 h-6 dark:fill-current dark:text-slate-50"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -62,7 +62,7 @@ const Menu: React.FC<MenuProps> = ({
       {/* 메뉴 */}
       {/* 메뉴 배경 */}
       <div
-        className={`h-screen overflow-y-auto fixed inset-0 bg-gradient-to-r from-neutral-800 to-transparent z-10 transition-opacity duration-500 ease-in-out ${
+        className={`h-screen overflow-y-auto fixed inset-0 bg-gradient-to-r from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
           isMenuOpen ? "opacity-100" : "opacity-0"
         } ${isMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
@@ -203,21 +203,21 @@ const Menu: React.FC<MenuProps> = ({
             {/* 메뉴 */}
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
               <li className="px-8 py-4  rounded-t-md hover:bg-gray-200">
-                메뉴1-1
+                menu 1-1
               </li>
-              <li className="px-8 py-4 hover:bg-gray-200">메뉴1-2</li>
+              <li className="px-8 py-4 hover:bg-gray-200">menu 1-2</li>
               <li className="px-8 py-4 rounded-b-md hover:bg-gray-200">
-                메뉴1-3
+                menu 1-3
               </li>
             </div>
 
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
               <li className="px-8 py-4 rounded-t-md hover:bg-gray-200">
-                메뉴2-1
+                menu 2-1
               </li>
-              <li className="px-8 py-4 hover:bg-gray-200">메뉴2-2</li>
+              <li className="px-8 py-4 hover:bg-gray-200">menu 2-2</li>
               <li className="px-8 py-4 rounded-b-md hover:bg-gray-200">
-                메뉴2-3
+                menu 2-3
               </li>
             </div>
           </ul>

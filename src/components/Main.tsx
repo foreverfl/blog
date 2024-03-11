@@ -33,7 +33,7 @@ const Main: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="min-h-screen flex justify-center items-center dark:bg-neutral-900">
       <div className="w-full md:w-4/5 lg:w-3/5">{renderContent()}</div>
     </div>
   );

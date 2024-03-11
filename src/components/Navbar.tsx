@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
 import { setCurrentView, resetView } from "@/features/blog/blogSlice";
-import Link from "next/link";
 import NavbarSub from "./NavbarSub";
 import Menu from "./navbar/Menu";
 import Profile from "./navbar/Profile";
@@ -90,7 +89,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-slate-50 p-4 flex justify-between items-center">
+      <nav className="fixed top-0 left-0 right-0 bg-slate-50 dark:bg-neutral-800 p-4 flex justify-between items-center">
         {/* 메뉴 열기 버튼 */}
         <div className="flex-1">
           <Menu
@@ -104,7 +103,7 @@ const Navbar: React.FC = () => {
         <div className="flex-1 flex justify-center">
           <div
             onClick={handleLogoClick}
-            className="text-2xl md:text-3xl font-sacramento cursor-pointer"
+            className="text-2xl md:text-3xl font-sacramento dark:text-slate-50 cursor-pointer"
           >
             mogumogu
           </div>
@@ -139,7 +138,7 @@ const Navbar: React.FC = () => {
       <div className="fixed top-0 left-0 right-0">
         <div className="w-full h-0.5 bg-transparent">
           <div
-            className="h-full bg-gray-900"
+            className="h-full bg-gray-900 dark:bg-neutral-50"
             style={{ width: `${scrollProgress}%` }}
           ></div>
         </div>

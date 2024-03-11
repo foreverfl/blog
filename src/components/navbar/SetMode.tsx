@@ -30,6 +30,14 @@ const SetMode: React.FC = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("siteDarkMode", isDarkMode.toString());
     }
+
+    if (typeof window !== "undefined") {
+      if (isDarkMode) {
+        document.body.classList.add("dark");
+      } else {
+        document.body.classList.remove("dark");
+      }
+    }
   }, [isDarkMode]);
 
   return (
