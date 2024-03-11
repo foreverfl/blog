@@ -1,16 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
-import { serialize } from "cookie";
-import { connectDB } from "../../../../../lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { code } = req.query;
+export async function GET(req: NextRequest) {
+  const code = req.nextUrl.searchParams.get("code");
 
   if (!code) {
-    return res.status(400).send("Code is required");
+    return new NextResponse("Code is required", { status: 400 });
   }
 
   try {
@@ -26,7 +22,7 @@ export default async function handler(
           code: code.toString(),
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
           client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-          redirect_uri: "http://localhost:3000/api/auth/providers/google",
+          redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
           grant_type: "authorization_code",
         }).toString(),
       }
@@ -70,7 +66,12 @@ export default async function handler(
 
     // JWT 토큰 생성
     const jwtToken = jwt.sign(
-      { userId: userDataFromDb?._id }, // 페이로드에 사용자 ID 포함
+      {
+        userId: userDataFromDb?._id,
+        username: userDataFromDb?.username,
+        email: userDataFromDb?.email,
+        photo: userDataFromDb?.photo,
+      }, // 페이로드에 사용자 ID 포함
       process.env.JWT_SECRET!, // Non-null assertion operator
       { expiresIn: "2h" } // 토큰 만료 시간
     );
@@ -80,21 +81,15 @@ export default async function handler(
     console.log(decoded);
 
     // 쿠키에 JWT 토큰 저장
-    res.setHeader(
-      "Set-Cookie",
-      serialize("auth", jwtToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        maxAge: 7200, // 2시간
-        path: "/",
-      })
-    );
-
-    // 클라이언트에 사용자 데이터 응답
-    // res.status(200).json(googleUserData);
-    res.writeHead(307, { Location: "/" }).end();
+    const response = NextResponse.redirect(new URL("/", req.url));
+    response.cookies.set("auth", jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 7200, // 2시간
+      path: "/",
+    });
+    return response;
   } catch (error) {
-    console.error("Authentication failed:", error);
-    res.status(500).send("Internal Server Error");
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

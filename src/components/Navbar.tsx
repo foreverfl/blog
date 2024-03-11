@@ -25,6 +25,7 @@ const Navbar: React.FC = () => {
 
         response = await fetch("/api/auth/status");
         const data = await response.json();
+        console.log(data);
 
         if (response.ok) {
           if (data.isAuthenticated) {

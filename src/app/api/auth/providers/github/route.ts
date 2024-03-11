@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { serialize } from "cookie";
 import { connectDB } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 

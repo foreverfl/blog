@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
 interface SocialLoginConfig {
@@ -9,7 +9,6 @@ interface SocialLoginConfig {
   loginUrl: (clientId: string | undefined, redirectUri: string) => string;
   imageUrl: string;
   imageAlt: string;
-  bgColor: string;
 }
 
 interface SocialLogins {
@@ -30,9 +29,8 @@ const Login: React.FC = () => {
       ),
       loginUrl: (clientId, redirectUri) =>
         `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`,
-      imageUrl: "/logo/github_black.png",
+      imageUrl: "/logo/github.png",
       imageAlt: "Github",
-      bgColor: "bg-gray-800",
     },
     google: {
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
@@ -43,46 +41,39 @@ const Login: React.FC = () => {
         `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`,
       imageUrl: "/logo/google.png",
       imageAlt: "Google",
-      bgColor: "bg-red-500",
-    },
-    facebook: {
-      clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID,
-      redirectUri: encodeURIComponent(
-        "http://localhost:3000/api/auth/providers/facebook"
-      ),
-      loginUrl: (clientId, redirectUri) =>
-        `https://www.facebook.com/v4.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}`,
-      imageUrl: "/logo/facebook.png",
-      imageAlt: "Facebook",
-      bgColor: "bg-blue-600",
-    },
-    twitter: {
-      clientId: process.env.NEXT_PUBLIC_TWITTER_CLIENT_ID,
-      redirectUri: encodeURIComponent(
-        "http://localhost:3000/api/auth/providers/twitter"
-      ),
-      loginUrl: (clientId, redirectUri) => `#`, // Twitter OAuth URL
-      imageUrl: "/logo/x_white.png",
-      imageAlt: "Twitter",
-      bgColor: "bg-gray-800",
     },
   };
 
   const LoginButton: React.FC<LoginButtonProps> = ({ provider, children }) => {
-    const { clientId, redirectUri, loginUrl, bgColor } = socialLogins[provider];
+    const [isHovered, setIsHovered] = useState(false); // Hover 상태 추적을 위한 상태 변수
+    const { clientId, redirectUri, loginUrl } = socialLogins[provider];
 
     const handleLogin = () => {
       const url = loginUrl(clientId, redirectUri);
       window.location.href = url;
     };
 
+    const getImageSrc = () => {
+      if (provider === "github") {
+        return isHovered ? "/logo/github_black.png" : "/logo/github.png";
+      } else {
+        return socialLogins[provider].imageUrl; // 다른 공급자는 기본 이미지 사용
+      }
+    };
+
     return (
       <button
         onClick={handleLogin}
-        className={`${bgColor} flex items-center justify-center p-3 border rounded-lg text-white w-full min-w-[200px]`}
+        onMouseEnter={() => setIsHovered(true)} // 마우스가 버튼 위에 있을 때
+        onMouseLeave={() => setIsHovered(false)} // 마우스가 버튼을 벗어날 때
+        className={`flex items-center justify-center p-3 rounded-lg w-full min-w-[200px] border ${
+          provider === "github"
+            ? "border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white"
+            : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+        } transition-colors duration-300`}
       >
         <Image
-          src={socialLogins[provider].imageUrl}
+          src={getImageSrc()}
           alt={socialLogins[provider].imageAlt}
           width={0}
           height={0}
@@ -96,19 +87,13 @@ const Login: React.FC = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-slate-50">
       <div className="text-center bg-white p-10 rounded-lg shadow-lg">
-        <h2 className="text-2xl mb-4">Sign In</h2>
+        <h2 className="text-2xl font-bold mb-10">Sign In</h2>
         <div className="flex flex-col space-y-4">
           <LoginButton provider="github">
             <span className="flex-grow text-center">Github</span>
           </LoginButton>
           <LoginButton provider="google">
             <span className="flex-grow text-center">Google</span>
-          </LoginButton>
-          <LoginButton provider="facebook">
-            <span className="flex-grow text-center">Facebook</span>
-          </LoginButton>
-          <LoginButton provider="twitter">
-            <span className="flex-grow text-center">X</span>
           </LoginButton>
         </div>
       </div>

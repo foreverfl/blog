@@ -11,6 +11,10 @@ const nextConfig = {
             {
                 protocol: 'https', // 이미지 URL의 프로토콜
                 hostname: 'avatars.githubusercontent.com', // 허용할 외부 이미지 호스트 명
+            },
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
             }
         ],
     },

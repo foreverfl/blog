@@ -59,6 +59,7 @@ const Profile: React.FC<ProfileProps> = ({
       </div>
     );
   }
+  console.log(photo);
 
   return (
     <>
@@ -229,9 +230,16 @@ const Profile: React.FC<ProfileProps> = ({
               ) : (
                 <li
                   onClick={toggleProfile}
-                  className="px-8 py-4 rounded-md hover:bg-gray-200"
+                  className="px-8 py-4 flex items-center hover:bg-gray-200"
                 >
-                  내 댓글
+                  <Image
+                    src={"/images/list.png"}
+                    alt={"My Comments"}
+                    width={15}
+                    height={15}
+                    className="flex-shrink-0"
+                  />
+                  <span className="ml-3">내 댓글</span>
                 </li>
               )}
             </div>
