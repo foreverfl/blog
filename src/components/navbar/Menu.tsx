@@ -68,7 +68,7 @@ const Menu: React.FC<MenuProps> = ({
       >
         {/* 메뉴 컨테이너 */}
         <div
-          className={`w-3/4 md:w-1/3 lg:w-1/6 min-h-screen z-10 transition-all duration-500 ease-out ${
+          className={`md:w-1/3 lg:w-1/6 min-h-screen z-10 transition-all duration-500 ease-out ${
             isMenuOpen
               ? "translate-y-0 opacity-100"
               : "-translate-y-full opacity-0"
@@ -142,60 +142,62 @@ const Menu: React.FC<MenuProps> = ({
 
             {/* 내 정보 */}
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
-              {/* portfolio */}
-              <li className="px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2">
-                <Image
-                  src={"/images/smile.png"}
-                  alt={"Portfolio"}
-                  width={15}
-                  height={15}
-                  className="flex-shrink-0"
-                />
-                <a
-                  href="https://foreverfl.github.io/web-portfolio/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  mogumogu&#39;s portfolio
-                </a>
-                <span></span>
-              </li>
+              <a
+                href="https://foreverfl.github.io/web-portfolio/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2"
+              >
+                <li className="flex items-center">
+                  <Image
+                    src={"/images/smile.png"}
+                    alt={"Portfolio"}
+                    width={15}
+                    height={15}
+                    className="flex-shrink-0"
+                  />
+                  <span className="ml-3">mogumogu&#39;s portfolio</span>
+                </li>
+              </a>
 
               {/* github */}
-              <li className="px-8 py-4 flex items-center hover:bg-gray-200 space-x-2">
-                <Image
-                  src={"/logo/github.svg"}
-                  alt={"Github"}
-                  width={15}
-                  height={15}
-                  className="flex-shrink-0"
-                />
-                <a
-                  href="https://github.com/foreverfl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  mogumogu&#39;s github
-                </a>
-              </li>
+              <a
+                href="https://github.com/foreverfl"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-8 py-4 flex items-center hover:bg-gray-200 space-x-2"
+              >
+                <li className="flex items-center">
+                  <Image
+                    src={"/logo/github.svg"}
+                    alt={"Github"}
+                    width={15}
+                    height={15}
+                    className="flex-shrink-0"
+                  />
+                  <span className="ml-3">mogumogu&#39;s github</span>
+                </li>
+              </a>
 
               {/* qiita */}
-              <li className="px-8 py-4 flex items-center hover:bg-gray-200 rounded-b-md space-x-2">
-                <Image
-                  src={"/logo/qiita.png"}
-                  alt={"Qiita"}
-                  width={15}
-                  height={15}
-                  className="flex-shrink-0"
-                />
-                <a
-                  href="https://qiita.com/mogumogusityau"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  mogumogu&#39;s qiita
-                </a>
-              </li>
+              <a
+                href="https://qiita.com/mogumogusityau"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-b-md space-x-2"
+              >
+                {/* qiita */}
+                <li className="flex items-center">
+                  <Image
+                    src={"/logo/qiita.png"}
+                    alt={"Qiita"}
+                    width={15}
+                    height={15}
+                    className="flex-shrink-0"
+                  />
+                  <span className="ml-3">mogumogu&#39;s qiita</span>
+                </li>
+              </a>
             </div>
 
             {/* 메뉴 */}

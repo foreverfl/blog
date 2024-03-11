@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
+import { setCurrentView } from "@/features/blog/blogSlice";
 
 interface ProfileProps {
   isProfileOpen: boolean;
@@ -24,6 +25,11 @@ const Profile: React.FC<ProfileProps> = ({
   isLoggedOut,
 }) => {
   const dispatch = useAppDispatch();
+
+  const handleViewChange = (view: string) => {
+    dispatch(setCurrentView({ view }));
+    toggleProfile();
+  };
 
   const handleLogout = async () => {
     try {
@@ -59,7 +65,6 @@ const Profile: React.FC<ProfileProps> = ({
       </div>
     );
   }
-  console.log(photo);
 
   return (
     <>
@@ -111,7 +116,7 @@ const Profile: React.FC<ProfileProps> = ({
       >
         {/* 프로필 컨테이너 */}
         <div
-          className={`w-3/4 md:w-1/3 lg:w-1/6 min-h-screen z-10 transition-all duration-500 ease-out ${
+          className={`md:w-1/3 lg:w-1/6 min-h-screen z-10 transition-all duration-500 ease-out ${
             isProfileOpen
               ? "translate-y-0 opacity-100"
               : "-translate-y-full opacity-0"
@@ -188,8 +193,8 @@ const Profile: React.FC<ProfileProps> = ({
               {email === "forevermfl@gmail.com" ? (
                 <>
                   <li
-                    onClick={toggleProfile}
-                    className="px-8 py-4 flex items-center rounded-t-md hover:bg-gray-200"
+                    onClick={() => handleViewChange("adminCategoryManagement")}
+                    className="px-8 py-4 flex items-center rounded-t-md hover:bg-gray-200 cursor-pointer"
                   >
                     <Image
                       src={"/images/category.png"}
@@ -201,8 +206,8 @@ const Profile: React.FC<ProfileProps> = ({
                     <span className="ml-3">카테고리 관리</span>
                   </li>
                   <li
-                    onClick={toggleProfile}
-                    className="px-8 py-4 flex items-center hover:bg-gray-200"
+                    onClick={() => handleViewChange("adminPostList")}
+                    className="px-8 py-4 flex items-center hover:bg-gray-200 cursor-pointer"
                   >
                     <Image
                       src={"/images/list.png"}
@@ -214,8 +219,8 @@ const Profile: React.FC<ProfileProps> = ({
                     <span className="ml-3">포스트 관리</span>
                   </li>
                   <li
-                    onClick={toggleProfile}
-                    className="px-8 py-4 flex items-center rounded-b-md hover:bg-gray-200"
+                    onClick={() => handleViewChange("adminCreatePost")}
+                    className="px-8 py-4 flex items-center rounded-b-md hover:bg-gray-200 cursor-pointer"
                   >
                     <Image
                       src={"/images/add.png"}

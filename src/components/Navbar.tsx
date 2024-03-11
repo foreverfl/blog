@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
+import { setCurrentView, resetView } from "@/features/blog/blogSlice";
 import Link from "next/link";
 import NavbarSub from "./NavbarSub";
 import Menu from "./navbar/Menu";
@@ -12,11 +13,22 @@ import SetMode from "./navbar/SetMode";
 
 // React.FC는 "Function Component"의 약자로, 이 타입은 컴포넌트가 React 요소를 반환한다는 것과 props 타입을 지정할 수 있는 기능을 제공
 const Navbar: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  // 블로그 상태
+  const { currentView, currentCategory, postId } = useAppSelector(
+    (state) => state.blog
+  );
+
+  const handleLogoClick = () => {
+    // 'main' 뷰로 상태 변경
+    dispatch(setCurrentView({ view: "main" }));
+  };
+
   // 로그인 상태
   const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
     (state) => state.user
   );
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchAuthStatus = async () => {
@@ -90,18 +102,25 @@ const Navbar: React.FC = () => {
 
         {/* 블로그 이름 */}
         <div className="flex-1 flex justify-center">
-          <Link href="/" className="text-3xl font-sacramento cursor-pointer">
+          <div
+            onClick={handleLogoClick}
+            className="text-2xl md:text-3xl font-sacramento cursor-pointer"
+          >
             mogumogu
-          </Link>
+          </div>
         </div>
 
         {/* 다국어 / 다크모드 / 프로필 컨테이너 */}
         <div className="flex-1 flex justify-end items-center gap-8">
           {/* 다국어 스위치 */}
-          <SetLanguage />
+          <div className="hidden md:flex">
+            <SetLanguage />
+          </div>
 
           {/* 다크모드 스위치 */}
-          <SetMode />
+          <div className="hidden md:flex">
+            <SetMode />
+          </div>
 
           {/* 프로필 버튼 */}
           <Profile

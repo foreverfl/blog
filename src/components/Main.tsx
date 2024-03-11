@@ -2,31 +2,39 @@
 
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { logout, loginSuccess } from "@/features/user/userSlice";
+import AdminCategoryManagement from "@/components/main/AdminCategoryManagement";
+import AdminPostList from "@/components/main/AdminPostList";
+import AdminCreatePost from "@/components/main/AdminCreatePost";
+import UserComments from "@/components/main/UserComments";
+import UserPostList from "@/components/main/UserPostList";
+import UserPostDetail from "@/components/main/UserPostDetail";
+import MainContent from "@/components/main/MainContent";
 
 const Main: React.FC = () => {
-  const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
-    (state) => state.user
-  );
+  const { currentView } = useAppSelector((state) => state.blog);
+
+  const renderContent = () => {
+    switch (currentView) {
+      case "adminCategoryManagement":
+        return <AdminCategoryManagement />;
+      case "adminPostList":
+        return <AdminPostList />;
+      case "adminCreatePost":
+        return <AdminCreatePost />;
+      case "userComments":
+        return <UserComments />;
+      case "userPostList":
+        return <UserPostList />;
+      case "userPostDetail":
+        return <UserPostDetail />;
+      default:
+        return <MainContent />; // 기본적으로 메인 페이지 컨텐츠를 렌더링
+    }
+  };
 
   return (
-    <div className="min-h-screen">
-      {isLoggedOut ? (
-        <>
-          <p>로그인을 진행해주세요.</p>
-        </>
-      ) : userName ? ( // userName이 실제로 존재하는지 여부를 체크
-        <>
-          <p>안녕하세요!! {userName}님</p>
-          <p>이메일: {email}</p>
-          <p>사진: {photo}</p>
-        </>
-      ) : (
-        // userName이 없을 경우 로그인 상태가 아니라고 가정하고 메시지 출력
-        <>
-          <p>로그인을 진행해주세요.</p>
-        </>
-      )}
+    <div className="min-h-screen flex justify-center items-center">
+      <div className="w-full md:w-4/5 lg:w-3/5">{renderContent()}</div>
     </div>
   );
 };
