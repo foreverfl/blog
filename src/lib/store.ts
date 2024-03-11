@@ -1,12 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
+import languageReducer from "@/features/language/languageSlice";
 import userReducer from "@/features/user/userSlice";
 import blogReducer from "@/features/blog/blogSlice";
+import categoryReducer from "@/features/category/categorySlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      language: languageReducer,
       user: userReducer,
       blog: blogReducer,
+      category: categoryReducer,
     },
   });
 };

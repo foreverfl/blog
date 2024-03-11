@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
 import { setCurrentView } from "@/features/blog/blogSlice";
+import locales, { Locales } from "@/locale";
 
 interface ProfileProps {
   isProfileOpen: boolean;
@@ -25,6 +26,11 @@ const Profile: React.FC<ProfileProps> = ({
   isLoggedOut,
 }) => {
   const dispatch = useAppDispatch();
+
+  // 현재 언어
+  const currentLanguage = useAppSelector((state) => state.language.value);
+
+  const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
 
   const handleViewChange = (view: string) => {
     dispatch(setCurrentView({ view }));
@@ -203,7 +209,9 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3">카테고리 관리</span>
+                    <span className="ml-3">
+                      {locales[languageKey].categoryManagement}
+                    </span>
                   </li>
                   <li
                     onClick={() => handleViewChange("adminPostList")}
@@ -216,7 +224,9 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3">포스트 관리</span>
+                    <span className="ml-3">
+                      {locales[languageKey].postManagement}
+                    </span>
                   </li>
                   <li
                     onClick={() => handleViewChange("adminCreatePost")}
@@ -229,7 +239,9 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3">포스트 작성</span>
+                    <span className="ml-3">
+                      {locales[languageKey].createPost}
+                    </span>
                   </li>
                 </>
               ) : (
@@ -244,7 +256,9 @@ const Profile: React.FC<ProfileProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3">내 댓글</span>
+                  <span className="ml-3">
+                    {locales[languageKey].myComments}
+                  </span>
                 </li>
               )}
             </div>
@@ -255,7 +269,7 @@ const Profile: React.FC<ProfileProps> = ({
                 onClick={handleLogout}
                 className="w-full px-8 py-4 bg-red-500 text-white rounded-md hover:bg-red-600"
               >
-                로그아웃
+                Sign Out
               </button>
             </div>
           </ul>

@@ -1,3 +1,5 @@
+"use server";
+
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 
 // 환경 변수에서 URI 가져오기
