@@ -35,7 +35,7 @@ const Login: React.FC = () => {
     google: {
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
       redirectUri: encodeURIComponent(
-        "http://localhost:3000/api/auth/providers/google"
+        process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!
       ),
       loginUrl: (clientId, redirectUri) =>
         `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`,
