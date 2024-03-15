@@ -4,6 +4,9 @@ import {
   updateClassification,
   deleteClassification,
   getClassificationsAndCategories,
+  addCategory,
+  updateCategory,
+  deleteCategory,
 } from "@/lib/mongodb";
 
 // 비동기 액션 생성자
@@ -52,6 +55,51 @@ export const deleteClassificationAsync = createAsyncThunk(
   }
 );
 
+export const addCategoryAsync = createAsyncThunk(
+  "category/addCategory",
+  async ({
+    classificationId,
+    name_ko,
+    name_ja,
+  }: {
+    classificationId: string;
+    name_ko: string;
+    name_ja: string;
+  }) => {
+    const insertedId = await addCategory(classificationId, name_ko, name_ja);
+    return {
+      _id: insertedId,
+      classification: classificationId,
+      name_ko,
+      name_ja,
+    };
+  }
+);
+
+export const updateCategoryAsync = createAsyncThunk(
+  "category/updateCategory",
+  async ({
+    categoryId,
+    name_ko,
+    name_ja,
+  }: {
+    categoryId: string;
+    name_ko: string;
+    name_ja: string;
+  }) => {
+    const modifiedCount = await updateCategory(categoryId, name_ko, name_ja);
+    return { categoryId, name_ko, name_ja, modifiedCount };
+  }
+);
+
+export const deleteCategoryAsync = createAsyncThunk(
+  "category/deleteCategory",
+  async (categoryId: string) => {
+    const deletedCount = await deleteCategory(categoryId);
+    return { categoryId, deletedCount };
+  }
+);
+
 interface CategoryState {
   classifications: any[];
   categories: any[];
@@ -81,6 +129,7 @@ const categorySlice = createSlice({
       .addCase(fetchClassificationsAndCategories.rejected, (state) => {
         state.loading = false;
       })
+      // Classification
       .addCase(addClassificationAsync.fulfilled, (state, action) => {
         state.classifications.push(action.payload);
       })
@@ -100,6 +149,26 @@ const categorySlice = createSlice({
         state.classifications = state.classifications.filter(
           (classification) =>
             classification._id !== action.payload.classificationId
+        );
+      })
+      // Category
+      .addCase(addCategoryAsync.fulfilled, (state, action) => {
+        state.categories.push(action.payload);
+      })
+      .addCase(updateCategoryAsync.fulfilled, (state, action) => {
+        const index = state.categories.findIndex(
+          (category) => category._id === action.payload.categoryId
+        );
+        if (index !== -1) {
+          state.categories[index] = {
+            ...state.categories[index],
+            ...action.payload,
+          };
+        }
+      })
+      .addCase(deleteCategoryAsync.fulfilled, (state, action) => {
+        state.categories = state.categories.filter(
+          (category) => category._id !== action.payload.categoryId
         );
       });
   },

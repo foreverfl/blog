@@ -17,9 +17,6 @@ export async function connectDB() {
   try {
     await client.connect();
     await client.db("blog").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
     return client.db("blog");
   } finally {
     // await client.close();
@@ -44,6 +41,7 @@ export async function getClassificationsAndCategories() {
   const categoriesFormatted = categories.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
+    classification: doc.classification.toString(),
   }));
 
   return {
@@ -128,7 +126,7 @@ export async function addCategory(
   };
   const result = await db.collection("categories").insertOne(category);
 
-  return result.insertedId;
+  return result.insertedId.toString();
 }
 
 export async function updateCategory(
@@ -172,6 +170,7 @@ export async function deleteCategory(categoryId: string) {
 
   return categoryDeleteResult.deletedCount;
 }
+
 // Post CRUD
 export async function addPost(
   categoryId: string,
