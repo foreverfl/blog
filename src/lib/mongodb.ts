@@ -36,7 +36,20 @@ export async function getClassificationsAndCategories() {
     .toArray();
   const categories = await db.collection("categories").find({}).toArray();
 
-  return { classifications, categories };
+  // _id를 문자열로 변환
+  const classificationsFormatted = classifications.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+  }));
+  const categoriesFormatted = categories.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+  }));
+
+  return {
+    classifications: classificationsFormatted,
+    categories: categoriesFormatted,
+  };
 }
 
 // Classification CRUD
@@ -47,7 +60,7 @@ export async function addClassification(name_ko: string, name_ja: string) {
     name_ko,
     name_ja,
   });
-  return result.insertedId;
+  return result.insertedId.toString();
 }
 
 export async function updateClassification(

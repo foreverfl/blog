@@ -156,7 +156,9 @@ const Menu: React.FC<MenuProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3">mogumogu&#39;s portfolio</span>
+                  <span className="ml-3 text-black">
+                    mogumogu&#39;s portfolio
+                  </span>
                 </li>
               </a>
 
@@ -175,7 +177,7 @@ const Menu: React.FC<MenuProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3">mogumogu&#39;s github</span>
+                  <span className="ml-3 text-black">mogumogu&#39;s github</span>
                 </li>
               </a>
 
@@ -195,28 +197,32 @@ const Menu: React.FC<MenuProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3">mogumogu&#39;s qiita</span>
+                  <span className="ml-3 text-black">mogumogu&#39;s qiita</span>
                 </li>
               </a>
             </div>
 
             {/* 메뉴 */}
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
-              <li className="px-8 py-4  rounded-t-md hover:bg-gray-200">
+              <li className="px-8 py-4  rounded-t-md hover:bg-gray-20 text-black">
                 menu 1-1
               </li>
-              <li className="px-8 py-4 hover:bg-gray-200">menu 1-2</li>
-              <li className="px-8 py-4 rounded-b-md hover:bg-gray-200">
+              <li className="px-8 py-4 hover:bg-gray-200 text-black">
+                menu 1-2
+              </li>
+              <li className="px-8 py-4 rounded-b-md hover:bg-gray-200 text-black">
                 menu 1-3
               </li>
             </div>
 
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
-              <li className="px-8 py-4 rounded-t-md hover:bg-gray-200">
+              <li className="px-8 py-4 rounded-t-md hover:bg-gray-200 text-black">
                 menu 2-1
               </li>
-              <li className="px-8 py-4 hover:bg-gray-200">menu 2-2</li>
-              <li className="px-8 py-4 rounded-b-md hover:bg-gray-200">
+              <li className="px-8 py-4 hover:bg-gray-200 text-black">
+                menu 2-2
+              </li>
+              <li className="px-8 py-4 rounded-b-md hover:bg-gray-200 text-black">
                 menu 2-3
               </li>
             </div>

@@ -66,7 +66,7 @@ const Profile: React.FC<ProfileProps> = ({
 
   if (!isReady) {
     return (
-      <div className="rounded-full p-2 border overflow-hidden">
+      <div className="rounded-full p-2 border overflow-hidden animate-pulse">
         <div className="h-6 w-6"></div>
       </div>
     );
@@ -209,7 +209,7 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3">
+                    <span className="ml-3 text-black">
                       {locales[languageKey].categoryManagement}
                     </span>
                   </li>
@@ -224,7 +224,7 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3">
+                    <span className="ml-3 text-black">
                       {locales[languageKey].postManagement}
                     </span>
                   </li>
@@ -239,7 +239,7 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3">
+                    <span className="ml-3 text-black">
                       {locales[languageKey].createPost}
                     </span>
                   </li>
@@ -256,7 +256,7 @@ const Profile: React.FC<ProfileProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3">
+                  <span className="ml-3 text-black">
                     {locales[languageKey].myComments}
                   </span>
                 </li>

@@ -1,18 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setLanguage } from "@/features/language/languageSlice";
 
 const SetLanguage: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const [isReady, setIsReady] = useState(false); // 로딩 상태 관리
+
   const currentLanguage = useAppSelector((state) => state.language.value);
+
+  useEffect(() => {
+    const initialLang =
+      localStorage.getItem("siteLanguage") ||
+      (navigator.language.startsWith("ko") ? "ko" : "ja");
+    dispatch(setLanguage(initialLang));
+    setIsReady(true);
+  }, [dispatch]);
 
   const toggleLanguage = () => {
     const newLanguage = currentLanguage === "ko" ? "ja" : "ko";
     dispatch(setLanguage(newLanguage));
   };
+
+  if (!isReady) {
+    return (
+      <div className="animate-pulse">
+        <div className="rounded-full bg-gray-400 h-8 w-14"></div>
+      </div>
+    );
+  }
 
   return (
     <>
