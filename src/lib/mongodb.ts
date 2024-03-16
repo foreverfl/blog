@@ -192,6 +192,17 @@ export async function deleteCategory(categoryId: string) {
 }
 
 // Post CRUD
+interface Post {
+  _id: string;
+  category: string; // 여기서 category는 카테고리의 ObjectId를 문자열로 변환한 값입니다.
+  title_ko: string;
+  title_ja: string;
+  content_ko: string;
+  content_ja: string;
+  like: number;
+  createdAt: string; // ISO 문자열 형태로 변환
+}
+
 export async function addPost(
   categoryId: string,
   title_ko: string,
@@ -214,13 +225,40 @@ export async function addPost(
   return result.insertedId.toString();
 }
 
-export async function getPostsByCategory(categoryId: string) {
+export async function getPosts(): Promise<Post[]> {
+  const db = await connectDB();
+  const posts = await db.collection("posts").find({}).toArray();
+  const postsFormatted: Post[] = posts.map((doc) => ({
+    _id: doc._id.toString(),
+    category: doc.category.toString(),
+    title_ko: doc.title_ko,
+    title_ja: doc.title_ja,
+    content_ko: doc.content_ko,
+    content_ja: doc.content_ja,
+    like: doc.like,
+    createdAt: doc.createdAt.toISOString(),
+  }));
+  return postsFormatted;
+}
+
+export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
   const db = await connectDB();
   const posts = await db
     .collection("posts")
     .find({ category: new ObjectId(categoryId) })
     .toArray();
-  return posts;
+  const postsFormatted: Post[] = posts.map((doc) => ({
+    _id: doc._id.toString(),
+    category: doc.category.toString(),
+    title_ko: doc.title_ko,
+    title_ja: doc.title_ja,
+    content_ko: doc.content_ko,
+    content_ja: doc.content_ja,
+    like: doc.like,
+    createdAt: doc.createdAt.toISOString(),
+  }));
+
+  return postsFormatted;
 }
 
 export async function updatePost(

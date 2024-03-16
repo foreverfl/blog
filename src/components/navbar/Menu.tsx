@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Image from "next/image";
+import { setCurrentView } from "@/features/blog/blogSlice";
+import { setSelectedCategory } from "@/features/category/categorySelectedSlice";
 
 interface MenuProps {
   isMenuOpen: boolean;
@@ -14,6 +16,8 @@ const Menu: React.FC<MenuProps> = ({
   toggleMenu,
 }) => {
   // Redux
+  const dispatch = useAppDispatch();
+
   const { classifications, categories, loading } = useAppSelector(
     (state) => state.category
   );
@@ -34,6 +38,13 @@ const Menu: React.FC<MenuProps> = ({
       document.body.style.paddingRight = "0px"; // 패딩 제거
     }
   }, [isMenuOpen]);
+
+  // Handler
+  const handleViewChange = (view: string, categoryId: string) => {
+    dispatch(setCurrentView({ view }));
+    dispatch(setSelectedCategory(categoryId));
+    toggleMenu();
+  };
 
   const handleInputChange = (e: {
     target: { value: React.SetStateAction<string> };
@@ -306,6 +317,10 @@ const Menu: React.FC<MenuProps> = ({
                               ? "border-b border-gray-200"
                               : ""
                           }`}
+                          onClick={(e) => {
+                            e.stopPropagation(); // 이벤트 버블링 방지
+                            handleViewChange("userPostList", category._id); // 카테고리 클릭 이벤트 핸들러 연결
+                          }}
                         >
                           {currentLanguage === "ko"
                             ? category.name_ko

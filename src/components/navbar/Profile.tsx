@@ -28,9 +28,12 @@ const Profile: React.FC<ProfileProps> = ({
   // Redux
   const dispatch = useAppDispatch();
 
-  // 현재 언어
   const currentLanguage = useAppSelector((state) => state.language.value);
 
+  // State
+  const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
+
+  // Handler
   const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
 
   const handleViewChange = (view: string) => {
@@ -53,9 +56,6 @@ const Profile: React.FC<ProfileProps> = ({
       console.error("로그아웃 시도 중 오류 발생", error);
     }
   };
-
-  // 렌더링 이전에 보여줄 요소
-  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const checkAuthStatus = async () => {

@@ -2,7 +2,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import languageReducer from "@/features/language/languageSlice";
 import userReducer from "@/features/user/userSlice";
 import blogReducer from "@/features/blog/blogSlice";
+import blogTitleReducer from "@/features/blog/blogTitleSlice";
 import categoryReducer from "@/features/category/categorySlice";
+import categorySelectedReducer from "@/features/category/categorySelectedSlice";
+import postReducer from "@/features/post/postsSlice";
+import postSelectedReducer from "@/features/post/postSelectedSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -10,7 +14,11 @@ export const makeStore = () => {
       language: languageReducer,
       user: userReducer,
       blog: blogReducer,
+      blogTitle: blogTitleReducer,
       category: categoryReducer,
+      categorySelected: categorySelectedReducer,
+      post: postReducer,
+      postSelected: postSelectedReducer,
     },
   });
 };

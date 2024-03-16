@@ -49,11 +49,36 @@ html {
 
 /* fonts */
 /* navbar */
+
 @font-face {
-  font-family: "Sacramento";
+  font-family: "NumberFont";
+  src: url("../../public/fonts/HiMelody-Regular.ttf") format("truetype");
+  unicode-range: U+0030-0039; /* 숫자 0-9 */
+  font-display: block;
+}
+
+/* navbar: English */
+@font-face {
+  font-family: "NavbarFont";
   src: url("../../public/fonts/Sacramento-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
+  unicode-range: U+0020-002F, U+003A-007F; /* 숫자를 제외한 기호 및 알파벳 */
+  font-display: block;
+}
+/* navbar: Korean */
+@font-face {
+  font-family: "NavbarFont";
+  src: url("../../public/fonts/HiMelody-Regular.ttf") format("truetype");
+  unicode-range: U+AC00-D7AF; /* 가각~힣 */
+  font-display: block;
+}
+/* navbar: Japanese */
+@font-face {
+  font-family: "NavbarFont";
+  src: url("../../public/fonts/SlacksideOne-Regular.ttf") format("truetype");
+  unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF; /* 구두점, 히라가나, 카타카나, 일본어 반각 카타카나, 한자 */
+  font-display: block;
 }
 
 /* footer */
@@ -65,11 +90,11 @@ html {
 }
 
 @layer utilities {
-  .font-sacramento {
-    font-family: "Sacramento", cursive;
+  .font-navbar {
+    font-family: "NavbarFont", "NumberFont", sans-serif;
   }
 
-  .font-caveat {
+  .font-footer {
     font-family: "Caveat", cursive;
   }
 }
