@@ -211,7 +211,7 @@ export async function addPost(
     createdAt,
   };
   const result = await db.collection("posts").insertOne(post);
-  return result.insertedId;
+  return result.insertedId.toString();
 }
 
 export async function getPostsByCategory(categoryId: string) {

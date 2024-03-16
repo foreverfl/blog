@@ -64,9 +64,10 @@ const Menu: React.FC<MenuProps> = ({
     setToggleStates(initialToggleStates);
   }, [classifications]); // classifications 데이터가 변경될 때마다 초기 토글 상태 업데이트
 
-  useEffect(() => {
-    console.log("Initial toggleStates:", toggleStates);
-  }, [toggleStates]);
+  // Debug
+  // useEffect(() => {
+  //   console.log("Initial toggleStates:", toggleStates);
+  // }, [toggleStates]);
 
   return (
     <>

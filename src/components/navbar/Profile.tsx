@@ -25,6 +25,7 @@ const Profile: React.FC<ProfileProps> = ({
   email,
   isLoggedOut,
 }) => {
+  // Redux
   const dispatch = useAppDispatch();
 
   // 현재 언어
