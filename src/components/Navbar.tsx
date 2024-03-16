@@ -9,10 +9,16 @@ import Menu from "./navbar/Menu";
 import Profile from "./navbar/Profile";
 import SetLanguage from "./navbar/SetLanguage";
 import SetMode from "./navbar/SetMode";
+import { fetchClassificationsAndCategories } from "@/features/category/categorySlice";
 
 // React.FC는 "Function Component"의 약자로, 이 타입은 컴포넌트가 React 요소를 반환한다는 것과 props 타입을 지정할 수 있는 기능을 제공
 const Navbar: React.FC = () => {
+  // Redux
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchClassificationsAndCategories());
+  }, [dispatch]);
 
   // 블로그 상태
   const { currentView, currentCategory, postId } = useAppSelector(

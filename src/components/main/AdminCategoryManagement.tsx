@@ -12,6 +12,7 @@ import {
 import Modal from "@/components/ui/Modal";
 
 const MainContent: React.FC = () => {
+  // redux
   const dispatch = useAppDispatch();
 
   const { userName, userId, email, photo, isLoggedOut } = useAppSelector(

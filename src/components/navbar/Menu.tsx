@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Image from "next/image";
 
 interface MenuProps {
@@ -12,6 +13,13 @@ const Menu: React.FC<MenuProps> = ({
   isProfileOpen,
   toggleMenu,
 }) => {
+  // Redux
+  const { classifications, categories, loading } = useAppSelector(
+    (state) => state.category
+  );
+  const currentLanguage = useAppSelector((state) => state.language.value);
+
+  // Menu Design
   const [inputValue, setInputValue] = useState(""); // 검색창 텍스트
   const [isInputFilled, setIsInputFilled] = useState(false); // 검색창 상태
 
@@ -33,6 +41,32 @@ const Menu: React.FC<MenuProps> = ({
     setInputValue(e.target.value);
     setIsInputFilled(e.target.value !== "");
   };
+
+  // Menu Expansion
+  const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
+
+  // 분류 토글 핸들러
+  const handleToggle = (classificationId: string) => {
+    setToggleStates((prevStates) => ({
+      ...prevStates,
+      [classificationId]: !prevStates[classificationId],
+    }));
+  };
+
+  useEffect(() => {
+    const initialToggleStates = classifications.reduce(
+      (acc, classification) => {
+        acc[classification._id] = false; // 기본적으로 모든 분류를 접혀있는 상태로 초기화
+        return acc;
+      },
+      {}
+    );
+    setToggleStates(initialToggleStates);
+  }, [classifications]); // classifications 데이터가 변경될 때마다 초기 토글 상태 업데이트
+
+  useEffect(() => {
+    console.log("Initial toggleStates:", toggleStates);
+  }, [toggleStates]);
 
   return (
     <>
@@ -203,8 +237,88 @@ const Menu: React.FC<MenuProps> = ({
             </div>
 
             {/* 메뉴 */}
-            <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
-              <li className="px-8 py-4  rounded-t-md hover:bg-gray-20 text-black">
+            <div className="space-y-4">
+              {classifications.map((classification) => (
+                <div
+                  key={classification._id}
+                  className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer"
+                >
+                  <div
+                    className="px-8 py-4 rounded-t-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center"
+                    onClick={() => handleToggle(classification._id)}
+                  >
+                    {currentLanguage === "ko"
+                      ? classification.name_ko
+                      : classification.name_ja}
+                    {/* 조건부 아이콘 렌더링 */}
+                    {toggleStates[classification._id] ? (
+                      <svg
+                        className="w-6 h-6 text-gray-800"
+                        aria-hidden="true"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m5 15 7-7 7 7"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-6 h-6 text-gray-800"
+                        aria-hidden="true"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m19 9-7 7-7-7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+
+                  {/* 조건부 카테고리 목록 렌더링 */}
+                  <div
+                    className={`overflow-hidden transition-all duration-1000 ${
+                      toggleStates[classification._id]
+                        ? "max-h-96 opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    {categories
+                      .filter(
+                        (category) =>
+                          category.classification === classification._id
+                      )
+                      .map((category, index, arr) => (
+                        <div
+                          key={category._id}
+                          className={`px-8 py-4 hover:bg-gray-200 text-black ${
+                            index < arr.length - 1
+                              ? "border-b border-gray-200"
+                              : ""
+                          }`}
+                        >
+                          {currentLanguage === "ko"
+                            ? category.name_ko
+                            : category.name_ja}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 메뉴 템플릿*/}
+            {/* <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
+              <li className="px-8 py-4 rounded-t-md hover:bg-gray-20 text-black">
                 menu 1-1
               </li>
               <li className="px-8 py-4 hover:bg-gray-200 text-black">
@@ -213,19 +327,7 @@ const Menu: React.FC<MenuProps> = ({
               <li className="px-8 py-4 rounded-b-md hover:bg-gray-200 text-black">
                 menu 1-3
               </li>
-            </div>
-
-            <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
-              <li className="px-8 py-4 rounded-t-md hover:bg-gray-200 text-black">
-                menu 2-1
-              </li>
-              <li className="px-8 py-4 hover:bg-gray-200 text-black">
-                menu 2-2
-              </li>
-              <li className="px-8 py-4 rounded-b-md hover:bg-gray-200 text-black">
-                menu 2-3
-              </li>
-            </div>
+            </div> */}
           </ul>
         </div>
       </div>

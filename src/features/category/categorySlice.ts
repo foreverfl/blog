@@ -10,20 +10,44 @@ import {
 } from "@/lib/mongodb";
 
 // 비동기 액션 생성자
+export const fetchClassificationsAndCategories = createAsyncThunk(
+  "category/fetchClassificationsAndCategories",
+  async () => {
+    let { classifications, categories } =
+      await getClassificationsAndCategories();
+    return { classifications, categories };
+  }
+);
+
+export const fetchClassificationsAndCategoriesAndAlignWithKorean =
+  createAsyncThunk(
+    "category/fetchClassificationsAndCategoriesAndAlignWithKorean",
+    async () => {
+      let { classifications, categories } =
+        await getClassificationsAndCategories();
+      classifications.sort((a, b) => a.name_ko.localeCompare(b.name_ko));
+      categories.sort((a, b) => a.name_ko.localeCompare(b.name_ko));
+      return { classifications, categories };
+    }
+  );
+
+export const fetchClassificationsAndCategoriesAndAlignWithJapanese =
+  createAsyncThunk(
+    "category/fetchClassificationsAndCategoriesAndAlignWithJapanese",
+    async () => {
+      let { classifications, categories } =
+        await getClassificationsAndCategories();
+      classifications.sort((a, b) => a.name_ja.localeCompare(b.name_ja));
+      categories.sort((a, b) => a.name_ja.localeCompare(b.name_ja));
+      return { classifications, categories };
+    }
+  );
+
 export const addClassificationAsync = createAsyncThunk(
   "category/addClassification",
   async ({ name_ko, name_ja }: { name_ko: string; name_ja: string }) => {
     const insertedId = await addClassification(name_ko, name_ja);
     return { _id: insertedId, name_ko, name_ja }; // 새로운 분류 정보를 반환
-  }
-);
-
-export const fetchClassificationsAndCategories = createAsyncThunk(
-  "category/fetchClassificationsAndCategories",
-  async () => {
-    const { classifications, categories } =
-      await getClassificationsAndCategories();
-    return { classifications, categories };
   }
 );
 
@@ -129,6 +153,21 @@ const categorySlice = createSlice({
       .addCase(fetchClassificationsAndCategories.rejected, (state) => {
         state.loading = false;
       })
+      // Alignment
+      .addCase(
+        fetchClassificationsAndCategoriesAndAlignWithKorean.fulfilled,
+        (state, action) => {
+          state.classifications = action.payload.classifications;
+          state.categories = action.payload.categories;
+        }
+      )
+      .addCase(
+        fetchClassificationsAndCategoriesAndAlignWithJapanese.fulfilled,
+        (state, action) => {
+          state.classifications = action.payload.classifications;
+          state.categories = action.payload.categories;
+        }
+      )
       // Classification
       .addCase(addClassificationAsync.fulfilled, (state, action) => {
         state.classifications.push(action.payload);

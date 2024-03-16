@@ -24,7 +24,23 @@ export async function connectDB() {
 }
 
 // Category and Classification CRUD
-export async function getClassificationsAndCategories() {
+interface Classification {
+  _id: string;
+  name_ko: string;
+  name_ja: string;
+}
+
+interface Category {
+  _id: string;
+  classification: string;
+  name_ko: string;
+  name_ja: string;
+}
+
+export async function getClassificationsAndCategories(): Promise<{
+  classifications: Classification[];
+  categories: Category[];
+}> {
   const db = await connectDB();
 
   const classifications = await db
@@ -37,11 +53,15 @@ export async function getClassificationsAndCategories() {
   const classificationsFormatted = classifications.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
+    name_ko: doc.name_ko,
+    name_ja: doc.name_ja,
   }));
   const categoriesFormatted = categories.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
     classification: doc.classification.toString(),
+    name_ko: doc.name_ko,
+    name_ja: doc.name_ja,
   }));
 
   return {
