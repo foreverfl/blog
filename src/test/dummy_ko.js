@@ -109,13 +109,13 @@ const dummyTextKo = `
 그 운명은 과연 어디로 향할 것인가.
 
 ## 코드
-\\\`\\\`\\\`java
+\`\`\`java
 public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
     }
 }
-\\\`\\\`\\\`
+\`\`\`
 `
 
 export default dummyTextKo;

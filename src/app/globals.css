@@ -89,6 +89,20 @@ html {
   font-style: normal;
 }
 
+/* github-markdown-css */
+.markdown-body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+
+.dark .markdown-body {
+  background-color: transparent; /* Dark background */
+  color: #ffffff; /* Light text for dark background */
+}
+
 @layer utilities {
   .font-navbar {
     font-family: "NavbarFont", "NumberFont", sans-serif;
