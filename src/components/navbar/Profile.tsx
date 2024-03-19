@@ -1,6 +1,9 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
 import { setCurrentView } from "@/features/blog/blogSlice";
@@ -32,13 +35,16 @@ const Profile: React.FC<ProfileProps> = ({
 
   // State
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
+  const router = useRouter();
 
   // Handler
   const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
 
   const handleViewChange = (view: string) => {
     dispatch(setCurrentView({ view }));
+    sessionStorage.setItem("currentView", view);
     toggleProfile();
+    router.push("/");
   };
 
   const handleLogout = async () => {

@@ -3,15 +3,19 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Image from "next/image";
 import { setCurrentView } from "@/features/blog/blogSlice";
 import { setSelectedCategory } from "@/features/category/categorySelectedSlice";
+import { useRouter } from "next/navigation";
+import { resetTitle } from "@/features/blog/blogTitleSlice";
 
 interface MenuProps {
   isMenuOpen: boolean;
+  menuColor: string;
   isProfileOpen: boolean;
   toggleMenu: () => void;
 }
 
 const Menu: React.FC<MenuProps> = ({
   isMenuOpen,
+  menuColor,
   isProfileOpen,
   toggleMenu,
 }) => {
@@ -23,7 +27,8 @@ const Menu: React.FC<MenuProps> = ({
   );
   const currentLanguage = useAppSelector((state) => state.language.value);
 
-  // Menu Design
+  // State
+  const router = useRouter();
   const [inputValue, setInputValue] = useState(""); // 검색창 텍스트
   const [isInputFilled, setIsInputFilled] = useState(false); // 검색창 상태
 
@@ -42,8 +47,10 @@ const Menu: React.FC<MenuProps> = ({
   // Handler
   const handleViewChange = (view: string, categoryId: string) => {
     dispatch(setCurrentView({ view }));
+    sessionStorage.setItem("currentView", view);
     dispatch(setSelectedCategory(categoryId));
     toggleMenu();
+    router.push("/", { scroll: false });
   };
 
   const handleInputChange = (e: {
@@ -75,17 +82,12 @@ const Menu: React.FC<MenuProps> = ({
     setToggleStates(initialToggleStates);
   }, [classifications]); // classifications 데이터가 변경될 때마다 초기 토글 상태 업데이트
 
-  // Debug
-  // useEffect(() => {
-  //   console.log("Initial toggleStates:", toggleStates);
-  // }, [toggleStates]);
-
   return (
     <>
       {/* 메뉴 열기 버튼 */}
       <button
         onClick={() => toggleMenu()}
-        className={`z-30 transition-opacity duration-300 ${
+        className={`z-30 transition-opacity duration-300 ${menuColor} ${
           isMenuOpen || isProfileOpen ? "opacity-0" : "opacity-100"
         }`}
       >

@@ -1,36 +1,48 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+// 외부 라이브러리 모듈
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
+
+// Redux와 관련된 훅스와 기능들
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
 import { setCurrentView, resetView } from "@/features/blog/blogSlice";
+import { fetchClassificationsAndCategories } from "@/features/category/categorySlice";
+import { fetchPosts } from "@/features/post/postsSlice";
+
+// 컴포넌트 모듈
 import NavbarSub from "./NavbarSub";
 import Menu from "./navbar/Menu";
 import Profile from "./navbar/Profile";
 import SetLanguage from "./navbar/SetLanguage";
 import SetMode from "./navbar/SetMode";
-import { fetchClassificationsAndCategories } from "@/features/category/categorySlice";
-import { fetchPosts } from "@/features/post/postsSlice";
-import { resetTitle, setCurrentTitle } from "@/features/blog/blogTitleSlice";
+
+type NavbarProps = {
+  postIdx: string;
+};
 
 // React.FC는 "Function Component"의 약자로, 이 타입은 컴포넌트가 React 요소를 반환한다는 것과 props 타입을 지정할 수 있는 기능을 제공
-const Navbar: React.FC = () => {
+const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
+  const pathname = usePathname();
+
   // Redux
   const dispatch = useAppDispatch();
+
+  // Language
+  const lan = useAppSelector((state) => state.language);
 
   // User
   const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
     (state) => state.user
   );
 
-  // Blog
-  const { currentView, currentCategory, postId } = useAppSelector(
-    (state) => state.blog
-  );
-
   // Title
   const initialTitle = useAppSelector((state) => state.blogTitle.initialTitle);
   const currentTitle = useAppSelector((state) => state.blogTitle.currentTitle);
+
+  // Post
+  const { currentPost, status } = useAppSelector((state) => state.postSelected);
 
   useEffect(() => {
     dispatch(fetchClassificationsAndCategories());
@@ -38,16 +50,42 @@ const Navbar: React.FC = () => {
   }, [dispatch]);
 
   // State
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false); // 메뉴
+  // 스크롤바
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollColor, setScrollColor] = useState(
+    "bg-gray-900 dark:bg-neutral-50"
+  );
+
+  // 네비게이션
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const [menuColor, setMenuColor] = useState(
+    postIdx ? "text-white dark:text-white" : "text-black dark:text-white"
+  );
+  const [titleColor, setTitleColor] = useState(
+    postIdx
+      ? "text-transparent dark:text-transparent"
+      : "text-black dark:text-transparent"
+  );
+  const [titleBackgroundColor, setTitleBackgroundColor] = useState(
+    postIdx ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800"
+  );
+  const [title, setTitle] = useState(pathname ? currentTitle : initialTitle); // Title
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false); // 프로필
-  const [scrollProgress, setScrollProgress] = useState(0); // 가로 스크롤바
-  const [title, setTitle] = useState(initialTitle); // Title
+  const [navbarTitleColor, setnavbarTitleColor] = useState(
+    postIdx ? "text-white" : "text-black dark:text-white"
+  );
+
+  // 서브 네비게이션
+  const [subnavTitle, setSubnavTitle] = useState(
+    pathname ? currentTitle : initialTitle + "'s sundries"
+  );
 
   const handleLogoClick = () => {
-    dispatch(setCurrentView({ view: "main" })); // 'main' 뷰로 상태 변경
+    dispatch(setCurrentView({ view: "main" })); // main 뷰로 상태 변경
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const fetchAuthStatus = async () => {
       try {
         let response;
@@ -96,8 +134,8 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
-  // 스크롤 바에 따른 제목 변경
-  useEffect(() => {
+  // 스크롤 바 위치에 따른 효과
+  useLayoutEffect(() => {
     const handleScroll = () => {
       const subNavbar = document.getElementById("subNavbar");
       if (!subNavbar) return; // SubNavbar 요소가 없으면 함수 종료
@@ -105,25 +143,54 @@ const Navbar: React.FC = () => {
       const subNavbarHeight = subNavbar.offsetHeight;
       const scrollPosition = window.scrollY;
 
-      if (scrollPosition > subNavbarHeight) {
+      const postPageRegex = /^\/posts\/[\w-]+$/;
+      if (postPageRegex.test(pathname)) {
         setTitle(currentTitle);
+        setSubnavTitle(currentTitle);
+
+        // subNavbar가 보이지 않을 때
+        if (scrollPosition > subNavbarHeight) {
+          setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
+          setTitleColor("text-black dark:text-white");
+          setMenuColor("text-black dark:text-white");
+        }
+
+        // SubNavbar가 보일 때
+        else {
+          setTitleBackgroundColor("bg-transparent");
+          setTitleColor("text-transparent dark:text-transparent");
+          setMenuColor("text-white dark:text-white");
+        }
       } else {
         setTitle(initialTitle);
+        setSubnavTitle(initialTitle + "'s sundries");
       }
     };
 
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentTitle, initialTitle]);
+  }, [currentTitle, initialTitle, pathname]);
+
+  useLayoutEffect(() => {
+    if (currentPost) {
+      const updatedTitle =
+        lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
+      setTitle(updatedTitle);
+      setSubnavTitle(updatedTitle);
+    }
+  }, [lan, currentPost, postIdx]);
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-slate-50 dark:bg-neutral-800 p-4 flex justify-between items-center">
+      <nav
+        className={`fixed top-0 left-0 right-0 p-4 flex justify-between items-center ${titleBackgroundColor}`}
+      >
         {/* 메뉴 열기 버튼 */}
         <div className="flex-1">
           <Menu
             isMenuOpen={isMenuOpen}
+            menuColor={menuColor}
             isProfileOpen={isProfileOpen}
             toggleMenu={() => setIsMenuOpen(!isMenuOpen)}
           />
@@ -133,14 +200,14 @@ const Navbar: React.FC = () => {
         <div className="flex-1 flex justify-center">
           <div
             onClick={handleLogoClick}
-            className="text-2xl md:text-3xl font-navbar dark:text-slate-50 cursor-pointer"
+            className={`text-2xl md:text-3xl font-navbar dark:text-slate-50 select-none cursor-pointer ${titleColor}`}
           >
             {title}
           </div>
         </div>
 
         {/* 다국어 / 다크모드 / 프로필 컨테이너 */}
-        <div className="flex-1 flex justify-end items-center gap-8">
+        <div className="flex-1 flex justify-end items-center gap-8 select-none">
           {/* 다국어 스위치 */}
           <div className="hidden md:flex">
             <SetLanguage />
@@ -168,14 +235,18 @@ const Navbar: React.FC = () => {
       <div className="fixed top-0 left-0 right-0">
         <div className="w-full h-0.5 bg-transparent">
           <div
-            className="h-full bg-gray-900 dark:bg-neutral-50"
+            className={`h-full ${scrollColor}`}
             style={{ width: `${scrollProgress}%` }}
           ></div>
         </div>
       </div>
 
       {/* 서브 네이게이션 바*/}
-      <NavbarSub />
+      <NavbarSub
+        postIdx={postIdx}
+        textColor={navbarTitleColor}
+        title={subnavTitle}
+      />
     </>
   );
 };

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { addPost } from "@/lib/mongodb";
 import { setCurrentView } from "@/features/blog/blogSlice";
+import dummyTextJa from "@/test/dummy_ja";
+import dummyTextKo from "@/test/dummy_ko";
 
 const AdminCreatePost: React.FC = () => {
   // Redux
@@ -78,12 +80,10 @@ const AdminCreatePost: React.FC = () => {
   // 더미 데이터 추가 함수
   const addDummyDataToCategory = async (categoryId: string) => {
     for (let i = 1; i <= 50; i++) {
-      const title_ko = `더미 포스트 제목 ${i} (KO)`;
-      const title_ja = `ダミーポストタイトル ${i} (JA)`;
-      const content_ko = `더미 포스트 내용 ${i} (KO). 여기에 더 상세한 내용을 채웁니다.`;
-      const content_ja = `ダミーポスト内容 ${i} (JA). ここに詳細な内容を記入します。`;
+      const title_ko = `더미 포스트 제목 ${i}`;
+      const title_ja = `ダミーポストタイトル ${i}`;
       try {
-        await addPost(categoryId, title_ko, title_ja, content_ko, content_ja);
+        await addPost(categoryId, title_ko, title_ja, dummyTextKo, dummyTextJa);
       } catch (error) {
         console.error(`더미 데이터 ${i} 추가 실패:`, error);
       }

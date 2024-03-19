@@ -9,9 +9,18 @@ import UserComments from "@/components/main/UserComments";
 import UserPostList from "@/components/main/UserPostList";
 import UserPostDetail from "@/components/main/UserPostDetail";
 import MainContent from "@/components/main/MainContent";
+import { setCurrentView } from "@/features/blog/blogSlice";
 
 const Main: React.FC = () => {
+  // Redux
+  const dispatch = useAppDispatch();
+
   const { currentView } = useAppSelector((state) => state.blog);
+
+  useEffect(() => {
+    const savedView = sessionStorage.getItem("currentView") || "main";
+    dispatch(setCurrentView({ view: savedView }));
+  });
 
   const renderContent = () => {
     switch (currentView) {
@@ -34,7 +43,7 @@ const Main: React.FC = () => {
 
   return (
     <div className="min-h-screen flex justify-center items-center dark:bg-neutral-900">
-      <div className="w-full md:w-4/5 lg:w-3/5">{renderContent()}</div>
+      <div className="w-full md:w-3/5">{renderContent()}</div>
     </div>
   );
 };

@@ -1,8 +1,13 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
+
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchPostsByCategory } from "@/features/post/postsSlice";
-import Pagination from "@/components/ui/Pagination";
 import { resetTitle, setCurrentTitle } from "@/features/blog/blogTitleSlice";
+
+import Pagination from "@/components/ui/Pagination";
+import Link from "next/link";
 
 interface Category {
   _id: string;
@@ -18,7 +23,7 @@ const UserPostList: React.FC = () => {
   const selectedCategoryId = useAppSelector(
     (state) => state.categorySelected.selectedCategoryId
   );
-  const { posts, loading } = useAppSelector((state) => state.post);
+  const { posts, loading } = useAppSelector((state) => state.posts);
 
   const selectedCategoryName = categories.find(
     (category: Category) => category._id === selectedCategoryId
@@ -63,29 +68,31 @@ const UserPostList: React.FC = () => {
         </h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-5 md:px-10">
           {currentPosts.map((post, index) => (
-            <div
-              key={post._id}
-              className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square"
-            >
-              {/* 이미지 */}
+            <Link key={post._id} href={`/posts/${post.index}`} scroll={false}>
               <div
-                className="h-3/4 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${
-                    post.imageUrl || "기본 이미지 경로"
-                  })`,
-                }}
-              ></div>
-              {/* 날짜 및 제목 */}
-              <div className="bg-gray-200 dark:bg-neutral-700 p-4">
-                <p className="text-sm dark:text-neutral-300">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </p>
-                <h3 className="font-semibold dark:text-neutral-100">
-                  {post[`title_${lan.value}`]}
-                </h3>
+                key={post._id}
+                className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square"
+              >
+                {/* 이미지 */}
+                <div
+                  className="h-3/4 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${
+                      post.imageUrl || "기본 이미지 경로"
+                    })`,
+                  }}
+                ></div>
+                {/* 날짜 및 제목 */}
+                <div className="bg-gray-200 dark:bg-neutral-700 p-4">
+                  <p className="text-sm dark:text-neutral-300">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                  <h3 className="font-semibold dark:text-neutral-100">
+                    {post[`title_${lan.value}`]}
+                  </h3>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

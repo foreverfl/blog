@@ -73,8 +73,21 @@ export async function getClassificationsAndCategories(): Promise<{
 // Classification CRUD
 export async function addClassification(name_ko: string, name_ja: string) {
   const db = await connectDB();
+  const classifications = db.collection("classifications");
+
+  // 현재 최대 index 값을 찾음
+  const maxIndexDocument = await classifications
+    .find()
+    .sort({ index: -1 })
+    .limit(1)
+    .toArray();
+  let currentIndex = 1;
+  if (maxIndexDocument.length > 0) {
+    currentIndex = maxIndexDocument[0].index + 1;
+  }
 
   const result = await db.collection("classifications").insertOne({
+    index: currentIndex,
     name_ko,
     name_ja,
   });
@@ -137,10 +150,23 @@ export async function addCategory(
   name_ja: string
 ) {
   const db = await connectDB();
+  const categories = db.collection("categories");
+
+  // 현재 최대 index 값을 찾음
+  const maxIndexDocument = await categories
+    .find()
+    .sort({ index: -1 })
+    .limit(1)
+    .toArray();
+  let currentIndex = 1;
+  if (maxIndexDocument.length > 0) {
+    currentIndex = maxIndexDocument[0].index + 1;
+  }
 
   // category 추가
   const category = {
     classification: new ObjectId(classificationId),
+    index: currentIndex,
     name_ko,
     name_ja,
   };
@@ -194,7 +220,8 @@ export async function deleteCategory(categoryId: string) {
 // Post CRUD
 interface Post {
   _id: string;
-  category: string; // 여기서 category는 카테고리의 ObjectId를 문자열로 변환한 값입니다.
+  index: number;
+  category: string;
   title_ko: string;
   title_ja: string;
   content_ko: string;
@@ -211,9 +238,23 @@ export async function addPost(
   content_ja: string
 ) {
   const db = await connectDB();
+  const posts = db.collection("posts");
+
+  // 현재 최대 index 값을 찾음
+  const maxIndexDocument = await posts
+    .find()
+    .sort({ index: -1 })
+    .limit(1)
+    .toArray();
+  let currentIndex = 1;
+  if (maxIndexDocument.length > 0) {
+    currentIndex = maxIndexDocument[0].index + 1;
+  }
+
   const createdAt = new Date();
   const post = {
     category: new ObjectId(categoryId),
+    index: currentIndex,
     title_ko,
     title_ja,
     content_ko,
@@ -230,6 +271,7 @@ export async function getPosts(): Promise<Post[]> {
   const posts = await db.collection("posts").find({}).toArray();
   const postsFormatted: Post[] = posts.map((doc) => ({
     _id: doc._id.toString(),
+    index: doc.index,
     category: doc.category.toString(),
     title_ko: doc.title_ko,
     title_ja: doc.title_ja,
@@ -249,6 +291,7 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
     .toArray();
   const postsFormatted: Post[] = posts.map((doc) => ({
     _id: doc._id.toString(),
+    index: doc.index,
     category: doc.category.toString(),
     title_ko: doc.title_ko,
     title_ja: doc.title_ja,
@@ -261,6 +304,29 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
   return postsFormatted;
 }
 
+export async function getPostByIndex(index: number): Promise<Post | null> {
+  const db = await connectDB();
+  const post = await db.collection("posts").findOne({ index: index });
+
+  if (!post) {
+    return null; // 조건에 맞는 포스트가 없는 경우
+  }
+
+  const postFormatted: Post = {
+    _id: post._id.toString(),
+    category: post.category.toString(),
+    index: post.index,
+    title_ko: post.title_ko,
+    title_ja: post.title_ja,
+    content_ko: post.content_ko,
+    content_ja: post.content_ja,
+    like: post.like,
+    createdAt: post.createdAt.toISOString(),
+  };
+
+  return postFormatted;
+}
+
 export async function updatePost(
   postId: string,
   title_ko: string,
@@ -269,6 +335,20 @@ export async function updatePost(
   content_ja: string
 ) {
   const db = await connectDB();
+
+  const classifications = db.collection("classifications");
+
+  // 현재 최대 index 값을 찾음
+  const maxIndexDocument = await classifications
+    .find()
+    .sort({ index: -1 })
+    .limit(1)
+    .toArray();
+  let currentIndex = 1;
+  if (maxIndexDocument.length > 0) {
+    currentIndex = maxIndexDocument[0].index + 1;
+  }
+
   const result = await db.collection("posts").updateOne(
     { _id: new ObjectId(postId) },
     {
@@ -303,9 +383,24 @@ export async function addComment(
   lan: string
 ) {
   const db = await connectDB();
+
+  const comments = db.collection("comments");
+
+  // 현재 최대 index 값을 찾음
+  const maxIndexDocument = await comments
+    .find()
+    .sort({ index: -1 })
+    .limit(1)
+    .toArray();
+  let currentIndex = 1;
+  if (maxIndexDocument.length > 0) {
+    currentIndex = maxIndexDocument[0].index + 1;
+  }
+
   const createdAt = new Date();
   const comment = {
     userId: new ObjectId(userId),
+    index: currentIndex,
     post: new ObjectId(postId),
     content,
     lan,

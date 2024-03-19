@@ -26,7 +26,6 @@ const Pagination: React.FC<PaginationProps> = ({
           <li key={number} className="list-none">
             <a
               onClick={() => paginate(number)}
-              href="#!"
               className={`px-4 py-2 border rounded cursor-pointer
               ${
                 currentPage === number

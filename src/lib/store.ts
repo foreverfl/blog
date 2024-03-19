@@ -5,7 +5,7 @@ import blogReducer from "@/features/blog/blogSlice";
 import blogTitleReducer from "@/features/blog/blogTitleSlice";
 import categoryReducer from "@/features/category/categorySlice";
 import categorySelectedReducer from "@/features/category/categorySelectedSlice";
-import postReducer from "@/features/post/postsSlice";
+import postsReducer from "@/features/post/postsSlice";
 import postSelectedReducer from "@/features/post/postSelectedSlice";
 
 export const makeStore = () => {
@@ -17,7 +17,7 @@ export const makeStore = () => {
       blogTitle: blogTitleReducer,
       category: categoryReducer,
       categorySelected: categorySelectedReducer,
-      post: postReducer,
+      posts: postsReducer,
       postSelected: postSelectedReducer,
     },
   });

@@ -4,7 +4,7 @@ import Main from "../components/Main";
 
 export default function Index() {
   return (
-    <Layout>
+    <Layout postIdx={""}>
       <Main />
     </Layout>
   );
