@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   initialTitle: "mogumogu",
-  currentTitle: "mogumogu",
+  currentTitle: "",
 };
 
 export const blogTitleSlice = createSlice({

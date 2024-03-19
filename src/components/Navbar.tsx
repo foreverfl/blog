@@ -2,7 +2,7 @@
 
 // 외부 라이브러리 모듈
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 // Redux와 관련된 훅스와 기능들
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -17,6 +17,7 @@ import Menu from "./navbar/Menu";
 import Profile from "./navbar/Profile";
 import SetLanguage from "./navbar/SetLanguage";
 import SetMode from "./navbar/SetMode";
+import { resetTitle } from "@/features/blog/blogTitleSlice";
 
 type NavbarProps = {
   postIdx: string;
@@ -25,6 +26,8 @@ type NavbarProps = {
 // React.FC는 "Function Component"의 약자로, 이 타입은 컴포넌트가 React 요소를 반환한다는 것과 props 타입을 지정할 수 있는 기능을 제공
 const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Redux
   const dispatch = useAppDispatch();
@@ -70,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   const [titleBackgroundColor, setTitleBackgroundColor] = useState(
     postIdx ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800"
   );
-  const [title, setTitle] = useState(pathname ? currentTitle : initialTitle); // Title
+  const [title, setTitle] = useState(postIdx ? currentTitle : initialTitle); // Title
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false); // 프로필
   const [navbarTitleColor, setnavbarTitleColor] = useState(
     postIdx ? "text-white" : "text-black dark:text-white"
@@ -78,11 +81,14 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
 
   // 서브 네비게이션
   const [subnavTitle, setSubnavTitle] = useState(
-    pathname ? currentTitle : initialTitle + "'s sundries"
+    postIdx ? currentTitle : initialTitle + "'s sundries"
   );
 
+  // Handler
   const handleLogoClick = () => {
     dispatch(setCurrentView({ view: "main" })); // main 뷰로 상태 변경
+    sessionStorage.setItem("currentView", "main");
+    router.push("/", { scroll: false });
   };
 
   useLayoutEffect(() => {
@@ -135,7 +141,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   }, []);
 
   // 스크롤 바 위치에 따른 효과
-  useLayoutEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       const subNavbar = document.getElementById("subNavbar");
       if (!subNavbar) return; // SubNavbar 요소가 없으면 함수 종료
@@ -162,8 +168,17 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
           setMenuColor("text-white dark:text-white");
         }
       } else {
-        setTitle(initialTitle);
-        setSubnavTitle(initialTitle + "'s sundries");
+        // subNavbar가 보이지 않을 때
+        if (scrollPosition > subNavbarHeight) {
+          setTitle(currentTitle);
+          setSubnavTitle(currentTitle);
+        }
+
+        // SubNavbar가 보일 때
+        else {
+          setTitle(initialTitle);
+          setSubnavTitle(initialTitle + "'s sundries");
+        }
       }
     };
 
@@ -179,7 +194,13 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       setTitle(updatedTitle);
       setSubnavTitle(updatedTitle);
     }
-  }, [lan, currentPost, postIdx]);
+  }, [lan, currentPost]);
+
+  // 링크 이동 시 Redux 초기화
+  useEffect(() => {
+    const url = `${pathname}`; // 링크 이동을 pathname으로 감지
+    resetTitle();
+  }, [pathname]);
 
   return (
     <>

@@ -98,6 +98,10 @@ html {
   padding: 45px;
 }
 
+.markdown-body pre {
+  padding: 0 !important;
+}
+
 .dark .markdown-body {
   background-color: transparent; /* Dark background */
   color: #ffffff; /* Light text for dark background */

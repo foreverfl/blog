@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchPostsByCategory } from "@/features/post/postsSlice";
 import { resetTitle, setCurrentTitle } from "@/features/blog/blogTitleSlice";
 
 import Pagination from "@/components/ui/Pagination";
-import Link from "next/link";
 
 interface Category {
   _id: string;
@@ -38,6 +38,10 @@ const UserPostList: React.FC = () => {
       dispatch(resetTitle()); // 컴포넌트가 언마운트될 때 초기 타이틀로 리셋
     };
   }, [dispatch, selectedCategoryName]);
+
+  useEffect(() => {
+    console.log(selectedCategoryName);
+  });
 
   useEffect(() => {
     if (selectedCategoryId) {
