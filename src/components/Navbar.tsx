@@ -26,7 +26,6 @@ type NavbarProps = {
 // React.FC는 "Function Component"의 약자로, 이 타입은 컴포넌트가 React 요소를 반환한다는 것과 props 타입을 지정할 수 있는 기능을 제공
 const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
 
   // Redux
