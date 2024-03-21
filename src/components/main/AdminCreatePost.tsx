@@ -106,13 +106,13 @@ const AdminCreatePost: React.FC = () => {
         try {
           const requestOptions = { method: "PUT", body: formData.get("file") };
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_R2_URI}/${newFileName}`,
+            `https://blog_workers.forever-fl.workers.dev/${newFileName}`,
             requestOptions
           );
           const result = await response.text(); // 또는 response.json() 등 response 처리
 
           // 업로드된 이미지 URL 설정
-          return `${process.env.NEXT_PUBLIC_R2_URI}/${newFileName}`;
+          return `https://blog_workers.forever-fl.workers.dev/${newFileName}`;
         } catch (error) {
           console.error("Upload error:", error);
           return null;
@@ -202,7 +202,7 @@ const AdminCreatePost: React.FC = () => {
       // 서버에서 이미지 삭제
       const requestOptions = { method: "DELETE" };
       await fetch(
-        `${process.env.NEXT_PUBLIC_R2_URI}/${imageLink}`,
+        `https://blog_workers.forever-fl.workers.dev/${imageLink}`,
         requestOptions
       );
 
