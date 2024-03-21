@@ -226,6 +226,7 @@ interface Post {
   title_ja: string;
   content_ko: string;
   content_ja: string;
+  image: string | null;
   like: number;
   createdAt: string; // ISO 문자열 형태로 변환
 }
@@ -235,7 +236,8 @@ export async function addPost(
   title_ko: string,
   title_ja: string,
   content_ko: string,
-  content_ja: string
+  content_ja: string,
+  image: string | null
 ) {
   const db = await connectDB();
   const posts = db.collection("posts");
@@ -259,6 +261,7 @@ export async function addPost(
     title_ja,
     content_ko,
     content_ja,
+    image,
     like: 0,
     createdAt,
   };
@@ -277,6 +280,7 @@ export async function getPosts(): Promise<Post[]> {
     title_ja: doc.title_ja,
     content_ko: doc.content_ko,
     content_ja: doc.content_ja,
+    image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
   }));
@@ -297,6 +301,7 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
     title_ja: doc.title_ja,
     content_ko: doc.content_ko,
     content_ja: doc.content_ja,
+    image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
   }));
@@ -320,6 +325,7 @@ export async function getPostByIndex(index: number): Promise<Post | null> {
     title_ja: post.title_ja,
     content_ko: post.content_ko,
     content_ja: post.content_ja,
+    image: post.image,
     like: post.like,
     createdAt: post.createdAt.toISOString(),
   };
@@ -332,7 +338,8 @@ export async function updatePost(
   title_ko: string,
   title_ja: string,
   content_ko: string,
-  content_ja: string
+  content_ja: string,
+  image: string | null
 ) {
   const db = await connectDB();
 
@@ -357,6 +364,7 @@ export async function updatePost(
         title_ja,
         content_ko,
         content_ja,
+        image,
         updatedAt: new Date(),
       },
     }
