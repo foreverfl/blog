@@ -37,9 +37,9 @@ const SetLanguage: React.FC = () => {
 
     if (languageCode) {
       if (newLanguage === "ja") {
-        router.push(`/post/ja/${postIdx}`);
+        router.push(`/post/ja/${postIdx}`, { scroll: false });
       } else if (newLanguage === "ko") {
-        router.push(`/post/ko/${postIdx}`);
+        router.push(`/post/ko/${postIdx}`, { scroll: false });
       }
     }
   };

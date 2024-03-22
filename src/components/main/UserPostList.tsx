@@ -9,6 +9,8 @@ import { fetchPostsByCategory } from "@/features/post/postsSlice";
 import { resetTitle, setCurrentTitle } from "@/features/blog/blogTitleSlice";
 
 import Pagination from "@/components/ui/Pagination";
+import { usePathname } from "next/navigation";
+import { clearSelectedCategory } from "@/features/category/categorySelectedSlice";
 
 interface Category {
   _id: string;
@@ -17,6 +19,8 @@ interface Category {
 }
 
 const UserPostList: React.FC = () => {
+  const pathname = usePathname();
+
   // Redux
   const dispatch = useAppDispatch();
   const lan = useAppSelector((state) => state.language);
@@ -39,6 +43,11 @@ const UserPostList: React.FC = () => {
       dispatch(resetTitle()); // 컴포넌트가 언마운트될 때 초기 타이틀로 리셋
     };
   }, [dispatch, selectedCategoryName]);
+
+  useEffect(() => {
+    const url = `${pathname}`; // 링크 이동을 pathname으로 감지
+    clearSelectedCategory();
+  }, [pathname]);
 
   useEffect(() => {
     if (selectedCategoryId) {

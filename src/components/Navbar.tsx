@@ -83,6 +83,21 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     postIdx ? currentTitle : initialTitle + "'s sundries"
   );
 
+  // 링크 이동 시 타이틀 초기화
+  useEffect(() => {
+    const pathParts = pathname.split("/"); // 링크 이동을 pathname으로 감지
+    const postPart = pathParts[1];
+    const languagePart = pathParts[2];
+
+    if (postPart && languagePart === "ja") {
+    } else if (postPart && languagePart === "ko") {
+    } else {
+      resetTitle();
+      setTitle(initialTitle);
+      setSubnavTitle(initialTitle + "'s sundries");
+    }
+  }, [initialTitle, pathname]);
+
   // Handler
   const handleLogoClick = () => {
     dispatch(setCurrentView({ view: "main" })); // main 뷰로 상태 변경
@@ -90,6 +105,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     router.push("/", { scroll: false });
   };
 
+  // 회원 정보 redux에 저장
   useLayoutEffect(() => {
     const fetchAuthStatus = async () => {
       try {
@@ -169,8 +185,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       } else {
         // subNavbar가 보이지 않을 때
         if (scrollPosition > subNavbarHeight) {
-          setTitle(currentTitle);
-          setSubnavTitle(currentTitle);
+          setTitle(initialTitle);
+          setSubnavTitle(initialTitle + "'s sundries");
         }
 
         // SubNavbar가 보일 때
@@ -194,12 +210,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       setSubnavTitle(updatedTitle);
     }
   }, [lan, currentPost]);
-
-  // 링크 이동 시 Redux 초기화
-  useEffect(() => {
-    const url = `${pathname}`; // 링크 이동을 pathname으로 감지
-    resetTitle();
-  }, [pathname]);
 
   return (
     <>

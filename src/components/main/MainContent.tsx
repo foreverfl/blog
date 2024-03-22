@@ -11,8 +11,11 @@ interface Post {
   title_ja: string;
   content_ko: string;
   content_ja: string;
+  images: string[];
+  image: string | null;
   like: number;
   createdAt: string; // ISO 문자열 형태로 변환
+  [key: string]: any;
 }
 
 const MainContent: React.FC = () => {
@@ -42,18 +45,6 @@ const MainContent: React.FC = () => {
     setRecentPosts(sortedRecentPosts);
   }, [posts]);
 
-  function formatDate(date: string | number | Date) {
-    const d = new Date(date);
-    let month = "" + (d.getMonth() + 1);
-    let day = "" + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = "0" + month;
-    if (day.length < 2) day = "0" + day;
-
-    return [year, month, day].join("-");
-  }
-
   return (
     <>
       <div className="my-56"></div>
@@ -66,18 +57,26 @@ const MainContent: React.FC = () => {
           </h2>
           <div className="grid grid-cols-4 gap-6 px-5 md:px-10">
             {popularPosts.map((post, index) => (
-              <Link key={post._id} href={`/posts/${post.index}`} scroll={false}>
-                <div
-                  key={index}
-                  className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square"
-                >
-                  <div className="h-3/4 bg-cover bg-center"></div>
+              <Link
+                key={post._id}
+                href={`/post/${lan.value === "ja" ? "ja" : "ko"}/${post.index}`}
+                scroll={false}
+              >
+                <div className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
+                  {/* 이미지 */}
+                  <div
+                    className="h-3/4 bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${post.image || "default path"})`,
+                    }}
+                  ></div>
+                  {/* 날짜 및 제목 */}
                   <div className="bg-gray-200 dark:bg-neutral-700 p-4">
                     <p className="text-sm dark:text-neutral-300">
-                      {formatDate(new Date(post.createdAt))}
+                      {new Date(post.createdAt).toLocaleDateString()}
                     </p>
                     <h3 className="font-semibold dark:text-neutral-100">
-                      {lan.value === "ja" ? post.title_ja : post.title_ko}
+                      {post[`title_${lan.value}`]}
                     </h3>
                   </div>
                 </div>
@@ -94,19 +93,29 @@ const MainContent: React.FC = () => {
             Recent Posts
           </h2>
           <div className="grid grid-cols-4 gap-4 px-5 md:px-10">
-            {recentPosts.map((post, index) => (
-              <Link key={post._id} href={`/posts/${post.index}`} scroll={false}>
-                <div
-                  key={index}
-                  className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square"
-                >
-                  <div className="h-3/4 bg-cover bg-center"></div>
+            {recentPosts.map((post) => (
+              <Link
+                key={post._id}
+                href={`/post/${
+                  lan.value === "ja" ? "ja" : lan.value === "ko" ? "ko" : ""
+                }/${post.index}`}
+                scroll={false}
+              >
+                <div className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
+                  {/* 이미지 */}
+                  <div
+                    className="h-3/4 bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${post.image || "default path"})`,
+                    }}
+                  ></div>
+                  {/* 날짜 및 제목 */}
                   <div className="bg-gray-200 dark:bg-neutral-700 p-4">
                     <p className="text-sm dark:text-neutral-300">
-                      {formatDate(new Date(post.createdAt))}
+                      {new Date(post.createdAt).toLocaleDateString()}
                     </p>
                     <h3 className="font-semibold dark:text-neutral-100">
-                      {lan.value === "ja" ? post.title_ja : post.title_ko}
+                      {post[`title_${lan.value}`]}
                     </h3>
                   </div>
                 </div>

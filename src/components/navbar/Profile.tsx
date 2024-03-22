@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,8 @@ const Profile: React.FC<ProfileProps> = ({
   email,
   isLoggedOut,
 }) => {
+  const router = useRouter();
+
   // Redux
   const dispatch = useAppDispatch();
 
@@ -35,7 +37,15 @@ const Profile: React.FC<ProfileProps> = ({
 
   // State
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
-  const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useLayoutEffect(() => {
+    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || []; // 현재 로그인한 유저의 이메일이 관리자 목록에 포함되어 있는지 확인
+
+    if (email) {
+      setIsAdmin(adminEmails.includes(email));
+    }
+  }, [email, isAdmin]);
 
   // Handler
   const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
@@ -203,7 +213,7 @@ const Profile: React.FC<ProfileProps> = ({
 
             {/* 메뉴 옵션 */}
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
-              {email === "forevermfl@gmail.com" ? (
+              {isAdmin ? (
                 <>
                   <li
                     onClick={() => handleViewChange("adminCategoryManagement")}
