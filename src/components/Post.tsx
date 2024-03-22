@@ -1,7 +1,11 @@
 "use client";
 
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -13,6 +17,8 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = ({ postIdx }) => {
+  const pathname = usePathname();
+
   // Redux
   const dispatch = useAppDispatch();
 
@@ -29,18 +35,32 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
   }, []);
 
   useEffect(() => {
+    const pathParts = pathname.split("/");
+    const languageCode = pathParts[2];
+
     if (currentPost !== null) {
-      if (lan.value == "ja") {
+      if (languageCode === "ja") {
         setContent(currentPost.content_ja);
       } else {
         setContent(currentPost.content_ko);
       }
     }
-  }, [currentPost, lan.value]);
+  }, [currentPost, pathname]);
 
   // 로딩 중 UI 처리
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="bg-transparent">
+          <Image
+            src="/images/gear.webp"
+            width={250}
+            height={250}
+            alt="loading"
+          />
+        </div>
+      </div>
+    );
   }
 
   return (

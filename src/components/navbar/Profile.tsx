@@ -44,7 +44,7 @@ const Profile: React.FC<ProfileProps> = ({
     dispatch(setCurrentView({ view }));
     sessionStorage.setItem("currentView", view);
     toggleProfile();
-    router.push("/");
+    router.push("/", { scroll: false });
   };
 
   const handleLogout = async () => {
@@ -175,7 +175,7 @@ const Profile: React.FC<ProfileProps> = ({
                     width={100}
                     height={100}
                     priority={true}
-                    className="w-full h-auto object-cover rounded-full"
+                    className="w-full h-full object-cover rounded-full"
                   />
                 </div>
                 {/* 사용자 이름 */}

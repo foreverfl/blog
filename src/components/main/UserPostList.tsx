@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -40,10 +41,6 @@ const UserPostList: React.FC = () => {
   }, [dispatch, selectedCategoryName]);
 
   useEffect(() => {
-    console.log(selectedCategoryName);
-  });
-
-  useEffect(() => {
     if (selectedCategoryId) {
       dispatch(fetchPostsByCategory(selectedCategoryId));
     }
@@ -60,7 +57,20 @@ const UserPostList: React.FC = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber); // 페이지 번호를 클릭했을 때 사용될 함수
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="bg-transparent">
+          <Image
+            src="/images/gear.webp"
+            width={250}
+            height={250}
+            alt="loading"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -72,18 +82,19 @@ const UserPostList: React.FC = () => {
         </h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-5 md:px-10">
           {currentPosts.map((post, index) => (
-            <Link key={post._id} href={`/posts/${post.index}`} scroll={false}>
-              <div
-                key={post._id}
-                className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square"
-              >
+            <Link
+              key={post._id}
+              href={`/post/${
+                lan.value === "ja" ? "ja" : lan.value === "ko" ? "ko" : ""
+              }/${post.index}`}
+              scroll={false}
+            >
+              <div className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
                 {/* 이미지 */}
                 <div
                   className="h-3/4 bg-cover bg-center"
                   style={{
-                    backgroundImage: `url(${
-                      post.imageUrl || "기본 이미지 경로"
-                    })`,
+                    backgroundImage: `url(${post.image || "기본 이미지 경로"})`,
                   }}
                 ></div>
                 {/* 날짜 및 제목 */}

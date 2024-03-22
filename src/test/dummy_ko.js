@@ -1,5 +1,9 @@
 const dummyTextKo = `
 # 제목
+
+## 이미지
+![example image](https://blog_workers.forever-fl.workers.dev/profile.png)
+
 ## 소제목1
 태평양에 떠 있는 메가 플로트 도시이자,
 어느 국가에도 소속되지 않은 베이론 시티.

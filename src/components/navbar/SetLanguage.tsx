@@ -1,11 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
+
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+
 import { setLanguage } from "@/features/language/languageSlice";
 
 const SetLanguage: React.FC = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  //Redux
   const dispatch = useAppDispatch();
 
   const [isReady, setIsReady] = useState(false); // 로딩 상태 관리
@@ -23,8 +30,19 @@ const SetLanguage: React.FC = () => {
   const toggleLanguage = () => {
     const newLanguage = currentLanguage === "ko" ? "ja" : "ko";
     dispatch(setLanguage(newLanguage));
-  };
 
+    const pathParts = pathname.split("/");
+    const languageCode = pathParts[2];
+    const postIdx = pathParts[3];
+
+    if (languageCode) {
+      if (newLanguage === "ja") {
+        router.push(`/post/ja/${postIdx}`);
+      } else if (newLanguage === "ko") {
+        router.push(`/post/ko/${postIdx}`);
+      }
+    }
+  };
   if (!isReady) {
     return (
       <div className="animate-pulse">

@@ -148,8 +148,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       const subNavbarHeight = subNavbar.offsetHeight;
       const scrollPosition = window.scrollY;
 
-      const postPageRegex = /^\/posts\/[\w-]+$/;
-      if (postPageRegex.test(pathname)) {
+      const pathParts = pathname.split("/");
+      if (pathParts[1] === "post") {
         setTitle(currentTitle);
         setSubnavTitle(currentTitle);
 

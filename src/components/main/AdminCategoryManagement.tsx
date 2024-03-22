@@ -15,10 +15,6 @@ const MainContent: React.FC = () => {
   // redux
   const dispatch = useAppDispatch();
 
-  const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
-    (state) => state.user
-  );
-
   const { classifications, categories, loading } = useAppSelector(
     (state) => state.category
   );
@@ -48,11 +44,6 @@ const MainContent: React.FC = () => {
       (category) => category.classification === selectedClassificationId
     );
   }, [categories, selectedClassificationId]);
-
-  // debug
-  // useEffect(() => {
-  //   console.log("Selected Classification ID:", selectedClassificationId);
-  // }, [selectedClassificationId]);
 
   // Modal
   type ModalState = {

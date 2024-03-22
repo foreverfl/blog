@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface MainState {
   currentView: string;
   currentCategory: string | null; // 현재 선택된 카테고리
-  postId: string | null; // 현재 보여줄 포스트의 ID
+  loading: boolean;
 }
 
 /*
@@ -18,7 +18,7 @@ interface MainState {
 const initialState: MainState = {
   currentView: "main", // 기본값은 포스트 목록
   currentCategory: null,
-  postId: null,
+  loading: false,
 };
 
 const mainSlice = createSlice({
@@ -30,26 +30,23 @@ const mainSlice = createSlice({
       action: PayloadAction<{
         view: string;
         category?: string;
-        postId?: string;
       }>
     ) {
-      const { view, category, postId } = action.payload;
+      const { view, category } = action.payload;
       state.currentView = view;
       if (category !== undefined) {
         state.currentCategory = category;
       }
-
-      if (postId !== undefined) {
-        state.postId = postId;
-      }
+    },
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload;
     },
     resetView(state) {
       state.currentView = "main";
       state.currentCategory = null;
-      state.postId = null;
     },
   },
 });
 
-export const { setCurrentView, resetView } = mainSlice.actions;
+export const { setCurrentView, setLoading, resetView } = mainSlice.actions;
 export default mainSlice.reducer;
