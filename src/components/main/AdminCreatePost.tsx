@@ -3,10 +3,15 @@ import Image from "next/image";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
-import { addPost } from "@/lib/mongodb";
+import { addPost, updatePost } from "@/lib/mongodb";
 import { setCurrentView } from "@/features/blog/blogSlice";
 import dummyTextJa from "@/test/dummy_ja";
 import dummyTextKo from "@/test/dummy_ko";
+import {
+  deleteImage,
+  renameAndOverwriteFiles,
+  uploadFiles,
+} from "@/lib/workers";
 
 const AdminCreatePost: React.FC = () => {
   // Redux
@@ -57,73 +62,24 @@ const AdminCreatePost: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log(content);
-    // console.log(images);
-    // console.log(contextMenu);
-  }, [content]);
+    // console.log(content);
+    console.log(images);
+    console.log(representativeImage);
+  }, [images, representativeImage]);
 
   const handleAddImages = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragOver(false); // 드래그가 끝나면 isDragOver 상태를 false로 설정
-    const files = event.dataTransfer.files;
+    event.preventDefault();
+    setIsDragOver(false);
 
-    if (files.length > 0) {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        // 파일명 생성 로직
-        // 타임 스탬프 만들기
-        const now = new Date();
-        const dateOptions: Intl.DateTimeFormatOptions = {
-          year: "2-digit",
-          month: "2-digit",
-          day: "2-digit",
-        };
-        const timeOptions: Intl.DateTimeFormatOptions = {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false, // 24시간 표시를 원할 경우
-        };
+    const { urls, errors } = await uploadFiles(event.dataTransfer.files);
 
-        // 날짜 포매팅 후 구분자 제거
-        const formattedDate = now
-          .toLocaleDateString("ko-KR", dateOptions)
-          .replace(/\.\s?/g, "");
-
-        // 시간 포매팅 후 구분자 제거
-        const formattedTime = now
-          .toLocaleTimeString("ko-KR", timeOptions)
-          .replace(/:/g, "");
-
-        const formattedTimestamp = `${formattedDate}-${formattedTime}`;
-        const originalFileName = file.name;
-        const safeFileName = originalFileName.replace(/\s+/g, "_");
-        const newFileName = `tmp_${formattedTimestamp}_${safeFileName}`;
-
-        // FormData 준비
-        const formData = new FormData();
-        formData.append("file", file, newFileName);
-
-        try {
-          const requestOptions = { method: "PUT", body: formData.get("file") };
-          const response = await fetch(
-            `https://blog_workers.forever-fl.workers.dev/${newFileName}`,
-            requestOptions
-          );
-          const result = await response.text(); // 또는 response.json() 등 response 처리
-
-          // 업로드된 이미지 URL 설정
-          return `https://blog_workers.forever-fl.workers.dev/${newFileName}`;
-        } catch (error) {
-          console.error("Upload error:", error);
-          return null;
-        }
-      });
-      const uploadedImageUrls = await Promise.all(uploadPromises);
-      const validUrls = uploadedImageUrls.filter(
-        (url) => url !== null
-      ) as string[];
-      setImages((prev) => [...prev, ...validUrls]);
+    if (errors.length > 0) {
+      console.error("Upload errors:", errors.join(", "));
     }
+
+    setImages((prev) => [...prev, ...urls]);
   };
 
   const insertImageAtCursor = (imageUrl: string) => {
@@ -198,20 +154,13 @@ const AdminCreatePost: React.FC = () => {
 
   // 이미지 삭제
   const handleDeleteImage = async (imageLink: string) => {
-    try {
-      // 서버에서 이미지 삭제
-      const requestOptions = { method: "DELETE" };
-      await fetch(
-        `https://blog_workers.forever-fl.workers.dev/${imageLink}`,
-        requestOptions
-      );
-
-      // 클라이언트 상태 업데이트
+    const isSuccess = await deleteImage(imageLink);
+    if (isSuccess) {
       setImages((currentImages) =>
         currentImages.filter((image) => image !== imageLink)
       );
-    } catch (error) {
-      console.error("Delete error:", error);
+    } else {
+      console.error("Failed to delete image from server");
     }
   };
 
@@ -232,12 +181,37 @@ const AdminCreatePost: React.FC = () => {
         selectedCategoryId,
         title_ko,
         title_ja,
-        representativeImage,
         content_ko,
-        content_ja
+        content_ja,
+        images,
+        representativeImage
       );
 
-      alert("Post successfully added!");
+      // 이미지 파일명 변경
+      const newImageUrls = await renameAndOverwriteFiles(
+        representativeImage,
+        images,
+        insertedId
+      );
+
+      // DB 업데이트
+      const updateResult = await updatePost(
+        insertedId,
+        title_ko,
+        title_ja,
+        content_ko,
+        content_ja,
+        newImageUrls.imageUrls,
+        newImageUrls.representativeImageUrl
+      );
+
+      alert("글이 등록되었어요!!. 확인해보시겠어요?");
+      // State 초기화
+      setSelectedCategoryId("");
+      setTitle({ ko: "", ja: "" });
+      setContent({ ko: "", ja: "" });
+      setImages([]);
+      setRepresentativeImage("");
 
       // sessionStorage.setItem("currentView", "adminPostList");
       // handleViewChange("adminPostList"); // AdminPostList로 redirection
@@ -263,6 +237,7 @@ const AdminCreatePost: React.FC = () => {
           title_ja,
           dummyTextKo,
           dummyTextJa,
+          ["https://blog_workers.forever-fl.workers.dev/profile.png"],
           "https://blog_workers.forever-fl.workers.dev/profile.png"
         );
       } catch (error) {

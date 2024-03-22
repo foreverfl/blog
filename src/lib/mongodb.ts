@@ -1,6 +1,7 @@
 "use server";
 
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+import { deleteImage } from "./workers";
 
 // 환경 변수에서 URI 가져오기
 const uri = process.env.MONGODB_URI!;
@@ -190,29 +191,24 @@ export async function updateCategory(
   return result.modifiedCount;
 }
 
-export async function deleteCategory(categoryId: string) {
+export async function deleteCategory(categoryId: string): Promise<number> {
   const db = await connectDB();
 
-  // category 삭제
+  // 해당 카테고리에 속한 모든 포스트 조회
+  const posts = await db
+    .collection("posts")
+    .find({ category: new ObjectId(categoryId) })
+    .toArray();
+
+  // 각 포스트와 연관된 이미지 및 댓글 삭제
+  for (const post of posts) {
+    await deletePost(post._id.toString());
+  }
+
+  // 카테고리 삭제
   const categoryDeleteResult = await db
     .collection("categories")
     .deleteOne({ _id: new ObjectId(categoryId) });
-
-  if (categoryDeleteResult.deletedCount > 0) {
-    // 해당 category에 속한 posts 찾기
-    const posts = await db
-      .collection("posts")
-      .find({ category: new ObjectId(categoryId) })
-      .toArray();
-
-    const postIds = posts.map((post) => post._id);
-
-    // 찾은 posts 삭제
-    await db.collection("posts").deleteMany({ _id: { $in: postIds } });
-
-    // 각 post에 속한 comments 삭제
-    await db.collection("comments").deleteMany({ post: { $in: postIds } });
-  }
 
   return categoryDeleteResult.deletedCount;
 }
@@ -226,6 +222,7 @@ interface Post {
   title_ja: string;
   content_ko: string;
   content_ja: string;
+  images: string[];
   image: string | null;
   like: number;
   createdAt: string; // ISO 문자열 형태로 변환
@@ -237,6 +234,7 @@ export async function addPost(
   title_ja: string,
   content_ko: string,
   content_ja: string,
+  images: string[],
   image: string | null
 ) {
   const db = await connectDB();
@@ -261,6 +259,7 @@ export async function addPost(
     title_ja,
     content_ko,
     content_ja,
+    images,
     image,
     like: 0,
     createdAt,
@@ -280,6 +279,7 @@ export async function getPosts(): Promise<Post[]> {
     title_ja: doc.title_ja,
     content_ko: doc.content_ko,
     content_ja: doc.content_ja,
+    images: doc.images,
     image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
@@ -301,6 +301,7 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
     title_ja: doc.title_ja,
     content_ko: doc.content_ko,
     content_ja: doc.content_ja,
+    images: doc.images,
     image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
@@ -325,6 +326,7 @@ export async function getPostByIndex(index: number): Promise<Post | null> {
     title_ja: post.title_ja,
     content_ko: post.content_ko,
     content_ja: post.content_ja,
+    images: post.images,
     image: post.image,
     like: post.like,
     createdAt: post.createdAt.toISOString(),
@@ -339,22 +341,10 @@ export async function updatePost(
   title_ja: string,
   content_ko: string,
   content_ja: string,
+  images: string[],
   image: string | null
 ) {
   const db = await connectDB();
-
-  const classifications = db.collection("classifications");
-
-  // 현재 최대 index 값을 찾음
-  const maxIndexDocument = await classifications
-    .find()
-    .sort({ index: -1 })
-    .limit(1)
-    .toArray();
-  let currentIndex = 1;
-  if (maxIndexDocument.length > 0) {
-    currentIndex = maxIndexDocument[0].index + 1;
-  }
 
   const result = await db.collection("posts").updateOne(
     { _id: new ObjectId(postId) },
@@ -364,6 +354,7 @@ export async function updatePost(
         title_ja,
         content_ko,
         content_ja,
+        images,
         image,
         updatedAt: new Date(),
       },
@@ -372,15 +363,33 @@ export async function updatePost(
   return result.modifiedCount;
 }
 
-export async function deletePost(postId: string) {
+export async function deletePost(postId: string): Promise<number> {
   const db = await connectDB();
-  const result = await db
+  const post = await db
     .collection("posts")
-    .deleteOne({ _id: new ObjectId(postId) });
-  if (result.deletedCount > 0) {
+    .findOne({ _id: new ObjectId(postId) }); // 먼저 포스트 정보를 조회
+
+  if (post) {
+    // 대표 이미지 삭제
+    if (post.image) {
+      await deleteImage(post.image);
+    }
+
+    // 나머지 이미지들 삭제
+    if (post.images && post.images.length > 0) {
+      await Promise.all(post.images.map((image: string) => deleteImage(image)));
+    }
+    // 포스트 삭제
+    const deleteResult = await db
+      .collection("posts")
+      .deleteOne({ _id: new ObjectId(postId) });
+    // 연관된 댓글들 삭제
     await db.collection("comments").deleteMany({ post: new ObjectId(postId) });
+
+    return deleteResult.deletedCount; // 삭제된 포스트 수 반환
   }
-  return result.deletedCount;
+
+  return 0; // 포스트가 없는 경우 0 반환
 }
 
 // Comment CRUD
