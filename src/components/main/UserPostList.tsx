@@ -75,6 +75,7 @@ const UserPostList: React.FC = () => {
             width={250}
             height={250}
             alt="loading"
+            priority={true}
           />
         </div>
       </div>
@@ -98,22 +99,24 @@ const UserPostList: React.FC = () => {
               }/${post.index}`}
               scroll={false}
             >
-              <div className="bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
+              <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
                 {/* 이미지 */}
                 <div
-                  className="h-3/4 bg-cover bg-center"
+                  className="absolute inset-0 bg-cover bg-center"
                   style={{
                     backgroundImage: `url(${post.image || "기본 이미지 경로"})`,
                   }}
                 ></div>
                 {/* 날짜 및 제목 */}
-                <div className="bg-gray-200 dark:bg-neutral-700 p-4">
-                  <p className="text-sm dark:text-neutral-300">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </p>
-                  <h3 className="font-semibold dark:text-neutral-100">
-                    {post[`title_${lan.value}`]}
-                  </h3>
+                <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
+                  <div className="text-center w-full">
+                    <p className="text-sm dark:text-neutral-300">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </p>
+                    <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
+                      {post[`title_${lan.value}`]}
+                    </h3>
+                  </div>
                 </div>
               </div>
             </Link>

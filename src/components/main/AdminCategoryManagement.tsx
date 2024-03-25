@@ -124,7 +124,15 @@ const MainContent: React.FC = () => {
         "Do you really want to delete this classification?"
       );
       if (confirmDelete) {
+        const startTime = Date.now();
         dispatch(deleteClassificationAsync(classificationId));
+        const endTime = Date.now();
+        const duration = (endTime - startTime) / 1000;
+        alert(
+          `Classification Deletion completed. It took ${duration.toFixed(
+            2
+          )} seconds.`
+        );
       }
     },
     [dispatch]
@@ -170,7 +178,14 @@ const MainContent: React.FC = () => {
         "Do you really want to delete this category?"
       );
       if (confirmDelete && categoryId) {
+        const startTime = Date.now();
+
         dispatch(deleteCategoryAsync(categoryId));
+        const endTime = Date.now();
+        const duration = (endTime - startTime) / 1000;
+        alert(
+          `Category Deletion completed. It took ${duration.toFixed(2)} seconds.`
+        );
       }
     },
     [dispatch]

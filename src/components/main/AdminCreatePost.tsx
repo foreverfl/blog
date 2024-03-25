@@ -246,6 +246,7 @@ const AdminCreatePost: React.FC = () => {
 
   // 더미 데이터 추가 함수
   const addDummyDataToCategory = async (categoryId: string) => {
+    const startTime = Date.now();
     for (let i = 1; i <= 15; i++) {
       const title_ko = `더미 포스트 제목 ${i}`;
       const title_ja = `ダミーポストタイトル ${i}`;
@@ -256,14 +257,20 @@ const AdminCreatePost: React.FC = () => {
           title_ja,
           dummyTextKo,
           dummyTextJa,
-          ["https://blog_workers.forever-fl.workers.dev/profile.png"],
-          "https://blog_workers.forever-fl.workers.dev/profile.png"
+          ["https://blog_workers.forever-fl.workers.dev/neko3.webp"],
+          "https://blog_workers.forever-fl.workers.dev/neko3.webp"
         );
       } catch (error) {
         console.error(`더미 데이터 ${i} 추가 실패:`, error);
       }
     }
-    alert("더미 데이터 15개가 성공적으로 추가되었습니다.");
+    const endTime = Date.now();
+    const duration = (endTime - startTime) / 1000;
+    alert(
+      `15 dummy data items were successfully added. It took ${duration.toFixed(
+        2
+      )} seconds.`
+    );
   };
 
   // "Add Dummy Data" 버튼 클릭 핸들러
