@@ -1,10 +1,20 @@
 # Blog
 
-- Cloudflare Pages, MongoDB Atlas, Next.js, React, Redux를 이용한 블로그입니다. 해당 자료는 웹서핑 및 GPT4를 참조해서 만들었습니다.
+- Vercel, Cloudflare R2, MongoDB Atlas, Next.js, React, Redux를 이용해서 블로그입니다. 해당 자료는 웹서핑 및 GPT4를 참조해서 만들었습니다.
 
 ## 목차
 
-- 목차가 들어갈 부분입니다!!
+- [프로젝트 환경 설정](#프로젝트-환경-설정)
+- [프로젝트 기본 구조](#프로젝트-기본-구조)
+- [npm 기본 명령어](#npm-기본-명령어)
+- [배포 주의사항](#배포-주의사항)
+- [TypeScript](#typescript)
+- [MongoDB](#mongodb)
+- [Next.js](#nextjs)
+- [Redux in Next.js](#redux-in-nextjs)
+- [Tailwind CSS](#tailwind-css)
+- [http](#http)
+- [workers api](#workers-api)
 
 ## 프로젝트 환경 설정
 
@@ -83,6 +93,27 @@ export default clientPromise;
 npm run dev
 ```
 
+## 프로젝트 기본 구조
+
+- **layout.tsx**: Next.js의 Root Layout을 정의하는 역할. Root Layout은 애플리케이션의 모든 페이지에 공통적으로 적용되는 최상위 레이아웃. 글로벌 CSS를 적용하고, 페이지의 기본 구조를 정의하는 역할을 함.
+- **page.tsx**: 실제 페이지 컴포넌트를 정의함. 이 파일은 보통 페이지의 실제 내용을 렌더링하는 데 사용됨.
+- **next.config.mjs**: Next.js 애플리케이션의 고급 설정을 정의하는 파일. 라우팅, 빌드 최적화, 환경 변수 등을 설정할 수 있음.
+- **next-env.d.ts**: Next.js에서 TypeScript를 사용할 때 필요한 타입 정의를 포함.
+- **postcss.config.js**: PostCSS를 사용하여 CSS를 변환하는 설정을 정의. 예를 들어, Tailwind CSS 같은 플러그인을 사용할 때 필요함.
+- **tailwind.config.ts**: Tailwind CSS 설정 파일. Tailwind의 테마, 변형, 플러그인 등을 설정.
+- **tsconfig.json**: TypeScript 컴파일러 옵션을 정의하는 파일. 프로젝트의 루트 레벨에서 TypeScript 설정을 관리함.
+
+## npm 기본 명령어
+
+- `npm init`: 새로운 Node.js 프로젝트를 시작할 때 사용. package.json 파일을 생성하고 프로젝트에 대한 정보(예: 이름, 버전, 설명)를 설정.
+- `npm install <패키지명>`: 특정 패키지를 프로젝트에 설치. --save 옵션을 함께 사용하면 package.json 파일에 의존성으로 추가됨.
+- `npm update`: 프로젝트의 모든 패키지를 최신 버전으로 업데이트. 특정 패키지만 업데이트하려면 npm update <패키지명>을 사용. npm 버전 5 이후부터는 `npm install <패키지명>` 명령어를 사용할 때 `--save` 옵션을 명시하지 않아도 자동으로 package.json 파일의 dependencies 섹션에 패키지가 추가됨.
+- `npm run <스크립트명>`: package.json 파일의 scripts 섹션에 정의된 스크립트를 실행함. 개발자는 자주 사용하는 작업(예: 테스트 실행, 빌드 등)을 스크립트로 정의하여 편리하게 사용할 수 있음.
+- `npm publish`: 작성한 패키지를 npm 저장소에 공개함. 이를 통해 다른 개발자들이 여러분의 패키지를 설치하고 사용할 수 있게 됨.
+- `npm cache clean --force`: npm의 캐시를 강제로 삭제함. npm은 패키지를 설치할 때 필요한 파일을 캐시에 저장하여, 다음 설치 시 속도를 향상시킴. 하지만 때때로 캐시가 손상되거나 문제를 일으킬 수 있어, 캐시를 완전히 지워야 할 필요가 생김. --force 플래그는 이 작업이 위험할 수 있음을 알리면서도 명령어의 실행을 강제함.
+- `npm i -verbose`: 설명: npm i는 npm install의 축약형으로, 패키지를 설치하는 명령어. -verbose 옵션은 설치 과정에서 더 자세한 정보를 출력하도록 함. 이를 통해 설치 과정의 세부 사항을 파악할 수 있음.
+- `npm prune`: package.json 파일에 명시되지 않은 패키지를 제거함. 프로젝트의 의존성을 관리하면서, 불필요한 패키지가 프로젝트에 남아 있는 것을 방지할 수 있음. 이는 프로젝트를 깔끔하게 유지하는 데 도움을 줌.
+
 ## 배포 주의사항
 
 ### Linux에서의 대소문자 구분 및 Github Cache 문제
@@ -99,15 +130,93 @@ git config core.ignorecase false
 git rm -r --cached .
 ```
 
-## 프로젝트 기본 구조
+## TypeScript
 
-- **layout.tsx**: Next.js의 Root Layout을 정의하는 역할. Root Layout은 애플리케이션의 모든 페이지에 공통적으로 적용되는 최상위 레이아웃. 글로벌 CSS를 적용하고, 페이지의 기본 구조를 정의하는 역할을 함.
-- **page.tsx**: 실제 페이지 컴포넌트를 정의함. 이 파일은 보통 페이지의 실제 내용을 렌더링하는 데 사용됨.
-- **next.config.mjs**: Next.js 애플리케이션의 고급 설정을 정의하는 파일. 라우팅, 빌드 최적화, 환경 변수 등을 설정할 수 있음.
-- **next-env.d.ts**: Next.js에서 TypeScript를 사용할 때 필요한 타입 정의를 포함.
-- **postcss.config.js**: PostCSS를 사용하여 CSS를 변환하는 설정을 정의. 예를 들어, Tailwind CSS 같은 플러그인을 사용할 때 필요함.
-- **tailwind.config.ts**: Tailwind CSS 설정 파일. Tailwind의 테마, 변형, 플러그인 등을 설정.
-- **tsconfig.json**: TypeScript 컴파일러 옵션을 정의하는 파일. 프로젝트의 루트 레벨에서 TypeScript 설정을 관리함.
+- **개념**: 타입스크립트는 자바스크립트(JavaScript)에 타입(type)을 추가한 언어. 자바스크립트는 동적 타입 언어로서, 변수의 타입이 실행 시점에 결정되며, 변경될 수 있음. 반면, 타입스크립트는 정적 타입 언어의 특성을 추가하여, 개발 시점에 변수의 타입을 지정해줌으로써 보다 안정적인 코드를 작성할 수 있도록 도움. 타입스크립트는 결국 자바스크립트로 컴파일되어 실행되므로, 모든 자바스크립트 코드는 유효한 타입스크립트 코드가 될 수 있음. 타입스크립트는 대규모 애플리케이션 개발에 적합하며, 개발자들이 더욱 안정적이고 관리하기 쉬운 코드를 작성할 수 있도록 도와줌.
+
+- **특징**
+
+1. **타입 주석(Type Annotations)**: 변수나 함수의 반환 값에 타입을 명시적으로 선언함. 이를 통해 컴파일 시 타입 체크를 할 수 있어, 오류를 미리 방지할 수 있음.
+
+```javascript
+let message: string = "Hello, TypeScript";
+function greet(name: string): string {
+  return `Hello, ${name}`;
+}
+```
+
+2. **인터페이스(Interfaces)**: 객체의 형태를 정의할 수 있는 방법으로, 타입 체킹을 위해 사용됨. 인터페이스를 통해 객체가 특정 구조를 충족하도록 강제할 수 있음.
+
+```javascript
+interface User {
+  name: string;
+  age: number;
+}
+
+function registerUser(user: User) {
+  // ...
+}
+```
+
+3.  **제네릭(Generics)**: 타입을 매개변수로 받아서 사용할 수 있는 기능으로, 다양한 타입에 대해 호환성을 유지하면서 코드를 재사용할 수 있게 함.
+
+```javascript
+function identity<T>(arg: T): T {
+  return arg;
+}
+```
+
+4. **유니언 타입(Union Types)과 인터섹션 타입(Intersection Types)**: 유니언 타입은 변수가 여러 타입 중 하나일 수 있음을 의미하고, 인터섹션 타입은 여러 타입을 모두 만족하는 타입을 의미함. 유니온 타입은 타입들을 |로 연결하여 사용.
+
+```javascript
+// 유니언 타입
+function printId(id: number | string) {
+  console.log(`Your ID is: ${id}`);
+}
+
+// 인터섹션 타입
+interface BusinessPartner {
+  name: string;
+  credit: number;
+}
+
+interface Identity {
+  id: number;
+  email: string;
+}
+
+type Employee = BusinessPartner & Identity;
+```
+
+5. **옵셔널 체이닝(Optional Chaining)**: ?. 연산자를 사용하여 객체의 프로퍼티에 접근할 때 해당 객체나 프로퍼티가 null 또는 undefined일 경우에 에러를 발생시키지 않고 undefined를 반환하도록 할 수 있음.
+
+```javascript
+const email = profile?.email;
+```
+
+6. **널 병합 연산자 (Nullish Coalescing)**: ?? 연산자를 사용하여 왼쪽 피연산자가 null 또는 undefined일 경우 오른쪽 피연산자의 값을 사용할 수 있음.
+
+```javascript
+const email = profile?.email ?? "";
+```
+
+7. **타입 단언 (Type Assertions)**: 특정 값의 타입을 명시적으로 지정하고 싶을 때 사용. as 키워드를 사용.
+
+```javascript
+const myCanvas = document.getElementById("main_canvas") as HTMLCanvasElement;
+
+```
+
+- **js와의 차이점**
+
+  > - **타입 시스템**: JS는 동적 타입 언어이고, TS는 정적 타입 언어. TS는 컴파일 시점에 타입 체크를 수행하여 오류를 사전에 발견할 수 있음.
+  > - **개발 도구 지원**: TS는 코드를 작성하는 도중에도 에러를 감지하고 자동 완성, 인터페이스 및 타입 정보 제공 등 향상된 개발 경험을 제공함.
+  > - **호환성**: TS는 JS의 상위 집합이므로, 모든 JS 코드는 TS에서도 작동합니다. TS를 사용하면 JS로 컴파일하여 실행할 수 있음.
+
+- **사용 이유**
+  > - **오류 감소**: 컴파일 시점에 타입 체크를 수행하여 런타임 오류를 줄일 수 있음.
+  > - **코드 가독성 및 유지보수**: 프로젝트가 커질수록 타입 정보가 코드의 가독성과 유지보수성을 높여줌.
+  > - **팀 개발**: 큰 규모의 프로젝트나 팀에서 작업할 때, 타입스크립트의 엄격한 타입 시스템은 개발자 간의 명확한 커뮤니케이션을 도와주고, 실수를 줄여줌.
 
 ## MongoDB
 
@@ -201,94 +310,6 @@ async function getPostsAndUsers() {
 
 // API 또는 getServerSideProps/getStaticProps 내에서 이 함수를 사용할 수 있습니다.
 ```
-
-## TypeScript
-
-- **개념**: 타입스크립트는 자바스크립트(JavaScript)에 타입(type)을 추가한 언어. 자바스크립트는 동적 타입 언어로서, 변수의 타입이 실행 시점에 결정되며, 변경될 수 있음. 반면, 타입스크립트는 정적 타입 언어의 특성을 추가하여, 개발 시점에 변수의 타입을 지정해줌으로써 보다 안정적인 코드를 작성할 수 있도록 도움. 타입스크립트는 결국 자바스크립트로 컴파일되어 실행되므로, 모든 자바스크립트 코드는 유효한 타입스크립트 코드가 될 수 있음. 타입스크립트는 대규모 애플리케이션 개발에 적합하며, 개발자들이 더욱 안정적이고 관리하기 쉬운 코드를 작성할 수 있도록 도와줌.
-
-- **특징**
-
-1. **타입 주석(Type Annotations)**: 변수나 함수의 반환 값에 타입을 명시적으로 선언함. 이를 통해 컴파일 시 타입 체크를 할 수 있어, 오류를 미리 방지할 수 있음.
-
-```javascript
-let message: string = "Hello, TypeScript";
-function greet(name: string): string {
-  return `Hello, ${name}`;
-}
-```
-
-2. **인터페이스(Interfaces)**: 객체의 형태를 정의할 수 있는 방법으로, 타입 체킹을 위해 사용됨. 인터페이스를 통해 객체가 특정 구조를 충족하도록 강제할 수 있음.
-
-```javascript
-interface User {
-  name: string;
-  age: number;
-}
-
-function registerUser(user: User) {
-  // ...
-}
-```
-
-3.  **제네릭(Generics)**: 타입을 매개변수로 받아서 사용할 수 있는 기능으로, 다양한 타입에 대해 호환성을 유지하면서 코드를 재사용할 수 있게 함.
-
-```javascript
-function identity<T>(arg: T): T {
-  return arg;
-}
-```
-
-4. **유니언 타입(Union Types)과 인터섹션 타입(Intersection Types)**: 유니언 타입은 변수가 여러 타입 중 하나일 수 있음을 의미하고, 인터섹션 타입은 여러 타입을 모두 만족하는 타입을 의미함. 유니온 타입은 타입들을 |로 연결하여 사용.
-
-```javascript
-// 유니언 타입
-function printId(id: number | string) {
-  console.log(`Your ID is: ${id}`);
-}
-
-// 인터섹션 타입
-interface BusinessPartner {
-  name: string;
-  credit: number;
-}
-
-interface Identity {
-  id: number;
-  email: string;
-}
-
-type Employee = BusinessPartner & Identity;
-```
-
-5. **옵셔널 체이닝(Optional Chaining)**: ?. 연산자를 사용하여 객체의 프로퍼티에 접근할 때 해당 객체나 프로퍼티가 null 또는 undefined일 경우에 에러를 발생시키지 않고 undefined를 반환하도록 할 수 있음.
-
-```javascript
-const email = profile?.email;
-```
-
-6. **널 병합 연산자 (Nullish Coalescing)**: ?? 연산자를 사용하여 왼쪽 피연산자가 null 또는 undefined일 경우 오른쪽 피연산자의 값을 사용할 수 있음.
-
-```javascript
-const email = profile?.email ?? "";
-```
-
-7. **타입 단언 (Type Assertions)**: 특정 값의 타입을 명시적으로 지정하고 싶을 때 사용. as 키워드를 사용.
-
-```javascript
-const myCanvas = document.getElementById("main_canvas") as HTMLCanvasElement;
-
-```
-
-- **js와의 차이점**
-
-  > - **타입 시스템**: JS는 동적 타입 언어이고, TS는 정적 타입 언어. TS는 컴파일 시점에 타입 체크를 수행하여 오류를 사전에 발견할 수 있음.
-  > - **개발 도구 지원**: TS는 코드를 작성하는 도중에도 에러를 감지하고 자동 완성, 인터페이스 및 타입 정보 제공 등 향상된 개발 경험을 제공함.
-  > - **호환성**: TS는 JS의 상위 집합이므로, 모든 JS 코드는 TS에서도 작동합니다. TS를 사용하면 JS로 컴파일하여 실행할 수 있음.
-
-- **사용 이유**
-  > - **오류 감소**: 컴파일 시점에 타입 체크를 수행하여 런타임 오류를 줄일 수 있음.
-  > - **코드 가독성 및 유지보수**: 프로젝트가 커질수록 타입 정보가 코드의 가독성과 유지보수성을 높여줌.
-  > - **팀 개발**: 큰 규모의 프로젝트나 팀에서 작업할 때, 타입스크립트의 엄격한 타입 시스템은 개발자 간의 명확한 커뮤니케이션을 도와주고, 실수를 줄여줌.
 
 ## Next.js
 
@@ -474,3 +495,41 @@ javascript;
 - **next / prev**: 시퀀스 내의 다음 또는 이전 문서를 가리킴.
 - **nofollow**: 검색 엔진이 이 링크를 따라가지 않도록 지정. SEO 관점에서 중요할 수 있음.
 - **tag**: 문서의 태그(키워드)를 가리킴.
+
+### Options
+ OPTIONS 메서드는 HTTP의 일종으로, 주로 CORS(Cross-Origin Resource Sharing) 처리에서 "Preflight Request"라고 하는 특별한 요청을 처리하기 위해 사용됩니다. Preflight Request는 브라우저가 본 요청을 서버로 보내기 전에, 서버가 해당 요청을 받아들일 수 있는지를 먼저 확인하기 위해 보내는 "사전 요청"입니다.
+
+Preflight Request가 필요한 상황
+Preflight Request는 다음과 같은 상황에서 필요합니다:
+
+HTTP 요청이 "simple requests"가 아닌 경우: 여기서 "simple requests"는 특정 조건을 만족하는 요청을 말합니다. 예를 들어, 메서드가 GET, HEAD, POST 중 하나이고, 특정 헤더만 사용하는 경우 등입니다. "simple requests"가 아닌 경우에는 Preflight Request가 필요합니다.
+
+사용자 정의 헤더 사용: 요청에 사용자 정의 헤더(예: X-My-Custom-Header)가 포함되어 있는 경우에도 Preflight Request가 필요합니다.
+
+특정 HTTP 메서드 사용: PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH와 같은 HTTP 메서드를 사용하는 경우에도 사전에 서버의 허용 여부를 확인하기 위해 Preflight Request가 발생합니다.
+
+Preflight Request 처리 방법
+Preflight Request는 실제 요청을 보내기 전에 서버가 해당 요청을 처리할 수 있는지 확인하는 메커니즘입니다. 이를 위해, 브라우저는 OPTIONS 메서드를 사용하여 서버에 요청을 보냅니다. 이때 요청 헤더에는 다음과 같은 정보가 포함될 수 있습니다:
+
+Access-Control-Request-Method: 실제 요청에서 사용할 HTTP 메서드
+Access-Control-Request-Headers: 실제 요청에서 사용할 헤더 목록
+
+## workers api
+
+- **추가**
+
+```bash
+curl -X PUT -H "Content-Type: image/jpeg" --data-binary @"C:\Users\forev\OneDrive\바탕 화면\profile.png" https://blog_workers.forever-fl.workers.dev/profile.png
+```
+
+- **조회**
+
+```bash
+curl https://blog_workers.forever-fl.workers.dev/profile.png
+```
+
+- **삭제**
+
+```bash
+curl -X DELETE https://blog_workers.forever-fl.workers.dev/profile.png
+```

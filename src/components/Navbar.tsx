@@ -2,7 +2,7 @@
 
 // 외부 라이브러리 모듈
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 // Redux와 관련된 훅스와 기능들
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -18,6 +18,8 @@ import Profile from "./navbar/Profile";
 import SetLanguage from "./navbar/SetLanguage";
 import SetMode from "./navbar/SetMode";
 import { resetTitle } from "@/features/blog/blogTitleSlice";
+import { addPreviousLink, setUsedImages } from "@/features/blog/blogRouteSlice";
+import { deleteImage } from "@/lib/workers";
 
 type NavbarProps = {
   postIdx: string;
@@ -50,6 +52,28 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     dispatch(fetchClassificationsAndCategories());
     dispatch(fetchPosts());
   }, [dispatch]);
+
+  // Link
+  const { previousLinks, usedImages } = useAppSelector(
+    (state) => state.blogRoute
+  );
+
+  // Link를 이용한 'updating_시간_파일명' 삭제 로직
+  useEffect(() => {
+    dispatch(addPreviousLink(pathname));
+
+    const containsEdit = previousLinks.some((link) => link.includes("edit"));
+    if (containsEdit) {
+      const deleteUsedImages = async () => {
+        for (const image of usedImages) {
+          await deleteImage(image); // 가정한 비동기 이미지 삭제 함수
+        }
+        dispatch(setUsedImages([])); // 모든 이미지 삭제 후 usedImages 상태를 초기화
+      };
+      deleteUsedImages();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, pathname]);
 
   // State
   // 스크롤바
@@ -214,7 +238,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 p-4 flex justify-between items-center ${titleBackgroundColor}`}
+        className={`fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center ${titleBackgroundColor}`}
       >
         {/* 메뉴 열기 버튼 */}
         <div className="flex-1">

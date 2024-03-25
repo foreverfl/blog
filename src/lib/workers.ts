@@ -3,7 +3,10 @@ type UploadResponse = {
   errors: string[];
 };
 
-export const uploadFiles = async (files: FileList): Promise<UploadResponse> => {
+export const uploadFiles = async (
+  files: FileList,
+  prefix: string
+): Promise<UploadResponse> => {
   const uploadPromises = Array.from(files).map(async (file) => {
     // 타임 스탬프 및 파일명 처리 로직
     const now = new Date();
@@ -27,7 +30,7 @@ export const uploadFiles = async (files: FileList): Promise<UploadResponse> => {
     const formattedTimestamp = `${formattedDate}-${formattedTime}`;
     const originalFileName = file.name;
     const safeFileName = originalFileName.replace(/\s+/g, "_");
-    const newFileName = `tmp_${formattedTimestamp}_${safeFileName}`;
+    const newFileName = `${prefix}_${formattedTimestamp}_${safeFileName}`;
 
     // 업로드 요청
     try {
@@ -73,14 +76,14 @@ export const uploadFiles = async (files: FileList): Promise<UploadResponse> => {
 };
 
 export const renameAndOverwriteFiles = async (
-  uploadedRepresentativeImageUrl: string | null,
   uploadedImageUrls: string[],
-  postId: string
-): Promise<{ representativeImageUrl: string | null; imageUrls: string[] }> => {
+  prefixBefore: string,
+  prefixAfter: string
+): Promise<{ imageUrls: string[] }> => {
   const renameFile = async (imageUrl: string): Promise<string> => {
     const urlParts = imageUrl.split("/");
     const originalFileName = urlParts.pop();
-    const newFileName = `${postId}_${originalFileName!.replace("tmp_", "")}`;
+    const newFileName = originalFileName!.replace(prefixBefore, prefixAfter);
     const newImageUrl = `https://blog_workers.forever-fl.workers.dev/${newFileName}`;
 
     const fileResponse = await fetch(imageUrl);
@@ -103,21 +106,12 @@ export const renameAndOverwriteFiles = async (
     return newImageUrl; // 새 이미지 URL 반환
   };
 
-  // 대표 이미지의 이름 변경
-  let newRepresentativeImageUrl: string | null = null;
-  if (uploadedRepresentativeImageUrl !== null) {
-    newRepresentativeImageUrl = await renameFile(
-      uploadedRepresentativeImageUrl
-    );
-  }
-
-  // 나머지 이미지들의 이름 변경
+  // 이미지들의 이름 변경
   const newImageUrls = await Promise.all(
     uploadedImageUrls.map((imageUrl) => renameFile(imageUrl))
   );
 
   return {
-    representativeImageUrl: newRepresentativeImageUrl,
     imageUrls: newImageUrls,
   };
 };

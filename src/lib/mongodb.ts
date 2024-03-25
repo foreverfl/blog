@@ -223,7 +223,7 @@ interface Post {
   content_ko: string;
   content_ja: string;
   images: string[];
-  image: string | null;
+  image: string;
   like: number;
   createdAt: string; // ISO 문자열 형태로 변환
 }
@@ -235,7 +235,7 @@ export async function addPost(
   content_ko: string,
   content_ja: string,
   images: string[],
-  image: string | null
+  image: string
 ) {
   const db = await connectDB();
   const posts = db.collection("posts");

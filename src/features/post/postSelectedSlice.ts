@@ -21,6 +21,8 @@ interface Post {
   title_ja: string;
   content_ko: string;
   content_ja: string;
+  image: string;
+  images: string[];
   like: number;
   createdAt: string; // ISO 문자열
 }

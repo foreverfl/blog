@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import languageReducer from "@/features/language/languageSlice";
 import userReducer from "@/features/user/userSlice";
 import blogReducer from "@/features/blog/blogSlice";
+import blogRouteReducer from "@/features/blog/blogRouteSlice";
 import blogTitleReducer from "@/features/blog/blogTitleSlice";
 import categoryReducer from "@/features/category/categorySlice";
 import categorySelectedReducer from "@/features/category/categorySelectedSlice";
@@ -14,6 +15,7 @@ export const makeStore = () => {
       language: languageReducer,
       user: userReducer,
       blog: blogReducer,
+      blogRoute: blogRouteReducer,
       blogTitle: blogTitleReducer,
       category: categoryReducer,
       categorySelected: categorySelectedReducer,

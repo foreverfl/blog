@@ -39,6 +39,7 @@ const Profile: React.FC<ProfileProps> = ({
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Admin 여부 확인
   useLayoutEffect(() => {
     const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || []; // 현재 로그인한 유저의 이메일이 관리자 목록에 포함되어 있는지 확인
 
