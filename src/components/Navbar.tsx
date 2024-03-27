@@ -41,6 +41,11 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     (state) => state.user
   );
 
+  // Cateogry
+  const { classifications, categories, loading } = useAppSelector(
+    (state) => state.category
+  );
+
   // Title
   const initialTitle = useAppSelector((state) => state.blogTitle.initialTitle);
   const currentTitle = useAppSelector((state) => state.blogTitle.currentTitle);
@@ -48,10 +53,41 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   // Post
   const { currentPost, status } = useAppSelector((state) => state.postSelected);
 
+  // State
+  const [category, setCategory] = useState<string | undefined>(undefined);
+  const [updatedDate, setUpdatedDate] = useState<Date | undefined>(undefined);
+
+  // Post 가져오기
   useEffect(() => {
     dispatch(fetchClassificationsAndCategories());
     dispatch(fetchPosts());
   }, [dispatch]);
+
+  // Category 가져오기
+  useEffect(() => {
+    if (currentPost) {
+      // updatedDate 상태 업데이트
+      setUpdatedDate(currentPost.updatedAt || currentPost.createdAt);
+
+      // Category 정보 업데이트
+      const currentCategory = categories.find(
+        (cat) => cat._id === currentPost.category
+      );
+      if (currentCategory) {
+        const currentCategoryName =
+          lan.value === "ja"
+            ? currentCategory.name_ja
+            : currentCategory.name_ko;
+        setCategory(currentCategoryName);
+      } else {
+        setCategory(undefined); // 또는 "기본 카테고리 이름" 같은 기본값 설정
+      }
+    } else {
+      // currentPost가 없을 때의 처리
+      setUpdatedDate(undefined);
+      setCategory(undefined);
+    }
+  }, [categories, currentPost, lan.value]);
 
   // Link
   const { previousLinks, usedImages } = useAppSelector(
@@ -300,6 +336,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
         postIdx={postIdx}
         textColor={navbarTitleColor}
         title={subnavTitle}
+        updatedDate={updatedDate}
+        category={category ?? ""}
       />
     </>
   );

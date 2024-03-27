@@ -224,8 +224,9 @@ interface Post {
   content_ja: string;
   images: string[];
   image: string;
-  like: number;
-  createdAt: string; // ISO 문자열 형태로 변환
+  like: string[];
+  createdAt: Date; // ISO 문자열 형태로 변환
+  updatedAt?: Date;
 }
 
 export async function addPost(
@@ -261,8 +262,9 @@ export async function addPost(
     content_ja,
     images,
     image,
-    like: 0,
+    like: [],
     createdAt,
+    updatedAt: null,
   };
   const result = await db.collection("posts").insertOne(post);
   return result.insertedId.toString();
@@ -283,6 +285,7 @@ export async function getPosts(): Promise<Post[]> {
     image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.createdAt.toISOString(),
   }));
   return postsFormatted;
 }
@@ -305,6 +308,7 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
     image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.createdAt.toISOString(),
   }));
 
   return postsFormatted;
@@ -390,6 +394,32 @@ export async function deletePost(postId: string): Promise<number> {
   }
 
   return 0; // 포스트가 없는 경우 0 반환
+}
+
+// 좋아요 추가
+export async function likePost(
+  postId: string,
+  userId: string
+): Promise<number> {
+  const db = await connectDB();
+  const result = await db.collection("posts").updateOne(
+    { _id: new ObjectId(postId) },
+    { $addToSet: { like: userId } } // 중복을 방지하면서 userId를 like 배열에 추가
+  );
+  return result.modifiedCount;
+}
+
+// 좋아요 취소
+export async function unlikePost(
+  postId: string,
+  userId: string
+): Promise<number> {
+  const db = await connectDB();
+  const result = await db.collection("posts").updateOne(
+    { _id: new ObjectId(postId) },
+    { $pull: { like: userId } } // userId를 like 배열에서 제거
+  );
+  return result.modifiedCount;
 }
 
 // Comment CRUD

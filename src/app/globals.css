@@ -99,8 +99,14 @@ html {
   padding: 45px;
 }
 
+/* 마크다운 내에서 코드 부분 여백 제거 */
 .markdown-body pre {
   padding: 0 !important;
+}
+
+/* 마크내운 내에서 이미지 투명 */
+.markdown-body img {
+  background-color: transparent !important;
 }
 
 .dark .markdown-body {

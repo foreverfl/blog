@@ -56,6 +56,7 @@ const SetMode: React.FC = () => {
               alt={resolvedTheme === "dark" ? "Dark Mode On" : "Dark Mode Off"}
               width={24}
               height={24}
+              priority={true}
               className="rounded-full"
             />
           </div>

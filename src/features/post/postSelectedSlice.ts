@@ -1,4 +1,4 @@
-import { getPostByIndex } from "@/lib/mongodb";
+import { getPostByIndex, likePost, unlikePost } from "@/lib/mongodb";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export const fetchPostByIndex = createAsyncThunk(
@@ -7,6 +7,38 @@ export const fetchPostByIndex = createAsyncThunk(
     try {
       const response = await getPostByIndex(index);
       return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// 좋아요 추가
+export const likePostByUser = createAsyncThunk(
+  "posts/likePost",
+  async (
+    { postId, userId }: { postId: string; userId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const modifiedCount = await likePost(postId, userId);
+      return { postId, userId, modifiedCount };
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// 좋아요 취소
+export const unlikePostByUser = createAsyncThunk(
+  "posts/unlikePost",
+  async (
+    { postId, userId }: { postId: string; userId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const modifiedCount = await unlikePost(postId, userId);
+      return { postId, userId, modifiedCount };
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -23,8 +55,9 @@ interface Post {
   content_ja: string;
   image: string;
   images: string[];
-  like: number;
-  createdAt: string; // ISO 문자열
+  like: string[];
+  createdAt: Date;
+  updatedAt?: Date;
 }
 
 interface PostSelectedState {
@@ -57,6 +90,32 @@ export const postSelectedSlice = createSlice({
       .addCase(fetchPostByIndex.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(likePostByUser.fulfilled, (state, action) => {
+        if (
+          state.currentPost &&
+          action.payload.postId === state.currentPost._id
+        ) {
+          // 좋아요 배열에 userId가 아직 없으면 추가
+          const isLiked = state.currentPost.like.includes(
+            action.payload.userId
+          );
+          if (!isLiked) {
+            state.currentPost.like.push(action.payload.userId);
+          }
+        }
+      })
+      .addCase(unlikePostByUser.fulfilled, (state, action) => {
+        if (
+          state.currentPost &&
+          action.payload.postId === state.currentPost._id
+        ) {
+          // 좋아요 배열에서 userId 제거
+          const index = state.currentPost.like.indexOf(action.payload.userId);
+          if (index > -1) {
+            state.currentPost.like.splice(index, 1);
+          }
+        }
       });
   },
 });

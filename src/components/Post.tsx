@@ -13,6 +13,7 @@ import { darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "github-markdown-css";
 import { deletePost } from "@/lib/mongodb";
 import { setCurrentView } from "@/features/blog/blogSlice";
+import Link from "next/link";
 
 interface PostProps {
   postIdx: string;
@@ -37,6 +38,7 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
   // State
   const [isAdmin, setIsAdmin] = useState(false);
   const [content, setContent] = useState("");
+  const [heartState, setHeartState] = useState("before");
 
   // 스크롤 최상단으로 이동
   useEffect(() => {
@@ -94,6 +96,44 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
     }
   };
 
+  // 클릭 이벤트 핸들러
+  const handleClick = () => {
+    if (heartState === "before") {
+      setHeartState("clicked");
+    } else if (heartState === "after") {
+      setHeartState("unclicked");
+    }
+  };
+
+  // 이미지 상태가 'clicked'나 'unclicked'로 변경될 때 애니메이션 재생 후 상태 변경
+  useEffect(() => {
+    if (heartState === "clicked") {
+      setTimeout(() => {
+        setHeartState("after");
+      }, 500);
+    } else if (heartState === "unclicked") {
+      setTimeout(() => {
+        setHeartState("before");
+      }, 500);
+    }
+  }, [heartState]);
+
+  // 이미지 상태에 따라 표시할 이미지 결정
+  const getImageSrc = () => {
+    switch (heartState) {
+      case "before":
+        return "/images/heart_before.png";
+      case "after":
+        return "/images/heart_after.png";
+      case "clicked":
+        return "/images/heart_clicked.gif";
+      case "unclicked":
+        return "/images/heart_unclicked.gif";
+      default:
+        return "/images/heart_before.png";
+    }
+  };
+
   // 로딩 중 UI 처리
   if (status === "loading") {
     return (
@@ -136,6 +176,8 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
           )}
 
           <div className="my-56"></div>
+
+          {/* 포스트 */}
           {currentPost ? (
             <Markdown
               remarkPlugins={[remarkGfm]}
@@ -162,8 +204,77 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
               {content}
             </Markdown>
           ) : (
-            <div>포스트가 존재하지 않습니다.</div>
+            <div></div>
           )}
+
+          <div className="my-56"></div>
+
+          {/* 하트 버튼 및 Create Commons */}
+          <div className="flex items-center justify-between my-4">
+            {/* 하트 버튼 */}
+            <button onClick={handleClick} className="p-2 rounded-full">
+              <Image
+                src={getImageSrc()}
+                alt="Like"
+                width={100}
+                height={100}
+                className="h-10 w-10 object-cover"
+              />
+            </button>
+            {/* Create Commons */}
+            <div>
+              <Link href={"https://creativecommons.org/licenses/by-nc-nd/4.0/"}>
+                <Image
+                  src={"/images/by-nc-nd.svg"}
+                  alt={"Creative Commons"}
+                  width={100}
+                  height={100}
+                  priority={true}
+                  className="w-32 object-cover"
+                />
+              </Link>
+            </div>
+          </div>
+
+          <hr />
+
+          {/* 댓글 */}
+          <div className="space-y-4">
+            {/* 다른 회원의 댓글 */}
+            <div className="flex items-start space-x-3">
+              <Image
+                src={"/images/smile.png"}
+                alt={"profile"}
+                width={100}
+                height={100}
+                className="w-8 h-8 rounded-full"
+              />
+              <div className="bg-gray-200 dark:bg-neutral-700 rounded-lg p-3">
+                <p className="text-sm dark:text-white">
+                  회원의 댓글이 여기에 들어갑니다...
+                </p>
+              </div>
+            </div>
+
+            {/* 사용자의 댓글 */}
+            <div className="flex items-start space-x-3 flex-row-reverse">
+              <Image
+                src={"/images/smile.png"}
+                alt={"profile"}
+                width={100}
+                height={100}
+                className="w-10 h-10 rounded-full"
+              />
+              <div className="bg-blue-500 rounded-lg p-3">
+                <p className="text-sm text-white">
+                  내 댓글이 여기에 들어갑니다...
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 댓글 달기 */}
+
           <div className="my-56"></div>
         </div>
       </div>
