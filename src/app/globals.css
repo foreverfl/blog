@@ -109,6 +109,15 @@ html {
   background-color: transparent !important;
 }
 
+/* 마크다운 내에서 ol, ul이 tailwind 보다 우선하도록 설정 */
+.markdown-body ul {
+  list-style: disc !important; /* ul에 대해 disc 스타일 적용 */
+}
+
+.markdown-body ol {
+  list-style: decimal !important; /* ol에 대해 숫자 스타일 적용 */
+}
+
 .dark .markdown-body {
   background-color: transparent; /* Dark background */
   color: #ffffff; /* Light text for dark background */
