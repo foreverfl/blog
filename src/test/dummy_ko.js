@@ -2,7 +2,7 @@ const dummyTextKo = `
 # 제목
 
 ## 이미지
-![example image](https://blog_workers.forever-fl.workers.dev/profile.png)
+![example image](https://blog_workers.forever-fl.workers.dev/neko3.webp)
 
 ## 소제목1
 태평양에 떠 있는 메가 플로트 도시이자,
