@@ -72,7 +72,7 @@ const MainContent: React.FC = () => {
           <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
             Popular Posts
           </h2>
-          <div className="grid grid-cols-4 gap-6 px-5 md:px-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
             {popularPosts.map((post, index) => (
               <Link
                 key={post._id}
@@ -113,7 +113,7 @@ const MainContent: React.FC = () => {
           <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
             Recent Posts
           </h2>
-          <div className="grid grid-cols-4 gap-4 px-5 md:px-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
             {recentPosts.map((post) => (
               <Link
                 key={post._id}
