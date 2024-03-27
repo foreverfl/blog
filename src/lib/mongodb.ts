@@ -334,6 +334,7 @@ export async function getPostByIndex(index: number): Promise<Post | null> {
     image: post.image,
     like: post.like,
     createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
   };
 
   return postFormatted;

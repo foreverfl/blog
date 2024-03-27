@@ -54,10 +54,12 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
         backgroundPosition: "center", // 배경 이미지를 중앙에 위치
       }}
     >
-      <h1 className="text-5xl md:text-7xl font-bold dark:text-slate-50 font-navbar">
-        {title}
-      </h1>
-      {isMain && (
+      {title && (
+        <h1 className="text-5xl md:text-7xl font-bold dark:text-slate-50 font-navbar">
+          {title}
+        </h1>
+      )}
+      {updatedDate && isMain && (
         <p className="text-lg md:text-lg font-bold dark:text-slate-300 font-navbar">
           {`${formatDate(new Date(updatedDate!))} | ${category}`}
         </p>

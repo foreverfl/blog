@@ -66,9 +66,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   // Category 가져오기
   useEffect(() => {
     if (currentPost) {
-      // updatedDate 상태 업데이트
-      setUpdatedDate(currentPost.updatedAt || currentPost.createdAt);
-
       // Category 정보 업데이트
       const currentCategory = categories.find(
         (cat) => cat._id === currentPost.category
@@ -82,12 +79,10 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       } else {
         setCategory(undefined); // 또는 "기본 카테고리 이름" 같은 기본값 설정
       }
-    } else {
-      // currentPost가 없을 때의 처리
-      setUpdatedDate(undefined);
-      setCategory(undefined);
+
+      setUpdatedDate(currentPost.updatedAt || currentPost.createdAt); // updatedDate 상태 업데이트
     }
-  }, [categories, currentPost, lan.value]);
+  }, [dispatch, categories, currentPost, lan.value]);
 
   // Link
   const { previousLinks, usedImages } = useAppSelector(
