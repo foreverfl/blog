@@ -51,7 +51,7 @@ const MainContent: React.FC = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="bg-transparent">
           <Image
-            src="/images/gear.webp"
+            src="/images/gear.gif"
             width={250}
             height={250}
             alt="loading"
@@ -69,9 +69,11 @@ const MainContent: React.FC = () => {
       <div className="mt-10">
         {/* Popular Posts */}
         <div className="mb-10 dark:bg-neutral-900">
-          <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
-            Popular Posts
-          </h2>
+          {popularPosts.length > 0 && (
+            <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
+              Popular Posts
+            </h2>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
             {popularPosts.map((post, index) => (
               <Link
@@ -110,9 +112,11 @@ const MainContent: React.FC = () => {
 
         {/* Recent Posts */}
         <div className="dark:bg-neutral-900">
-          <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
-            Recent Posts
-          </h2>
+          {recentPosts.length > 0 && (
+            <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
+              Recent Posts
+            </h2>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
             {recentPosts.map((post) => (
               <Link
