@@ -424,12 +424,25 @@ export async function unlikePost(
 }
 
 // Comment CRUD
+interface Comment {
+  _id: ObjectId;
+  index: number;
+  user: ObjectId;
+  post: ObjectId;
+  lan: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  adminNotified: boolean;
+  userNotified: boolean;
+}
+
 export async function addComment(
   postId: string,
   userId: string,
   content: string,
   lan: string
-) {
+): Promise<Comment> {
   const db = await connectDB();
 
   const comments = db.collection("comments");
@@ -453,10 +466,23 @@ export async function addComment(
     content,
     lan,
     createdAt,
-    isAnswered: false,
+    updatedAt: createdAt, // 처음 생성 시점에서 updatedAt도 동일하게 설정
+    adminNotified: false,
+    userNotified: false,
   };
   const result = await db.collection("comments").insertOne(comment);
-  return result.insertedId;
+  return {
+    _id: result.insertedId,
+    user: new ObjectId(userId),
+    post: new ObjectId(postId),
+    index: currentIndex,
+    content,
+    lan,
+    createdAt,
+    updatedAt: createdAt,
+    adminNotified: false,
+    userNotified: false,
+  };
 }
 
 export async function getCommentsByPost(postId: string) {
@@ -471,15 +497,23 @@ export async function getCommentsByPost(postId: string) {
 export async function updateComment(
   commentId: string,
   content: string,
-  isAnswered: boolean
+  adminNotified?: boolean,
+  userNotified?: boolean
 ) {
   const db = await connectDB();
-  const result = await db
-    .collection("comments")
-    .updateOne(
-      { _id: new ObjectId(commentId) },
-      { $set: { content, isAnswered } }
-    );
+  const updateFields: any = {
+    content,
+    ...(adminNotified !== undefined && { adminNotified }),
+    ...(userNotified !== undefined && { userNotified }),
+  };
+
+  const result = await db.collection("comments").updateOne(
+    { _id: new ObjectId(commentId) },
+    {
+      $set: updateFields,
+      $currentDate: { updatedAt: true }, // 업데이트 동작 내에 포함
+    }
+  );
   return result.modifiedCount;
 }
 
