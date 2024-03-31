@@ -23,41 +23,32 @@ import {
   fetchCommentsByPost,
 } from "@/features/comment/commentsSlice";
 import CommentUser from "./ui/CommentUser";
+import CommentUserUpdate from "./ui/CommentUserUpdate";
 
 interface PostProps {
   postIdx: string;
 }
 
 const Post: React.FC<PostProps> = ({ postIdx }) => {
+  // Utilities
   const router = useRouter();
   const pathname = usePathname();
 
   // Redux
   const dispatch = useAppDispatch();
-
-  // User
+  const lan = useAppSelector((state) => state.language); // Language
   const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
     (state) => state.user
-  );
-
-  // Language
-  const lan = useAppSelector((state) => state.language);
-
-  // Post
-  const { currentPost, status } = useAppSelector((state) => state.postSelected);
-
-  // Comment
+  ); // User
+  const { currentPost, status } = useAppSelector((state) => state.postSelected); // Post
   const {
     comments,
     status: commentStatus,
     error,
-  } = useAppSelector((state) => state.comments);
-
-  useEffect(() => {
-    if (currentPost?._id) {
-      dispatch(fetchCommentsByPost(currentPost._id));
-    }
-  }, [currentPost?._id, dispatch]);
+  } = useAppSelector((state) => state.comments); // Comment
+  const { editingCommentId, replyingCommentId } = useAppSelector(
+    (state) => state.commentsUI
+  ); // CommentUI
 
   // State
   const [isAdmin, setIsAdmin] = useState(false);
@@ -75,10 +66,16 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
   }
   const [usersInfo, setUsersInfo] = useState<UsersState>({});
 
-  // 스크롤 최상단으로 이동
+  // Other Hooks
+  useEffect(() => {
+    if (currentPost?._id) {
+      dispatch(fetchCommentsByPost(currentPost._id));
+    }
+  }, [currentPost?._id, dispatch]); // 댓글 불러오기
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, []); // 스크롤 최상단으로 이동
 
   // Admin 여부 확인
   useLayoutEffect(() => {
@@ -119,6 +116,7 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
     });
   }, [comments]);
 
+  // Handler
   // 포스트 수정 핸들러
   const handleEditPost = (postId: string) => {
     router.push(`/post/${postId}/edit`, { scroll: false });
@@ -322,24 +320,44 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
           {/* 댓글 */}
           <div className="space-y-4">
             {/* 사용자의 댓글 */}
-            {comments.map((comment) => (
-              <CommentUser
-                key={comment._id}
-                userIdComment={usersInfo[comment.user]?._id}
-                username={usersInfo[comment.user]?.username || comment.user}
-                userPhoto={
-                  usersInfo[comment.user]?.photo || "/images/smile.png"
-                }
-                content={comment.content}
-                createdAt={comment.createdAt}
-              />
-            ))}
+            {comments.map((comment) => {
+              // 수정 중이거나 답변 중인 댓글에 따라 다른 컴포넌트를 렌더링합니다.
+              if (comment._id === editingCommentId) {
+                return (
+                  <CommentUserUpdate
+                    key={comment._id}
+                    userIdInComment={usersInfo[comment.user]?._id}
+                    username={usersInfo[comment.user]?.username || comment.user}
+                    userPhoto={
+                      usersInfo[comment.user]?.photo || "/images/smile.png"
+                    }
+                    commentId={comment._id}
+                    content={comment.content}
+                    updatedAt={comment.updatedAt}
+                  />
+                );
+              } else {
+                return (
+                  <CommentUser
+                    key={comment._id}
+                    userIdInComment={usersInfo[comment.user]?._id}
+                    username={usersInfo[comment.user]?.username || comment.user}
+                    userPhoto={
+                      usersInfo[comment.user]?.photo || "/images/smile.png"
+                    }
+                    commentId={comment._id}
+                    content={comment.content}
+                    updatedAt={comment.updatedAt}
+                  />
+                );
+              }
+            })}
           </div>
 
           {/* 댓글 달기 */}
           <div className="flex items-start mt-4">
             <Image
-              src={"/images/smile.png"}
+              src={photo || "/images/smile.png"}
               alt={"profile"}
               width={100}
               height={100}

@@ -83,7 +83,7 @@ export const editComment = createAsyncThunk(
     try {
       const success = await updateCommentContent(commentId, content);
       if (success) {
-        return commentId;
+        return { commentId, content };
       } else {
         throw new Error("Failed to update content");
       }
@@ -222,11 +222,12 @@ const commentsSlice = createSlice({
         state.comments.push(action.payload);
       })
       .addCase(editComment.fulfilled, (state, action) => {
+        const { commentId, content } = action.payload;
         const index = state.comments.findIndex(
-          (comment) => comment._id === action.payload
+          (comment) => comment._id === commentId
         );
         if (index !== -1) {
-          state.comments[index].content = action.meta.arg.content;
+          state.comments[index].content = content;
           state.comments[index].updatedAt = new Date().toISOString();
         }
       })

@@ -1,47 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { removeComment } from "@/features/comment/commentsSlice";
+import {
+  setEditingCommentId,
+  setReplyingCommentId,
+} from "@/features/comment/commentsUISlice";
 
 interface CommentUserProps {
-  userIdComment: string;
+  userIdInComment: string;
   username: string;
   userPhoto: string;
+  commentId: string;
   content: string;
-  createdAt: string;
+  updatedAt: string;
 }
 
 const CommentUser: React.FC<CommentUserProps> = ({
-  userIdComment,
+  userIdInComment,
   username,
   userPhoto,
+  commentId,
   content,
-  createdAt,
+  updatedAt,
 }) => {
-  // Redux
-  const dispatch = useAppDispatch();
-
-  // User
-  const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
-    (state) => state.user
-  );
-
-  // Language
-  const lan = useAppSelector((state) => state.language);
-
-  // State
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Admin 여부 확인
-  useEffect(() => {
-    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || []; // 현재 로그인한 유저의 이메일이 관리자 목록에 포함되어 있는지 확인
-
-    if (email) {
-      setIsAdmin(adminEmails.includes(email));
-    }
-  }, [email, isAdmin]);
-
-  useEffect(() => {});
-
+  // Utilities
   function formatDate(date: string) {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -51,6 +34,43 @@ const CommentUser: React.FC<CommentUserProps> = ({
     const minutes = d.getMinutes().toString().padStart(2, "0");
     return `${year}.${month}.${day} ${hours}:${minutes}`;
   }
+
+  // Redux
+  const dispatch = useAppDispatch();
+
+  const lan = useAppSelector((state) => state.language); // Language
+  const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
+    (state) => state.user
+  ); // User
+
+  // State
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Other Hooks
+  useEffect(() => {
+    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || []; // 현재 로그인한 유저의 이메일이 관리자 목록에 포함되어 있는지 확인
+
+    if (email) {
+      setIsAdmin(adminEmails.includes(email));
+    }
+  }, [email, isAdmin]); // Admin 여부 확인
+
+  // Handler
+  const handleUpdateComment = () => {
+    dispatch(setEditingCommentId(commentId));
+  };
+
+  const handleDeleteComment = () => {
+    const isConfirmed = window.confirm("정말로 댓글을 삭제하시겠습니까?");
+
+    if (isConfirmed) {
+      dispatch(removeComment(commentId));
+    }
+  };
+
+  const handleAnswerComment = () => {
+    dispatch(setReplyingCommentId(commentId));
+  };
 
   return (
     <div className="flex items-start">
@@ -74,14 +94,14 @@ const CommentUser: React.FC<CommentUserProps> = ({
           <div className="flex justify-start text-xs dark:text-white space-x-2">
             <span>{username}</span>
             <span>|</span>
-            <span>{formatDate(createdAt)}</span>
+            <span>{formatDate(updatedAt)}</span>
           </div>
 
           {/* 버튼 */}
           <div className="flex justify-end space-x-2">
             {/* 수정 버튼 */}
-            {userIdComment === userId && (
-              <button>
+            {userIdInComment === userId && (
+              <button onClick={handleUpdateComment}>
                 <svg
                   className="w-4 h-4 text-gray-800 dark:text-white"
                   aria-hidden="true"
@@ -96,15 +116,15 @@ const CommentUser: React.FC<CommentUserProps> = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="m4.988 19.012 5.41-5.41m2.366-6.424 4.058 4.058-2.03 5.41L5.3 20 4 18.701l3.355-9.494 5.41-2.029Zm4.626 4.625L12.197 6.61 14.807 4 20 9.194l-2.61 2.61Z"
+                    d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
                   />
                 </svg>
               </button>
             )}
 
             {/* 삭제 버튼 */}
-            {(userIdComment === userId || isAdmin) && (
-              <button>
+            {(userIdInComment === userId || isAdmin) && (
+              <button onClick={handleDeleteComment}>
                 <svg
                   className="w-4 h-4 text-red-400 dark:text-red-400"
                   aria-hidden="true"
