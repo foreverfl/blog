@@ -317,7 +317,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       </nav>
 
       {/* 가로 스크롤바 */}
-      <div className="fixed top-0 left-0 right-0">
+      <div className="fixed top-0 left-0 right-0 z-50">
         <div className="w-full h-0.5 bg-transparent">
           <div
             className={`h-full ${scrollColor}`}

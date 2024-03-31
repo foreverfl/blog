@@ -86,8 +86,8 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-slate-50">
-      <div className="text-center bg-white p-10 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-10">Sign In</h2>
+      <div className="text-center text-black dark:text-black bg-white p-10 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-10 ">Sign In</h2>
         <div className="flex flex-col space-y-4">
           <LoginButton provider="github">
             <span className="flex-grow text-center">Github</span>

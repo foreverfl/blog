@@ -2,106 +2,196 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   addComment,
   getCommentsByPost,
-  updateComment,
   deleteComment,
+  updateCommentContent,
+  updateCommentWithAnswer,
+  updateCommentAdminNotified,
+  updateCommentUserNotified,
 } from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
 
 export const fetchCommentsByPost = createAsyncThunk(
   "comments/fetchByPost",
-  async (postId: string) => {
-    const response = await getCommentsByPost(postId);
-    // MongoDB에서 받은 데이터를 Comment[] 타입으로 매핑
-    const comments: Comment[] = response.map((doc) => ({
-      _id: doc._id.toString(),
-      index: doc.index,
-      post: doc.post,
-      user: doc.user,
-      content: doc.content,
-      lan: doc.lan,
-      createdAt: new Date(doc.createdAt),
-      updatedAt: new Date(doc.updatedAt),
-      adminNotified: doc.adminNotified,
-      userNotified: doc.userNotified,
-    }));
-    return comments;
+  async (postId: string, { rejectWithValue }) => {
+    try {
+      const response = await getCommentsByPost(postId);
+      const comments = response.map((doc) => ({
+        _id: doc._id.toString(),
+        index: doc.index,
+        user: doc.user.toString(),
+        post: doc.post.toString(),
+        lan: doc.lan,
+        content: doc.content,
+        createdAt: doc.createdAt.toISOString(),
+        updatedAt: doc.updatedAt.toISOString(),
+        adminNotified: doc.adminNotified,
+        answer: doc.answer,
+        answeredAt: doc.answeredAt ? doc.answeredAt.toISOString() : undefined,
+        userNotified: doc.userNotified,
+      }));
+      return comments;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
   }
 );
 
-export const createComment = createAsyncThunk(
-  "comments/create",
-  async ({
-    postId,
-    userId,
-    content,
-    lan,
-  }: {
+export const createComment = createAsyncThunk<
+  Comment, // 반환 타입
+  {
     postId: string;
     userId: string;
     content: string;
     lan: string;
-  }) => {
-    const commentFromDB = await addComment(postId, userId, content, lan);
-    const result: Comment = {
-      _id: commentFromDB._id.toString(),
-      user: commentFromDB.user.toString(),
-      post: commentFromDB.post.toString(),
-      index: commentFromDB.index,
-      content: commentFromDB.content,
-      lan: commentFromDB.lan,
-      createdAt: commentFromDB.createdAt,
-      updatedAt: commentFromDB.updatedAt,
-      adminNotified: commentFromDB.adminNotified,
-      userNotified: commentFromDB.userNotified,
-    };
-
-    return result;
+  },
+  // 추가 옵션
+  {
+    rejectValue: string;
+  }
+>(
+  "comments/create",
+  async ({ postId, userId, content, lan }, { rejectWithValue }) => {
+    try {
+      const commentFromDB = await addComment(postId, userId, content, lan);
+      const result = {
+        _id: commentFromDB._id.toString(),
+        user: commentFromDB.user.toString(),
+        post: commentFromDB.post.toString(),
+        index: commentFromDB.index,
+        content: commentFromDB.content,
+        lan: commentFromDB.lan,
+        createdAt: commentFromDB.createdAt.toISOString(),
+        updatedAt: commentFromDB.updatedAt.toISOString(),
+        adminNotified: commentFromDB.adminNotified,
+      };
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue("An unknown error occurred");
+      }
+    }
   }
 );
 
 export const editComment = createAsyncThunk(
-  "comments/update",
-  async ({
-    commentId,
-    content,
-    adminNotified,
-    userNotified,
-  }: {
-    commentId: string;
-    content: string;
-    adminNotified?: boolean;
-    userNotified?: boolean;
-  }) => {
-    const modifiedCount = await updateComment(
-      commentId,
-      content,
-      adminNotified,
-      userNotified
-    );
-    // 수정된 댓글 정보를 반환하거나, modifiedCount를 활용하여 상태 업데이트
-    return { commentId, content, adminNotified, userNotified, modifiedCount };
+  "comments/updateContent",
+  async (
+    { commentId, content }: { commentId: string; content: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const success = await updateCommentContent(commentId, content);
+      if (success) {
+        return commentId;
+      } else {
+        throw new Error("Failed to update content");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const addAnswerToComment = createAsyncThunk(
+  "comments/addAnswer",
+  async (
+    { commentId, answer }: { commentId: string; answer: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const success = await updateCommentWithAnswer(commentId, answer);
+      if (success) {
+        return commentId;
+      } else {
+        throw new Error("Failed to add answer");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const updateAdminNotified = createAsyncThunk(
+  "comments/updateAdminNotified",
+  async (
+    { commentId, adminNotified }: { commentId: string; adminNotified: boolean },
+    { rejectWithValue }
+  ) => {
+    try {
+      const success = await updateCommentAdminNotified(
+        commentId,
+        adminNotified
+      );
+      if (success) {
+        return commentId;
+      } else {
+        throw new Error("Failed to update admin notified status");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
+  }
+);
+
+export const updateUserNotified = createAsyncThunk(
+  "comments/updateUserNotified",
+  async (
+    { commentId, userNotified }: { commentId: string; userNotified: boolean },
+    { rejectWithValue }
+  ) => {
+    try {
+      const success = await updateCommentUserNotified(commentId, userNotified);
+      if (success) {
+        return commentId;
+      } else {
+        throw new Error("Failed to update user notified status");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
   }
 );
 
 export const removeComment = createAsyncThunk(
   "comments/delete",
-  async (commentId: string) => {
-    const deletedCount = await deleteComment(commentId);
-    return { commentId, deletedCount };
+  async (commentId: string, { rejectWithValue }) => {
+    try {
+      const deletedCount = await deleteComment(commentId);
+      if (deletedCount > 0) {
+        return commentId;
+      } else {
+        throw new Error("Deletion failed");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+    }
   }
 );
 
 interface Comment {
   _id: string;
   index: number;
-  post: string;
   user: string;
-  content: string;
+  post: string;
   lan: string;
-  createdAt: Date;
-  updatedAt: Date;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
   adminNotified: boolean;
-  userNotified: boolean;
+  answer?: string;
+  answeredAt?: string;
+  userNotified?: boolean;
 }
 
 interface CommentsState {
@@ -123,43 +213,63 @@ const commentsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCommentsByPost.pending, (state) => {
-        state.status = "loading";
-      })
       .addCase(fetchCommentsByPost.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.comments = action.payload;
       })
-      .addCase(fetchCommentsByPost.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Could not fetch comments.";
-      })
       .addCase(createComment.fulfilled, (state, action) => {
+        state.status = "succeeded";
         state.comments.push(action.payload);
       })
       .addCase(editComment.fulfilled, (state, action) => {
-        const { commentId, content, adminNotified, userNotified } =
-          action.payload;
-        const existingComment = state.comments.find(
-          (comment) => comment._id === commentId
+        const index = state.comments.findIndex(
+          (comment) => comment._id === action.payload
         );
-        if (existingComment) {
-          existingComment.content = content;
-          if (adminNotified !== undefined)
-            existingComment.adminNotified = adminNotified;
-          if (userNotified !== undefined)
-            existingComment.userNotified = userNotified;
-          // updatedAt는 서버에서 처리됩니다.
-          // 여기서는 예시로만 포함시키며, 실제로는 서버 응답을 기반으로 업데이트해야 합니다.
-          existingComment.updatedAt = new Date();
+        if (index !== -1) {
+          state.comments[index].content = action.meta.arg.content;
+          state.comments[index].updatedAt = new Date().toISOString();
         }
       })
-      .addCase(removeComment.fulfilled, (state, action) => {
-        const { commentId } = action.payload;
-        state.comments = state.comments.filter(
-          (comment) => comment._id !== commentId
+      .addCase(addAnswerToComment.fulfilled, (state, action) => {
+        const index = state.comments.findIndex(
+          (comment) => comment._id === action.payload
         );
-      });
+        if (index !== -1) {
+          state.comments[index].answer = action.meta.arg.answer;
+          state.comments[index].answeredAt = new Date().toISOString();
+          state.comments[index].userNotified = false;
+        }
+      })
+      .addCase(updateAdminNotified.fulfilled, (state, action) => {
+        const index = state.comments.findIndex(
+          (comment) => comment._id === action.payload
+        );
+        if (index !== -1) {
+          state.comments[index].adminNotified = action.meta.arg.adminNotified;
+        }
+      })
+      .addCase(updateUserNotified.fulfilled, (state, action) => {
+        const index = state.comments.findIndex(
+          (comment) => comment._id === action.payload
+        );
+        if (index !== -1) {
+          state.comments[index].userNotified = action.meta.arg.userNotified;
+        }
+      })
+      // 댓글 삭제 성공
+      .addCase(removeComment.fulfilled, (state, action) => {
+        state.comments = state.comments.filter(
+          (comment) => comment._id !== action.payload
+        );
+      })
+      .addMatcher(
+        (action) =>
+          action.type.startsWith("comments/") &&
+          action.type.endsWith("/rejected"),
+        (state, action) => {
+          state.status = "failed";
+        }
+      );
   },
 });
 

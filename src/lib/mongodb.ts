@@ -24,6 +24,31 @@ export async function connectDB() {
   }
 }
 
+// User CRUD
+export async function getUsersInfoByIds(userIds: string[]) {
+  await client.connect();
+
+  const objectIds = userIds.map((id) => new ObjectId(id)); // ObjectId 배열 생성
+
+  const db = await connectDB();
+
+  // 사용자 정보 조회
+  const users = await db
+    .collection("users")
+    .find({
+      _id: { $in: objectIds },
+    })
+    .toArray();
+
+  const usersInfo = users.map((user) => ({
+    _id: user._id.toString(),
+    username: user.username,
+    photo: user.photo,
+  }));
+
+  return usersInfo;
+}
+
 // Category and Classification CRUD
 interface Classification {
   _id: string;
@@ -225,7 +250,7 @@ interface Post {
   images: string[];
   image: string;
   like: string[];
-  createdAt: Date; // ISO 문자열 형태로 변환
+  createdAt: Date;
   updatedAt?: Date;
 }
 
@@ -425,21 +450,23 @@ export async function unlikePost(
 
 // Comment CRUD
 interface Comment {
-  _id: ObjectId;
+  _id: string;
   index: number;
-  user: ObjectId;
-  post: ObjectId;
+  user: string;
+  post: string;
   lan: string;
   content: string;
   createdAt: Date;
   updatedAt: Date;
   adminNotified: boolean;
-  userNotified: boolean;
+  answer?: string;
+  answeredAt?: Date;
+  userNotified?: boolean;
 }
 
 export async function addComment(
-  postId: string,
-  userId: string,
+  post: string,
+  user: string,
   content: string,
   lan: string
 ): Promise<Comment> {
@@ -460,28 +487,26 @@ export async function addComment(
 
   const createdAt = new Date();
   const comment = {
-    userId: new ObjectId(userId),
     index: currentIndex,
-    post: new ObjectId(postId),
-    content,
+    user: new ObjectId(user),
+    post: new ObjectId(post),
     lan,
+    content,
     createdAt,
     updatedAt: createdAt, // 처음 생성 시점에서 updatedAt도 동일하게 설정
     adminNotified: false,
-    userNotified: false,
   };
   const result = await db.collection("comments").insertOne(comment);
   return {
-    _id: result.insertedId,
-    user: new ObjectId(userId),
-    post: new ObjectId(postId),
+    _id: result.insertedId.toString(),
     index: currentIndex,
-    content,
+    user: new ObjectId(user).toString(),
+    post: new ObjectId(post).toString(),
     lan,
+    content,
     createdAt,
     updatedAt: createdAt,
     adminNotified: false,
-    userNotified: false,
   };
 }
 
@@ -491,30 +516,74 @@ export async function getCommentsByPost(postId: string) {
     .collection("comments")
     .find({ post: new ObjectId(postId) })
     .toArray();
-  return comments;
+  const commentsFormatted: Comment[] = comments.map((doc) => ({
+    _id: doc._id.toString(),
+    index: doc.index,
+    user: doc.user.toString(),
+    post: doc.post.toString(),
+    lan: doc.lan,
+    content: doc.content,
+    createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
+    adminNotified: doc.adminNotified,
+    answer: doc.answer,
+    answeredAt: doc.answeredAt,
+    userNotified: doc.userNotified,
+  }));
+  return commentsFormatted;
 }
 
-export async function updateComment(
+export async function updateCommentContent(commentId: string, content: string) {
+  const db = await connectDB();
+  const result = await db
+    .collection("comments")
+    .updateOne(
+      { _id: new ObjectId(commentId) },
+      { $set: { content: content, updatedAt: new Date() } }
+    );
+  return result.upsertedId;
+}
+
+export async function updateCommentWithAnswer(
   commentId: string,
-  content: string,
-  adminNotified?: boolean,
-  userNotified?: boolean
+  answer: string
 ) {
   const db = await connectDB();
-  const updateFields: any = {
-    content,
-    ...(adminNotified !== undefined && { adminNotified }),
-    ...(userNotified !== undefined && { userNotified }),
-  };
+  const result = await db
+    .collection("comments")
+    .updateOne(
+      { _id: new ObjectId(commentId) },
+      { $set: { answer: answer, answeredAt: new Date(), adminNotified: true } }
+    );
+  return result.upsertedId;
+}
 
-  const result = await db.collection("comments").updateOne(
-    { _id: new ObjectId(commentId) },
-    {
-      $set: updateFields,
-      $currentDate: { updatedAt: true }, // 업데이트 동작 내에 포함
-    }
-  );
-  return result.modifiedCount;
+export async function updateCommentAdminNotified(
+  commentId: string,
+  adminNotified: boolean
+) {
+  const db = await connectDB();
+  const result = await db
+    .collection("comments")
+    .updateOne(
+      { _id: new ObjectId(commentId) },
+      { $set: { adminNotified: adminNotified } }
+    );
+  return result.upsertedId;
+}
+
+export async function updateCommentUserNotified(
+  commentId: string,
+  userNotified: boolean
+) {
+  const db = await connectDB();
+  const result = await db
+    .collection("comments")
+    .updateOne(
+      { _id: new ObjectId(commentId) },
+      { $set: { userNotified: userNotified } }
+    );
+  return result.upsertedId;
 }
 
 export async function deleteComment(commentId: string) {

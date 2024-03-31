@@ -8,6 +8,7 @@ import categoryReducer from "@/features/category/categorySlice";
 import categorySelectedReducer from "@/features/category/categorySelectedSlice";
 import postsReducer from "@/features/post/postsSlice";
 import postSelectedReducer from "@/features/post/postSelectedSlice";
+import commentsReducer from "@/features/comment/commentsSlice";
 
 export const makeStore = () => {
   return configureStore({
@@ -21,6 +22,7 @@ export const makeStore = () => {
       categorySelected: categorySelectedReducer,
       posts: postsReducer,
       postSelected: postSelectedReducer,
+      comments: commentsReducer,
     },
   });
 };
