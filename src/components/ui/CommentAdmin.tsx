@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { setReplyingCommentId } from "@/features/comment/commentsUISlice";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 interface AdminCommentProps {
   commentId: string;
@@ -31,6 +31,22 @@ const CommentAdmin: React.FC<AdminCommentProps> = ({
 
   // Redux
   const dispatch = useAppDispatch();
+
+  const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
+    (state) => state.user
+  ); // User
+
+  // State
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Other Hooks
+  useEffect(() => {
+    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || [];
+
+    if (email) {
+      setIsAdmin(adminEmails.includes(email));
+    }
+  }, [email, isAdmin]); // Admin 여부 확인
 
   // Handler
   const handleUpdateCommentWithAnswer = () => {
@@ -63,25 +79,27 @@ const CommentAdmin: React.FC<AdminCommentProps> = ({
 
         {/* 수정 버튼 */}
         <div className="flex justify-end space-x-2 pe-3">
-          <button onClick={handleUpdateCommentWithAnswer}>
-            <svg
-              className="w-4 h-4 text-gray-800 dark:text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-              />
-            </svg>
-          </button>
+          {isAdmin && (
+            <button onClick={handleUpdateCommentWithAnswer}>
+              <svg
+                className="w-4 h-4 text-gray-800 dark:text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     </div>
