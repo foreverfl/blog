@@ -321,7 +321,7 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
           <div className="space-y-4">
             {/* 사용자의 댓글 */}
             {comments.map((comment) => {
-              // 수정 중이거나 답변 중인 댓글에 따라 다른 컴포넌트를 렌더링합니다.
+              // 수정 중이거나 답변 중인 댓글에 따라 다른 컴포넌트를 렌더링
               if (comment._id === editingCommentId) {
                 return (
                   <CommentUserUpdate
@@ -348,6 +348,8 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
                     commentId={comment._id}
                     content={comment.content}
                     updatedAt={comment.updatedAt}
+                    answer={comment.answer}
+                    answeredAt={comment.answeredAt}
                   />
                 );
               }

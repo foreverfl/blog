@@ -88,9 +88,8 @@ const CommentUser: React.FC<CommentUserUpdateProps> = ({
             <span>{formatDate(updatedAt)}</span>
           </div>
 
-          {/* 버튼 */}
+          {/* 수정 완료 버튼 */}
           <div className="flex justify-end space-x-2">
-            {/* 수정 완료 버튼 */}
             {userIdInComment === userId && (
               <button onClick={handleUpdateCompletedComment}>
                 <svg
