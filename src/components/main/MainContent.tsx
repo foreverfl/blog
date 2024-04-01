@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { getPostsForMain } from "@/lib/mongodb";
 
 interface Post {
   _id: string;
@@ -14,8 +15,10 @@ interface Post {
   content_ja: string;
   images: string[];
   image: string | null;
-  like: number;
-  createdAt: string; // ISO 문자열 형태로 변환
+  like: string[];
+  likeCount?: number;
+  createdAt: Date;
+  updatedAt?: Date;
   [key: string]: any;
 }
 
@@ -23,28 +26,30 @@ const MainContent: React.FC = () => {
   // Redux
   const dispatch = useAppDispatch();
   const lan = useAppSelector((state) => state.language);
-  const { posts, loading } = useAppSelector((state) => state.posts);
 
   // State
   const [popularPosts, setPopularPosts] = useState<Post[]>([]);
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
+  // Other Hooks
   useEffect(() => {
-    // 인기 포스트 정렬 (like가 많은 순으로 상위 8개)
-    const sortedPopularPosts = [...posts]
-      .sort((a, b) => b.like - a.like)
-      .slice(0, 8);
-    setPopularPosts(sortedPopularPosts);
+    const fetchPosts = async () => {
+      setLoading(true);
 
-    // 최근 포스트 정렬 (날짜가 최신인 순으로 상위 8개)
-    const sortedRecentPosts = [...posts]
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      .slice(0, 8);
-    setRecentPosts(sortedRecentPosts);
-  }, [posts]);
+      try {
+        const { popularPosts, recentPosts } = await getPostsForMain();
+        setPopularPosts(popularPosts);
+        setRecentPosts(recentPosts);
+      } catch (error) {
+        console.error("Failed to fetch posts", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   if (loading) {
     return (
@@ -56,6 +61,7 @@ const MainContent: React.FC = () => {
             height={250}
             alt="loading"
             priority={true}
+            className="w-32 h-32 object-fit"
           />
         </div>
       </div>

@@ -250,6 +250,7 @@ interface Post {
   images: string[];
   image: string;
   like: string[];
+  likeCount?: number;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -289,7 +290,7 @@ export async function addPost(
     image,
     like: [],
     createdAt,
-    updatedAt: null,
+    updatedAt: createdAt,
   };
   const result = await db.collection("posts").insertOne(post);
   return result.insertedId.toString();
@@ -313,6 +314,87 @@ export async function getPosts(): Promise<Post[]> {
     updatedAt: doc.createdAt.toISOString(),
   }));
   return postsFormatted;
+}
+
+export async function getPostsForMain(): Promise<{
+  popularPosts: Post[];
+  recentPosts: Post[];
+}> {
+  const db = await connectDB();
+
+  // 인기 포스트 가져오기: like가 많은 순으로 상위 8개
+  const popularPosts = await db
+    .collection("posts")
+    .aggregate([
+      {
+        $addFields: {
+          likeCount: { $size: "$like" }, // like 배열의 길이를 계산하여 likeCount 필드를 추가
+        },
+      },
+      { $sort: { likeCount: -1, updatedAt: -1 } }, // 내림차순 정렬
+      { $limit: 8 }, // 상위 8개 문서만 선택
+      {
+        $project: {
+          _id: 1,
+          index: 1,
+          category: 1,
+          title_ko: 1,
+          title_ja: 1,
+          content_ko: 1,
+          content_ja: 1,
+          images: 1,
+          image: 1,
+          like: 1,
+          likeCount: 1, // likeCount 필드를 결과에 포함시킵니다.
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ])
+    .toArray()
+    .then((posts) =>
+      posts.map((doc) => ({
+        _id: doc._id.toString(),
+        index: doc.index,
+        category: doc.category.toString(),
+        title_ko: doc.title_ko,
+        title_ja: doc.title_ja,
+        content_ko: doc.content_ko,
+        content_ja: doc.content_ja,
+        images: doc.images,
+        image: doc.image,
+        like: doc.like,
+        likeCount: doc.likeCount, // likeCount 필드 추가
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      }))
+    );
+
+  // 최근 포스트 가져오기: 날짜가 최신인 순으로 상위 8개
+  const recentPosts = await db
+    .collection("posts")
+    .find({})
+    .sort({ updatedAt: -1 })
+    .limit(8)
+    .toArray()
+    .then((posts) =>
+      posts.map((doc) => ({
+        _id: doc._id.toString(),
+        index: doc.index,
+        category: doc.category.toString(),
+        title_ko: doc.title_ko,
+        title_ja: doc.title_ja,
+        content_ko: doc.content_ko,
+        content_ja: doc.content_ja,
+        images: doc.images,
+        image: doc.image,
+        like: doc.like,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      }))
+    );
+
+  return { popularPosts, recentPosts };
 }
 
 export async function getPostsByCategory(categoryId: string): Promise<Post[]> {

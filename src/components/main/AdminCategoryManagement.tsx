@@ -173,14 +173,14 @@ const MainContent: React.FC = () => {
 
   // Delete Category
   const handleDeleteCategory = useCallback(
-    (categoryId: string) => {
+    async (categoryId: string) => {
       const confirmDelete = confirm(
         "Do you really want to delete this category?"
       );
       if (confirmDelete && categoryId) {
         const startTime = Date.now();
 
-        dispatch(deleteCategoryAsync(categoryId));
+        await dispatch(deleteCategoryAsync(categoryId));
         const endTime = Date.now();
         const duration = (endTime - startTime) / 1000;
         alert(

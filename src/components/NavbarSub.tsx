@@ -17,7 +17,17 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   updatedDate,
   category,
 }) => {
+  // Utilities
   const pathName = usePathname();
+
+  function formatDate(date: Date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
+  }
 
   // Redux
 
@@ -34,15 +44,6 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   const backgroundImageUrl = postIdx
     ? "/images/subnav_background1_darker.jpg"
     : "";
-
-  function formatDate(date: Date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `${year}.${month}.${day} ${hours}:${minutes}`;
-  }
 
   return (
     <div
