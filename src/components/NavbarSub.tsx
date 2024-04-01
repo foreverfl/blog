@@ -48,7 +48,7 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   return (
     <div
       id="subNavbar"
-      className={`w-full h-screen flex flex-col items-center justify-center select-none bg-neutral-200 dark:bg-neutral-950 ${textColor}`}
+      className={`w-full h-screen flex flex-col items-center justify-center space-y-3 select-none bg-neutral-200 dark:bg-neutral-950 ${textColor}`}
       style={{
         backgroundImage: `url(${backgroundImageUrl})`,
         backgroundSize: "cover", // 배경 이미지를 컨테이너에 맞게 조절
@@ -61,7 +61,7 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
         </h1>
       )}
       {updatedDate && isMain && (
-        <p className="text-lg md:text-lg font-bold dark:text-slate-300 font-navbar">
+        <p className="text-lg md:text-lg font-bold dark:text-slate-50 font-navbar">
           {`${formatDate(new Date(updatedDate!))} | ${category}`}
         </p>
       )}

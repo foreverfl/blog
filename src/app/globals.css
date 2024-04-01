@@ -61,7 +61,7 @@ html {
 /* navbar: English */
 @font-face {
   font-family: "NavbarFont";
-  src: url("../../public/fonts/Sacramento-Regular.ttf") format("truetype");
+  src: url("../../public/fonts/Caveat-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   unicode-range: U+0020-002F, U+003A-007F; /* 숫자를 제외한 기호 및 알파벳 */
@@ -77,7 +77,7 @@ html {
 /* navbar: Japanese */
 @font-face {
   font-family: "NavbarFont";
-  src: url("../../public/fonts/SlacksideOne-Regular.ttf") format("truetype");
+  src: url("../../public/fonts/Yomogi-Regular.ttf") format("truetype");
   unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF; /* 구두점, 히라가나, 카타카나, 일본어 반각 카타카나, 한자 */
   font-display: block;
 }

@@ -345,7 +345,7 @@ export async function getPostsForMain(): Promise<{
           images: 1,
           image: 1,
           like: 1,
-          likeCount: 1, // likeCount 필드를 결과에 포함시킵니다.
+          likeCount: 1,
           createdAt: 1,
           updatedAt: 1,
         },

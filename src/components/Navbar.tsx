@@ -27,43 +27,68 @@ type NavbarProps = {
 
 // React.FC는 "Function Component"의 약자로, 이 타입은 컴포넌트가 React 요소를 반환한다는 것과 props 타입을 지정할 수 있는 기능을 제공
 const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
+  // Utilities
   const pathname = usePathname();
   const router = useRouter();
 
   // Redux
   const dispatch = useAppDispatch();
-
-  // Language
-  const lan = useAppSelector((state) => state.language);
-
-  // User
+  const lan = useAppSelector((state) => state.language); // Language
   const { userName, userId, email, photo, isLoggedOut } = useAppSelector(
     (state) => state.user
-  );
-
-  // Cateogry
+  ); // User
   const { classifications, categories, loading } = useAppSelector(
     (state) => state.category
+  ); // Cateogry
+  const initialTitle = useAppSelector((state) => state.blogTitle.initialTitle); // Title_initialTitle
+  const currentTitle = useAppSelector((state) => state.blogTitle.currentTitle); // Title_currentTitle
+  const { currentPost, status } = useAppSelector((state) => state.postSelected); // Post
+  // Link
+  const { previousLinks, usedImages } = useAppSelector(
+    (state) => state.blogRoute
   );
 
-  // Title
-  const initialTitle = useAppSelector((state) => state.blogTitle.initialTitle);
-  const currentTitle = useAppSelector((state) => state.blogTitle.currentTitle);
-
-  // Post
-  const { currentPost, status } = useAppSelector((state) => state.postSelected);
-
   // State
+  // 주소 상태
+  const [isPostPage, setIsPostPage] = useState(pathname.startsWith("/post/"));
+  // 스크롤바
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollColor, setScrollColor] = useState(
+    "bg-gray-900 dark:bg-neutral-50"
+  );
+  // 네비게이션
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [menuColor, setMenuColor] = useState(
+    isPostPage ? "text-white dark:text-white" : "text-black dark:text-white"
+  );
+  const [titleColor, setTitleColor] = useState(
+    isPostPage
+      ? "text-transparent dark:text-transparent"
+      : "text-black dark:text-transparent"
+  );
+  const [titleBackgroundColor, setTitleBackgroundColor] = useState(
+    isPostPage ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800"
+  );
+  const [title, setTitle] = useState(""); // Title
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false); // 프로필
+  const [navbarTitleColor, setnavbarTitleColor] = useState(
+    isPostPage ? "text-white" : "text-black dark:text-white"
+  );
+  const [titleIsHovered, setTitleIsHovered] = useState(false);
+
+  // 서브 네비게이션
+  const [subnavTitle, setSubnavTitle] = useState("");
   const [category, setCategory] = useState<string | undefined>(undefined);
   const [updatedDate, setUpdatedDate] = useState<Date | undefined>(undefined);
 
+  // Other Hooks
   // Post 가져오기
   useEffect(() => {
     dispatch(fetchClassificationsAndCategories());
     dispatch(fetchPosts());
   }, [dispatch]);
 
-  // Category 가져오기
+  // updatedDate 상태 업데이트
   useEffect(() => {
     if (currentPost) {
       // Category 정보 업데이트
@@ -80,14 +105,9 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
         setCategory(undefined); // 또는 "기본 카테고리 이름" 같은 기본값 설정
       }
 
-      setUpdatedDate(currentPost.updatedAt || currentPost.createdAt); // updatedDate 상태 업데이트
+      setUpdatedDate(currentPost.updatedAt || currentPost.createdAt);
     }
-  }, [dispatch, categories, currentPost, lan.value]);
-
-  // Link
-  const { previousLinks, usedImages } = useAppSelector(
-    (state) => state.blogRoute
-  );
+  }, [dispatch, categories, currentPost, lan.value]); // Category 가져오기
 
   // Link를 이용한 'updating_시간_파일명' 삭제 로직
   useEffect(() => {
@@ -106,38 +126,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pathname]);
 
-  // State
-  // 스크롤바
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [scrollColor, setScrollColor] = useState(
-    "bg-gray-900 dark:bg-neutral-50"
-  );
-
-  // 네비게이션
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
-  const [menuColor, setMenuColor] = useState(
-    postIdx ? "text-white dark:text-white" : "text-black dark:text-white"
-  );
-  const [titleColor, setTitleColor] = useState(
-    postIdx
-      ? "text-transparent dark:text-transparent"
-      : "text-black dark:text-transparent"
-  );
-  const [titleBackgroundColor, setTitleBackgroundColor] = useState(
-    postIdx ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800"
-  );
-  const [title, setTitle] = useState(postIdx ? currentTitle : initialTitle); // Title
-  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false); // 프로필
-  const [navbarTitleColor, setnavbarTitleColor] = useState(
-    postIdx ? "text-white" : "text-black dark:text-white"
-  );
-
-  // 서브 네비게이션
-  const [subnavTitle, setSubnavTitle] = useState(
-    postIdx ? currentTitle : initialTitle + "'s sundries"
-  );
-
   // 링크 이동 시 타이틀 초기화
   useEffect(() => {
     const pathParts = pathname.split("/"); // 링크 이동을 pathname으로 감지
@@ -153,15 +141,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     }
   }, [initialTitle, pathname]);
 
-  // Handler
-  const handleLogoClick = () => {
-    dispatch(setCurrentView({ view: "main" })); // main 뷰로 상태 변경
-    sessionStorage.setItem("currentView", "main");
-    router.push("/", { scroll: false });
-  };
-
   // 회원 정보 redux에 저장
-  useLayoutEffect(() => {
+  useEffect(() => {
     const fetchAuthStatus = async () => {
       try {
         let response;
@@ -201,14 +182,64 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       setScrollProgress(scrolled);
     };
 
-    // 스크롤 이벤트 리스너 추가
-    window.addEventListener("scroll", updateScrollProgress);
+    window.addEventListener("scroll", updateScrollProgress); // 스크롤 이벤트 리스너 추가
 
     return () => {
       // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
       window.removeEventListener("scroll", updateScrollProgress);
     };
   }, []);
+
+  // 페이지(main/post)에 따른 title 변경
+  useEffect(() => {
+    if (isPostPage) {
+      setTitle(currentTitle);
+      setSubnavTitle(currentTitle);
+    } else {
+      setTitle(initialTitle);
+      setSubnavTitle(initialTitle + "'s sundries");
+    }
+  }, [currentTitle, initialTitle, isPostPage]);
+
+  // 언어에 따른 title 변경
+  useEffect(() => {
+    if (isPostPage && currentPost) {
+      const updatedTitle =
+        lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
+      setTitle(updatedTitle);
+      setSubnavTitle(updatedTitle);
+    }
+  }, [lan, currentPost, isPostPage]);
+
+  // hover에 따른 title 변경
+  useEffect(() => {
+    if (isPostPage) {
+      const subNavbar = document.getElementById("subNavbar");
+      if (!subNavbar) return; // SubNavbar 요소가 없으면 함수 종료
+
+      const subNavbarHeight = subNavbar.offsetHeight;
+      const scrollPosition = window.scrollY;
+
+      // SubNavbar가 보일때만 적용
+      if (scrollPosition < subNavbarHeight) {
+        if (titleIsHovered) {
+          setTitleColor("text-white dark:text-white");
+
+          if (lan.value === "ja") {
+            setTitle("ホームに移動します。");
+          } else {
+            setTitle("홈으로 이동합니다.");
+          }
+        } else {
+          setTitleColor("text-transparent dark:text-transparent");
+          const updatedTitle =
+            lan.value === "ja" ? currentPost!.title_ja : currentPost!.title_ko;
+          setTitle(updatedTitle);
+          setSubnavTitle(updatedTitle);
+        }
+      }
+    }
+  }, [currentPost, isPostPage, lan.value, titleIsHovered]);
 
   // 스크롤 바 위치에 따른 효과
   useEffect(() => {
@@ -219,11 +250,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       const subNavbarHeight = subNavbar.offsetHeight;
       const scrollPosition = window.scrollY;
 
-      const pathParts = pathname.split("/");
-      if (pathParts[1] === "post") {
-        setTitle(currentTitle);
-        setSubnavTitle(currentTitle);
-
+      if (isPostPage) {
         // subNavbar가 보이지 않을 때
         if (scrollPosition > subNavbarHeight) {
           setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
@@ -237,34 +264,34 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
           setTitleColor("text-transparent dark:text-transparent");
           setMenuColor("text-white dark:text-white");
         }
-      } else {
-        // subNavbar가 보이지 않을 때
-        if (scrollPosition > subNavbarHeight) {
-          setTitle(initialTitle);
-          setSubnavTitle(initialTitle + "'s sundries");
-        }
-
-        // SubNavbar가 보일 때
-        else {
-          setTitle(initialTitle);
-          setSubnavTitle(initialTitle + "'s sundries");
-        }
       }
     };
 
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentTitle, initialTitle, pathname]);
+  }, [currentTitle, isPostPage]);
 
-  useLayoutEffect(() => {
-    if (currentPost) {
-      const updatedTitle =
-        lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
-      setTitle(updatedTitle);
-      setSubnavTitle(updatedTitle);
+  // Handler
+  const handleLogoClick = () => {
+    const subNavbar = document.getElementById("subNavbar");
+    if (!subNavbar) return; // SubNavbar 요소가 없으면 함수 종료
+
+    const subNavbarHeight = subNavbar.offsetHeight;
+    const scrollPosition = window.scrollY;
+
+    if (scrollPosition < subNavbarHeight) {
+      dispatch(setCurrentView({ view: "main" })); // main 뷰로 상태 변경
+      sessionStorage.setItem("currentView", "main");
+      router.push("/", { scroll: false });
+    } else {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
     }
-  }, [lan, currentPost]);
+  };
 
   return (
     <>
@@ -282,10 +309,14 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
         </div>
 
         {/* 블로그 이름 */}
-        <div className="flex-1 flex justify-center">
+        <div
+          onMouseEnter={() => setTitleIsHovered(true)}
+          onMouseLeave={() => setTitleIsHovered(false)}
+          className="flex-1 flex justify-center"
+        >
           <div
             onClick={handleLogoClick}
-            className={`text-2xl md:text-3xl font-navbar dark:text-slate-50 select-none cursor-pointer ${titleColor}`}
+            className={`min-w-32 text-2xl md:text-3xl font-navbar dark:text-slate-50 select-none cursor-pointer ${titleColor}`}
           >
             {title}
           </div>
