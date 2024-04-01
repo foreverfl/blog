@@ -86,8 +86,13 @@ export async function getClassificationsAndCategories(): Promise<{
   const classifications = await db
     .collection("classifications")
     .find({})
+    .sort({ index: 1 })
     .toArray();
-  const categories = await db.collection("categories").find({}).toArray();
+  const categories = await db
+    .collection("categories")
+    .find({})
+    .sort({ index: 1 })
+    .toArray();
 
   // _id를 문자열로 변환
   const classificationsFormatted = classifications.map((doc) => ({

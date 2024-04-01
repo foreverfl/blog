@@ -119,13 +119,13 @@ const MainContent: React.FC = () => {
 
   // Delete Classification
   const handleDeleteClassification = useCallback(
-    (classificationId: string) => {
+    async (classificationId: string) => {
       const confirmDelete = confirm(
         "Do you really want to delete this classification?"
       );
       if (confirmDelete) {
         const startTime = Date.now();
-        dispatch(deleteClassificationAsync(classificationId));
+        await dispatch(deleteClassificationAsync(classificationId));
         const endTime = Date.now();
         const duration = (endTime - startTime) / 1000;
         alert(
