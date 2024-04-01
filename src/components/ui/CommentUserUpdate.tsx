@@ -75,7 +75,11 @@ const CommentUser: React.FC<CommentUserUpdateProps> = ({
           <textarea
             className="w-full h-full bg-gray-200 dark:bg-neutral-700 rounded-md text-lg dark:text-white leading-relaxed p-2 resize-none"
             rows={4}
-            placeholder="회원님의 댓글을 여기에 작성해 주세요..."
+            placeholder={
+              lan.value === "ja"
+                ? "ここにコメントを書いてください。"
+                : "회원님의 댓글을 여기에 작성해 주세요."
+            }
             value={commentContent}
             onChange={(e) => setCommentContent(e.target.value)}
           ></textarea>

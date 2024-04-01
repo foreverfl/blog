@@ -70,7 +70,13 @@ const CommentUser: React.FC<CommentUserProps> = ({
   };
 
   const handleDeleteComment = () => {
-    const isConfirmed = window.confirm("정말로 댓글을 삭제하시겠습니까?");
+    // lan.value에 따라 메시지를 설정
+    const message =
+      lan.value === "ja"
+        ? "本当にコメントを削除しますか？"
+        : "정말로 댓글을 삭제하시겠습니까?";
+
+    const isConfirmed = window.confirm(message);
 
     if (isConfirmed) {
       dispatch(removeComment(commentId));
@@ -140,7 +146,7 @@ const CommentUser: React.FC<CommentUserProps> = ({
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
-                    height="24"
+                    height="24" // 스크롤 최상단으로 이동
                     fill="none"
                     viewBox="0 0 24 24"
                   >

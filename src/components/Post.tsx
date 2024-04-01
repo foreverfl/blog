@@ -67,18 +67,20 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
   const [usersInfo, setUsersInfo] = useState<UsersState>({});
 
   // Other Hooks
+  // 댓글 불러오기
   useEffect(() => {
     if (currentPost?._id) {
       dispatch(fetchCommentsByPost(currentPost._id));
     }
-  }, [currentPost?._id, dispatch]); // 댓글 불러오기
+  }, [currentPost?._id, dispatch]);
 
+  // 스크롤 최상단으로 이동
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []); // 스크롤 최상단으로 이동
+  }, []);
 
   // Admin 여부 확인
-  useLayoutEffect(() => {
+  useEffect(() => {
     const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || [];
 
     if (email) {
@@ -320,40 +322,46 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
           {/* 댓글 */}
           <div className="space-y-4">
             {/* 사용자의 댓글 */}
-            {comments.map((comment) => {
-              // 수정 중이거나 답변 중인 댓글에 따라 다른 컴포넌트를 렌더링
-              if (comment._id === editingCommentId) {
-                return (
-                  <CommentUserUpdate
-                    key={comment._id}
-                    userIdInComment={usersInfo[comment.user]?._id}
-                    username={usersInfo[comment.user]?.username || comment.user}
-                    userPhoto={
-                      usersInfo[comment.user]?.photo || "/images/smile.png"
-                    }
-                    commentId={comment._id}
-                    content={comment.content}
-                    updatedAt={comment.updatedAt}
-                  />
-                );
-              } else {
-                return (
-                  <CommentUser
-                    key={comment._id}
-                    userIdInComment={usersInfo[comment.user]?._id}
-                    username={usersInfo[comment.user]?.username || comment.user}
-                    userPhoto={
-                      usersInfo[comment.user]?.photo || "/images/smile.png"
-                    }
-                    commentId={comment._id}
-                    content={comment.content}
-                    updatedAt={comment.updatedAt}
-                    answer={comment.answer}
-                    answeredAt={comment.answeredAt}
-                  />
-                );
-              }
-            })}
+            {comments
+              .filter((comment) => comment.lan === lan.value)
+              .map((comment) => {
+                // 수정 중이거나 답변 중인 댓글에 따라 다른 컴포넌트를 렌더링
+                if (comment._id === editingCommentId) {
+                  return (
+                    <CommentUserUpdate
+                      key={comment._id}
+                      userIdInComment={usersInfo[comment.user]?._id}
+                      username={
+                        usersInfo[comment.user]?.username || comment.user
+                      }
+                      userPhoto={
+                        usersInfo[comment.user]?.photo || "/images/smile.png"
+                      }
+                      commentId={comment._id}
+                      content={comment.content}
+                      updatedAt={comment.updatedAt}
+                    />
+                  );
+                } else {
+                  return (
+                    <CommentUser
+                      key={comment._id}
+                      userIdInComment={usersInfo[comment.user]?._id}
+                      username={
+                        usersInfo[comment.user]?.username || comment.user
+                      }
+                      userPhoto={
+                        usersInfo[comment.user]?.photo || "/images/smile.png"
+                      }
+                      commentId={comment._id}
+                      content={comment.content}
+                      updatedAt={comment.updatedAt}
+                      answer={comment.answer}
+                      answeredAt={comment.answeredAt}
+                    />
+                  );
+                }
+              })}
           </div>
 
           {/* 댓글 달기 */}
@@ -370,7 +378,11 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
                 <textarea
                   className="w-full h-full bg-gray-200 dark:bg-neutral-700 rounded-md text-lg dark:text-white leading-relaxed mb-14 p-2 resize-none"
                   rows={4}
-                  placeholder="회원님의 댓글을 여기에 작성해 주세요..."
+                  placeholder={
+                    lan.value === "ja"
+                      ? "ここにコメントを書いてください。"
+                      : "회원님의 댓글을 여기에 작성해 주세요."
+                  }
                   value={commentContent}
                   onChange={(e) => setCommentContent(e.target.value)}
                 ></textarea>

@@ -57,7 +57,7 @@ const CommentAdminUpdate: React.FC<AdminCommentUpdateProps> = ({
           <textarea
             className="w-full h-full bg-blue-500 rounded-md text-lg text-white dark:text-white leading-relaxed p-2 resize-none placeholder-white focus:ring-0"
             rows={4}
-            placeholder="관리자의 댓글을 여기에 작성해 주세요..."
+            placeholder="Please write the admin's comment here."
             value={answerContent}
             onChange={(e) => setAnswerContent(e.target.value)}
           ></textarea>
