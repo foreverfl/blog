@@ -232,10 +232,12 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
           }
         } else {
           setTitleColor("text-transparent dark:text-transparent");
-          const updatedTitle =
-            lan.value === "ja" ? currentPost!.title_ja : currentPost!.title_ko;
-          setTitle(updatedTitle);
-          setSubnavTitle(updatedTitle);
+          if (currentPost) {
+            const updatedTitle =
+              lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
+            setTitle(updatedTitle);
+            setSubnavTitle(updatedTitle);
+          }
         }
       }
     }

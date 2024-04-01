@@ -1,6 +1,6 @@
 "use server";
 
-import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+import { Db, MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { deleteImage } from "./workers";
 
 // 환경 변수에서 URI 가져오기
@@ -13,16 +13,30 @@ const client = new MongoClient(uri, {
   },
 });
 
+let db: Db | null = null; // 전역 변수로 데이터베이스 인스턴스를 유지
+
 // DB 연결하기
 export async function connectDB() {
-  try {
-    await client.connect();
-    await client.db("blog").command({ ping: 1 });
-    return client.db("blog");
-  } finally {
-    // await client.close();
+  // 이미 데이터베이스 인스턴스가 있는 경우, 재사용
+  if (db) {
+    // console.log("Reusing existing database connection.");
+    return db;
   }
+
+  // 클라이언트 연결
+  // console.log("Establishing new database connection.");
+  await client.connect();
+  db = client.db("blog");
+
+  // 연결 상태 확인
+  await db.command({ ping: 1 });
+  return db;
 }
+
+// 프로세스 종료 시에 데이터베이스 연결 닫기
+process.on("exit", async () => {
+  await client.close();
+});
 
 // User CRUD
 export async function getUsersInfoByIds(userIds: string[]) {
