@@ -10,7 +10,6 @@ import {
   renameAndOverwriteFiles,
   uploadFiles,
 } from "@/lib/workers";
-import { fetchPosts } from "@/features/post/postsSlice";
 import { usePathname, useRouter } from "next/navigation";
 import { setUsedImages } from "@/features/blog/blogRouteSlice";
 
@@ -333,7 +332,6 @@ const PostEdit: React.FC<PostProps> = ({ postIdx }) => {
       setRepresentativeImage("");
 
       alert("The post has been updated!");
-      dispatch(fetchPosts()); // 포스트 정보 리로딩
       dispatch(setCurrentView({ view: "main" })); // main 뷰로 상태 변경
       sessionStorage.setItem("currentView", "main");
       router.push("/", { scroll: false });
