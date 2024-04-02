@@ -176,6 +176,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       if (currentPost) {
         const updatedTitle =
           lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
+
         setTitle(updatedTitle);
         setSubnavTitle(updatedTitle);
       }
@@ -184,13 +185,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       setSubnavTitle("mogumogu's sundries");
     }
   }, [lan, currentPost, isPostPage]);
-
-  useEffect(() => {
-    console.log(isPostPage);
-    console.log(title);
-    console.log(subnavTitle);
-    console.log("=================");
-  }, [isPostPage, subnavTitle, title]);
 
   // hover에 따른 title 변경
   useEffect(() => {
