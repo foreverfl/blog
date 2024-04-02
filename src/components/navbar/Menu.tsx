@@ -13,12 +13,22 @@ interface MenuProps {
   toggleMenu: () => void;
 }
 
+interface Category {
+  _id: string;
+  classification: string;
+  name_ko: string;
+  name_ja: string;
+}
+
 const Menu: React.FC<MenuProps> = ({
   isMenuOpen,
   menuColor,
   isProfileOpen,
   toggleMenu,
 }) => {
+  // Utilities
+  const router = useRouter();
+
   // Redux
   const dispatch = useAppDispatch();
 
@@ -28,10 +38,12 @@ const Menu: React.FC<MenuProps> = ({
   const currentLanguage = useAppSelector((state) => state.language.value);
 
   // State
-  const router = useRouter();
   const [inputValue, setInputValue] = useState(""); // 검색창 텍스트
   const [isInputFilled, setIsInputFilled] = useState(false); // 검색창 상태
+  const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({}); // Menu Expansion
 
+  // Other Hooks
+  // 메뉴 열리면 메인 스크롤 비활성화
   useEffect(() => {
     const scrollbarWidth =
       window.innerWidth - document.documentElement.clientWidth;
@@ -44,33 +56,6 @@ const Menu: React.FC<MenuProps> = ({
     }
   }, [isMenuOpen]);
 
-  // Handler
-  const handleViewChange = (view: string, categoryId: string) => {
-    dispatch(setCurrentView({ view }));
-    sessionStorage.setItem("currentView", view);
-    dispatch(setSelectedCategory(categoryId));
-    toggleMenu();
-    router.push("/", { scroll: false });
-  };
-
-  const handleInputChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setInputValue(e.target.value);
-    setIsInputFilled(e.target.value !== "");
-  };
-
-  // Menu Expansion
-  const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
-
-  // 분류 토글 핸들러
-  const handleToggle = (classificationId: string) => {
-    setToggleStates((prevStates) => ({
-      ...prevStates,
-      [classificationId]: !prevStates[classificationId],
-    }));
-  };
-
   useEffect(() => {
     const initialToggleStates = classifications.reduce(
       (acc, classification) => {
@@ -81,6 +66,29 @@ const Menu: React.FC<MenuProps> = ({
     );
     setToggleStates(initialToggleStates);
   }, [classifications]); // classifications 데이터가 변경될 때마다 초기 토글 상태 업데이트
+
+  // Handler
+  const handleViewChange = (view: string, category: Category) => {
+    dispatch(setCurrentView({ view }));
+    sessionStorage.setItem("currentView", view);
+    dispatch(setSelectedCategory(category));
+    toggleMenu();
+  };
+
+  const handleInputChange = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setInputValue(e.target.value);
+    setIsInputFilled(e.target.value !== "");
+  };
+
+  // 분류 토글 핸들러
+  const handleToggle = (classificationId: string) => {
+    setToggleStates((prevStates) => ({
+      ...prevStates,
+      [classificationId]: !prevStates[classificationId],
+    }));
+  };
 
   return (
     <>
@@ -321,7 +329,7 @@ const Menu: React.FC<MenuProps> = ({
                           }`}
                           onClick={(e) => {
                             e.stopPropagation(); // 이벤트 버블링 방지
-                            handleViewChange("userPostList", category._id); // 카테고리 클릭 이벤트 핸들러 연결
+                            handleViewChange("userPostList", category);
                           }}
                         >
                           {currentLanguage === "ko"

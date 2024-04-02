@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,35 +14,73 @@ import { clearSelectedCategory } from "@/features/category/categorySelectedSlice
 
 interface Category {
   _id: string;
+  classification: string;
   name_ko: string;
   name_ja: string;
 }
 
+interface Post {
+  _id: string;
+  index: number;
+  category: string;
+  title_ko: string;
+  title_ja: string;
+  content_ko: string;
+  content_ja: string;
+  images: string[];
+  image: string;
+  like: string[];
+  likeCount?: number;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
 const UserPostList: React.FC = () => {
+  // Utilities
   const pathname = usePathname();
 
   // Redux
   const dispatch = useAppDispatch();
   const lan = useAppSelector((state) => state.language);
   const { categories } = useAppSelector((state) => state.category);
-  const selectedCategoryId = useAppSelector(
-    (state) => state.categorySelected.selectedCategoryId
+  const selectedCategory = useAppSelector(
+    (state) => state.categorySelected.selectedCategory
   );
   const { posts, loading } = useAppSelector((state) => state.posts);
 
-  const selectedCategoryName = categories.find(
-    (category: Category) => category._id === selectedCategoryId
-  )?.[`name_${lan.value}`];
+  // State
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(12);
+  const [currentPosts, setCurrentPosts] = useState<Post[]>([]);
 
+  // Other Hooks
+  // 카테고리명 업데이트
   useEffect(() => {
-    if (selectedCategoryName) {
-      dispatch(setCurrentTitle(selectedCategoryName)); // 카테고리가 선택되면 타이틀을 업데이트
+    const currentCategory = categories.find(
+      (category: Category) => category._id === selectedCategory?._id
+    )?.[`name_${lan.value}`];
+
+    if (currentCategory) {
+      dispatch(setCurrentTitle(currentCategory)); // 카테고리가 선택되면 타이틀을 업데이트
     }
 
     return () => {
       dispatch(resetTitle()); // 컴포넌트가 언마운트될 때 초기 타이틀로 리셋
     };
-  }, [dispatch, selectedCategoryName]);
+  }, [categories, dispatch, lan.value, selectedCategory?._id]);
+
+  // useMemo를 사용하여 현재 페이지의 포스트를 계산
+  const calculatedCurrentPosts = useMemo(() => {
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    return posts.slice(indexOfFirstPost, indexOfLastPost);
+  }, [currentPage, posts, postsPerPage]);
+
+  // currentPosts 최신화
+  useEffect(() => {
+    setCurrentPosts(calculatedCurrentPosts);
+  }, [calculatedCurrentPosts]);
 
   useEffect(() => {
     const url = `${pathname}`; // 링크 이동을 pathname으로 감지
@@ -50,21 +88,15 @@ const UserPostList: React.FC = () => {
   }, [pathname]);
 
   useEffect(() => {
-    if (selectedCategoryId) {
-      dispatch(fetchPostsByCategory(selectedCategoryId));
+    if (selectedCategory) {
+      dispatch(fetchPostsByCategory(selectedCategory._id));
     }
-  }, [dispatch, selectedCategoryId]);
+  }, [dispatch, selectedCategory]);
 
-  // State
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(12);
-
-  // 현재 페이지의 포스트를 계산
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber); // 페이지 번호를 클릭했을 때 사용될 함수
+  // 페이지 번호를 변경하는 함수
+  const paginate = useCallback((pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  }, []);
 
   if (loading) {
     return (
@@ -88,7 +120,9 @@ const UserPostList: React.FC = () => {
 
       <div className="mt-10">
         <h1 className="text-5xl font-semibold my-10 text-neutral-800 dark:text-neutral-200 text-center">
-          {selectedCategoryName}
+          {lan.value === "ja"
+            ? selectedCategory?.name_ja
+            : selectedCategory?.name_ko}{" "}
         </h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-5 md:px-10">
           {currentPosts.map((post, index) => (
@@ -114,7 +148,7 @@ const UserPostList: React.FC = () => {
                       {new Date(post.createdAt).toLocaleDateString()}
                     </p>
                     <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
-                      {post[`title_${lan.value}`]}
+                      {lan.value === "ja" ? post.title_ja : post.title_ko}
                     </h3>
                   </div>
                 </div>
