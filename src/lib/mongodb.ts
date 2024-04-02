@@ -19,12 +19,12 @@ let db: Db | null = null; // 전역 변수로 데이터베이스 인스턴스를
 export async function connectDB() {
   // 이미 데이터베이스 인스턴스가 있는 경우, 재사용
   if (db) {
-    // console.log("Reusing existing database connection.");
+    console.log("Reusing existing database connection.");
     return db;
   }
 
   // 클라이언트 연결
-  // console.log("Establishing new database connection.");
+  console.log("Establishing new database connection.");
   await client.connect();
   db = client.db("blog");
 
@@ -33,14 +33,9 @@ export async function connectDB() {
   return db;
 }
 
-// 프로세스 종료 시에 데이터베이스 연결 닫기
-process.on("exit", async () => {
-  await client.close();
-});
-
 // User CRUD
 export async function getUsersInfoByIds(userIds: string[]) {
-  await client.connect();
+  // await client.connect();
 
   const objectIds = userIds.map((id) => new ObjectId(id)); // ObjectId 배열 생성
 

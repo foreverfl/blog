@@ -40,6 +40,11 @@ const Profile: React.FC<ProfileProps> = ({
   // State
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isAdmin, setIsAdmin] = useState(false);
+  const [visitorData, setVisitorData] = useState({
+    total: 0,
+    prev: 0,
+    today: 0,
+  });
 
   // Other Hooks
   // Admin 여부 확인
@@ -51,6 +56,31 @@ const Profile: React.FC<ProfileProps> = ({
     }
   }, [email, isAdmin]);
 
+  // // 방문자 체크. 마운팅 시 처음에만 이루어져야함.
+  // useEffect(() => {
+  //   const fetchVisitorData = async () => {
+  //     try {
+  //       const response = await fetch("/api/visitors/count");
+  //       if (!response.ok) {
+  //         throw new Error("Server response was not ok");
+  //       }
+  //       const data = await response.json();
+  //       console.log(data);
+  //       setVisitorData({
+  //         total: data.total,
+  //         prev: data.prev,
+  //         today: data.today,
+  //       });
+  //     } catch (error) {
+  //       console.error("Failed to fetch visitor data:", error);
+  //     }
+  //   };
+
+  //   fetchVisitorData();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
+  // authStatus 체크
   useEffect(() => {
     const checkAuthStatus = async () => {
       setIsReady(true); // 상태가 확정되면 준비 상태를 true로 설정
@@ -211,15 +241,15 @@ const Profile: React.FC<ProfileProps> = ({
             <div className="flex justify-between items-center mx-8 my-4 text-white gap-4">
               <div className="flex-1">
                 <p className="text-sm">Total</p>
-                <p className="text-xl font-bold">10,000</p>
+                <p className="text-xl font-bold">{visitorData.total}</p>
               </div>
               <div className="flex-initial text-right">
                 <p className="text-xs">Prev</p>
-                <p>300</p>
+                <p>{visitorData.prev}</p>
               </div>
               <div className="flex-initial text-right">
                 <p className="text-xs">Today</p>
-                <p>100</p>
+                <p>{visitorData.today}</p>
               </div>
             </div>
 

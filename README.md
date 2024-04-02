@@ -497,7 +497,8 @@ javascript;
 - **tag**: 문서의 태그(키워드)를 가리킴.
 
 ### Options
- OPTIONS 메서드는 HTTP의 일종으로, 주로 CORS(Cross-Origin Resource Sharing) 처리에서 "Preflight Request"라고 하는 특별한 요청을 처리하기 위해 사용됩니다. Preflight Request는 브라우저가 본 요청을 서버로 보내기 전에, 서버가 해당 요청을 받아들일 수 있는지를 먼저 확인하기 위해 보내는 "사전 요청"입니다.
+
+OPTIONS 메서드는 HTTP의 일종으로, 주로 CORS(Cross-Origin Resource Sharing) 처리에서 "Preflight Request"라고 하는 특별한 요청을 처리하기 위해 사용됩니다. Preflight Request는 브라우저가 본 요청을 서버로 보내기 전에, 서버가 해당 요청을 받아들일 수 있는지를 먼저 확인하기 위해 보내는 "사전 요청"입니다.
 
 Preflight Request가 필요한 상황
 Preflight Request는 다음과 같은 상황에서 필요합니다:
@@ -513,6 +514,14 @@ Preflight Request는 실제 요청을 보내기 전에 서버가 해당 요청�
 
 Access-Control-Request-Method: 실제 요청에서 사용할 HTTP 메서드
 Access-Control-Request-Headers: 실제 요청에서 사용할 헤더 목록
+
+### X-Forwarded-For
+
+X-Forwarded-For 헤더는 HTTP 요청을 프록시 서버나 로드 밸런서 같은 중간자를 통해 전달할 때, 원본 클라이언트의 IP 주소를 식별하기 위해 사용됩니다. 클라이언트가 직접 서버에 연결하는 경우가 아니라, 예를 들어 클라우드 서비스를 통해 서버에 접근하는 경우에는 서버가 받는 요청의 IP 주소가 실제 클라이언트의 IP 주소가 아니라 중간에 위치한 프록시 서버나 로드 밸런서의 IP 주소가 될 수 있습니다. 이런 경우, 실제 클라이언트의 IP 주소는 X-Forwarded-For 헤더에 추가됩니다.
+
+X-Forwarded-For 헤더의 값은 보통 클라이언트 IP 주소, 프록시 서버 IP 주소 등 여러 IP 주소가 콤마로 구분되어 순서대로 나열된 문자열 형태입니다. 첫 번째 IP 주소는 원본 클라이언트의 IP 주소, 그 다음 IP 주소는 첫 번째 프록시 서버의 IP 주소, 그리고 이어서 추가적인 프록시 서버의 IP 주소가 나열됩니다.
+
+예를 들어, 클라이언트의 IP가 192.0.2.1이고, 이 요청이 192.0.2.2와 192.0.2.3 두 프록시 서버를 거쳐 서버에 도달했다면, X-Forwarded-For 헤더의 값은 "192.0.2.1, 192.0.2.2, 192.0.2.3"이 됩니다.
 
 ## workers api
 
