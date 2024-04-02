@@ -8,6 +8,7 @@ type NavbarSubProps = {
   title: string;
   updatedDate?: Date;
   category?: string;
+  status: string;
 };
 
 const SubNavbar: React.FC<NavbarSubProps> = ({
@@ -16,6 +17,7 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   title,
   updatedDate,
   category,
+  status,
 }) => {
   // Utilities
   const pathName = usePathname();
@@ -55,7 +57,7 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
         backgroundPosition: "center", // 배경 이미지를 중앙에 위치
       }}
     >
-      {title && (
+      {status === "succeeded" && title && (
         <h1 className="text-5xl md:text-7xl font-bold dark:text-slate-50 font-navbar">
           {title}
         </h1>

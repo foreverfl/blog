@@ -67,13 +67,6 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
   const [usersInfo, setUsersInfo] = useState<UsersState>({});
 
   // Other Hooks
-  // 댓글 불러오기
-  useEffect(() => {
-    if (currentPost?._id) {
-      dispatch(fetchCommentsByPost(currentPost._id));
-    }
-  }, [currentPost?._id, dispatch]);
-
   // 스크롤 최상단으로 이동
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -100,6 +93,13 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
       }
     }
   }, [currentPost, pathname]);
+
+  // 댓글 불러오기
+  useEffect(() => {
+    if (currentPost?._id) {
+      dispatch(fetchCommentsByPost(currentPost._id));
+    }
+  }, [currentPost?._id, dispatch]);
 
   // 유저 정보 조회를 위한 Map
   useEffect(() => {

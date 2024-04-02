@@ -39,8 +39,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   const { classifications, categories, loading } = useAppSelector(
     (state) => state.category
   ); // Cateogry
-  const initialTitle = useAppSelector((state) => state.blogTitle.initialTitle); // Title_initialTitle
-  const currentTitle = useAppSelector((state) => state.blogTitle.currentTitle); // Title_currentTitle
   const { currentPost, status } = useAppSelector((state) => state.postSelected); // Post
   // Link
   const { previousLinks, usedImages } = useAppSelector(
@@ -81,7 +79,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   const [updatedDate, setUpdatedDate] = useState<Date | undefined>(undefined);
 
   // Other Hooks
-  // Post 가져오기
+  // 카테고리 가져오기
   useEffect(() => {
     dispatch(fetchClassificationsAndCategories());
   }, [dispatch]);
@@ -123,21 +121,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pathname]);
-
-  // 링크 이동 시 타이틀 초기화
-  useEffect(() => {
-    const pathParts = pathname.split("/"); // 링크 이동을 pathname으로 감지
-    const postPart = pathParts[1];
-    const languagePart = pathParts[2];
-
-    if (postPart && languagePart === "ja") {
-    } else if (postPart && languagePart === "ko") {
-    } else {
-      resetTitle();
-      setTitle(initialTitle);
-      setSubnavTitle(initialTitle + "'s sundries");
-    }
-  }, [initialTitle, pathname]);
 
   // 회원 정보 redux에 저장
   useEffect(() => {
@@ -183,31 +166,31 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     window.addEventListener("scroll", updateScrollProgress); // 스크롤 이벤트 리스너 추가
 
     return () => {
-      // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-      window.removeEventListener("scroll", updateScrollProgress);
+      window.removeEventListener("scroll", updateScrollProgress); // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
     };
   }, []);
 
-  // 페이지(main/post)에 따른 title 변경
+  // 언어 및 페이지에 따른 title 변경
   useEffect(() => {
     if (isPostPage) {
-      setTitle(currentTitle);
-      setSubnavTitle(currentTitle);
+      if (currentPost) {
+        const updatedTitle =
+          lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
+        setTitle(updatedTitle);
+        setSubnavTitle(updatedTitle);
+      }
     } else {
-      setTitle(initialTitle);
-      setSubnavTitle(initialTitle + "'s sundries");
-    }
-  }, [currentTitle, initialTitle, isPostPage]);
-
-  // 언어에 따른 title 변경
-  useEffect(() => {
-    if (isPostPage && currentPost) {
-      const updatedTitle =
-        lan.value === "ja" ? currentPost.title_ja : currentPost.title_ko;
-      setTitle(updatedTitle);
-      setSubnavTitle(updatedTitle);
+      setTitle("mogumogu");
+      setSubnavTitle("mogumogu's sundries");
     }
   }, [lan, currentPost, isPostPage]);
+
+  useEffect(() => {
+    console.log(isPostPage);
+    console.log(title);
+    console.log(subnavTitle);
+    console.log("=================");
+  }, [isPostPage, subnavTitle, title]);
 
   // hover에 따른 title 변경
   useEffect(() => {
@@ -270,7 +253,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentTitle, isPostPage]);
+  }, [isPostPage]);
 
   // Handler
   const handleLogoClick = () => {
@@ -364,6 +347,7 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
         title={subnavTitle}
         updatedDate={updatedDate}
         category={category ?? ""}
+        status={status}
       />
     </>
   );
