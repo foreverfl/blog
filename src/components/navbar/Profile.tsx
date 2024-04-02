@@ -28,19 +28,22 @@ const Profile: React.FC<ProfileProps> = ({
   email,
   isLoggedOut,
 }) => {
+  // Utilities
   const router = useRouter();
 
   // Redux
   const dispatch = useAppDispatch();
 
   const currentLanguage = useAppSelector((state) => state.language.value);
+  const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
 
   // State
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Other Hooks
   // Admin 여부 확인
-  useLayoutEffect(() => {
+  useEffect(() => {
     const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || []; // 현재 로그인한 유저의 이메일이 관리자 목록에 포함되어 있는지 확인
 
     if (email) {
@@ -48,14 +51,29 @@ const Profile: React.FC<ProfileProps> = ({
     }
   }, [email, isAdmin]);
 
-  // Handler
-  const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      setIsReady(true); // 상태가 확정되면 준비 상태를 true로 설정
+    };
 
+    checkAuthStatus();
+  }, []); // 의존성 배열이 비어 있으므로 컴포넌트 마운트 시 한 번만 실행
+
+  // Handler
   const handleViewChange = (view: string) => {
     dispatch(setCurrentView({ view }));
     sessionStorage.setItem("currentView", view);
     toggleProfile();
     router.push("/", { scroll: false });
+  };
+
+  const handleLoginRedirect = () => {
+    document.cookie =
+      "preLoginUrl=" +
+      encodeURIComponent(window.location.href) +
+      "; path=/; max-age=600"; // 현재 URL을 쿠키에 저장
+
+    router.push("/login"); // 로그인 페이지로 리디렉트
   };
 
   const handleLogout = async () => {
@@ -74,14 +92,6 @@ const Profile: React.FC<ProfileProps> = ({
     }
   };
 
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      setIsReady(true); // 상태가 확정되면 준비 상태를 true로 설정
-    };
-
-    checkAuthStatus();
-  }, []); // 의존성 배열이 비어 있으므로 컴포넌트 마운트 시 한 번만 실행
-
   if (!isReady) {
     return (
       <div className="rounded-full p-2 border overflow-hidden animate-pulse">
@@ -93,24 +103,25 @@ const Profile: React.FC<ProfileProps> = ({
   return (
     <>
       {isLoggedOut ? (
-        <Link href="/login">
-          <button className="border border-gray-300 dark:border-neutral-50 rounded-full p-2 overflow-hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 dark:fill-current dark:text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 14.4c-2.982 0-5.6-1.456-5.6-3.2 0-.964 1.312-1.858 3.343-2.463a11.641 11.641 0 0 1 4.514 0c2.03.605 3.343 1.499 3.343 2.463 0 1.744-2.618 3.2-5.6 3.2z"
-              />
-            </svg>
-          </button>
-        </Link>
+        <button
+          className="border border-gray-300 dark:border-neutral-50 rounded-full p-2 overflow-hidden"
+          onClick={handleLoginRedirect}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 dark:fill-current dark:text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 14.4c-2.982 0-5.6-1.456-5.6-3.2 0-.964 1.312-1.858 3.343-2.463a11.641 11.641 0 0 1 4.514 0c2.03.605 3.343 1.499 3.343 2.463 0 1.744-2.618 3.2-5.6 3.2z"
+            />
+          </svg>
+        </button>
       ) : (
         <button
           onClick={() => toggleProfile()}

@@ -75,11 +75,23 @@ export async function GET(req: NextRequest) {
       { expiresIn: "2h" } // 토큰 만료 시간
     );
 
-    // JWT 내부 확인
-    const decoded = jwt.decode(jwtToken);
+    const decoded = jwt.decode(jwtToken); // JWT 내부
+
+    // 쿠키에서 리다이렉션 링크 찾기
+    const preLoginUrl = req.cookies.get("preLoginUrl");
+    console.log(preLoginUrl);
+
+    if (!preLoginUrl) {
+      return new NextResponse("Cookie has expired. Please try again.", {
+        status: 400, // BadRequest
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8", // 콘텐츠 타입 명시
+        },
+      });
+    }
 
     // 쿠키에 JWT 토큰 저장
-    const response = NextResponse.redirect(new URL("/", req.url));
+    const response = NextResponse.redirect(new URL(preLoginUrl.value, req.url));
     response.cookies.set("auth", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",

@@ -33,6 +33,7 @@ const Main: React.FC = () => {
             width={250}
             height={250}
             alt="loading"
+            priority={true}
           />
         </div>
       </div>
