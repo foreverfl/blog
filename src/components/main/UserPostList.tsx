@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchPostsByCategory } from "@/features/post/postsSlice";
 import { resetTitle, setCurrentTitle } from "@/features/blog/blogTitleSlice";
 
 import Pagination from "@/components/ui/Pagination";
@@ -46,13 +45,13 @@ const UserPostList: React.FC = () => {
   const selectedCategory = useAppSelector(
     (state) => state.categorySelected.selectedCategory
   );
-  const { posts, loading } = useAppSelector((state) => state.posts);
 
   // State
-  const [currentCategory, setCurrentCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(12);
-  const [currentPosts, setCurrentPosts] = useState<Post[]>([]);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   // Other Hooks
   // 카테고리명 업데이트
@@ -70,33 +69,41 @@ const UserPostList: React.FC = () => {
     };
   }, [categories, dispatch, lan.value, selectedCategory?._id]);
 
-  // useMemo를 사용하여 현재 페이지의 포스트를 계산
-  const calculatedCurrentPosts = useMemo(() => {
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    return posts.slice(indexOfFirstPost, indexOfLastPost);
-  }, [currentPage, posts, postsPerPage]);
-
-  // currentPosts 최신화
+  // 포스트 정보를 페이지네이션을 통해 가져옴
   useEffect(() => {
-    setCurrentPosts(calculatedCurrentPosts);
-  }, [calculatedCurrentPosts]);
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `/api/paging/${selectedCategory?._id}/${currentPage}?itemsPerPage=${postsPerPage}`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setPosts(data.posts);
+        setTotalPosts(data.pagination.totalItems);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    const url = `${pathname}`; // 링크 이동을 pathname으로 감지
-    clearSelectedCategory();
-  }, [pathname]);
-
-  useEffect(() => {
-    if (selectedCategory) {
-      dispatch(fetchPostsByCategory(selectedCategory._id));
+    if (selectedCategory?._id) {
+      fetchPosts();
     }
-  }, [dispatch, selectedCategory]);
+  }, [currentPage, postsPerPage, selectedCategory?._id]);
 
   // 페이지 번호를 변경하는 함수
   const paginate = useCallback((pageNumber: number) => {
     setCurrentPage(pageNumber);
   }, []);
+
+  useEffect(() => {
+    const url = `${pathname}`; // 링크 이동을 pathname으로 감지
+    clearSelectedCategory();
+  }, [pathname]);
 
   if (loading) {
     return (
@@ -125,7 +132,7 @@ const UserPostList: React.FC = () => {
             : selectedCategory?.name_ko}{" "}
         </h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-5 md:px-10">
-          {currentPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <Link
               key={post._id}
               href={`/post/${
@@ -160,7 +167,7 @@ const UserPostList: React.FC = () => {
         <div className="mt-12">
           <Pagination
             postsPerPage={postsPerPage}
-            totalPosts={posts.length}
+            totalPosts={totalPosts}
             paginate={paginate}
             currentPage={currentPage}
           />

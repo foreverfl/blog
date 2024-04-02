@@ -36,8 +36,6 @@ export async function GET(req: NextRequest) {
       },
     });
     const githubUserData = await userResponse.json();
-    console.log("githubUserData");
-    console.log(githubUserData);
 
     // userData를 사용하여 데이터베이스에 사용자 정보 저장
     const db = await connectDB();
@@ -59,7 +57,6 @@ export async function GET(req: NextRequest) {
     let userDataFromDb = await db
       .collection("users")
       .findOne({ email: userData.email });
-    console.log(userDataFromDb);
 
     // JWT 토큰 생성
     const jwtToken = jwt.sign(
@@ -75,7 +72,6 @@ export async function GET(req: NextRequest) {
 
     // JWT 내부 확인
     const decoded = jwt.decode(jwtToken);
-    console.log(decoded);
 
     // JSON 데이터를 응답으로 보내기
     // const response = new NextResponse(JSON.stringify(userData), {

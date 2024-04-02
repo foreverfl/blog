@@ -416,11 +416,20 @@ export async function getPostsForMain(): Promise<{
   return { popularPosts, recentPosts };
 }
 
-export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
+export async function getPostsByCategory(
+  categoryId: string,
+  page: number,
+  itemsPerPage: number
+): Promise<{ posts: Post[]; total: number }> {
   const db = await connectDB();
+  const total = await db
+    .collection("posts")
+    .countDocuments({ category: new ObjectId(categoryId) });
   const posts = await db
     .collection("posts")
     .find({ category: new ObjectId(categoryId) })
+    .skip((page - 1) * itemsPerPage)
+    .limit(itemsPerPage)
     .toArray();
   const postsFormatted: Post[] = posts.map((doc) => ({
     _id: doc._id.toString(),
@@ -434,10 +443,10 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
     image: doc.image,
     like: doc.like,
     createdAt: doc.createdAt.toISOString(),
-    updatedAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
   }));
 
-  return postsFormatted;
+  return { posts: postsFormatted, total };
 }
 
 export async function getPostByIndex(index: number): Promise<Post | null> {

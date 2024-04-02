@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
 import { setCurrentView, resetView } from "@/features/blog/blogSlice";
 import { fetchClassificationsAndCategories } from "@/features/category/categorySlice";
-import { fetchPosts } from "@/features/post/postsSlice";
 
 // 컴포넌트 모듈
 import NavbarSub from "./NavbarSub";
@@ -85,7 +84,6 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
   // Post 가져오기
   useEffect(() => {
     dispatch(fetchClassificationsAndCategories());
-    dispatch(fetchPosts());
   }, [dispatch]);
 
   // updatedDate 상태 업데이트

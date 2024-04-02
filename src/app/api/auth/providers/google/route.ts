@@ -62,7 +62,6 @@ export async function GET(req: NextRequest) {
     let userDataFromDb = await db
       .collection("users")
       .findOne({ email: userData.email });
-    console.log(userDataFromDb);
 
     // JWT 토큰 생성
     const jwtToken = jwt.sign(
@@ -78,7 +77,6 @@ export async function GET(req: NextRequest) {
 
     // JWT 내부 확인
     const decoded = jwt.decode(jwtToken);
-    console.log(decoded);
 
     // 쿠키에 JWT 토큰 저장
     const response = NextResponse.redirect(new URL("/", req.url));
