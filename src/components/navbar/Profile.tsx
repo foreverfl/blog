@@ -56,29 +56,29 @@ const Profile: React.FC<ProfileProps> = ({
     }
   }, [email, isAdmin]);
 
-  // // 방문자 체크. 마운팅 시 처음에만 이루어져야함.
-  // useEffect(() => {
-  //   const fetchVisitorData = async () => {
-  //     try {
-  //       const response = await fetch("/api/visitors/count");
-  //       if (!response.ok) {
-  //         throw new Error("Server response was not ok");
-  //       }
-  //       const data = await response.json();
-  //       console.log(data);
-  //       setVisitorData({
-  //         total: data.total,
-  //         prev: data.prev,
-  //         today: data.today,
-  //       });
-  //     } catch (error) {
-  //       console.error("Failed to fetch visitor data:", error);
-  //     }
-  //   };
+  // 방문자 체크. 마운팅 시 처음에만 이루어져야함.
+  useEffect(() => {
+    const fetchVisitorData = async () => {
+      try {
+        const response = await fetch("/api/visitors/count");
+        if (!response.ok) {
+          throw new Error("Server response was not ok");
+        }
+        const data = await response.json();
+        console.log(data);
+        setVisitorData({
+          total: data.total,
+          prev: data.prev,
+          today: data.today,
+        });
+      } catch (error) {
+        console.error("Failed to fetch visitor data:", error);
+      }
+    };
 
-  //   fetchVisitorData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+    fetchVisitorData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // authStatus 체크
   useEffect(() => {

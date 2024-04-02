@@ -35,8 +35,6 @@ export async function connectDB() {
 
 // User CRUD
 export async function getUsersInfoByIds(userIds: string[]) {
-  // await client.connect();
-
   const objectIds = userIds.map((id) => new ObjectId(id)); // ObjectId 배열 생성
 
   const db = await connectDB();
