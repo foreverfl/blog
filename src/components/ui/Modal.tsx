@@ -10,12 +10,51 @@ interface ModalProps {
     categoryId?: string
   ) => void;
   title: string;
+  editingItem: { name_ko: string; name_ja: string };
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title }) => {
-  const [korean, setKorean] = useState("");
-  const [japanese, setJapanese] = useState("");
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  editingItem,
+}) => {
+  // Utilities
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
+  // State
+  const [korean, setKorean] = useState(editingItem?.name_ko || "");
+  const [japanese, setJapanese] = useState(editingItem?.name_ja || "");
+
+  // Other Hooks
+  // 모달이 열릴 때마다 editingItem의 현재 값으로 입력 필드를 업데이트
+
+  useEffect(() => {
+    setKorean(editingItem?.name_ko || "");
+    setJapanese(editingItem?.name_ja || "");
+  }, [editingItem]);
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
+    // Cleanup 함수
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, handleKeyDown]);
+
+  // Handler
   const handleKoreanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKorean(e.target.value);
   };
@@ -30,28 +69,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, title }) => {
     setJapanese(""); // 입력 필드 초기화
     onClose(); // 모달 닫기
   };
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    },
-    [onClose]
-  );
-
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-    } else {
-      document.removeEventListener("keydown", handleKeyDown);
-    }
-
-    // Cleanup 함수
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 

@@ -51,6 +51,7 @@ const MainContent: React.FC = () => {
     mode: "add" | "edit" | null;
     dataType: "classification" | "category" | null;
     editingId?: string;
+    editingItem?: { name_ko: string; name_ja: string };
   };
 
   const [modalState, setModalState] = useState<ModalState>({
@@ -66,13 +67,21 @@ const MainContent: React.FC = () => {
       dataType: "classification",
     });
 
-  const openEditClassificationModal = (id: string) =>
+  const openEditClassificationModal = (id: string) => {
+    const classification = classifications.find((c) => c._id === id);
+    console.log(classification);
+
     setModalState({
       isOpen: true,
       mode: "edit",
       dataType: "classification",
       editingId: id,
+      editingItem: {
+        name_ko: classification.name_ko,
+        name_ja: classification.name_ja,
+      },
     });
+  };
 
   const openAddCategoryModal = () =>
     setModalState({
@@ -81,13 +90,17 @@ const MainContent: React.FC = () => {
       dataType: "category",
     });
 
-  const openEditCategoryModal = (id: string) =>
+  const openEditCategoryModal = (id: string) => {
+    const category = categories.find((c) => c._id === id);
+
     setModalState({
       isOpen: true,
       mode: "edit",
       dataType: "category",
       editingId: id,
+      editingItem: { name_ko: category.name_ko, name_ja: category.name_ja },
     });
+  };
 
   const closeModal = useCallback(() => {
     setModalState((currentState) => ({ ...currentState, isOpen: false }));
@@ -126,6 +139,7 @@ const MainContent: React.FC = () => {
       if (confirmDelete) {
         const startTime = Date.now();
         await dispatch(deleteClassificationAsync(classificationId));
+        dispatch(fetchClassificationsAndCategories()); // redux 상태 갱신
         const endTime = Date.now();
         const duration = (endTime - startTime) / 1000;
         alert(
@@ -337,6 +351,7 @@ const MainContent: React.FC = () => {
             ? "Edit Category"
             : ""
         }
+        editingItem={modalState.editingItem!}
       />
     </div>
   );
