@@ -59,24 +59,16 @@ export async function GET(req: NextRequest) {
   );
 }
 
-// 시간이 한국 날짜 생성
-function getKSTDate() {
-  const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000; // UTC로 변환
-  const kstOffset = 9 * 60 * 60000; // KST는 UTC+9
-  return new Date(utc + kstOffset);
-}
-
 function getToday() {
-  const today = getKSTDate();
-  today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
-  return today;
+  const now = new Date();
+  now.setUTCHours(0, 0, 0, 0); // UTC 기준으로 자정으로 설정
+  return now;
 }
 
 function getYesterday() {
   const today = getToday();
   const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1); // 어제 날짜 설정
+  yesterday.setUTCDate(today.getUTCDate() - 1); // 어제 날짜 설정
   return yesterday;
 }
 
