@@ -77,7 +77,14 @@ const initialState: PostSelectedState = {
 export const postSelectedSlice = createSlice({
   name: "postSelected",
   initialState,
-  reducers: {},
+  reducers: {
+    clearCurrentPost(state) {
+      state.currentPost = null;
+      state.selectedPostId = null;
+      state.status = "idle";
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPostByIndex.pending, (state) => {
@@ -119,5 +126,7 @@ export const postSelectedSlice = createSlice({
       });
   },
 });
+
+export const { clearCurrentPost } = postSelectedSlice.actions;
 
 export default postSelectedSlice.reducer;

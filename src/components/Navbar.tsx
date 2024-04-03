@@ -19,6 +19,7 @@ import SetMode from "./navbar/SetMode";
 import { resetTitle } from "@/features/blog/blogTitleSlice";
 import { addPreviousLink, setUsedImages } from "@/features/blog/blogRouteSlice";
 import { deleteImage } from "@/lib/workers";
+import { clearCurrentPost } from "@/features/post/postSelectedSlice";
 
 type NavbarProps = {
   postIdx: string;
@@ -183,8 +184,9 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
     } else {
       setTitle("mogumogu");
       setSubnavTitle("mogumogu's sundries");
+      dispatch(clearCurrentPost());
     }
-  }, [lan, currentPost, isPostPage]);
+  }, [lan, currentPost, isPostPage, dispatch]);
 
   // hover에 따른 title 변경
   useEffect(() => {

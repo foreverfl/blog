@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -53,7 +59,18 @@ const UserPostList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
 
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
   // Other Hooks
+  // posts가 로드된 후 스크롤 최상단으로 이동
+  useEffect(() => {
+    if (titleRef.current) {
+      const offsetPosition =
+        titleRef.current.getBoundingClientRect().top + window.scrollY - 80; // Adjust 65px for the fixed navbar height
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+    }
+  }, [posts]);
+
   // 카테고리명 업데이트
   useEffect(() => {
     const currentCategory = categories.find(
@@ -126,7 +143,10 @@ const UserPostList: React.FC = () => {
       <div className="my-56"></div>
 
       <div className="mt-10">
-        <h1 className="text-5xl font-semibold my-10 text-neutral-800 dark:text-neutral-200 text-center">
+        <h1
+          ref={titleRef}
+          className="text-5xl font-semibold my-10 text-neutral-800 dark:text-neutral-200 text-center"
+        >
           {lan.value === "ja"
             ? selectedCategory?.name_ja
             : selectedCategory?.name_ko}{" "}
