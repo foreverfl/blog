@@ -366,13 +366,42 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
 
           {/* 댓글 달기 */}
           <div className="flex items-start mt-4">
-            <Image
-              src={photo || "/images/smile.png"}
-              alt={"profile"}
-              width={100}
-              height={100}
-              className="w-8 h-8 rounded-full object-cover"
-            />
+            {isLoggedOut ? (
+              <button className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black p-2 overflow-hidden">
+                <svg
+                  className="h-6 w-6 dark:fill-current dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              </button>
+            ) : (
+              <button
+                className={`rounded-full overflow-hidden transition-opacity duration-300 `}
+              >
+                {photo ? (
+                  <Image
+                    src={photo}
+                    alt="Profile Image"
+                    width={100}
+                    height={100}
+                    className="w-10 h-10 object-cover"
+                  />
+                ) : (
+                  <div className="w-7 h-7 flex justify-center items-center"></div>
+                )}
+              </button>
+            )}
+
             <div className="flex flex-col w-full">
               <div className="relative bg-gray-200 dark:bg-neutral-700 rounded-lg p-3 mx-3 flex-grow">
                 <textarea
