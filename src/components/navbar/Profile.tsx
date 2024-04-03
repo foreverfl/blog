@@ -133,21 +133,22 @@ const Profile: React.FC<ProfileProps> = ({
     <>
       {isLoggedOut ? (
         <button
-          className="border border-gray-300 dark:border-neutral-50 rounded-full p-2 overflow-hidden"
+          className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black p-2 overflow-hidden"
           onClick={handleLoginRedirect}
         >
           <svg
-            xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 dark:fill-current dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
             fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              stroke="currentColor"
               strokeWidth="2"
-              d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 14.4c-2.982 0-5.6-1.456-5.6-3.2 0-.964 1.312-1.858 3.343-2.463a11.641 11.641 0 0 1 4.514 0c2.03.605 3.343 1.499 3.343 2.463 0 1.744-2.618 3.2-5.6 3.2z"
+              d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
             />
           </svg>
         </button>
