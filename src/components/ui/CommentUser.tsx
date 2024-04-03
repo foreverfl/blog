@@ -109,8 +109,8 @@ const CommentUser: React.FC<CommentUserProps> = ({
             {/* 메타 정보 */}
             <div className="flex justify-start text-xs dark:text-white space-x-2">
               <span>{username}</span>
-              <span>|</span>
-              <span>{formatDate(updatedAt)}</span>
+              <span className="hidden md:block">|</span>
+              <span className="hidden md:block">{formatDate(updatedAt)}</span>
             </div>
 
             {/* 버튼 */}

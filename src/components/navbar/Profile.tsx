@@ -113,6 +113,7 @@ const Profile: React.FC<ProfileProps> = ({
       if (response.ok) {
         dispatch(logout());
         toggleProfile(); // 프로필 창 닫기
+        window.location.reload(); // 현재 페이지 새로고침
       } else {
         console.error("로그아웃 실패");
       }

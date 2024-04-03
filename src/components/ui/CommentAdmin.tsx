@@ -71,10 +71,10 @@ const CommentAdmin: React.FC<AdminCommentProps> = ({
           </div>
         </div>
         {/* 메타정보 */}
-        <div className="text-xs dark:text-white px-4 py-2 space-x-2 self-end">
+        <div className="flex text-xs dark:text-white px-4 py-2 space-x-2 self-end">
           <span>{adminName}</span>
-          <span>|</span>
-          <span>{formatDate(answeredAt!)}</span>
+          <span className="hidden md:block">|</span>
+          <span className="hidden md:block">{formatDate(answeredAt!)}</span>
         </div>
 
         {/* 수정 버튼 */}
