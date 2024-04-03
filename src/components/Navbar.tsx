@@ -289,11 +289,11 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
         <div
           onMouseEnter={() => setTitleIsHovered(true)}
           onMouseLeave={() => setTitleIsHovered(false)}
-          className="flex-1 flex justify-center"
+          className="flex-1 flex w-72 justify-center"
         >
           <div
             onClick={handleLogoClick}
-            className={`min-w-32 text-2xl md:text-3xl font-navbar dark:text-slate-50 select-none cursor-pointer ${titleColor}`}
+            className={`min-w-32 text-2xl md:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
           >
             {title}
           </div>
