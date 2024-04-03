@@ -5,6 +5,8 @@ import { setCurrentView } from "@/features/blog/blogSlice";
 import { setSelectedCategory } from "@/features/category/categorySelectedSlice";
 import { useRouter } from "next/navigation";
 import { resetTitle } from "@/features/blog/blogTitleSlice";
+import SetLanguage from "./SetLanguage";
+import SetMode from "./SetMode";
 
 interface MenuProps {
   isMenuOpen: boolean;
@@ -150,6 +152,21 @@ const Menu: React.FC<MenuProps> = ({
                   d="M6 18 18 6m0 12L6 6"
                 />
               </svg>
+            </div>
+
+            {/* 다크모드 및 다국어 스위치 - 모바일 */}
+            <div className="mx-8 rounded-md md:hidden bg-transparent">
+              <div className="flex justify-end gap-4">
+                {/* 다국어 스위치 */}
+                <div className="flex">
+                  <SetLanguage />
+                </div>
+
+                {/* 다크모드 스위치 */}
+                <div className="flex">
+                  <SetMode />
+                </div>
+              </div>
             </div>
 
             {/* 검색창 */}
