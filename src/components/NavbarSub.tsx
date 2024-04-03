@@ -52,7 +52,6 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
       }}
     >
       {isPostPage ? (
-        status === "succeeded" &&
         title && (
           <h1 className="text-5xl md:text-7xl font-bold dark:text-slate-50 font-navbar">
             {title}

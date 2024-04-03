@@ -69,6 +69,7 @@ const Menu: React.FC<MenuProps> = ({
 
   // Handler
   const handleViewChange = (view: string, category: Category) => {
+    router.push("/", { scroll: false });
     dispatch(setCurrentView({ view }));
     sessionStorage.setItem("currentView", view);
     dispatch(setSelectedCategory(category));

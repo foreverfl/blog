@@ -65,7 +65,6 @@ const Profile: React.FC<ProfileProps> = ({
           throw new Error("Server response was not ok");
         }
         const data = await response.json();
-        console.log(data);
         setVisitorData({
           total: data.total,
           prev: data.prev,
