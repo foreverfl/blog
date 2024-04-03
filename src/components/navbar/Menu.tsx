@@ -127,7 +127,7 @@ const Menu: React.FC<MenuProps> = ({
       >
         {/* 메뉴 컨테이너 */}
         <div
-          className={`md:w-1/3 lg:w-1/6 min-h-screen z-10 transition-all duration-500 ease-out ${
+          className={`md:w-1/3 lg:w-1/6 min-h-screen z-10 pb-10 transition-all duration-500 ease-out ${
             isMenuOpen
               ? "translate-y-0 opacity-100"
               : "-translate-y-full opacity-0"

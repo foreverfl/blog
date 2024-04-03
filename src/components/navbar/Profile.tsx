@@ -181,7 +181,7 @@ const Profile: React.FC<ProfileProps> = ({
       >
         {/* 프로필 컨테이너 */}
         <div
-          className={`w-full md:w-1/3 lg:w-1/6 min-h-screen z-10 transition-all duration-500 ease-out ${
+          className={`w-full md:w-1/3 lg:w-1/6 min-h-screen pb-10 z-10 transition-all duration-500 ease-out ${
             isProfileOpen
               ? "translate-y-0 opacity-100"
               : "-translate-y-full opacity-0"
