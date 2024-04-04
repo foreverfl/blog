@@ -243,6 +243,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
           setTitleColor("text-transparent dark:text-transparent");
           setMenuColor("text-white dark:text-white");
         }
+      } else {
+        setTitleColor("text-black dark:text-white");
       }
     };
 

@@ -127,7 +127,7 @@ const UserPostList: React.FC = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="bg-transparent">
           <Image
-            src="/images/gear.webp"
+            src="/images/gear.gif"
             width={250}
             height={250}
             alt="loading"
