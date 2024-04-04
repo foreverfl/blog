@@ -80,7 +80,7 @@ const MainContent: React.FC = () => {
               Popular Posts
             </h2>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
             {popularPosts.map((post, index) => (
               <Link
                 key={post._id}
@@ -123,7 +123,7 @@ const MainContent: React.FC = () => {
               Recent Posts
             </h2>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
             {recentPosts.map((post) => (
               <Link
                 key={post._id}
