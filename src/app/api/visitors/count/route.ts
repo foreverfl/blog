@@ -20,25 +20,26 @@ export async function GET(req: NextRequest) {
   // 방문자 카운트 업데이트
   await updateVisitorCount(today, visitorIP, visits);
 
-  // 오늘 방문자 수
-  const todayVisitorsCount = await visits.countDocuments({
-    date: {
-      $gte: today,
-    },
-  });
-
-  // 어제 방문자 수
-  const yesterdayVisitorsCount = await visits.countDocuments({
-    date: {
-      $gte: yesterday,
-      $lt: today,
-    },
-  });
-
   // 총 방문자 수
   const totalVisitorsCount = await visits
     .aggregate([{ $group: { _id: null, total: { $sum: "$count" } } }])
     .toArray();
+
+  // 오늘 방문자 수
+  const todayVisitDocument = await visits.findOne({
+    date: today,
+  });
+
+  const todayVisitorsCount = todayVisitDocument ? todayVisitDocument.count : 0;
+
+  // 어제 방문자 수
+  const yesterdayVisitDocument = await visits.findOne({
+    date: yesterday,
+  });
+
+  const yesterdayVisitorsCount = yesterdayVisitDocument
+    ? yesterdayVisitDocument.count
+    : 0;
 
   const totalVisitors =
     totalVisitorsCount.length > 0 ? totalVisitorsCount[0].total : 0;
@@ -74,8 +75,10 @@ function getYesterday() {
 
 // IP 주소를 추출하는 함수
 const getVisitorIP = (req: NextRequest) => {
+  const cfIP = req.headers.get("cf-connecting-ip"); // 우선적으로 cloudflare에서 제공하는 원본 아이피를 가져옴
   const forwarded = req.headers.get("x-forwarded-for");
-  const ip = typeof forwarded === "string" ? forwarded.split(",")[0] : req.ip;
+  const ip =
+    cfIP || (typeof forwarded === "string" ? forwarded.split(",")[0] : req.ip);
   return ip || "";
 };
 

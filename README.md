@@ -498,30 +498,25 @@ javascript;
 
 ### Options
 
-OPTIONS 메서드는 HTTP의 일종으로, 주로 CORS(Cross-Origin Resource Sharing) 처리에서 "Preflight Request"라고 하는 특별한 요청을 처리하기 위해 사용됩니다. Preflight Request는 브라우저가 본 요청을 서버로 보내기 전에, 서버가 해당 요청을 받아들일 수 있는지를 먼저 확인하기 위해 보내는 "사전 요청"입니다.
-
-Preflight Request가 필요한 상황
-Preflight Request는 다음과 같은 상황에서 필요합니다:
-
-HTTP 요청이 "simple requests"가 아닌 경우: 여기서 "simple requests"는 특정 조건을 만족하는 요청을 말합니다. 예를 들어, 메서드가 GET, HEAD, POST 중 하나이고, 특정 헤더만 사용하는 경우 등입니다. "simple requests"가 아닌 경우에는 Preflight Request가 필요합니다.
-
-사용자 정의 헤더 사용: 요청에 사용자 정의 헤더(예: X-My-Custom-Header)가 포함되어 있는 경우에도 Preflight Request가 필요합니다.
-
-특정 HTTP 메서드 사용: PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH와 같은 HTTP 메서드를 사용하는 경우에도 사전에 서버의 허용 여부를 확인하기 위해 Preflight Request가 발생합니다.
-
-Preflight Request 처리 방법
-Preflight Request는 실제 요청을 보내기 전에 서버가 해당 요청을 처리할 수 있는지 확인하는 메커니즘입니다. 이를 위해, 브라우저는 OPTIONS 메서드를 사용하여 서버에 요청을 보냅니다. 이때 요청 헤더에는 다음과 같은 정보가 포함될 수 있습니다:
-
-Access-Control-Request-Method: 실제 요청에서 사용할 HTTP 메서드
-Access-Control-Request-Headers: 실제 요청에서 사용할 헤더 목록
+- OPTIONS 메서드는 HTTP의 일종으로, 주로 CORS(Cross-Origin Resource Sharing) 처리에서 "Preflight Request"라고 하는 특별한 요청을 처리하기 위해 사용됨. Preflight Request는 브라우저가 본 요청을 서버로 보내기 전에, 서버가 해당 요청을 받아들일 수 있는지를 먼저 확인하기 위해 보내는 "사전 요청".
+- Preflight Request가 필요한 상황
+  > - **HTTP 요청이 "simple requests"가 아닌 경우**: 여기서 "simple requests"는 특정 조건을 만족하는 요청. 예를 들어, 메서드가 GET, HEAD, POST 중 하나이고, 특정 헤더만 사용하는 경우. "simple requests"가 아닌 경우에는 Preflight Request가 필요함.
+  > - **사용자 정의 헤더 사용**: 요청에 사용자 정의 헤더(예: X-My-Custom-Header)가 포함되어 있는 경우에도 Preflight Request가 필요함.
+  > - **특정 HTTP 메서드 사용**: PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH와 같은 HTTP 메서드를 사용하는 경우에도 사전에 서버의 허용 여부를 확인하기 위해 Preflight Request가 발생함.
+- Preflight Request 처리 방법
+  > - Preflight Request는 실제 요청을 보내기 전에 서버가 해당 요청을 처리할 수 있는지 확인하는 메커니즘. 이를 위해, 브라우저는 OPTIONS 메서드를 사용하여 서버에 요청을 보냅니다. 이때 요청 헤더에는 다음과 같은 정보가 포함될 수 있음
 
 ### X-Forwarded-For
 
-X-Forwarded-For 헤더는 HTTP 요청을 프록시 서버나 로드 밸런서 같은 중간자를 통해 전달할 때, 원본 클라이언트의 IP 주소를 식별하기 위해 사용됩니다. 클라이언트가 직접 서버에 연결하는 경우가 아니라, 예를 들어 클라우드 서비스를 통해 서버에 접근하는 경우에는 서버가 받는 요청의 IP 주소가 실제 클라이언트의 IP 주소가 아니라 중간에 위치한 프록시 서버나 로드 밸런서의 IP 주소가 될 수 있습니다. 이런 경우, 실제 클라이언트의 IP 주소는 X-Forwarded-For 헤더에 추가됩니다.
+- X-Forwarded-For 헤더는 HTTP 요청을 프록시 서버나 로드 밸런서 같은 중간자를 통해 전달할 때, 원본 클라이언트의 IP 주소를 식별하기 위해 사용됨. 클라이언트가 직접 서버에 연결하는 경우가 아니라, 예를 들어 클라우드 서비스를 통해 서버에 접근하는 경우에는 서버가 받는 요청의 IP 주소가 실제 클라이언트의 IP 주소가 아니라 중간에 위치한 프록시 서버나 로드 밸런서의 IP 주소가 될 수 있음. 이런 경우, 실제 클라이언트의 IP 주소는 X-Forwarded-For 헤더에 추가됨.
+- X-Forwarded-For 헤더의 값은 보통 클라이언트 IP 주소, 프록시 서버 IP 주소 등 여러 IP 주소가 콤마로 구분되어 순서대로 나열된 문자열 형태. 첫 번째 IP 주소는 원본 클라이언트의 IP 주소, 그 다음 IP 주소는 첫 번째 프록시 서버의 IP 주소, 그리고 이어서 추가적인 프록시 서버의 IP 주소가 나열됨.
+- 예를 들어, 클라이언트의 IP가 192.0.2.1이고, 이 요청이 192.0.2.2와 192.0.2.3 두 프록시 서버를 거쳐 서버에 도달했다면, X-Forwarded-For 헤더의 값은 "192.0.2.1, 192.0.2.2, 192.0.2.3"이 됨.
 
-X-Forwarded-For 헤더의 값은 보통 클라이언트 IP 주소, 프록시 서버 IP 주소 등 여러 IP 주소가 콤마로 구분되어 순서대로 나열된 문자열 형태입니다. 첫 번째 IP 주소는 원본 클라이언트의 IP 주소, 그 다음 IP 주소는 첫 번째 프록시 서버의 IP 주소, 그리고 이어서 추가적인 프록시 서버의 IP 주소가 나열됩니다.
+### cf-connecting-ip 헤더
 
-예를 들어, 클라이언트의 IP가 192.0.2.1이고, 이 요청이 192.0.2.2와 192.0.2.3 두 프록시 서버를 거쳐 서버에 도달했다면, X-Forwarded-For 헤더의 값은 "192.0.2.1, 192.0.2.2, 192.0.2.3"이 됩니다.
+cf-connecting-ip는 Cloudflare가 원본 요청을 서버로 전달할 때, 실제 방문자의 IP 주소를 담아 전송하는 헤더입니다.
+이 헤더를 통해 Cloudflare를 거쳐온 요청의 경우 실제 방문자의 IP 주소를 정확히 알 수 있습니다.
+만약 요청이 Cloudflare를 거치지 않았다면, 이 헤더는 존재하지 않을 것입니다.
 
 ## workers api
 
