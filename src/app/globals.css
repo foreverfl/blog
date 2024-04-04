@@ -118,14 +118,16 @@ html {
   list-style: decimal !important; /* ol에 대해 숫자 스타일 적용 */
 }
 
+/* post on light mode */
 .markdown-body {
-  background-color: white; /* Dark background */
-  color: #000000; /* Light text for dark background */
+  background-color: white !important;
+  color: #000000 !important;
 }
 
+/* post on dark mode */
 .dark .markdown-body {
-  background-color: transparent; /* Dark background */
-  color: #ffffff; /* Light text for dark background */
+  background-color: transparent !important;
+  color: #ffffff !important;
 }
 
 @layer utilities {
