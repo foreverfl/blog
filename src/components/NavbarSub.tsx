@@ -1,6 +1,8 @@
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { usePathname } from "next/navigation";
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 type NavbarSubProps = {
   postIdx: string;
@@ -51,7 +53,18 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
         backgroundPosition: "center", // 배경 이미지를 중앙에 위치
       }}
     >
-      {isPostPage ? (
+      {status === "loading" ? (
+        <div className="text-xl md:text-2xl font-bold dark:text-slate-50 font-navbar">
+          <Image
+            src="/images/gear.gif"
+            width={250}
+            height={250}
+            alt="loading"
+            priority={true}
+            className="w-32 h-32 object-fit"
+          />
+        </div>
+      ) : isPostPage ? (
         title && (
           <h1 className="text-5xl md:text-7xl text-center font-bold dark:text-slate-50 font-navbar">
             {title}
@@ -62,11 +75,13 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
           mogumogu&#39;s sundries
         </h1>
       )}
-      {updatedDate && isPostPage && (
-        <p className="text-lg md:text-lg font-bold dark:text-slate-50 font-navbar">
-          {`${formatDate(new Date(updatedDate!))} | ${category}`}
-        </p>
-      )}
+      {updatedDate &&
+        isPostPage &&
+        status !== "loading" && ( // 로딩 중이 아닐 때만 날짜와 카테고리를 표시
+          <p className="text-lg md:text-lg font-bold dark:text-slate-50 font-navbar">
+            {`${formatDate(new Date(updatedDate!))} | ${category}`}
+          </p>
+        )}
     </div>
   );
 };
