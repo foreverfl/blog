@@ -261,7 +261,7 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
                       PreTag="div"
                       language={match[1]}
                       style={darcula}
-                      customStyle={{ margin: "0", borderRadius: "20px" }} // pre 태그에 적용될 스타일
+                      customStyle={{ margin: "0" }} // pre 태그에 적용될 스타일
                       showLineNumbers={true}
                     >
                       {String(children).replace(/\n$/, "")}
