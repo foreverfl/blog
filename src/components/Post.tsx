@@ -223,7 +223,7 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
 
   return (
     <>
-      <div className="min-h-screen flex justify-center items-center dark:bg-neutral-900">
+      <div className="min-h-screen flex justify-center items-center bg-white dark:bg-neutral-900">
         <div className="markdown-body relative w-full md:w-3/5 dark:bg-transparent">
           {isAdmin && (
             <div className="absolute right-5 top-10 space-x-5">

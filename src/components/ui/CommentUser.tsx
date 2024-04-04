@@ -101,7 +101,7 @@ const CommentUser: React.FC<CommentUserProps> = ({
           <div className="relative bg-gray-200 dark:bg-neutral-700 rounded-lg p-3 mx-3">
             <div className="absolute bg-gray-200 dark:bg-neutral-700 h-4 w-4 transform rotate-45 top-2 -left-1"></div>
             {/* 댓글 내용 */}
-            <div className="text-lg dark:text-white leading-relaxed my-1">
+            <div className="text-lg text-black dark:text-white leading-relaxed my-1">
               {content}
             </div>
           </div>

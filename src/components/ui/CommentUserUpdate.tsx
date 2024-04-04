@@ -73,7 +73,7 @@ const CommentUser: React.FC<CommentUserUpdateProps> = ({
           <div className="absolute bg-gray-200 dark:bg-neutral-700 h-4 w-4 transform rotate-45 top-2 -left-1"></div>
           {/* 댓글 수정 창 */}
           <textarea
-            className="w-full h-full bg-gray-200 dark:bg-neutral-700 rounded-md text-lg dark:text-white leading-relaxed p-2 resize-none"
+            className="w-full h-full bg-gray-200 text-black dark:bg-neutral-700 rounded-md text-lg dark:text-white leading-relaxed p-2 resize-none"
             rows={4}
             placeholder={
               lan.value === "ja"
