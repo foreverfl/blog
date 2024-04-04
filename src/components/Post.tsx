@@ -332,7 +332,10 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
                       key={comment._id}
                       userIdInComment={usersInfo[comment.user]?._id}
                       username={
-                        usersInfo[comment.user]?.username || comment.user
+                        usersInfo[comment.user]?.username ||
+                        (lan.value === "ja"
+                          ? "存在しないユーザー"
+                          : "알 수 없는 사용자")
                       }
                       userPhoto={
                         usersInfo[comment.user]?.photo || "/images/smile.png"
@@ -348,7 +351,10 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
                       key={comment._id}
                       userIdInComment={usersInfo[comment.user]?._id}
                       username={
-                        usersInfo[comment.user]?.username || comment.user
+                        usersInfo[comment.user]?.username ||
+                        (lan.value === "ja"
+                          ? "存在しないユーザー"
+                          : "알 수 없는 사용자")
                       }
                       userPhoto={
                         usersInfo[comment.user]?.photo || "/images/smile.png"

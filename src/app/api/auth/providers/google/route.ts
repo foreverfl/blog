@@ -40,7 +40,6 @@ export async function GET(req: NextRequest) {
       }
     );
     const googleUserData = await userResponse.json();
-    console.log(googleUserData);
 
     // userData를 사용하여 데이터베이스에 사용자 정보 저장
     const db = await connectDB();
@@ -79,7 +78,6 @@ export async function GET(req: NextRequest) {
 
     // 쿠키에서 리다이렉션 링크 찾기
     const preLoginUrl = req.cookies.get("preLoginUrl");
-    console.log(preLoginUrl);
 
     if (!preLoginUrl) {
       return new NextResponse("Cookie has expired. Please try again.", {

@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     const db = await connectDB();
 
     const userData = {
-      username: githubUserData.name,
+      username: githubUserData.login, // name은 null일 수 있음
       email: githubUserData.email,
       photo: githubUserData.avatar_url,
       authProvider: "github",
