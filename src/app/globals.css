@@ -118,6 +118,11 @@ html {
   list-style: decimal !important; /* ol에 대해 숫자 스타일 적용 */
 }
 
+.markdown-body {
+  background-color: white; /* Dark background */
+  color: #000000; /* Light text for dark background */
+}
+
 .dark .markdown-body {
   background-color: transparent; /* Dark background */
   color: #ffffff; /* Light text for dark background */
