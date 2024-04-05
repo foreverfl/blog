@@ -267,7 +267,9 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
                       {String(children).replace(/\n$/, "")}
                     </SyntaxHighlighter>
                   ) : (
-                    <code {...rest} className={className}></code>
+                    <code {...rest} className={className}>
+                      {children}
+                    </code>
                   );
                 },
               }}
