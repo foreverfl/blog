@@ -15,6 +15,7 @@ import "github-markdown-css";
 import { deletePost, getUsersInfoByIds } from "@/lib/mongodb";
 import { setCurrentView } from "@/features/blog/blogSlice";
 import {
+  fetchPostByIndex,
   likePostByUser,
   unlikePostByUser,
 } from "@/features/post/postSelectedSlice";
@@ -24,12 +25,30 @@ import {
 } from "@/features/comment/commentsSlice";
 import CommentUser from "./ui/CommentUser";
 import CommentUserUpdate from "./ui/CommentUserUpdate";
+import { setCurrentTitle } from "@/features/blog/blogTitleSlice";
 
 interface PostProps {
   postIdx: string;
+  post: Post;
 }
 
-const Post: React.FC<PostProps> = ({ postIdx }) => {
+interface Post {
+  _id: string;
+  index: number;
+  category: string;
+  title_ko: string;
+  title_ja: string;
+  content_ko: string;
+  content_ja: string;
+  images: string[];
+  image: string;
+  like: string[];
+  likeCount?: number;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+const Post: React.FC<PostProps> = ({ postIdx, post }) => {
   // Utilities
   const router = useRouter();
   const pathname = usePathname();
@@ -67,6 +86,27 @@ const Post: React.FC<PostProps> = ({ postIdx }) => {
   const [usersInfo, setUsersInfo] = useState<UsersState>({});
 
   // Other Hooks
+  // 포스트 가져오기
+  useEffect(() => {
+    const index = Number(postIdx);
+    if (!isNaN(index)) {
+      dispatch(fetchPostByIndex(index));
+    }
+  }, [dispatch, postIdx]);
+
+  // 포스트 본문 redux에 담기
+  useEffect(() => {
+    if (lan.value === "ja") {
+      if (currentPost) {
+        dispatch(setCurrentTitle(currentPost.title_ja));
+      }
+    } else {
+      if (currentPost) {
+        dispatch(setCurrentTitle(currentPost.title_ko));
+      }
+    }
+  }, [dispatch, currentPost, lan.value]);
+
   // 스크롤 최상단으로 이동
   useEffect(() => {
     window.scrollTo(0, 0);

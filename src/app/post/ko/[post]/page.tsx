@@ -1,38 +1,19 @@
-"use client";
-
-import React, { useEffect, useLayoutEffect } from "react";
 import Layout from "@/components/Layout";
 import Post from "@/components/Post";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchPostByIndex } from "@/features/post/postSelectedSlice";
-import { setCurrentTitle } from "@/features/blog/blogTitleSlice";
+import { notFound } from "next/navigation";
 
-export default function Page({ params }: { params: { post: string } }) {
+export default async function Page({ params }: { params: { post: string } }) {
   const postIdx = params.post;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const response = await fetch(`${baseUrl}/api/post/${postIdx}`);
+  const post = await response.json();
 
-  // Redux
-  // 최상위 컴포넌트에서 미리 모든 post 정보를 pre-loading
-  const dispatch = useAppDispatch();
-
-  const { currentPost, status } = useAppSelector((state) => state.postSelected);
-  const lan = useAppSelector((state) => state.language);
-
-  useLayoutEffect(() => {
-    if (currentPost) {
-      dispatch(setCurrentTitle(currentPost.title_ko));
-    }
-  }, [dispatch, currentPost]);
-
-  useLayoutEffect(() => {
-    const index = Number(postIdx);
-    if (!isNaN(index)) {
-      dispatch(fetchPostByIndex(index));
-    }
-  }, [dispatch, postIdx]);
-
+  if (!response.ok) {
+    return notFound();
+  }
   return (
     <Layout postIdx={params.post}>
-      <Post postIdx={params.post} />
+      <Post postIdx={params.post} post={post} />
     </Layout>
   );
 }
