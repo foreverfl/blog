@@ -551,6 +551,16 @@ export async function unlikePost(
   return result.modifiedCount;
 }
 
+export async function getAllPostsForSitemap() {
+  const db = await connectDB();
+  const posts = db.collection("posts");
+
+  const postsData = await posts
+    .find({}, { projection: { _id: 0, index: 1, updatedAt: 1 } })
+    .toArray();
+  return postsData;
+}
+
 // Comment CRUD
 interface Comment {
   _id: string;
