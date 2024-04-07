@@ -13,7 +13,7 @@ interface MainState {
 - "adminCreatePost": 포스트 작성(관리자)
 - "userComments": 내 댓글 관리(사용자)
 - "userPostList": 포스트 목록(사용자)
-- "userPostDetail": 포스트 상세(사용자)
+- "userPostListSearch": 검색 후 포스트 목록(사용자)
 */
 const initialState: MainState = {
   currentView: "main", // 기본값은 포스트 목록

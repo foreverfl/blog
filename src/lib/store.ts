@@ -6,6 +6,7 @@ import blogRouteReducer from "@/features/blog/blogRouteSlice";
 import blogTitleReducer from "@/features/blog/blogTitleSlice";
 import categoryReducer from "@/features/category/categorySlice";
 import categorySelectedReducer from "@/features/category/categorySelectedSlice";
+import searchTitleReducer from "@/features/category/searchTitleSlice";
 import postSelectedReducer from "@/features/post/postSelectedSlice";
 import commentsReducer from "@/features/comment/commentsSlice";
 import commentsUIReducer from "@/features/comment/commentsUISlice";
@@ -20,6 +21,7 @@ export const makeStore = () => {
       blogTitle: blogTitleReducer,
       category: categoryReducer,
       categorySelected: categorySelectedReducer,
+      searchTitle: searchTitleReducer,
       postSelected: postSelectedReducer,
       comments: commentsReducer,
       commentsUI: commentsUIReducer,

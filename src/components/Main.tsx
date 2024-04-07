@@ -12,6 +12,7 @@ import AdminCreatePost from "@/components/main/AdminCreatePost";
 import UserComments from "@/components/main/UserComments";
 import UserPostList from "@/components/main/UserPostList";
 import MainContent from "@/components/main/MainContent";
+import UserPostListSearch from "./main/UserPostListSearch";
 
 const Main: React.FC = () => {
   // Redux
@@ -52,6 +53,8 @@ const Main: React.FC = () => {
         return <UserComments />;
       case "userPostList":
         return <UserPostList />;
+      case "userPostListSearch":
+        return <UserPostListSearch />;
       default:
         return <MainContent />; // 기본적으로 메인 페이지 컨텐츠를 렌더링
     }

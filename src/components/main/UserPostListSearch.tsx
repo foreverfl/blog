@@ -16,13 +16,10 @@ import { resetTitle, setCurrentTitle } from "@/features/blog/blogTitleSlice";
 import Pagination from "@/components/ui/Pagination";
 import { usePathname } from "next/navigation";
 import { clearSelectedCategory } from "@/features/category/categorySelectedSlice";
-
-interface Category {
-  _id: string;
-  classification: string;
-  name_ko: string;
-  name_ja: string;
-}
+import {
+  resetSearchTitle,
+  setSearchTitle,
+} from "@/features/category/searchTitleSlice";
 
 interface Post {
   _id: string;
@@ -40,17 +37,14 @@ interface Post {
   updatedAt?: Date;
 }
 
-const UserPostList: React.FC = () => {
+const UserPostListSearch: React.FC = () => {
   // Utilities
   const pathname = usePathname();
 
   // Redux
   const dispatch = useAppDispatch();
   const lan = useAppSelector((state) => state.language);
-  const { categories } = useAppSelector((state) => state.category);
-  const selectedCategory = useAppSelector(
-    (state) => state.categorySelected.selectedCategory
-  );
+  const searchQuery = useAppSelector((state) => state.searchTitle.title);
 
   // State
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,46 +65,31 @@ const UserPostList: React.FC = () => {
     }
   }, [posts]);
 
-  // 카테고리명 업데이트
-  useEffect(() => {
-    const currentCategory = categories.find(
-      (category: Category) => category._id === selectedCategory?._id
-    )?.[`name_${lan.value}`];
-
-    if (currentCategory) {
-      dispatch(setCurrentTitle(currentCategory)); // 카테고리가 선택되면 타이틀을 업데이트
-    }
-
-    return () => {
-      dispatch(resetTitle()); // 컴포넌트가 언마운트될 때 초기 타이틀로 리셋
-    };
-  }, [categories, dispatch, lan.value, selectedCategory?._id]);
-
-  // 포스트 정보를 페이지네이션을 통해 가져옴
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `/api/paging/${selectedCategory?._id}/${currentPage}?itemsPerPage=${postsPerPage}`
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setPosts(data.posts);
-        setTotalPosts(data.pagination.totalItems);
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-      } finally {
-        setLoading(false);
+  // 검색 함수
+  const handleSearch = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/search/ko/${searchQuery}/${currentPage}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    };
-
-    if (selectedCategory?._id) {
-      fetchPosts();
+      const data = await response.json();
+      setPosts(data.posts);
+      setTotalPosts(data.pagination.totalItems);
+    } catch (error) {
+      console.error("Failed to fetch search results:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [currentPage, postsPerPage, selectedCategory?._id]);
+  }, [searchQuery, currentPage]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      handleSearch();
+    }
+  }, [searchQuery, currentPage, handleSearch]);
 
   // 페이지 번호를 변경하는 함수
   const paginate = useCallback((pageNumber: number) => {
@@ -150,8 +129,8 @@ const UserPostList: React.FC = () => {
           className="text-5xl font-semibold my-10 text-neutral-800 dark:text-neutral-200 text-center"
         >
           {lan.value === "ja"
-            ? selectedCategory?.name_ja
-            : selectedCategory?.name_ko}{" "}
+            ? `'${searchQuery}' 検索結果`
+            : `'${searchQuery}' 검색 결과`}
         </h1>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-5 md:px-10">
           {posts.map((post, index) => (
@@ -201,4 +180,4 @@ const UserPostList: React.FC = () => {
   );
 };
 
-export default UserPostList;
+export default UserPostListSearch;

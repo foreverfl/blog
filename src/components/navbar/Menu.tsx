@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { resetTitle } from "@/features/blog/blogTitleSlice";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
+import { setSearchTitle } from "@/features/category/searchTitleSlice";
 
 interface MenuProps {
   isMenuOpen: boolean;
@@ -70,6 +71,7 @@ const Menu: React.FC<MenuProps> = ({
   }, [classifications]); // classifications 데이터가 변경될 때마다 초기 토글 상태 업데이트
 
   // Handler
+  // 카테고리 관련 핸들러
   const handleViewChange = (view: string, category: Category) => {
     router.push("/", { scroll: false });
     dispatch(setCurrentView({ view }));
@@ -78,11 +80,21 @@ const Menu: React.FC<MenuProps> = ({
     toggleMenu();
   };
 
+  // 검색 관련 핸들러
   const handleInputChange = (e: {
     target: { value: React.SetStateAction<string> };
   }) => {
     setInputValue(e.target.value);
     setIsInputFilled(e.target.value !== "");
+  };
+
+  const handleSearchSubmit = () => {
+    router.push("/", { scroll: false });
+    dispatch(setSearchTitle(`${inputValue}`)); // 검색 타이틀 설정
+    sessionStorage.setItem("currentView", "userPostListSearch");
+    dispatch(
+      setCurrentView({ view: "userPostListSearch", category: undefined })
+    ); // 뷰 변경
   };
 
   // 분류 토글 핸들러
@@ -192,8 +204,13 @@ const Menu: React.FC<MenuProps> = ({
                 placeholder="Search..."
                 onChange={handleInputChange}
                 value={inputValue}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchSubmit();
+                  }
+                }}
               />
-              <button className="ml-3">
+              <button className="ml-3" onClick={handleSearchSubmit}>
                 <svg
                   className={`w-6 h-6 ${
                     isInputFilled ? "text-white" : "text-gray-800"

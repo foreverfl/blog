@@ -442,6 +442,39 @@ export async function getPostsByCategory(
   return { posts: postsFormatted, total };
 }
 
+export async function getPostsByContentKo(
+  contentQuery: string,
+  page: number,
+  itemsPerPage: number
+): Promise<{ posts: Post[]; total: number }> {
+  const db = await connectDB();
+  const query = { content_ko: { $regex: contentQuery, $options: "i" } };
+  const total = await db.collection("posts").countDocuments(query);
+  const posts = await db
+    .collection("posts")
+    .find(query)
+    .skip((page - 1) * itemsPerPage)
+    .limit(itemsPerPage)
+    .toArray();
+
+  const postsFormatted: Post[] = posts.map((doc) => ({
+    _id: doc._id.toString(),
+    index: doc.index,
+    category: doc.category.toString(),
+    title_ko: doc.title_ko,
+    title_ja: doc.title_ja,
+    content_ko: doc.content_ko,
+    content_ja: doc.content_ja,
+    images: doc.images,
+    image: doc.image,
+    like: doc.like,
+    createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
+  }));
+
+  return { posts: postsFormatted, total };
+}
+
 export async function getPostByIndex(index: number): Promise<Post | null> {
   const db = await connectDB();
   const post = await db.collection("posts").findOne({ index: index });
