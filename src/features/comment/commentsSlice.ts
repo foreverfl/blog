@@ -5,8 +5,6 @@ import {
   deleteComment,
   updateCommentContent,
   updateCommentWithAnswer,
-  updateCommentAdminNotified,
-  updateCommentUserNotified,
 } from "@/lib/mongodb";
 
 export const fetchCommentsByPost = createAsyncThunk(
@@ -116,51 +114,6 @@ export const addAnswerToComment = createAsyncThunk(
   }
 );
 
-export const updateAdminNotified = createAsyncThunk(
-  "comments/updateAdminNotified",
-  async (
-    { commentId, adminNotified }: { commentId: string; adminNotified: boolean },
-    { rejectWithValue }
-  ) => {
-    try {
-      const success = await updateCommentAdminNotified(
-        commentId,
-        adminNotified
-      );
-      if (success) {
-        return commentId;
-      } else {
-        throw new Error("Failed to update admin notified status");
-      }
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
-    }
-  }
-);
-
-export const updateUserNotified = createAsyncThunk(
-  "comments/updateUserNotified",
-  async (
-    { commentId, userNotified }: { commentId: string; userNotified: boolean },
-    { rejectWithValue }
-  ) => {
-    try {
-      const success = await updateCommentUserNotified(commentId, userNotified);
-      if (success) {
-        return commentId;
-      } else {
-        throw new Error("Failed to update user notified status");
-      }
-    } catch (error) {
-      return rejectWithValue(
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
-    }
-  }
-);
-
 export const removeComment = createAsyncThunk(
   "comments/delete",
   async (commentId: string, { rejectWithValue }) => {
@@ -239,22 +192,6 @@ const commentsSlice = createSlice({
           state.comments[index].answer = action.meta.arg.answer;
           state.comments[index].answeredAt = new Date().toISOString();
           state.comments[index].userNotified = false;
-        }
-      })
-      .addCase(updateAdminNotified.fulfilled, (state, action) => {
-        const index = state.comments.findIndex(
-          (comment) => comment._id === action.payload
-        );
-        if (index !== -1) {
-          state.comments[index].adminNotified = action.meta.arg.adminNotified;
-        }
-      })
-      .addCase(updateUserNotified.fulfilled, (state, action) => {
-        const index = state.comments.findIndex(
-          (comment) => comment._id === action.payload
-        );
-        if (index !== -1) {
-          state.comments[index].userNotified = action.meta.arg.userNotified;
         }
       })
       // 댓글 삭제 성공

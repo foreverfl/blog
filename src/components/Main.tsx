@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setCurrentView } from "@/features/blog/blogSlice";
 
 import AdminCategoryManagement from "@/components/main/AdminCategoryManagement";
-import AdminPostList from "@/components/main/AdminPostList";
+import AdminCommentList from "@/components/main/AdminCommentList";
 import AdminCreatePost from "@/components/main/AdminCreatePost";
 import UserComments from "@/components/main/UserComments";
 import UserPostList from "@/components/main/UserPostList";
@@ -45,8 +45,8 @@ const Main: React.FC = () => {
     switch (currentView) {
       case "adminCategoryManagement":
         return <AdminCategoryManagement />;
-      case "adminPostList":
-        return <AdminPostList />;
+      case "adminCommentList":
+        return <AdminCommentList />;
       case "adminCreatePost":
         return <AdminCreatePost />;
       case "userComments":

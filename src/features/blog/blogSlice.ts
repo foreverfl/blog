@@ -9,8 +9,8 @@ interface MainState {
 /*
 - "main": 초기 상태(메인 화면)
 - "adminCategoryManagement": 카테고리 관리(관리자)
-- "adminPostList": 포스트 목록(관리자)
 - "adminCreatePost": 포스트 작성(관리자)
+- "adminCommentList": 댓글 목록(관리자)
 - "userComments": 내 댓글 관리(사용자)
 - "userPostList": 포스트 목록(사용자)
 - "userPostListSearch": 검색 후 포스트 목록(사용자)

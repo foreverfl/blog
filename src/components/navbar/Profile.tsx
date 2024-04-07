@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
 import { setCurrentView } from "@/features/blog/blogSlice";
@@ -29,6 +29,7 @@ const Profile: React.FC<ProfileProps> = ({
   isLoggedOut,
 }) => {
   // Utilities
+  const pathname = usePathname();
   const router = useRouter();
 
   // Redux
@@ -38,6 +39,7 @@ const Profile: React.FC<ProfileProps> = ({
   const languageKey = currentLanguage as keyof Locales; // 타입 단언을 위한 Locales의 키
 
   // State
+  const [isPostPage, setIsPostPage] = useState(pathname.startsWith("/post/"));
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isAdmin, setIsAdmin] = useState(false);
   const [visitorData, setVisitorData] = useState({
@@ -113,7 +115,10 @@ const Profile: React.FC<ProfileProps> = ({
       if (response.ok) {
         dispatch(logout());
         toggleProfile(); // 프로필 창 닫기
-        window.location.reload(); // 현재 페이지 새로고침
+        if (!isPostPage) {
+          dispatch(setCurrentView({ view: "main" }));
+          sessionStorage.setItem("currentView", "main");
+        }
       } else {
         console.error("로그아웃 실패");
       }
@@ -274,7 +279,7 @@ const Profile: React.FC<ProfileProps> = ({
                     </span>
                   </li>
                   <li
-                    onClick={() => handleViewChange("adminPostList")}
+                    onClick={() => handleViewChange("adminCommentList")}
                     className="px-8 py-4 flex items-center hover:bg-gray-200 cursor-pointer"
                   >
                     <Image
@@ -306,8 +311,8 @@ const Profile: React.FC<ProfileProps> = ({
                 </>
               ) : (
                 <li
-                  onClick={toggleProfile}
-                  className="px-8 py-4 flex items-center hover:bg-gray-200"
+                  onClick={() => handleViewChange("userComments")}
+                  className="px-8 py-4 flex items-center hover:bg-gray-200 cursor-pointer"
                 >
                   <Image
                     src={"/images/list.png"}

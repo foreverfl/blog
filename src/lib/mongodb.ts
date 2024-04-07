@@ -712,6 +712,89 @@ export async function getCommentsByPost(postId: string) {
   return commentsFormatted;
 }
 
+export async function getUnnotifiedComments() {
+  try {
+    const db = await connectDB();
+    const collection = db.collection("comments");
+    const comments = await collection
+      .aggregate([
+        { $match: { adminNotified: false } }, // adminNotified가 false인 댓글 선택
+        {
+          $lookup: {
+            // 관련 포스트 정보를 조인
+            from: "posts",
+            localField: "post", // comments 컬렉션의 post 필드
+            foreignField: "_id", // posts 컬렉션의 _id 필드
+            as: "postDetails", // 결과를 postDetails 배열로 추가
+          },
+        },
+        { $unwind: "$postDetails" }, // postDetails 배열을 풀어서 각 객체에 포함
+      ])
+      .toArray();
+
+    const formattedComments = comments.map((doc) => ({
+      _id: doc._id.toString(),
+      index: doc.index,
+      user: doc.user.toString(),
+      post: doc.post.toString(),
+      postIndex: doc.postDetails.index, // 포스트 인덱스 추가
+      lan: doc.lan,
+      content: doc.content,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+      adminNotified: doc.adminNotified,
+      answer: doc.answer,
+      answeredAt: doc.answeredAt,
+      userNotified: doc.userNotified,
+    }));
+    return formattedComments;
+  } catch (error) {
+    console.error("Error fetching unnotified comments:", error);
+    throw error;
+  }
+}
+
+export async function getCommentsByUser(userId: string) {
+  try {
+    const db = await connectDB();
+    const collection = db.collection("comments");
+    const comments = await collection
+      .aggregate([
+        { $match: { user: new ObjectId(userId) } }, // 주어진 사용자 ID에 해당하는 댓글 선택
+        {
+          $lookup: {
+            from: "posts", // posts 컬렉션과 조인
+            localField: "post", // comments의 post 필드
+            foreignField: "_id", // posts의 _id 필드
+            as: "postDetails", // 조인된 데이터를 postDetails 배열로 추가
+          },
+        },
+        { $unwind: "$postDetails" }, // postDetails 배열을 풀어서 각 객체에 포함
+      ])
+      .toArray();
+
+    const formattedComments = comments.map((doc) => ({
+      _id: doc._id.toString(),
+      index: doc.index,
+      user: doc.user.toString(),
+      post: doc.post.toString(),
+      postIndex: doc.postDetails.index, // 포스트 인덱스 추가
+      lan: doc.lan,
+      content: doc.content,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+      adminNotified: doc.adminNotified,
+      answer: doc.answer,
+      answeredAt: doc.answeredAt,
+      userNotified: doc.userNotified,
+    }));
+    return formattedComments;
+  } catch (error) {
+    console.error("Error fetching comments for user:", error);
+    throw error;
+  }
+}
+
 export async function updateCommentContent(commentId: string, content: string) {
   const db = await connectDB();
   const result = await db
@@ -728,41 +811,28 @@ export async function updateCommentWithAnswer(
   answer: string
 ) {
   const db = await connectDB();
-  const result = await db
-    .collection("comments")
-    .updateOne(
-      { _id: new ObjectId(commentId) },
-      { $set: { answer: answer, answeredAt: new Date(), adminNotified: true } }
-    );
+  const result = await db.collection("comments").updateOne(
+    { _id: new ObjectId(commentId) },
+    {
+      $set: {
+        answer: answer,
+        answeredAt: new Date(),
+        adminNotified: true,
+        userNotified: false,
+      },
+    }
+  );
   return result.upsertedId;
 }
 
-export async function updateCommentAdminNotified(
-  commentId: string,
-  adminNotified: boolean
-) {
+// 유저가 답변을 확인했을 때 호출할 함수
+export async function markCommentAsReadByUser(commentId: string) {
   const db = await connectDB();
-  const result = await db
-    .collection("comments")
-    .updateOne(
-      { _id: new ObjectId(commentId) },
-      { $set: { adminNotified: adminNotified } }
-    );
-  return result.upsertedId;
-}
-
-export async function updateCommentUserNotified(
-  commentId: string,
-  userNotified: boolean
-) {
-  const db = await connectDB();
-  const result = await db
-    .collection("comments")
-    .updateOne(
-      { _id: new ObjectId(commentId) },
-      { $set: { userNotified: userNotified } }
-    );
-  return result.upsertedId;
+  const result = await db.collection("comments").updateOne(
+    { _id: new ObjectId(commentId) },
+    { $set: { userNotified: true } } // 유저가 답변을 확인했음
+  );
+  return result.modifiedCount > 0; // 수정된 문서의 수 반환
 }
 
 export async function deleteComment(commentId: string) {

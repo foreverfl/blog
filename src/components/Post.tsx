@@ -346,7 +346,10 @@ const Post: React.FC<PostProps> = ({ postIdx, post }) => {
             </div>
             {/* Create Commons */}
             <div>
-              <Link href={"https://creativecommons.org/licenses/by-nc-nd/4.0/"}>
+              <Link
+                href={"https://creativecommons.org/licenses/by-nc-nd/4.0/"}
+                target="_blank"
+              >
                 <Image
                   src={"/images/by-nc-nd.svg"}
                   alt={"Creative Commons"}
