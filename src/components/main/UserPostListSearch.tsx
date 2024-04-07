@@ -68,10 +68,13 @@ const UserPostListSearch: React.FC = () => {
   // 검색 함수
   const handleSearch = useCallback(async () => {
     setLoading(true);
+    const endpoint =
+      lan.value === "ja"
+        ? `/api/search/ja/${searchQuery}/${currentPage}`
+        : `/api/search/ko/${searchQuery}/${currentPage}`;
+
     try {
-      const response = await fetch(
-        `/api/search/ko/${searchQuery}/${currentPage}`
-      );
+      const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -83,7 +86,7 @@ const UserPostListSearch: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, currentPage]);
+  }, [searchQuery, currentPage, lan.value]);
 
   useEffect(() => {
     if (searchQuery) {

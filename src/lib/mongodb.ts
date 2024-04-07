@@ -442,6 +442,32 @@ export async function getPostsByCategory(
   return { posts: postsFormatted, total };
 }
 
+export async function getPostByIndex(index: number): Promise<Post | null> {
+  const db = await connectDB();
+  const post = await db.collection("posts").findOne({ index: index });
+
+  if (!post) {
+    return null; // 조건에 맞는 포스트가 없는 경우
+  }
+
+  const postFormatted: Post = {
+    _id: post._id.toString(),
+    category: post.category.toString(),
+    index: post.index,
+    title_ko: post.title_ko,
+    title_ja: post.title_ja,
+    content_ko: post.content_ko,
+    content_ja: post.content_ja,
+    images: post.images,
+    image: post.image,
+    like: post.like,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt?.toISOString(),
+  };
+
+  return postFormatted;
+}
+
 export async function getPostsByContentKo(
   contentQuery: string,
   page: number,
@@ -475,30 +501,37 @@ export async function getPostsByContentKo(
   return { posts: postsFormatted, total };
 }
 
-export async function getPostByIndex(index: number): Promise<Post | null> {
+export async function getPostsByContentJa(
+  contentQuery: string,
+  page: number,
+  itemsPerPage: number
+): Promise<{ posts: Post[]; total: number }> {
   const db = await connectDB();
-  const post = await db.collection("posts").findOne({ index: index });
+  const query = { content_ja: { $regex: contentQuery, $options: "i" } };
+  const total = await db.collection("posts").countDocuments(query);
+  const posts = await db
+    .collection("posts")
+    .find(query)
+    .skip((page - 1) * itemsPerPage)
+    .limit(itemsPerPage)
+    .toArray();
 
-  if (!post) {
-    return null; // 조건에 맞는 포스트가 없는 경우
-  }
+  const postsFormatted: Post[] = posts.map((doc) => ({
+    _id: doc._id.toString(),
+    index: doc.index,
+    category: doc.category.toString(),
+    title_ko: doc.title_ko,
+    title_ja: doc.title_ja,
+    content_ko: doc.content_ko,
+    content_ja: doc.content_ja,
+    images: doc.images,
+    image: doc.image,
+    like: doc.like,
+    createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
+  }));
 
-  const postFormatted: Post = {
-    _id: post._id.toString(),
-    category: post.category.toString(),
-    index: post.index,
-    title_ko: post.title_ko,
-    title_ja: post.title_ja,
-    content_ko: post.content_ko,
-    content_ja: post.content_ja,
-    images: post.images,
-    image: post.image,
-    like: post.like,
-    createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt?.toISOString(),
-  };
-
-  return postFormatted;
+  return { posts: postsFormatted, total };
 }
 
 export async function updatePost(

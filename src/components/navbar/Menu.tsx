@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setCurrentView } from "@/features/blog/blogSlice";
 import { setSelectedCategory } from "@/features/category/categorySelectedSlice";
-import { useRouter } from "next/navigation";
-import { resetTitle } from "@/features/blog/blogTitleSlice";
+import { setSearchTitle } from "@/features/category/searchTitleSlice";
+
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
-import { setSearchTitle } from "@/features/category/searchTitleSlice";
 
 interface MenuProps {
   isMenuOpen: boolean;
@@ -27,7 +28,7 @@ const Menu: React.FC<MenuProps> = ({
   isMenuOpen,
   menuColor,
   isProfileOpen,
-  toggleMenu,
+  toggleMenu: originalToggleMenu,
 }) => {
   // Utilities
   const router = useRouter();
@@ -46,6 +47,13 @@ const Menu: React.FC<MenuProps> = ({
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({}); // Menu Expansion
 
   // Other Hooks
+  // 토글 메뉴 재정의
+  const toggleMenu = () => {
+    originalToggleMenu(); // 원래의 토글 함수 호출
+    setInputValue(""); // 검색창 텍스트 비우기
+    setIsInputFilled(false); // 검색창 채워짐 상태 업데이트
+  };
+
   // 메뉴 열리면 메인 스크롤 비활성화
   useEffect(() => {
     const scrollbarWidth =
