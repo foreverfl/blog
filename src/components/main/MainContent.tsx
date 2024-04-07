@@ -61,7 +61,7 @@ const MainContent: React.FC = () => {
             height={250}
             alt="loading"
             priority={true}
-            className="w-32 h-32 object-fit"
+            className="w-8 w-8 object-fit"
           />
         </div>
       </div>

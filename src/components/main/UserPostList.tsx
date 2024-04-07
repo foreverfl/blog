@@ -132,6 +132,7 @@ const UserPostList: React.FC = () => {
             height={250}
             alt="loading"
             priority={true}
+            className="w-8 w-8 object-fit"
           />
         </div>
       </div>

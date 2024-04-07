@@ -38,10 +38,6 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   // State
   const [isPostPage, setIsPostPage] = useState(pathname.startsWith("/post/"));
 
-  useEffect(() => {
-    console.log(title);
-  });
-
   // 로딩 중 UI 처리
   const backgroundImageUrl = postIdx
     ? "/images/subnav_background1_darker.jpg"
@@ -66,7 +62,7 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
             height={250}
             alt="loading"
             priority={true}
-            className="w-32 h-32 object-fit"
+            className="w-8 h-8 object-fit"
           />
         </div>
       ) : isPostPage ? (
