@@ -16,7 +16,6 @@ import Menu from "./navbar/Menu";
 import Profile from "./navbar/Profile";
 import SetLanguage from "./navbar/SetLanguage";
 import SetMode from "./navbar/SetMode";
-import { resetTitle } from "@/features/blog/blogTitleSlice";
 import { addPreviousLink, setUsedImages } from "@/features/blog/blogRouteSlice";
 import { deleteImage } from "@/lib/workers";
 import { clearCurrentPost } from "@/features/post/postSelectedSlice";
@@ -186,7 +185,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
       setSubnavTitle("mogumogu's sundries");
       dispatch(clearCurrentPost());
     }
-  }, [lan, currentPost, isPostPage, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPost, isPostPage, dispatch]);
 
   // hover에 따른 title 변경
   useEffect(() => {
@@ -218,7 +218,8 @@ const Navbar: React.FC<NavbarProps> = ({ postIdx }) => {
         }
       }
     }
-  }, [currentPost, isPostPage, lan.value, titleIsHovered]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPost, isPostPage, titleIsHovered]);
 
   // 스크롤 바 위치에 따른 효과
   useEffect(() => {

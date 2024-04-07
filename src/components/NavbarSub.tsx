@@ -38,6 +38,10 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   // State
   const [isPostPage, setIsPostPage] = useState(pathname.startsWith("/post/"));
 
+  useEffect(() => {
+    console.log(title);
+  });
+
   // 로딩 중 UI 처리
   const backgroundImageUrl = postIdx
     ? "/images/subnav_background1_darker.jpg"
@@ -53,6 +57,7 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
         backgroundPosition: "center", // 배경 이미지를 중앙에 위치
       }}
     >
+      {/* 제목 */}
       {status === "loading" ? (
         <div className="text-xl md:text-2xl font-bold dark:text-slate-50 font-navbar">
           <Image
@@ -75,6 +80,8 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
           mogumogu&#39;s sundries
         </h1>
       )}
+
+      {/* 날짜 */}
       {updatedDate &&
         isPostPage &&
         status !== "loading" && ( // 로딩 중이 아닐 때만 날짜와 카테고리를 표시
@@ -86,4 +93,4 @@ const SubNavbar: React.FC<NavbarSubProps> = ({
   );
 };
 
-export default SubNavbar;
+export default React.memo(SubNavbar);
