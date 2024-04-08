@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "github-markdown-css";
@@ -291,7 +292,10 @@ const Post: React.FC<PostProps> = ({ postIdx, post }) => {
           {/* 포스트 */}
           {currentPost ? (
             <Markdown
+              // remarkSlug has type problem
+              //@ts-ignore
               remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeSlug]}
               components={{
                 code(props) {
                   const { children, className, node, ...rest } = props;
