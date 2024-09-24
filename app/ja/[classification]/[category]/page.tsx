@@ -17,7 +17,7 @@ interface MDXFrontMatter {
   image: string;
 }
 
-export async function getAllPostFrontMatters(
+async function getAllPostFrontMatters(
   classification: string,
   category: string
 ): Promise<FrontMatter[]> {
