@@ -1,0 +1,437 @@
+---
+title: "Next.js で自分だけのブログを作成"
+date: "2023-09-22T12:34:56"
+image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-07-pagination.png"
+---
+
+# Next.js で自分だけのブログを作成
+
+- [ブログ](https://mogumogu.dev/)
+- [ギットハブ](https://github.com/foreverfl/blog)
+
+2 年前に開発を始めた時、最初に行ったことは Wordpress でブログを作成することでした。開発者として自分が学んだ資料を整理し、集めておくことが重要だと考えたからです。以前の Wordpress ブログでは、実際に広告収入である程度の収益も得ました。しかし、Wordpress のような CMS(Content Manage System)にはいくつかの問題点があります。
+
+---
+
+### Wordpress の問題点
+
+1. **基本的に重すぎる**: AWS の Lightsail を利用してデプロイしても落ちることがあります。CMS 自体がコンテンツを扱うための様々な機能を含んでいるため、仕方ない問題だとは思います。結局、ホスティングのために一定の費用を支払う必要があります。
+2. **プラグインが自分の好みにピッタリ合わない**: Wordpress には数多くのプラグインがあり、優れたプラグインも多くあります。SEO のための Yoast のようなプラグインは実際に非常に便利に使用しました。しかし、誰かが作成した既製品が自分が求めるものと完全に一致することはないと感じました。開発者であるため、「自分でも作れるのに...」と感じたかもしれません。
+3. **デザインのカスタマイズが思った以上に難しい**: ウェブサイトでデザインは非常に重要な要素です。開発ほどお金がかかるわけではありませんが、相手にインパクトを与えることができる部分です。Wordpress で自分が求めるデザインを見つけるのにも思った以上に時間がかかります。そして、そのデザインをカスタマイズするのにはかなりの時間がかかります。このような理由でデザインを大幅に変更するつもりなら、最初から別のデザインを探す必要があります。
+
+---
+
+これらの問題を経験した後、最終的にはブログを自分で開発することを決意しました。私がブログに入れたい主要機能は「日本語・韓国語の多言語ポスト管理」と「好みのデザインのダークモード」の 2 つでした。元々は常に Vanilla JavaScript を通して開発を進めていましたが、今回は TypeScript、Next.js、React という新しい技術を使ってブログを作成することにしました。基本的には Next.js の App Router を使用して作成しました。
+
+---
+
+### ブログに使用された技術スタック
+
+- **インフラ**: Vercel, Cloudflare Workers, Cloudflare R2
+- **データベース**: MongoDB(Atlas)
+- **バックエンド**: Next.js
+- **フロントエンド**: React, Redux, Tailwind
+
+---
+
+ここで Vercel を使用した理由は、Next.js が Vercel で作られたため、CI/CD パイプラインの構築が簡単だからです。プロジェクトを作成し、リポジトリを追加するだけで、`git push`をするたびに自動的にサイトがデプロイされます。
+
+---
+
+### Cloudflare R2 vs AWS S3 価格比較
+
+![vercel_connect](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-01-vercel-connect.png)
+
+そして、Cloudflare R2 は画像ファイルを保存するためのストレージとして使用しました。通常、実際の開発では AWS S3 Bucket を主に使用していますが、コスト的に大きな差があるため、友人から Cloudflare R2 が安価だと聞いてすぐに Cloudflare R2 を使用することにしました。一度、2 つの価格を比較してみましょうか？
+
+![R2_Pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-02-R2-Pricing.png)
+
+R2 のコストは、ストレージは基本的には月 10GB まで無料で、その後は 1GB あたり 0.015 ドル、データ入力(Class A)は 100 万リクエストまで無料で、その後は 100 万リクエストあたり 4.5 ドル、データ読み取り(Class B)は 100 万リクエストまで無料で、その後は 100 万リクエストあたり 0.36 ドルです。
+
+![S3_storage_pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-03-S3-storage-pricing.png)
+![S3_request_pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-04-S3-request-pricing.png)
+
+一方、S3 のコストを見ると、月 1GB あたり 0.023 ドル、データ入力は 100 万リクエストあたり 5 ドル、データ読み取りは 100 万リクエストあたり 0.4 ドルです。
+
+データベースの場合は NoSQL を使用しましたが、特に理由があるわけではなく、NoSQL を使用した経験がなかったため、経験目的で使用しました。もしもブログに DB が必要な場合は、単に RDBMS を使用してください。関連を直接結び付けて、削除するたびに関連を処理するのが思ったより面倒でした。
+
+プロジェクト環境の作成部分は特に説明しません。どうせ[Next.js 公式ドキュメント](https://nextjs.org/docs/getting-started/installation)によく説明されています。ブログを作成して、直接開発した機能は次のとおりです。
+
+### ブログに必須の機能
+
+#### 1. ログイン
+
+![login_page](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-05-login_page.png)
+
+- 私は OAuth2.0 + JWT で実装しました。以前 Wordpress を運営していた時には定期的にスパムコメントが付いていたので、最低限の安全装置だと考えてログイン機能を実装しました。本来は Next.js で OAuth2.0 を簡単に実装できる NextAuth.js というライブラリが存在しますが、Page Router でのコードはあるものの App Router でのマイグレーションされたコードを別途提供していないため、App Router では直接実装しました。
+- OAuth2.0 アクセストークンリクエストコード
+
+```typescript
+  const socialLogins: SocialLogins = {
+    github: {
+      clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+      redirectUri: encodeURIComponent(
+        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI!
+      ),
+      loginUrl: (clientId, redirectUri) =>
+        `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`,
+      imageUrl: "/logo/github.png",
+      imageAlt: "Github",
+    },
+    google: {
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      redirectUri: encodeURIComponent(
+        process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!
+      ),
+      loginUrl: (clientId, redirectUri) =>
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`,
+      imageUrl: "/logo/google.png",
+      imageAlt: "Google",
+    },
+  };
+
+  const LoginButton: React.FC<LoginButtonProps> = ({ provider, children }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const { clientId, redirectUri, loginUrl } = socialLogins[provider];
+
+    const handleLogin = () => {
+      const url = loginUrl(clientId, redirectUri);
+      window.location.href = url;
+    };
+
+    const getImageSrc = () => {
+      if (provider === "github") {
+        return isHovered ? "/logo/github_black.png" : "/logo/github.png";
+      } else {
+        return socialLogins[provider].imageUrl;
+      }
+    };
+```
+
+#### 2. ファイルアップロード
+
+![file_upload](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-06-file_upload.png)
+
+- ブログをテキストのみで作成する場合は問題ありませんが、通常、ブログには多くの写真資料が含まれます。そのため、投稿作成中に必要なファイルアップロードを実装しました。ドラッグでファイルを持ってくると'tmp\_日付\_ファイル名'でファイルが作成され、投稿が完了すると'objectId\_日付\_ファイル名'に画像が変わるように実装しました。投稿の編集も同様に実装しました。
+- 投稿登録時に Cloudflare R2 にアップロードするコード
+
+```typescript
+const handleSubmit = async (event: React.FormEvent) => {
+  event.preventDefault();
+  if (!selectedCategoryId) {
+    alert("Please select a category.");
+    return;
+  }
+
+  const title_ko = title.ko;
+  const title_ja = title.ja;
+  const content_ko = content.ko;
+  const content_ja = content.ja;
+
+  try {
+    const insertedId = await addPost(
+      selectedCategoryId,
+      title_ko,
+      title_ja,
+      content_ko,
+      content_ja,
+      images,
+      representativeImage
+    );
+
+    // R2内でイメージファイル名の変更
+    const newImageUrls = await renameAndOverwriteFiles(
+      images,
+      "tmp",
+      insertedId
+    );
+
+    // 代表イメージのファイル名を変更
+    const newRepresentativeImageUrl = representativeImage.replace(
+      /(https:\/\/blog_workers\.forever-fl\.workers\.dev\/)tmp_/,
+      `$1${insertedId}_`
+    );
+
+    // コンテンツ内の全ての'tmp'URLを'insertedId'に置換
+    const updatedContentKo = content_ko.replace(
+      /https:\/\/blog_workers\.forever-fl\.workers\.dev\/tmp/g,
+      `https://blog_workers.forever-fl.workers.dev/${insertedId}`
+    );
+    const updatedContentJa = content_ja.replace(
+      /https:\/\/blog_workers\.forever-fl\.workers\.dev\/tmp/g,
+      `https://blog_workers.forever-fl.workers.dev/${insertedId}`
+    );
+
+    // DBをアップデート
+    const updateResult = await updatePost(
+      insertedId,
+      title_ko,
+      title_ja,
+      updatedContentKo,
+      updatedContentJa,
+      newImageUrls.imageUrls,
+      newRepresentativeImageUrl
+    );
+
+    // 不要なイメージの削除
+    for (const image of images) {
+      await deleteImage(image);
+    }
+
+    // ステートの初期化
+    setSelectedCategoryId("");
+    setTitle({ ko: "", ja: "" });
+    setContent({ ko: "", ja: "" });
+    setImages([]);
+    setRepresentativeImage("");
+
+    alert("The post has been published!");
+
+    dispatch(setCurrentView({ view: "main" })); // mainビューへの状態変更
+    sessionStorage.setItem("currentView", "main");
+    router.push("/", { scroll: false });
+  } catch (error) {
+    console.error("Failed to add post:", error);
+    alert("Failed to add the post.");
+  }
+};
+```
+
+#### 3. ページネーション
+
+![pagination](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-07-pagination.png)
+
+- 投稿を一度にすべて取得するとローディング速度が遅くなり、UI に悪影響を及ぼすため、必須で実装すべきです。Next.js では api で実装する部分で、それほど難しくはありませんでした。
+- ページネーション Rest API コード
+
+```typescript
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { categoryId: string; page: string } }
+) {
+  const categoryId = params.categoryId;
+  const pageNumber = parseInt(params.page, 10);
+  const itemsPerPage = 12; // ページ毎のアイテム数
+
+  try {
+    // カテゴリ別のポストを取得
+    const { posts, total } = await getPostsByCategory(
+      categoryId,
+      pageNumber,
+      itemsPerPage
+    );
+
+    // レスポンスデータの作成
+    const responseBody = JSON.stringify({
+      posts,
+      pagination: {
+        page: pageNumber,
+        itemsPerPage,
+        totalItems: total,
+        totalPages: Math.ceil(total / itemsPerPage),
+      },
+    });
+
+    return new NextResponse(responseBody, {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error(error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+```
+
+#### 4. 投稿およびコメントの CRUD 機能
+
+- ブログの核心機能です。ウェブ開発者ならいつもすることがこれではないかと思います。特に変わった点はありません。MongoDB と接続した後、CRUD 機能をする関数を実装し、このように実装した関数を非同期で使用する形で実装しました。特に変わった点はないので、コードは省略します。
+
+### 自分で追加したい機能
+
+#### 1. 日本語・韓国語投稿の同時管理
+
+![posting_bilingual](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-08_posting-bilingual.png)
+
+- 私のブログの目的は、同じ記事を韓国語と日本語で同時に書いて発行し、それぞれを SEO 最適化することにありました。そのため、ERD を設計する際に、Post Collection に content_ko、content_ja を同時に入れ、Redux で管理する言語の状態によって異なる部分ページを表示するように実装しました。
+- 多言語処理する部分
+- **多言語で投稿をする HTML コード**: `setContent({ ...content, [selectedLanguage]: e.target.value })` ここで見るように、上で選択された言語を React で状態管理を`selectedLanguage`この変数で行っており、この変数に応じて異なる部分が表示されるようにしました。
+
+```typescript
+<div>
+  <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+    Content
+  </label>
+  <textarea
+    id="content"
+    ref={textAreaRef}
+    value={content[selectedLanguage]}
+    onChange={(e) =>
+      setContent({ ...content, [selectedLanguage]: e.target.value })
+    }
+    className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    rows={50}
+    required
+  ></textarea>
+</div>
+```
+
+#### 2. 言語モード選択ボタン
+
+![navbar](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-09_navbar.png)
+
+- 日本語・韓国語の投稿の同時管理のため、それぞれの言語を選択するボタンが必要でした。
+- **言語選択のための状態管理をする`SetLanguage.tsx`モジュール**: ただ全体のコードを入れました。見れば大体理解できると思います。
+
+```typescript
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+
+import { setLanguage } from "@/features/language/languageSlice";
+
+const SetLanguage: React.FC = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  //Redux
+  const dispatch = useAppDispatch();
+
+  const [isReady, setIsReady] = useState(false); // ローディング状態の管理
+
+  const currentLanguage = useAppSelector((state) => state.language.value);
+
+  useEffect(() => {
+    const initialLang =
+      localStorage.getItem("siteLanguage") ||
+      (navigator.language.startsWith("ko") ? "ko" : "ja");
+    dispatch(setLanguage(initialLang));
+    setIsReady(true);
+  }, [dispatch]);
+
+  const toggleLanguage = () => {
+    const newLanguage = currentLanguage === "ko" ? "ja" : "ko";
+    dispatch(setLanguage(newLanguage));
+
+    const pathParts = pathname.split("/");
+    const languageCode = pathParts[2];
+    const postIdx = pathParts[3];
+
+    if (languageCode) {
+      if (newLanguage === "ja") {
+        router.push(`/post/ja/${postIdx}`, { scroll: false });
+      } else if (newLanguage === "ko") {
+        router.push(`/post/ko/${postIdx}`, { scroll: false });
+      }
+    }
+  };
+  if (!isReady) {
+    return (
+      <div className="animate-pulse">
+        <div className="rounded-full bg-gray-400 h-8 w-14"></div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* スイッチコンテナ */}
+      <div
+        className="relative inline-block w-14 h-8 cursor-pointer"
+        onClick={toggleLanguage}
+      >
+        <input type="checkbox" className="hidden" />
+        {/* スイッチの背景 */}
+        <div
+          className={`rounded-full h-8 bg-gray-400 p-1 transition-colors duration-200 ease-in-out`}
+        >
+          {/* スイッチトグルハンドル */}
+          <div
+            className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+              currentLanguage === "ko" ? "translate-x-6" : ""
+            }`}
+          >
+            <Image
+              src={
+                currentLanguage === "ko"
+                  ? "/images/korea.png"
+                  : "/images/japan.png"
+              }
+              alt={currentLanguage === "ko" ? "Korean Flag" : "Japanese Flag"}
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default SetLanguage;
+```
+
+#### 3. ダークモード選択ボタン
+
+- ただ入れたかったです。。。私がダークモードをよく使い、自分が復習用にも使うブログだからです。ページやコードは特に見せる必要はないと思います。上で実装した多言語処理と似たように実装しました。
+
+#### 4. 投稿内で Markdown 言語をパースして表示する
+
+![post_parsed](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-10-post-parsed.png)
+
+- 普段、学習資料を Markdown 言語で整理することが多いので、ブログも Markdown 言語で投稿すると表示する時は HTML にパースして表示するようにしました。この問題は私が Tailwind を最上位で宣言し、投稿を表示する部分では[github-markdown-css](https://www.npmjs.com/package/github-markdown-css?activeTab=readme)ライブラリをダウンロードして適用したのですが、2 つのコードが重なってしまい、問題が発生しました。Next.js の App Router では`global.css`でグローバルに css を変更することができるのですが、重なる部分を`!important`処理して解決しました。
+- **投稿をパースするコード**: [react-markdown](!https://www.npmjs.com/package/react-markdown)ライブラリを利用して統合しました。
+
+```typescript
+{
+  currentPost ? (
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code(props) {
+          const { children, className, node, ...rest } = props;
+          const match = /language-(\w+)/.exec(className || "");
+          return match ? (
+            <SyntaxHighlighter
+              PreTag="div"
+              language={match[1]}
+              style={darcula}
+              customStyle={{ margin: "0" }} // preタグに適用されるスタイル
+              showLineNumbers={true}
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          ) : (
+            <code {...rest} className={className}></code>
+          );
+        },
+      }}
+    >
+      {content}
+    </Markdown>
+  ) : (
+    <div></div>
+  );
+}
+```
+
+#### デザイン
+
+- 実は、これが私がブログを直接作った最大の理由です。普段からよく見るブログがあり、その方のブログのデザインを真似したかったからです。そこで、私が望むようにそのブログのデザインを取り入れてカスタマイズしました。スクロールに応じてデザインが変わる部分には特に注意を払いました。ブログに入れば全体的なデザインを見ることができるので、別途説明はしません。
+
+実はまだ細かい機能（検索機能、コメント通知機能）がいくつか実装されていませんが、主要機能はすべて終わりましたし、最初の記事は私がブログを作った理由について書きたかったので、作成しました。正直、今まで Python、Java、JavaScript だけ触ってきましたが、1 ヶ月間は React を学び、このブログを作るのに純粋にかかった時間は 1 ヶ月でした。正直、機能自体を作るだけならもっと早く作ることができたと思いますが。。。デザインを私が望むようにするのが思ったより難しかったです。特に React で作るとテキストブリンキング問題が発生して、これも難しかったです。
+
+個人的な感想は、ブログはただの Tistory、Ameblo など作られたものを使った方がいいです。カスタマイズしたいと思っても、docusaurus のように少し触りやすいもので作るべきです。普段、企業で実装されたブログを使っているときは気づかなかったですが、ブログには思ったより多くの機能が入っていることを知りました。。。自分が個人プロジェクトを進めなければならないが、アイデアがないというなら、ブログを作るのも良い選択だと思います。これまで Spring Framework(Java)、Django(Python)、Express(Node.js)を通してサイトを一つずつ構築してみましたが。。。ただブログ一つ作るだけで、多くのサイトに入る核心機能を作ってみることができます。
+
+### まとめ
+
+- ブログには思ったより多くの機能が入っています。
+- ブログを直接構築すると、細かい部分まで自分の好みにできて良いです。
+- でも、時間がかなりかかります。
+
+最近、日本での転職を目指してエントリーしながら、良い記事をたくさん読んで、私も他の人に役立つ記事を書いてみたいと思いました。面接で良くない結果が続いていますが。。。頑張ればできるはずです。(泣) 長い記事を読んでくださり、ありがとうございます。次回もさらに良い記事でお会いしましょう~

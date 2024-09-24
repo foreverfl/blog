@@ -2,6 +2,9 @@
 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import createMDX from "@next/mdx";
+import remarkGfm from 'remark-gfm';
+import rehypeSlug from "rehype-slug";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -22,14 +25,19 @@ const nextConfig = {
             }
         ],
     },
+    pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
     webpack: (config) => {
         // Alias 설정 추가
-        config.resolve.alias['@'] = join(__dirname, 'src');
-        config.resolve.alias['@app'] = join(__dirname, 'src/app');
-
         return config;
     },
 };
 
+const withMDX = createMDX({
+    extension: /\.mdx?$/, // MDX 확장자를 정규식으로 지정
+    options: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeSlug],
+    },
+});
 
-export default nextConfig;
+export default withMDX(nextConfig);
