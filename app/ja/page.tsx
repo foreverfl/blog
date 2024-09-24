@@ -34,7 +34,7 @@ async function getFilesRecursively(dir: string): Promise<string[]> {
   return files;
 }
 
-export async function getAllPostFrontMatters(): Promise<FrontMatter[]> {
+async function getAllPostFrontMatters(): Promise<FrontMatter[]> {
   // 최상위 디렉터리 지정
   const contentDirectory = path.join(process.cwd(), `contents/ja/`);
 
