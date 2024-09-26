@@ -13,7 +13,7 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ---
 
-### Wordpress의 문제점
+## Wordpress의 문제점
 
 1. **기본적으로 너무 무겁다**: AWS의 Lightsail을 이용해서 배포해도 뻗어버리는 경우도 있습니다. 기본적으로 CMS(Content Manage System) 자체가 컨텐츠를 다루기 여러 기능들을 포함하고 있기 때문에 감안해야 되는 문제라고 생각은 합니다. 결국 이를 해결하기 위해서 호스팅을 위해서 일정 비용을 지불해야 합니다.
 2. **플러그인이 내 입맛에 딱 맞는 것이 없다**: 워드프레스에는 수 많은 플러그인이 있고 좋은 플러그인도 많습니다. Yoast 같은 SEO를 위한 플러그인은 실제로 매우 유용하게 사용했습니다. 하지만, 누군가 만들어놓은 기성품이 내가 원하는 것과 딱 맞아 떨어질 수는 없다는 점을 많이 느꼈습니다. 개발자이기에 "나도 만들 수 있는 건데..."라고 느꼈기 때문일지도 모르겠네요.
@@ -25,7 +25,7 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ---
 
-### 블로그에 사용된 기술 스택
+## 블로그에 사용된 기술 스택
 
 - **인프라**: Vercel, Cloudflare Workers, Cloudflare R2
 - **데이터베이스**: MongoDB(Atlas)
@@ -42,7 +42,7 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ---
 
-### Cloudflare R2 vs AWS S3 가격비교
+## Cloudflare R2 vs AWS S3 가격비교
 
 ![R2_Pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-02-R2-Pricing.png)
 
@@ -59,9 +59,9 @@ R2의 비용은 Storage는 기본적으로는 월 10GB 까지는 무료제공이
 
 프로젝트 환경 생성 부분은 따로 설명하지는 않을게요. 어차피 [Next.js 공식문서](https://nextjs.org/docs/getting-started/installation)에 잘 설명되있어요. 블로그를 만들면서 직접 개발해 본 기능은 다음과 같아요.
 
-### 블로그에 필수적으로 들어가야 하는 기능
+## 블로그에 필수적으로 들어가야 하는 기능
 
-#### 1. 로그인
+### 1. 로그인
 
 ![login_page](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-05-login_page.png)
 
@@ -110,7 +110,7 @@ R2의 비용은 Storage는 기본적으로는 월 10GB 까지는 무료제공이
     };
 ```
 
-#### 2. 파일 업로드
+### 2. 파일 업로드
 
 ![file_upload](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-06-file_upload.png)
 
@@ -199,7 +199,7 @@ const handleSubmit = async (event: React.FormEvent) => {
 };
 ```
 
-#### 3. 페이지네이션
+### 3. 페이지네이션
 
 ![pagination](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-07-pagination.png)
 
@@ -245,13 +245,13 @@ export async function GET(
 }
 ```
 
-#### 4. 포스트 및 댓글 CRUD 기능
+### 4. 포스트 및 댓글 CRUD 기능
 
 - 블로그의 핵심 기능이죠. 웹 개발자라면 늘상 하는 일이 이게 아닌가 생각합니다. 특이한 부분은 없네요. MongoDB랑 연결한 다음에 CRUD 기능을 하는 함수를 구현하고, 이렇게 구현한 함수를 비동기로 사용하는 식으로 구현했어요. 특이한 부분은 아니기 때문에 코드는 생략할게요.
 
-### 원해서 추가한 기능
+## 원해서 추가한 기능
 
-#### 1. 한국어/일본어 포스트 동시 관리
+### 1. 한국어/일본어 포스트 동시 관리
 
 ![posting_bilingual](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-08_posting-bilingual.png)
 
@@ -277,7 +277,7 @@ export async function GET(
 </div>
 ```
 
-#### 2. 언어 모드 선택 버튼
+### 2. 언어 모드 선택 버튼
 
 ![navbar](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-09_navbar.png)
 
@@ -377,11 +377,11 @@ const SetLanguage: React.FC = () => {
 export default SetLanguage;
 ```
 
-#### 3. 다크 모드 선택 버튼
+### 3. 다크 모드 선택 버튼
 
 - 그냥 넣고 싶었어요... 제가 다크모드를 많이 쓰고, 제가 복습용으로도 쓸 블로그여서요. 페이지나 코드는 따로 보여줄 필요는 없을 것 같아요. 위에서 제가 구현한 다국어 처리와 비슷하게 구현했습니다.
 
-#### 4. Post 내에서 Markdown언어를 파싱해서 보여주기
+### 4. Post 내에서 Markdown언어를 파싱해서 보여주기
 
 ![post_parsed](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-10-post-parsed.png)
 
@@ -421,7 +421,7 @@ export default SetLanguage;
 }
 ```
 
-#### 5. 디자인
+### 5. 디자인
 
 - 사실 이 부분이 제가 블로그를 직접 만든 가장 큰 이유입니다. 평소에 자주 보는 블로그가 있는데, 그 분 블로그의 디자인을 따라하고 싶었습니다. 그래서 제가 원하는 식으로 그분 블로그의 디자인을 따와서 커스터마이징 했습니다. 스크롤에 따라서 디자인이 바뀌는 부분에 신경을 많이 썼습니다. 블로그를 들어와보시면 전반적인 디자인을 볼 수 있기 때문에 따로 설명은 하지 않을게요.
 
@@ -429,7 +429,7 @@ export default SetLanguage;
 
 개인적인 소감은 블로그는 그냥 Tistory, Ameblo 등 만들어진 것 쓰세요. 커스터마이징 하고 싶다고 하면 docusaurus같이 좀 만지기 간단한 걸로 만드세요. 평소에 기업에서 구현해 놓은 블로그를 쓸 때는 몰랐는데, 생각보다 블로그에 많은 기능이 들어간다는 걸 알았네요... 본인이 개인 프로젝트를 진행해야 하는데, 아이디어가 없다고 하면 블로그를 만드는 것도 좋은 선택이라고 생각합니다. 지금까지 Spring Framework(Java), Django(Python), Express(Node.js)를 통해서 사이트를 하나씩 구축해봤는데... 그냥 블로그 하나 만들면 여러 사이트에 들어가는 핵심 기능을 만들어 볼 수 있어요.
 
-### 요약
+## 요약
 
 - 블로그에는 생각보다 많은 기능이 들어간다.
 - 블로그를 직접 구축하면 세세한 부분까지 내 마음대로 만들 수 있어서 좋다.

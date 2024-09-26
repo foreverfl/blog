@@ -1,0 +1,113 @@
+---
+title: "公式ドキュメントを集まったサイトを開発しました"
+date: "2023-09-26T21:39:00"
+image: "https://blog_workers.forever-fl.workers.dev/002-making-site-for-assembling-docs-01-site.png"
+---
+
+# 公式ドキュメントを集まったサイトを開発しました
+
+- [サイト](https://docs.mogumogu.dev/)
+- [ギットハブ](https://github.com/foreverfl/docs)
+
+---
+
+## はじめに
+
+![](https://blog_workers.forever-fl.workers.dev/002-making-site-for-assembling-docs-01-site.png)
+
+最近、開発を始める前に公式ドキュメントを読み終えることが多くなりました。そのため、公式ドキュメントを集めたサイトを作成しました。この記事では、そのサイトの開発について紹介します。
+
+---
+
+## 公式ドキュメントが重要な理由
+
+最近、私が[この文書を集まったサイト](https://docs.mogumogu.dev/)を作ることが無意味だという人たちがいました。彼らは、すべては生成型 AI に任せれば良いと言っていました。しかし、私は公式ドキュメントが重要だと考えています。その理由を以下に述べます。
+
+### 1. 生成型 AI の普及により、公式ドキュメントの重要性が増した
+
+最近の開発をするときには、直接コーディングするよりも生成型 AI(ChatGPT, Claude など)を使って開発することが一般的になりました。そのため、直接コードを書くことよりも、AI にどんな指示を出すかが重要になりました。ライブラリをどう使うかについて具体的に指示を出すためには、コーディング能力以上に知識が必要です。まだ、生成型 AI は完全ではありません。
+
+例えば、半年前に私が Next.js でブログを構築したとき、私は'Page Router'ではなく、'App Router'を使って開発を行いました。しかし、ChatGPT が教えてくれたコードはほとんどが'Page Router'を使ったものでした。現在では、'App Router'が学習データに含まれているため、このような問題は解決できましたが、このような問題が発生することは多いです。もし、私がこの二つの'Router'への理解が足りなかったら、ChatGPT に誤った情報を教えられて、開発ができなかったかもしれません。
+
+### 2. 結局問題が発生したときには公式ドキュメントを見ることが多い
+
+開発をしていると、どうしても問題が発生します。そのとき、最終的な行き着く先は 2 つです。一つ目は、公式ドキュメントを見ることです。もう一つは、Stack Overflow などのコミュニティです。公式ドキュメントを見ることができれば、問題を簡単に解決することができることが多いです。
+
+例えば、最近、私は私のブログをリファクタリングしました。この過程で、[next-mdx-remote](https://github.com/hashicorp/next-mdx-remote)を導入しました。ChatGPT にこれを使うように指示を出したところ、エラーが発生しました。私は Next.js の`page.tsx`の中で Markdown を処理するようにコードを作成しました。したがって、Markdown を処理するためには、RSC(React Server Component)を利用する必要がありました。あの`README.md`を見ると、`next-mdx-remote/rsc`を利用すれば簡単に処理できるように説明があります。
+
+```tsx
+import { MDXRemote } from "next-mdx-remote/rsc";
+
+// app/page.js
+export default function Home() {
+  return (
+    <MDXRemote
+      source={`# Hello World
+
+      This is from Server Components!
+      `}
+    />
+  );
+}
+```
+
+でも、ChatGPT や Claude に聞いても`next-mdx-remote/rsc`を使うコードは教えてくれませんでした。多分、最新情報は学習データに含まれていなかったのかもしれません。私は上のコードを応用して、サーバーサイドで Markdown を使えるようにするため、このようにコードを作成しました。
+
+```tsx
+// MDX 컴파일 시 코드 하이라이팅 추가
+const { content, frontmatter } = await compileMDX<{
+  title: string;
+  date: string;
+  image: string;
+}>({
+  source: fileContent,
+  options: {
+    parseFrontmatter: true,
+    mdxOptions: {
+      remarkPlugins: [remarkGfm], // GitHub Flavored Markdown 사용
+      rehypePlugins: [
+        [
+          rehypePrettyCode,
+          {
+            theme: "github-light", // 원하는 테마 설정
+          },
+        ],
+      ],
+    },
+  },
+});
+
+return (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="markdown-body w-full md:w-3/5">
+      <div className="my-56"></div>
+      {content}
+      <div className="my-56"></div>
+    </div>
+  </div>
+);
+```
+
+このように、公式ドキュメントを見ると、意外と簡単に解決できることが多いです。
+
+### 3. ライブラリやフレームワーク公式ドキュメントには設計思想が含まれている
+
+ライブラリやフレームワークの公式ドキュメントには、そのライブラリやフレームワークの設計思想が含まれています。例えば、「なんで React を使うの？他のライブラリより何がいいの？」という質問に対して、すぐ答えが出せないと、React に対しての理解が足りないと言えます。例えば公式ドキュメントには、[Component の純粋性が重要な理由](https://ja.react.dev/reference/rules/components-and-hooks-must-be-pure)を、このように書いています。
+
+> 冪等 (idempotent) であること - 同じ入力で実行するたびに常に同じ結果が得られること。コンポーネントの入力とは props と state とコンテクスト。フックの入力とはその引数。
+> レンダー時に副作用がない - 副作用 (side effect) を伴うコードはレンダーとは別に実行する必要がある。例えばユーザが UI を操作しそれによって UI が更新される場合はイベントハンドラとして、> またはレンダー直後に動作させる場合はエフェクトとして実行する。
+> ローカルな値以外を変更しない：コンポーネントとフックは、レンダー中にローカルに作成されたものではない値を決して変更してはならない。
+
+このように、公式ドキュメントにもかいてあるにもかかわらず、現場でのコードを見ると、この設計思想に反していることが多いです。Component の管理が全然できていない React コードを見たことが数え切れないほどあります。公式ドキュメントを読むことで、このような設計思想を理解し、問題を避けることができます。
+
+---
+
+## 翻訳進行方向
+
+個人的なプロジェクトにはほとんど JavaScript と関連の技術しか使ってないため、これらから翻訳をしたいです。でも、今私の会社で使っている技術は Spring Framework, Thymeleaf, PostgreSQL, Docker, Kafka, Kubernetes などで、これらの翻訳が先に進められる予定です。そして, JavaScript と関連する文書を翻訳する予定です。
+
+---
+
+## まとめ
+
+また、ほとんどの公式ドキュメントの翻訳はできていないけど、どんどん翻訳していきたいです。いつか誰かにこのサイトが役に立つと信じえています。

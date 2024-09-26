@@ -8,7 +8,6 @@ import StoreProvider from "./StoreProvider";
 import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/main/Footer";
-import { PostProvider } from "@/context/PostContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,14 +29,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class">
           <StoreProvider>
-            <PostProvider>
-              <Navbar />
-              <main>
-                {children}
-                <Analytics />
-              </main>
-              <Footer />
-            </PostProvider>
+            <Navbar />
+            <main>
+              {children}
+              <Analytics />
+            </main>
+            <Footer />
           </StoreProvider>
         </ThemeProvider>
       </body>

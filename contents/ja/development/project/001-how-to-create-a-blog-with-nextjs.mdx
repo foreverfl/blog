@@ -13,7 +13,7 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ---
 
-### Wordpress の問題点
+## Wordpress の問題点
 
 1. **基本的に重すぎる**: AWS の Lightsail を利用してデプロイしても落ちることがあります。CMS 自体がコンテンツを扱うための様々な機能を含んでいるため、仕方ない問題だとは思います。結局、ホスティングのために一定の費用を支払う必要があります。
 2. **プラグインが自分の好みにピッタリ合わない**: Wordpress には数多くのプラグインがあり、優れたプラグインも多くあります。SEO のための Yoast のようなプラグインは実際に非常に便利に使用しました。しかし、誰かが作成した既製品が自分が求めるものと完全に一致することはないと感じました。開発者であるため、「自分でも作れるのに...」と感じたかもしれません。
@@ -25,7 +25,7 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ---
 
-### ブログに使用された技術スタック
+## ブログに使用された技術スタック
 
 - **インフラ**: Vercel, Cloudflare Workers, Cloudflare R2
 - **データベース**: MongoDB(Atlas)
@@ -38,7 +38,7 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ---
 
-### Cloudflare R2 vs AWS S3 価格比較
+## Cloudflare R2 vs AWS S3 価格比較
 
 ![vercel_connect](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-01-vercel-connect.png)
 
@@ -57,9 +57,9 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
 
 プロジェクト環境の作成部分は特に説明しません。どうせ[Next.js 公式ドキュメント](https://nextjs.org/docs/getting-started/installation)によく説明されています。ブログを作成して、直接開発した機能は次のとおりです。
 
-### ブログに必須の機能
+## ブログに必須の機能
 
-#### 1. ログイン
+### 1. ログイン
 
 ![login_page](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-05-login_page.png)
 
@@ -108,7 +108,7 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
     };
 ```
 
-#### 2. ファイルアップロード
+### 2. ファイルアップロード
 
 ![file_upload](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-06-file_upload.png)
 
@@ -197,7 +197,7 @@ const handleSubmit = async (event: React.FormEvent) => {
 };
 ```
 
-#### 3. ページネーション
+### 3. ページネーション
 
 ![pagination](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-07-pagination.png)
 
@@ -243,13 +243,13 @@ export async function GET(
 }
 ```
 
-#### 4. 投稿およびコメントの CRUD 機能
+### 4. 投稿およびコメントの CRUD 機能
 
 - ブログの核心機能です。ウェブ開発者ならいつもすることがこれではないかと思います。特に変わった点はありません。MongoDB と接続した後、CRUD 機能をする関数を実装し、このように実装した関数を非同期で使用する形で実装しました。特に変わった点はないので、コードは省略します。
 
-### 自分で追加したい機能
+## 自分で追加したい機能
 
-#### 1. 日本語・韓国語投稿の同時管理
+### 1. 日本語・韓国語投稿の同時管理
 
 ![posting_bilingual](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-08_posting-bilingual.png)
 
@@ -276,7 +276,7 @@ export async function GET(
 </div>
 ```
 
-#### 2. 言語モード選択ボタン
+### 2. 言語モード選択ボタン
 
 ![navbar](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-09_navbar.png)
 
@@ -376,11 +376,11 @@ const SetLanguage: React.FC = () => {
 export default SetLanguage;
 ```
 
-#### 3. ダークモード選択ボタン
+### 3. ダークモード選択ボタン
 
 - ただ入れたかったです。。。私がダークモードをよく使い、自分が復習用にも使うブログだからです。ページやコードは特に見せる必要はないと思います。上で実装した多言語処理と似たように実装しました。
 
-#### 4. 投稿内で Markdown 言語をパースして表示する
+### 4. 投稿内で Markdown 言語をパースして表示する
 
 ![post_parsed](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-10-post-parsed.png)
 
@@ -420,7 +420,7 @@ export default SetLanguage;
 }
 ```
 
-#### デザイン
+### デザイン
 
 - 実は、これが私がブログを直接作った最大の理由です。普段からよく見るブログがあり、その方のブログのデザインを真似したかったからです。そこで、私が望むようにそのブログのデザインを取り入れてカスタマイズしました。スクロールに応じてデザインが変わる部分には特に注意を払いました。ブログに入れば全体的なデザインを見ることができるので、別途説明はしません。
 
@@ -428,7 +428,7 @@ export default SetLanguage;
 
 個人的な感想は、ブログはただの Tistory、Ameblo など作られたものを使った方がいいです。カスタマイズしたいと思っても、docusaurus のように少し触りやすいもので作るべきです。普段、企業で実装されたブログを使っているときは気づかなかったですが、ブログには思ったより多くの機能が入っていることを知りました。。。自分が個人プロジェクトを進めなければならないが、アイデアがないというなら、ブログを作るのも良い選択だと思います。これまで Spring Framework(Java)、Django(Python)、Express(Node.js)を通してサイトを一つずつ構築してみましたが。。。ただブログ一つ作るだけで、多くのサイトに入る核心機能を作ってみることができます。
 
-### まとめ
+## まとめ
 
 - ブログには思ったより多くの機能が入っています。
 - ブログを直接構築すると、細かい部分まで自分の好みにできて良いです。
