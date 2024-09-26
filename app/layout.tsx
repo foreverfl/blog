@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Head from "next/head";
+import { Analytics } from "@vercel/analytics/react";
 
 import "@/styles/globals.css";
 import StoreProvider from "./StoreProvider";
@@ -31,7 +32,10 @@ export default function RootLayout({
           <StoreProvider>
             <PostProvider>
               <Navbar />
-              <main>{children}</main>
+              <main>
+                {children}
+                <Analytics />
+              </main>
               <Footer />
             </PostProvider>
           </StoreProvider>
