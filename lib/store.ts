@@ -1,8 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "@/features/user/userSlice";
-import blogReducer from "@/features/blog/blogSlice";
-import blogRouteReducer from "@/features/blog/blogRouteSlice";
-import blogTitleReducer from "@/features/blog/blogTitleSlice";
 import postSelectedReducer from "@/features/post/postSelectedSlice";
 import commentsReducer from "@/features/comment/commentsSlice";
 import commentsUIReducer from "@/features/comment/commentsUISlice";
@@ -11,9 +8,6 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       user: userReducer,
-      blog: blogReducer,
-      blogRoute: blogRouteReducer,
-      blogTitle: blogTitleReducer,
       postSelected: postSelectedReducer,
       comments: commentsReducer,
       commentsUI: commentsUIReducer,

@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
-import { setCurrentView } from "@/features/blog/blogSlice";
 import locales, { Locales } from "@/locale";
 
 interface ProfileProps {
@@ -49,7 +48,6 @@ const Profile: React.FC<ProfileProps> = ({
 
   // Handler
   const handleViewChange = (view: string) => {
-    dispatch(setCurrentView({ view }));
     sessionStorage.setItem("currentView", view);
     toggleProfile();
     router.push("/", { scroll: false });
@@ -73,7 +71,6 @@ const Profile: React.FC<ProfileProps> = ({
         dispatch(logout());
         toggleProfile(); // 프로필 창 닫기
         if (!isPostPage) {
-          dispatch(setCurrentView({ view: "main" }));
           sessionStorage.setItem("currentView", "main");
         }
       } else {
