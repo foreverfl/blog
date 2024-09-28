@@ -33,8 +33,12 @@ image: "https://blog_workers.forever-fl.workers.dev/001-nextjs-minified-react-er
 「Hydration」は一般的に「水分補給」を意味しますが、React 公式ドキュメントではこのように説明されています。
 
 > In React, “hydration” is how React “attaches” to existing HTML that was already rendered by React in a server environment. During hydration, React will attempt to attach event listeners to the existing markup and take over rendering the app on the client.
+>
+> <cite>— React</cite>
 
-> React では、“ハイドレーション (hydration)” とは、サーバ環境の React によって事前レンダーされている HTML に React が「アタッチ」することを指します。ハイドレーション中、React は既存のマークアップにイベントリスナをアタッチし、アプリのレンダー処理をクライアントに引き継ぎます。
+> React では、「ハイドレーション (hydration)」とは、サーバ環境の React によって事前レンダーされている HTML に React が「アタッチ」することを指します。ハイドレーション中、React は既存のマークアップにイベントリスナをアタッチし、アプリのレンダー処理をクライアントに引き継ぎます。
+>
+> <cite>— React</cite>
 
 簡単に説明すると、サーバー側からクライアント側に、水を供給するように、サーバーでレンダリングされた HTML に React が結び付けることを「Hydration」と呼びます。この「Hydration」中にエラーが発生した場合、React はクライアント側で全体のルートをレンダリングします。
 
