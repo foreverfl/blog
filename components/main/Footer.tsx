@@ -1,3 +1,5 @@
+"use client";
+
 const Footer: React.FC = () => {
   return (
     <footer className="p-4 dark:text-neutral-50 dark:bg-neutral-900">

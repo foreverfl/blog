@@ -89,14 +89,14 @@ const Navbar: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
   // 포스트 정보 업데이트
-  // useEffect(() => {
-  //   const postPage = isPostPage();
-  //   setIsPost(postPage);
+  useEffect(() => {
+    const postPage = isPostPage();
+    setIsPost(postPage);
 
-  //   if (postPage) {
-  //     fetchPostInfo();
-  //   }
-  // }, [pathname, fetchPostInfo, isPostPage]);
+    if (postPage) {
+      fetchPostInfo();
+    }
+  }, [pathname, fetchPostInfo, isPostPage]);
 
   // 가로 스크롤
   useEffect(() => {
