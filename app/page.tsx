@@ -1,15 +1,10 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import LanguageRedirect from "@/components/main/LanguageRedirect";
 
 export default function Index() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const userLang = navigator.language.startsWith("ko") ? "ko" : "ja"; // 사용자의 언어를 감지
-    router.replace(`/${userLang}`); // 사용자의 언어에 따라 리다이렉트
-  }, [router]);
-
-  return null;
+  return (
+    <div>
+      <LanguageRedirect /> {/* 리다이렉트 로직 호출 */}
+      <p>로딩 중...</p> {/* 혹시 리다이렉트 전에 사용자에게 보여줄 내용 */}
+    </div>
+  );
 }
