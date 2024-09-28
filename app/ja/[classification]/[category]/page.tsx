@@ -8,12 +8,16 @@ interface FrontMatter {
   fileName: string;
   title: string;
   date: string;
+  classification: string;
+  category: string;
   image: string;
 }
 
 interface MDXFrontMatter {
   title: string;
   date: string;
+  classification: string;
+  category: string;
   image: string;
 }
 
@@ -42,9 +46,11 @@ async function getAllPostFrontMatters(
     });
 
     frontMatters.push({
-      fileName,
+      fileName: path.basename(filePath),
       title: frontmatter.title || "No title",
       date: frontmatter.date || "No date",
+      classification: frontmatter.classification || "No classification",
+      category: frontmatter.category || "No category",
       image: frontmatter.image || "No image",
     });
   }
