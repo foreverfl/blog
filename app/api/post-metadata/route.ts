@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { NextResponse } from "next/server";
+import { format, toZonedTime } from "date-fns-tz";
 
 interface FrontMatter {
   fileName: string;
@@ -39,10 +40,14 @@ async function getPostFrontMatter(
       options: { parseFrontmatter: true },
     });
 
+    const utcDate = new Date(frontmatter.date);
+    const kstDate = toZonedTime(utcDate, "Asia/Seoul");
+    const formattedKSTDate = format(kstDate, "yyyy-MM-dd HH:mm:ss");
+
     return {
       fileName: `${slug}.mdx`,
       title: frontmatter.title || "No title",
-      date: frontmatter.date || "No date",
+      date: formattedKSTDate || "No date",
       image: frontmatter.image || "No image",
     };
   } catch (error) {
