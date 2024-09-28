@@ -4,6 +4,8 @@ const mdxFilePaths = [
   "ja/development/project/001-how-to-create-a-blog-with-nextjs",
   "ko/development/project/002-making-docs-site",
   "ja/development/project/002-making-docs-site",
+  "ko/development/debugging/001-nextjs-minified-react-error",
+  "ja/development/debugging/001-nextjs-minified-react-error",
 ];
 
 // SSR용 MDX 파일 import 함수

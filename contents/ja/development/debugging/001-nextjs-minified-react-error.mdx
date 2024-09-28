@@ -1,0 +1,75 @@
+---
+title: "Minified React error"
+date: "2024-09-28T17:33:00"
+classification: "development"
+category: "debugging"
+image: "https://blog_workers.forever-fl.workers.dev/001-nextjs-minified-react-error-01-error.png"
+---
+
+# 「Minified React error」を解決しました
+
+## はじめに
+
+私のブログに何か不要なログが残されているか確認するため、ブラウザのコンソールを開いていたところ、次のエラーがみつかりました。
+
+![001-nextjs-minified-react-error-01-error](https://blog_workers.forever-fl.workers.dev/001-nextjs-minified-react-error-01-error.png)
+
+普段はエラーがどこで発生しているのかわかりますが、このエラーはどこで発生しているのかわかりませんでした。まずはこのエラーについて説明がある「React」公式ドキュメントをみてみることにしました。
+
+- [Minified React error #418](https://react.dev/errors/425): Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client.
+- [Minified React error #423](https://react.dev/errors/425): There was an error while hydrating but React was able to recover by instead client rendering the entire root.
+- [Minified React error #425](https://react.dev/errors/425): Text content does not match server-rendered HTML.
+
+日本語で翻訳すると、次のようになります。
+
+- **Minified React error #418**: Hydration に失敗しました。サーバーでレンダリングされた HTML がクライアントと一致しませんでした。その結果、このツリーはクライアント側で再度レンダリングされます。
+- **Minified React error #423**: Hydration 中にエラーが発生しましたが、React がこれを復元してクライアント側で全体のルートをレンダリングしました。
+- **Minified React error #425**: テキストの内容がサーバーでレンダリングされた HTML と一致しません。
+
+このエラーを読んでみると、「Hydration」に関するエラーだと判断することができます。それでは、「Hydration」は何でしょうか？
+
+## 「Hydration」とは
+
+「Hydration」は一般的に「水分補給」を意味しますが、React 公式ドキュメントではこのように説明されています。
+
+> In React, “hydration” is how React “attaches” to existing HTML that was already rendered by React in a server environment. During hydration, React will attempt to attach event listeners to the existing markup and take over rendering the app on the client.
+
+> React では、“ハイドレーション (hydration)” とは、サーバ環境の React によって事前レンダーされている HTML に React が「アタッチ」することを指します。ハイドレーション中、React は既存のマークアップにイベントリスナをアタッチし、アプリのレンダー処理をクライアントに引き継ぎます。
+
+簡単に説明すると、サーバー側からクライアント側に、水を供給するように、サーバーでレンダリングされた HTML に React が結び付けることを「Hydration」と呼びます。この「Hydration」中にエラーが発生した場合、React はクライアント側で全体のルートをレンダリングします。
+
+## どこでエラーが発生しているのか
+
+ネットを探してみると、これが発生する原因はサーバー側の時間とクライアント側の時間が異なる場合に発生することが多いようです。サーバー側の時間は UTC 時間で、クライアント側の時間はローカル時間であることが原因の一つとして挙げられています。
+
+私はこのブログを半年前に作って、最近に Refactoring を初めて、私のブログのメインページに、投稿日を表示したことをうっかり忘れていました。そのため、どの Component でエラーが発生しているのかわかりませんでした。一つ一つの Component を消しながら、エラーが発生する Component を特定しました。
+
+問題が発生していた Component は、次のコードでした。
+
+![](https://blog_workers.forever-fl.workers.dev/001-nextjs-minified-react-error-02-blog-main.png)
+
+```tsx title="AllCategory.tsx" showLineNumbers
+<div className="text-center w-full">
+  <p className="text-sm dark:text-neutral-300">
+    {new Date(post.date).toLocaleDateString()}
+  </p>
+  <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
+    {post.title}
+  </h3>
+</div>
+```
+
+## エラーを解決した方法
+
+この部分を次のように修正することでエラーを解決することができました。
+
+```diff title="AllCategory.tsx"
+- {new Date(post.date).toLocaleDateString()}
++ {new Date(post.date).toISOString().split("T")[0]}
+```
+
+このようにして、サーバー側とクライアント側の時間を一致させることで、エラーを解決することができました。
+
+## まとめ
+
+他のエラーはどこで発生しているのかわかりますが、このエラーはどこで発生しているのかわかりませんでした。次に私と同じようにこのエラーに遭遇した方のために、このエラーについて説明してみました。次にはもっといい記事でお会いしましょう。

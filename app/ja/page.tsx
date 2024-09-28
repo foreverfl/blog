@@ -8,15 +8,18 @@ interface FrontMatter {
   fileName: string;
   title: string;
   date: string;
+  classification: string;
+  category: string;
   image: string;
 }
 
 interface MDXFrontMatter {
   title: string;
   date: string;
+  classification: string;
+  category: string;
   image: string;
 }
-
 // 재귀적으로 폴더를 탐색하며 .mdx 파일 찾기
 async function getFilesRecursively(dir: string): Promise<string[]> {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -56,6 +59,8 @@ async function getAllPostFrontMatters(): Promise<FrontMatter[]> {
       fileName: path.basename(filePath),
       title: frontmatter.title || "No title",
       date: frontmatter.date || "No date",
+      classification: frontmatter.classification || "No classification",
+      category: frontmatter.category || "No category",
       image: frontmatter.image || "No image",
     });
   }

@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 interface FrontMatter {
   title: string;
   date: string;
+  classification: string;
+  category: string;
   image: string;
   fileName: string;
 }
@@ -54,10 +56,9 @@ const Category: React.FC<Props> = ({ posts }) => {
           {currentPosts.map((post) => (
             <Link
               key={post.fileName}
-              href={`/${lan}/development/project/${post.fileName.replace(
-                ".mdx",
-                ""
-              )}`} // 파일 이름에서 .mdx 제거하여 slug로 사용
+              href={`/${lan}/${post.category}/${
+                post.classification
+              }/${post.fileName.replace(".mdx", "")}`}
               scroll={false}
             >
               <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
