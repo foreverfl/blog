@@ -54,6 +54,36 @@ const Navbar: React.FC = () => {
     }
   }, [pathname, lan, isPostPage]);
 
+  const handleNavbarClick = () => {
+    console.log("handleNavbarClick");
+    if (window.scrollY === 0) {
+      window.location.href = "/";
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (window.scrollY === 0) {
+      setTitleColor("text-white");
+      if (lan === "ko") {
+        setHoveredTitle("홈으로 이동합니다");
+      } else if (lan === "ja") {
+        setHoveredTitle("ホームに移動します");
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (window.scrollY === 0) {
+      setHoveredTitle(title);
+      setTitleColor("text-transparent");
+    }
+  };
+
   // Refs
   const subNavbarRef = useRef<HTMLDivElement>(null); // useRef로 DOM 요소 참조 생성
 
@@ -62,6 +92,7 @@ const Navbar: React.FC = () => {
   const [isPost, setIsPost] = useState(isPostPage());
   const [postInfo, setPostInfo] = useState<PostInfo | null>(null);
   const [title, setTitle] = useState("");
+  const [hoveredTitle, setHoveredTitle] = useState(title);
   const [subnavTitle, setSubnavTitle] = useState("");
 
   // 스타일
@@ -120,8 +151,10 @@ const Navbar: React.FC = () => {
     if (isPost) {
       setTitle(postInfo?.title || "");
       setSubnavTitle(postInfo?.title || "");
+      setHoveredTitle(postInfo?.title || "");
     } else {
       setTitle("mogumogu");
+      setHoveredTitle("mogumogu");
       setSubnavTitle("mogumogu's sundries");
     }
   }, [isPost, postInfo?.title]);
@@ -197,13 +230,14 @@ const Navbar: React.FC = () => {
 
         {/* 블로그 이름 */}
         <div className="flex-1 flex w-80 sm:w-96 md:w-full justify-center">
-          <Link href="/">
-            <div
-              className={`min-w-32 max-w-80 sm:max-w-96 md:max-w-full text-2xl sm:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
-            >
-              {title}
-            </div>
-          </Link>
+          <div
+            onClick={handleNavbarClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={`min-w-32 max-w-80 sm:max-w-96 md:max-w-full text-2xl sm:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
+          >
+            {hoveredTitle}
+          </div>
         </div>
 
         {/* 다국어 / 다크모드 / 프로필 컨테이너 */}

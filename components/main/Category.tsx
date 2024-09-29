@@ -59,7 +59,6 @@ const Category: React.FC<Props> = ({ posts }) => {
               href={`/${lan}/${post.category}/${
                 post.classification
               }/${post.fileName.replace(".mdx", "")}`}
-              scroll={false}
             >
               <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
                 <div
