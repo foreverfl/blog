@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 import NavbarSub from "./NavbarSub";
 import Menu from "./Menu";
@@ -26,6 +25,12 @@ const Navbar: React.FC = () => {
   const isPostPage = useCallback(() => {
     const pathSegments = pathname.split("/").filter(Boolean);
     return pathSegments.length === 4;
+  }, [pathname]);
+
+  // 특정 경로에서는 Navbar를 숨김
+  const shouldHideNavbar = useCallback(() => {
+    const hiddenRoutes = ["/login"];
+    return hiddenRoutes.some((route) => pathname.includes(route));
   }, [pathname]);
 
   // Fetch post metadata
@@ -212,6 +217,10 @@ const Navbar: React.FC = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [isPost]);
+
+  if (shouldHideNavbar()) {
+    return null;
+  }
 
   return (
     <>

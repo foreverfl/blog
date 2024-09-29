@@ -1,26 +1,8 @@
-import fs from "fs";
-import path from "path";
 import mdxFiles from "@/contents/mdxFiles";
 import { notFound } from "next/navigation";
-import { compileMDX } from "next-mdx-remote/rsc";
 import "github-markdown-css";
-import rehypePrettyCode from "rehype-pretty-code";
-import remarkGfm from "remark-gfm";
-
-function getMdxFileContent(
-  classification: string,
-  category: string,
-  slug: string
-) {
-  const filePath = path.join(
-    process.cwd(),
-    `contents/ko/${classification}/${category}/${slug}.mdx`
-  );
-
-  // MDX 파일 내용을 읽음
-  const fileContent = fs.readFileSync(filePath, "utf8");
-  return fileContent;
-}
+import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
+import { cookies } from "next/headers";
 
 export default async function Page({
   params,
@@ -31,6 +13,9 @@ export default async function Page({
     slug: string;
   };
 }) {
+  const cookieStore = cookies();
+  const lan = cookieStore.get("lan")?.value || "ja";
+
   const { classification, category, slug } = params;
 
   const markdownFilePath = `ko/${classification}/${category}/${slug}`;
@@ -40,30 +25,8 @@ export default async function Page({
     notFound(); // 컴포넌트가 없을 경우 처리
   }
 
-  const fileContent = getMdxFileContent(classification, category, slug);
-
-  // MDX 컴파일 시 코드 하이라이팅 추가
-  const { content, frontmatter } = await compileMDX<{
-    title: string;
-    date: string;
-    image: string;
-  }>({
-    source: fileContent,
-    options: {
-      parseFrontmatter: true,
-      mdxOptions: {
-        remarkPlugins: [remarkGfm], // GitHub Flavored Markdown 사용
-        rehypePlugins: [
-          [
-            rehypePrettyCode,
-            {
-              theme: "github-light", // 원하는 테마 설정
-            },
-          ],
-        ],
-      },
-    },
-  });
+  const fileContent = getMdxFileContent(lan, classification, category, slug);
+  const { content } = await compileMdxContent(fileContent);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

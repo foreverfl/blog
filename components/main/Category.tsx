@@ -5,12 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 interface FrontMatter {
+  fileName?: string;
   title: string;
   date: string;
   classification: string;
   category: string;
   image: string;
-  fileName: string;
 }
 
 interface Props {
@@ -56,9 +56,9 @@ const Category: React.FC<Props> = ({ posts }) => {
           {currentPosts.map((post) => (
             <Link
               key={post.fileName}
-              href={`/${lan}/${post.category}/${
-                post.classification
-              }/${post.fileName.replace(".mdx", "")}`}
+              href={`/${lan}/${post.classification}/${
+                post.category
+              }/${post.fileName?.replace(".mdx", "")}`}
             >
               <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
                 <div

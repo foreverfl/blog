@@ -1,7 +1,6 @@
 "use server";
 
 import { Db, MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-import { deleteImage } from "./workers";
 
 // 환경 변수에서 URI 가져오기
 const uri = process.env.MONGODB_URI!;
@@ -226,28 +225,6 @@ export async function updateCategory(
       { $set: { name_ko, name_ja } }
     );
   return result.modifiedCount;
-}
-
-export async function deleteCategory(categoryId: string): Promise<number> {
-  const db = await connectDB();
-
-  // 해당 카테고리에 속한 모든 포스트 조회
-  const posts = await db
-    .collection("posts")
-    .find({ category: new ObjectId(categoryId) })
-    .toArray();
-
-  // 각 포스트와 연관된 이미지 및 댓글 삭제
-  for (const post of posts) {
-    await deletePost(post._id.toString());
-  }
-
-  // 카테고리 삭제
-  const categoryDeleteResult = await db
-    .collection("categories")
-    .deleteOne({ _id: new ObjectId(categoryId) });
-
-  return categoryDeleteResult.deletedCount;
 }
 
 // Post CRUD
@@ -560,35 +537,6 @@ export async function updatePost(
     }
   );
   return result.modifiedCount;
-}
-
-export async function deletePost(postId: string): Promise<number> {
-  const db = await connectDB();
-  const post = await db
-    .collection("posts")
-    .findOne({ _id: new ObjectId(postId) }); // 먼저 포스트 정보를 조회
-
-  if (post) {
-    // 대표 이미지 삭제
-    if (post.image) {
-      await deleteImage(post.image);
-    }
-
-    // 나머지 이미지들 삭제
-    if (post.images && post.images.length > 0) {
-      await Promise.all(post.images.map((image: string) => deleteImage(image)));
-    }
-    // 포스트 삭제
-    const deleteResult = await db
-      .collection("posts")
-      .deleteOne({ _id: new ObjectId(postId) });
-    // 연관된 댓글들 삭제
-    await db.collection("comments").deleteMany({ post: new ObjectId(postId) });
-
-    return deleteResult.deletedCount; // 삭제된 포스트 수 반환
-  }
-
-  return 0; // 포스트가 없는 경우 0 반환
 }
 
 // 좋아요 추가
