@@ -196,10 +196,10 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* 블로그 이름 */}
-        <div className="flex-1 flex w-72 justify-center">
+        <div className="flex-1 flex w-80 sm:w-96 md:w-full justify-center">
           <Link href="/">
             <div
-              className={`min-w-32 text-2xl md:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
+              className={`min-w-32 max-w-80 sm:max-w-96 md:max-w-full text-2xl sm:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
             >
               {title}
             </div>
