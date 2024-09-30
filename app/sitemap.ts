@@ -5,7 +5,9 @@ import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const languages = ["ko", "ja"];
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev"
+  ).replace(/\/$/, ""); // 끝 슬래시 제거
 
   let allSitemapEntries: MetadataRoute.Sitemap = [];
   const menuFilePath = path.join(process.cwd(), "public", "category.json");

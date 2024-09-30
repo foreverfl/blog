@@ -2,7 +2,6 @@ import mdxFiles from "@/contents/mdxFiles";
 import { notFound } from "next/navigation";
 import "github-markdown-css";
 import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
-import { cookies } from "next/headers";
 
 export default async function Page({
   params,
@@ -13,9 +12,6 @@ export default async function Page({
     slug: string;
   };
 }) {
-  const cookieStore = cookies();
-  const lan = cookieStore.get("lan")?.value || "ja";
-
   const { classification, category, slug } = params;
 
   const markdownFilePath = `ko/${classification}/${category}/${slug}`;
@@ -25,7 +21,7 @@ export default async function Page({
     notFound(); // 컴포넌트가 없을 경우 처리
   }
 
-  const fileContent = getMdxFileContent(lan, classification, category, slug);
+  const fileContent = getMdxFileContent("ko", classification, category, slug);
   const { content } = await compileMdxContent(fileContent);
 
   return (

@@ -23,8 +23,8 @@ const mdxFilePaths = [
   "ja/documentation/open-source/001-dummy",
 
   // documentatin/translation-notes
-  "ko/documentation/translation-notes/001-dummy",
-  "ja/documentation/translation-notes/001-dummy",
+  "ko/documentation/translation-notes/001-next-mdx-remote",
+  "ja/documentation/translation-notes/001-next-mdx-remote",
 
   // miscellaneous/my-thoughts
   "ko/miscellaneous/my-thoughts/001-dummy",

@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
 import Link from "next/link";
+import Search from "./Search";
 
 interface MenuProps {
   isMenuOpen: boolean;
@@ -199,52 +200,7 @@ const Menu: React.FC<MenuProps> = ({
 
             {/* 검색창 */}
             <div className="mx-8 flex items-center">
-              <svg
-                className="w-6 h-6 flex-shrink-0 mr-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="white"
-                viewBox="0 0 24 24"
-              >
-                <path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z" />
-                <path
-                  fillRule="evenodd"
-                  d="M21.7 21.7a1 1 0 0 1-1.4 0l-3.5-3.5a1 1 0 0 1 1.4-1.4l3.5 3.5c.4.4.4 1 0 1.4Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-
-              <input
-                className="w-full p-4 bg-transparent border-none focus:ring-0 text-white"
-                type="search"
-                placeholder="Search..."
-                onChange={handleInputChange}
-                value={inputValue}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSearchSubmit();
-                  }
-                }}
-              />
-              <button className="ml-3" onClick={handleSearchSubmit}>
-                <svg
-                  className={`w-6 h-6 ${
-                    isInputFilled ? "text-white" : "text-gray-800"
-                  }`}
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 12H5m14 0-4 4m4-4-4-4"
-                  />
-                </svg>
-              </button>
+              <Search></Search>
             </div>
 
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
