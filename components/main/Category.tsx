@@ -41,6 +41,16 @@ const Category: React.FC<Props> = ({ posts }) => {
     }
   };
 
+  const renderNoPostsMessage = () => {
+    if (lan === "ko") {
+      return "게시물이 없습니다.";
+    } else if (lan === "ja") {
+      return "投稿はありません。";
+    } else {
+      return "No posts available.";
+    }
+  };
+
   return (
     <>
       <div className="my-56"></div>

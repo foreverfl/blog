@@ -39,6 +39,6 @@ export function middleware(request) {
 export const config = {
     matcher: [
         // 'api'와 'login'으로 시작하는 경로를 제외하고 모든 경로에 적용
-        '/((?!api|login|_next|fonts|category\.json|images|favicon\.ico|logo).*)',
+        '/((?!api|login|_next|fonts|category\.json|images|favicon\.ico|logo|sitemap\.xml).*)',
     ],
 }

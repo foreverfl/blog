@@ -12,7 +12,11 @@ export default async function Index({
   const lan = cookieStore.get("lan")?.value || "ja";
   const { classification, category } = params;
 
-  const frontMatters = await getAllPostFrontMatters(classification, category);
+  const frontMatters = await getAllPostFrontMatters(
+    lan,
+    classification,
+    category
+  );
 
   return (
     <div className="flex items-center justify-center min-h-screen">

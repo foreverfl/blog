@@ -1,28 +1,44 @@
-import { getAllPostsForSitemap } from "@/lib/mongodb";
-import { MetadataRoute } from "next";
+import fs from "fs";
+import path from "path";
+import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
+import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const links = [
-    {
-      url: "https://mogumogu.dev/",
-      lastModified: new Date(),
-    },
-  ];
+  const languages = ["ko", "ja"];
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
 
-  const postsData = await getAllPostsForSitemap();
+  let allSitemapEntries: MetadataRoute.Sitemap = [];
+  const menuFilePath = path.join(process.cwd(), "public", "category.json");
 
-  postsData.forEach((postData) => {
-    // 한국어 버전의 포스트 URL 추가
-    links.push({
-      url: `https://mogumogu.dev/post/ko/${postData.index}`,
-      lastModified: new Date(postData.updatedAt),
-    });
+  for (const lan of languages) {
+    // 메뉴 기반
+    const menuData = JSON.parse(fs.readFileSync(menuFilePath, "utf8"));
+    for (const classification of menuData) {
+      for (const category of classification.categories) {
+        const sitemapEntry = {
+          url: `${baseUrl}/${lan}/${classification.link}/${category.link}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.7, // 분류/카테고리 페이지의 우선순위 설정
+        };
+        allSitemapEntries.push(sitemapEntry);
+      }
+    }
 
-    // 일본어 버전의 포스트 URL 추가
-    links.push({
-      url: `https://mogumogu.dev/post/ja/${postData.index}`,
-      lastModified: new Date(postData.updatedAt),
-    });
-  });
-  return links;
+    // 포스트 기반
+    const posts = await getAllPostFrontMatters(lan);
+    const sitemapEntries = posts.map((post) => ({
+      url: `${baseUrl}/${lan}/${post.classification}/${
+        post.category
+      }/${post.fileName?.replace(".mdx", "")}`,
+      lastModified: new Date(post.date),
+      changeFrequency: "weekly" as const,
+      priority: 0.8, // 우선순위 설정
+    }));
+
+    // Sitemap에 추가
+    allSitemapEntries = allSitemapEntries.concat(sitemapEntries);
+  }
+
+  return allSitemapEntries;
 }
