@@ -6,10 +6,12 @@ interface NavbarSubProps {
   isPost: boolean;
   textColor: string;
   title: string;
+  category: string;
+  date: string;
 }
 
 const NavbarSub = forwardRef<HTMLDivElement, NavbarSubProps>(
-  ({ isPost, textColor, title }, ref) => {
+  ({ isPost, textColor, title, category, date }, ref) => {
     return (
       <div
         ref={ref}
@@ -33,6 +35,13 @@ const NavbarSub = forwardRef<HTMLDivElement, NavbarSubProps>(
           <h1 className="text-5xl md:text-7xl font-bold dark:text-slate-50 font-navbar">
             mogumogu&#39;s sundries
           </h1>
+        )}
+
+        {/* 날짜 */}
+        {title && (
+          <p className="text-lg md:text-lg font-bold dark:text-slate-50 font-navbar">
+            {`${category} | ${new Date(date).toLocaleDateString("ko-KR")}`}
+          </p>
         )}
       </div>
     );

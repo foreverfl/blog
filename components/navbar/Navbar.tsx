@@ -12,6 +12,7 @@ import SetMode from "./SetMode";
 interface PostInfo {
   fileName: string;
   title: string;
+  category: string;
   date: string;
   image: string;
 }
@@ -50,6 +51,7 @@ const Navbar: React.FC = () => {
         if (response.ok) {
           const data = await response.json();
           setPostInfo(data); // Set the post info in state
+          console.log(data);
         } else {
           console.error("Failed to fetch post metadata");
         }
@@ -295,6 +297,8 @@ const Navbar: React.FC = () => {
         isPost={isPost}
         textColor={subNavbarTitleColor}
         title={postInfo?.title || subnavTitle}
+        category={postInfo?.category || ""}
+        date={postInfo?.date || ""}
       />
     </>
   );
