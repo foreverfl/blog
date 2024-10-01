@@ -62,7 +62,11 @@ const Navbar: React.FC = () => {
   const handleNavbarClick = () => {
     console.log("handleNavbarClick");
     if (window.scrollY === 0) {
-      window.location.href = "/";
+      if (lan === "ko") {
+        window.location.href = "/ko";
+      } else if (lan === "ja") {
+        window.location.href = "/ja";
+      }
     } else {
       window.scrollTo({
         top: 0,

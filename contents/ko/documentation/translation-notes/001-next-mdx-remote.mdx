@@ -1,11 +1,197 @@
 ---
 title: "next-mdx-remote"
-date: "2024-09-30T18:32:00"
+date: "2024-10-01T15:21:00"
 classification: "documentation"
 category: "translation-notes"
-image: ""
+image: "https://blog_workers.forever-fl.workers.dev/001-next-mdx-remote-001-home-screen.png"
 ---
 
 # next-mdx-remote
 
-## Dummy Subtitle
+## 들어가며
+
+- 번역한 README.md: [next-mdx-remote](https://github.com/foreverfl/next-mdx-remote/blob/main/README-ko.md)
+
+![home-screen](https://blog_workers.forever-fl.workers.dev/001-next-mdx-remote-001-home-screen.png)
+
+이번에 next-mdx-remote의 공식 README.md를 번역했습니다. 얼마 전 제 블로그를 리팩토링하면서 이 라이브러리를 사용했습니다.
+
+처음에는 제 개인용으로 직접 CMS(콘텐츠 관리 시스템)를 만들었습니다. 하지만 최근 다양한 공식 문서를 번역하고 제 서브도메인에 게시하면서 한 가지 깨달은 점이 있었습니다. 그것은 제 블로그도 공식 문서처럼 정적 사이트로 만들면 좋겠다는 생각이었습니다. 정적 사이트는 일반적으로 서버 사이드 렌더링(SSR)으로 만듭니다. 그래서 Markdown을 클라이언트 측에서 렌더링하던 기존의 방식을 버리고, Markdown을 서버 사이드에서 렌더링하기로 결정했습니다.
+
+또한, Docusaurus나 Nextra 같은 문서화 도구들은 MDX를 지원합니다. 저도 제 블로그에서 MDX를 사용하고 싶었습니다.
+
+이러한 조건들을 만족시키기 위해 next-mdx-remote가 최적이라고 생각했습니다.
+
+먼저, MDX가 익숙하지 않은 분들을 위해 MDX가 무엇인지 설명하겠습니다.
+
+## MDX란?
+
+[MDX 공식 문서](https://mdxjs.com/docs/what-is-mdx/#markdown-for-the-component-era)에는 다음과 같이 설명되어 있습니다.
+
+> MDX를 사용하면 마크다운 콘텐츠 내에서 JSX를 사용할 수 있습니다. 인터랙티브한 차트나 알림 등의 컴포넌트를 가져와서 콘텐츠 내에 포함할 수 있습니다. 이를 통해 컴포넌트를 사용하여 긴 글을 쓰는 것이 매우 즐거워집니다. 🚀
+>
+> ― MDX
+
+간단히 말해, MDX는 마크다운에 JSX를 사용할 수 있게 한 것입니다. 이를 통해 마크다운 안에 React 컴포넌트를 삽입할 수 있습니다.
+
+```md title="example.md" showLineNumbers
+# Title
+
+This is a content block.
+
+- Item 1
+- Item 2
+- Item 3
+```
+
+기존 마크다운에서는 위와 같이 작성할 수 있지만, MDX에서는 다음과 같이 작성할 수 있습니다.
+
+```mdx title="example.mdx" showLineNumbers
+# Title
+
+This is a content block.
+
+- Item 1
+- Item 2
+- Item 3
+
+<Counter />
+
+<MyCustomComponent message="Hello from MDX!" />
+```
+
+자신이 정의한 React 컴포넌트를 사용할 수 있어 더 유연한 콘텐츠를 만들 수 있습니다. 프로그래밍에 능숙한 사람들에게는 자유도가 높아집니다. 그렇다면 MDX와 next-mdx-remote는 어떤 관계가 있을까요?
+
+## next-mdx-remote란?
+
+next-mdx-remote는 이름에서 추측할 수 있듯이 Next.js에서 MDX를 사용하기 위한 라이브러리입니다. 제 블로그는 Next.js로 만들어졌기 때문에 이 라이브러리를 사용하기로 했습니다.
+
+next-mdx-remote의 README.md에 있는 코드를 참고하며 코드를 작성하는 것은 그리 어렵지 않았습니다. 하지만 next-mdx-remote를 사용하기 위해서는 주의할 점이 있습니다. 이 라이브러리를 사용하기 전에 서버 사이드 렌더링(SSR)에 대해 이해하고 있어야 합니다. README.md에도 나와 있듯이, 기본적인 사용법은 클라이언트 측에서는 `MDXRemote`를 사용하고, 서버 측에서는 `serialize`를 사용하는 것입니다. 서버 측에서 데이터를 가져와 클라이언트 측에 전달하고 `MDXRemote`로 표시하는 구조입니다.
+
+```jsx title="Example.jsx" showLineNumbers
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+
+import Test from "../components/test";
+
+const components = { Test };
+
+export default function TestPage({ source }) {
+  return (
+    <div className="wrapper">
+      <MDXRemote {...source} components={components} />
+    </div>
+  );
+}
+
+export async function getStaticProps() {
+  // MDX 텍스트 - 로컬 파일, 데이터베이스, 어디서든 가져올 수 있음
+  const source = "Some **mdx** text, with a component <Test />";
+  const mdxSource = await serialize(source);
+  return { props: { source: mdxSource } };
+}
+```
+
+이렇게 `getStaticProps()`에서는 서버 측에서 MDX 텍스트를 가져와 `serialize`로 변환하여 클라이언트 측에 전달합니다. 그리고 클라이언트 측에서는 `MDXRemote`로 표시합니다. 하지만 이것이 전부였다면, 이 README.md를 자세히 보지 않았을 것입니다.
+
+이렇게 말하면 간단해 보이지만, ChatGPT로 이를 사용해 코드를 작성할 때 문제가 발생했습니다. 원인은 제가 Next.js의 App Router를 사용하고 있었기 때문입니다. 제가 App Router에 관한 질문을 해도 ChatGPT는 서버 사이드에서 `MDXRemote`를 사용하는 코드를 알려주었고, 계속해서 오류가 발생했습니다.
+
+Next.js의 App Router에 대해서는 ChatGPT의 이해가 부족해서, 제가 직접 next-mdx-remote의 README.md를 읽어보기로 했습니다. App Router의 app 경로는 기본적으로 서버 사이드로 취급되므로 `MDXRemote`를 사용하는 것은 무리가 있습니다. 그리고 이 README.md에는 app 경로에서 이 라이브러리를 사용할 경우 `next-mdx-remote/rsc`를 사용하라고 쓰여 있습니다. 결국, 항상 그렇듯이 해결 방법은 공식 문서에 쓰여 있었습니다.
+
+문제를 해결한 제 코드는 다음과 같습니다.
+
+```tsx title="lib/mdxHelper.ts" showLineNumbers
+import fs from "fs";
+import path from "path";
+import { compileMDX } from "next-mdx-remote/rsc";
+import rehypePrettyCode from "rehype-pretty-code";
+import remarkGfm from "remark-gfm";
+
+export function getMdxFileContent(
+  lan: string,
+  classification: string,
+  category: string,
+  slug: string
+) {
+  const filePath = path.join(
+    process.cwd(),
+    `contents/${lan}/${classification}/${category}/${slug}.mdx`
+  );
+
+  const fileContent = fs.readFileSync(filePath, "utf8");
+  return fileContent;
+}
+
+export async function compileMdxContent(fileContent: string) {
+  return await compileMDX({
+    source: fileContent,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [
+          [
+            rehypePrettyCode,
+            {
+              theme: "github-light",
+            },
+          ],
+        ],
+      },
+    },
+  });
+}
+```
+
+이렇게 Markdown을 읽어와서 `compileMDX`를 사용해 컴파일합니다. 그리고 `MDXRemote`를 사용해 표시합니다. 이렇게 만든 함수를 사용해 페이지를 생성하는 서버 사이드 코드는 다음과 같습니다.
+
+```tsx title="app/ja/[classification]/[category]/[slug]/page.tsx" showLineNumbers
+import mdxFiles from "@/contents/mdxFiles";
+import { notFound } from "next/navigation";
+import "github-markdown-css";
+import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
+
+export default async function Page({
+  params,
+}: {
+  params: {
+    classification: string;
+    category: string;
+    slug: string;
+  };
+}) {
+  const { classification, category, slug } = params;
+
+  const markdownFilePath = `ja/${classification}/${category}/${slug}`;
+  const MarkdownComponent = mdxFiles[markdownFilePath];
+
+  if (!MarkdownComponent) {
+    notFound();
+  }
+
+  const fileContent = getMdxFileContent("ja", classification, category, slug);
+  const { content } = await compileMdxContent(fileContent);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="markdown-body w-full md:w-3/5">
+        <div className="my-56"></div>
+        {content}
+        <div className="my-56"></div>
+      </div>
+    </div>
+  );
+}
+```
+
+## 마무리
+
+next-mdx-remote의 README.md에서도 개인적인 작은 사이트를 만들기 위해 Next.js와 같은 무거운 프레임워크를 피하라고 권장하고 있습니다.
+
+> 데이터에 따르면 모든 개발자 도구 사용 사례의 99%가 불필요하게 복잡한 개인 블로그를 만드는 것입니다. 농담입니다. 하지만 진지하게, 개인 또는 소규모 비즈니스용 블로그를 만들려고 한다면 일반 HTML과 CSS를 사용하는 것을 고려해보세요. 간단한 블로그를 만드는 데 무거운 풀 스택 JavaScript 프레임워크를 사용할 필요는 절대 없습니다. 몇 년 후에 업데이트하러 돌아왔을 때 모든 의존성에 10번의 주요 변경 사항이 없었다면 감사할 것입니다.
+>
+> <cite>— next-mdx-remote </cite>
+
+하지만 저는 엔지니어로서 최신 기술에 빠지는 한심한 인간이라 어쩔 수 없네요. ㅠㅠ
+
+요약하자면, next-mdx-remote를 사용할 때는 서버 사이드와 클라이언트 사이드의 차이를 이해하고 있는 것이 중요합니다. 이를 이해하지 못하면 계속해서 어려움을 겪게 될 것입니다. Next.js에서 MDX를 사용하려는 분들에게 이 글이 도움이 되었으면 좋겠습니다. 번역은 [여기](https://github.com/foreverfl/next-mdx-remote/blob/main/README-ko.md)를 참고해 주세요. 글을 읽어주셔서 감사합니다. 다음에는 더 좋은 글로 찾아뵙겠습니다.

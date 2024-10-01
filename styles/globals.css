@@ -119,6 +119,14 @@ figure figcaption {
   padding: 10px;
 }
 
+.markdown-body blockquote {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px;
+  margin: 20px 0;
+}
+
 /* 코드 블럭 라인 넘버링 */
 code[data-line-numbers] {
   counter-reset: line;
