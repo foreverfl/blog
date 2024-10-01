@@ -38,11 +38,11 @@ const NavbarSub = forwardRef<HTMLDivElement, NavbarSubProps>(
         )}
 
         {/* 날짜 */}
-        {title && (
+        {isPost && title ? (
           <p className="text-lg md:text-lg font-bold dark:text-slate-50 font-navbar">
             {`${category} | ${new Date(date).toLocaleDateString("ko-KR")}`}
           </p>
-        )}
+        ) : null}
       </div>
     );
   }

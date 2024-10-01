@@ -1,17 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "@/features/user/userSlice";
-import postSelectedReducer from "@/features/post/postSelectedSlice";
-import commentsReducer from "@/features/comment/commentsSlice";
-import commentsUIReducer from "@/features/comment/commentsUISlice";
+
+const dummyReducer = (state = {}, action: any) => {
+  return state;
+};
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {
-      user: userReducer,
-      postSelected: postSelectedReducer,
-      comments: commentsReducer,
-      commentsUI: commentsUIReducer,
-    },
+    reducer: dummyReducer,
   });
 };
 

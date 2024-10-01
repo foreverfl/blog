@@ -28,8 +28,12 @@ const Category: React.FC<Props> = ({ posts }) => {
   // Calculate total pages
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
+  const sortedPosts = [...posts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
   // Get current posts
-  const currentPosts = posts.slice(
+  const currentPosts = sortedPosts.slice(
     (currentPage - 1) * postsPerPage,
     currentPage * postsPerPage
   );
