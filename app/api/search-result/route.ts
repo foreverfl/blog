@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
+import { getAllMdxFilesWithFrontMatter } from "@/lib/mdxHelpers";
 
 export async function GET(req: Request) {
   // URL에서 쿼리 파라미터를 가져옴
@@ -8,8 +8,11 @@ export async function GET(req: Request) {
   const classification = searchParams.get("classification");
   const category = searchParams.get("category");
 
-  // getAllPostFrontMatters 호출
-  const posts = await getAllPostFrontMatters(lang, classification!, category!);
+  const posts = await getAllMdxFilesWithFrontMatter(
+    lang,
+    classification!,
+    category!
+  );
 
   return NextResponse.json(posts);
 }

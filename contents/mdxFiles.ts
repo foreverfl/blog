@@ -11,24 +11,16 @@ const mdxFilePaths = [
   "ja/development/debugging/001-nextjs-minified-react-error",
 
   // career/interviews
-  "ko/career/interviews/001-dummy",
-  "ja/career/interviews/001-dummy",
 
   // career/coding-tests
-  "ko/career/coding-tests/001-dummy",
-  "ja/career/coding-tests/001-dummy",
 
   // documentation/open-source
-  "ko/documentation/open-source/001-dummy",
-  "ja/documentation/open-source/001-dummy",
 
   // documentatin/translation-notes
   "ko/documentation/translation-notes/001-next-mdx-remote",
   "ja/documentation/translation-notes/001-next-mdx-remote",
 
   // miscellaneous/my-thoughts
-  "ko/miscellaneous/my-thoughts/001-dummy",
-  "ja/miscellaneous/my-thoughts/001-dummy",
 ];
 
 // SSR용 MDX 파일 import 함수

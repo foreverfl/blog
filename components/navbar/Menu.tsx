@@ -36,7 +36,6 @@ const Menu: React.FC<MenuProps> = ({
   toggleMenu: originalToggleMenu,
 }) => {
   // Utilities
-  const router = useRouter();
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
@@ -94,26 +93,6 @@ const Menu: React.FC<MenuProps> = ({
   }, [classifications]);
 
   // Handler
-  // 카테고리 관련 핸들러
-  const handleViewChange = (view: string, category: Category) => {
-    router.push("/", { scroll: false });
-    sessionStorage.setItem("currentView", view);
-    toggleMenu();
-  };
-
-  // 검색 관련 핸들러
-  const handleInputChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setInputValue(e.target.value);
-    setIsInputFilled(e.target.value !== "");
-  };
-
-  const handleSearchSubmit = () => {
-    router.push("/", { scroll: false });
-    sessionStorage.setItem("currentView", "userPostListSearch");
-  };
-
   // 분류 토글 핸들러
   const handleToggle = (classificationId: string) => {
     setToggleStates((prevStates) => ({
@@ -200,7 +179,7 @@ const Menu: React.FC<MenuProps> = ({
 
             {/* 검색창 */}
             <div className="mx-8 flex items-center">
-              <Search></Search>
+              <Search isMenuOpen={isMenuOpen} />
             </div>
 
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">

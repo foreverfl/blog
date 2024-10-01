@@ -1,13 +1,22 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Fuse from "fuse.js";
+import ReactDOM from "react-dom";
+import { usePathname } from "next/navigation";
 
-interface FrontMatter {
-  fileName?: string;
-  title: string;
-  date: string;
-  classification: string;
-  category: string;
-  image: string;
+interface Post {
+  frontmatter: {
+    fileName: string;
+    title: string;
+    date: string;
+    classification: string;
+    category: string;
+    image: string;
+  };
+  content: string;
+}
+
+interface SearchProps {
+  isMenuOpen: boolean;
 }
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
@@ -19,29 +28,40 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   };
 }
 
-const Search: React.FC = () => {
-  const [posts, setPosts] = useState<FrontMatter[]>([]);
-  const [searchResults, setSearchResults] = useState<FrontMatter[]>(posts);
+const Search: React.FC<SearchProps> = ({ isMenuOpen }) => {
+  const pathname = usePathname();
+  const lan = pathname.split("/")[1];
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [searchResults, setSearchResults] = useState<Post[]>(posts);
   const [query, setQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await fetch("/api/search-result?lan=ko"); // 한국어 게시물 가져오기
-      const data: FrontMatter[] = await res.json();
+      const res = await fetch(`/api/search-result?lan=${lan}`);
+      const data: Post[] = await res.json();
       setPosts(data);
-      setSearchResults(data); // 처음에는 전체 게시물을 표시
     };
 
     fetchPosts();
-  }, []);
+  }, [lan]);
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      setQuery("");
+    }
+  }, [isMenuOpen]);
 
   // Fuse.js 설정
   const fuse = useMemo(
     () =>
-      new Fuse(posts, {
-        keys: ["title", "classification", "category"],
-        threshold: 0.3, // 퍼지 검색을 허용할 범위
-      }),
+      posts.length > 0
+        ? new Fuse(posts, {
+            keys: ["content"],
+            threshold: 0.1, // 퍼지 검색을 허용할 범위
+          })
+        : null, // posts가 없을 때는 null로 설정
     [posts]
   );
 
@@ -49,11 +69,18 @@ const Search: React.FC = () => {
   const debouncedSearch = useMemo(
     () =>
       debounce((input: string) => {
+        setIsSearching(true);
+
         if (!input) {
           setSearchResults(posts); // 검색어가 없으면 전체 포스트 반환
-        } else {
+          setIsSearching(false);
+        } else if (fuse) {
           const result = fuse.search(input).map((result) => result.item);
           setSearchResults(result);
+          setIsSearching(false);
+        } else {
+          setSearchResults([]); // fuse가 없을 때 빈 배열 반환
+          setIsSearching(false);
         }
       }, 300), // 300ms 지연 후 검색 실행
     [fuse, posts]
@@ -65,14 +92,87 @@ const Search: React.FC = () => {
     debouncedSearch(inputValue); // 입력값이 바뀔 때마다 디바운스된 검색 실행
   };
 
-  const handleSearchSubmit = () => {
-    debouncedSearch(query); // 검색 버튼을 클릭하면 검색 실행
+  const getHighlightedText = (
+    content: string,
+    query: string,
+    snippetLength = 20
+  ) => {
+    const regex = new RegExp(query, "gi");
+    const match = regex.exec(content);
+
+    if (match) {
+      const start = Math.max(0, match.index - snippetLength);
+      const end = Math.min(
+        content.length,
+        match.index + query.length + snippetLength
+      );
+
+      const before = content.slice(start, match.index);
+      const matchedText = content.slice(
+        match.index,
+        match.index + query.length
+      );
+      const after = content.slice(match.index + query.length, end);
+
+      return (
+        <>
+          ...{before}
+          <mark className="bg-yellow-200 dark:bg-yellow-600">
+            {matchedText}
+          </mark>
+          {after}...
+        </>
+      );
+    }
+
+    // 검색어가 없으면 전체 텍스트를 반환
+    return content;
   };
 
-  const isInputFilled = query.length > 0;
+  const renderSearchResults = () => {
+    if (!query || !isMenuOpen || isSearching) return null;
+
+    return ReactDOM.createPortal(
+      <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/3 bg-white dark:bg-gray-800 shadow-lg z-50 max-h-96 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
+        {searchResults && searchResults.length > 0 ? (
+          searchResults.map((post) => (
+            <div
+              key={post.frontmatter.fileName}
+              className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700"
+            >
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {post.frontmatter.title}
+              </h3>
+              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {getHighlightedText(post.content, query)}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {post.frontmatter.classification} &gt;{" "}
+                {post.frontmatter.category} |{" "}
+                {new Date(post.frontmatter.date).toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            </div>
+          ))
+        ) : searchResults.length === 0 ? (
+          <div className="p-4 text-center text-gray-600 dark:text-gray-400">
+            {lan === "ko"
+              ? "검색 결과가 없습니다."
+              : lan === "ja"
+              ? "結果が見つかりません。"
+              : "No results found."}
+          </div>
+        ) : null}
+      </div>,
+      document.body // Portal을 사용하여 body 아래에 렌더링
+    );
+  };
 
   return (
-    <div className="relative">
+    <>
       {/* 검색창 및 버튼 */}
       <div className="mx-8 flex items-center">
         <svg
@@ -96,54 +196,12 @@ const Search: React.FC = () => {
           placeholder="Search..."
           onChange={handleInputChange}
           value={query}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearchSubmit();
-            }
-          }}
         />
-        <button className="ml-3" onClick={handleSearchSubmit}>
-          <svg
-            className={`w-6 h-6 ${
-              isInputFilled ? "text-white" : "text-gray-800"
-            }`}
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 12H5m14 0-4 4m4-4-4-4"
-            />
-          </svg>
-        </button>
       </div>
 
-      {/* 검색 결과를 바로 아래에 표시 */}
-      {query && (
-        <div className="absolute top-16 left-0 w-full bg-white shadow-lg z-10 max-h-64 overflow-y-auto">
-          {searchResults.length > 0 ? (
-            searchResults.map((post) => (
-              <div
-                key={post.fileName}
-                className="p-4 hover:bg-gray-100 cursor-pointer"
-              >
-                <h3 className="text-lg font-semibold">{post.title}</h3>
-                <p className="text-sm text-gray-600">
-                  {post.classification} / {post.category} / {post.date}
-                </p>
-              </div>
-            ))
-          ) : (
-            <div className="p-4">No results found.</div>
-          )}
-        </div>
-      )}
-    </div>
+      {/* Portal로 검색 결과 렌더링 */}
+      {renderSearchResults()}
+    </>
   );
 };
 
