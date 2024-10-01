@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import Fuse from "fuse.js";
 import ReactDOM from "react-dom";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface Post {
   frontmatter: {
@@ -17,6 +18,7 @@ interface Post {
 
 interface SearchProps {
   isMenuOpen: boolean;
+  closeMenu: () => void;
 }
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
@@ -28,7 +30,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   };
 }
 
-const Search: React.FC<SearchProps> = ({ isMenuOpen }) => {
+const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
@@ -72,7 +74,7 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen }) => {
         setIsSearching(true);
 
         if (!input) {
-          setSearchResults(posts); // 검색어가 없으면 전체 포스트 반환
+          setSearchResults([]); // 검색어가 없으면 빈 배열 반환
           setIsSearching(false);
         } else if (fuse) {
           const result = fuse.search(input).map((result) => result.item);
@@ -83,7 +85,7 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen }) => {
           setIsSearching(false);
         }
       }, 300), // 300ms 지연 후 검색 실행
-    [fuse, posts]
+    [fuse]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,26 +138,29 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen }) => {
       <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/3 bg-white dark:bg-gray-800 shadow-lg z-50 max-h-96 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
         {searchResults && searchResults.length > 0 ? (
           searchResults.map((post) => (
-            <div
+            <Link
+              href={`/${lan}/${post.frontmatter.classification}/${post.frontmatter.category}/${post.frontmatter.fileName}`} // frontmatter의 파일명으로 링크 생성
               key={post.frontmatter.fileName}
-              className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700"
+              onClick={closeMenu}
             >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {post.frontmatter.title}
-              </h3>
-              <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {getHighlightedText(post.content, query)}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {post.frontmatter.classification} &gt;{" "}
-                {post.frontmatter.category} |{" "}
-                {new Date(post.frontmatter.date).toLocaleDateString("ko-KR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
+              <div className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {post.frontmatter.title}
+                </h3>
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {getHighlightedText(post.content, query)}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {post.frontmatter.classification} &gt;{" "}
+                  {post.frontmatter.category} |{" "}
+                  {new Date(post.frontmatter.date).toLocaleDateString("ko-KR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+            </Link>
           ))
         ) : searchResults.length === 0 ? (
           <div className="p-4 text-center text-gray-600 dark:text-gray-400">

@@ -93,6 +93,10 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   // Refs
   const subNavbarRef = useRef<HTMLDivElement>(null); // useRef로 DOM 요소 참조 생성
 
@@ -235,6 +239,7 @@ const Navbar: React.FC = () => {
         <div className="flex-1">
           <Menu
             isMenuOpen={isMenuOpen}
+            closeMenu={closeMenu}
             menuColor={menuColor}
             isProfileOpen={isProfileOpen}
             toggleMenu={() => setIsMenuOpen(!isMenuOpen)}

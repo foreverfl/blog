@@ -17,11 +17,27 @@ interface Props {
   posts: FrontMatter[];
 }
 
+interface Category {
+  name_ko: string;
+  name_ja: string;
+  link: string;
+}
+
+interface Classification {
+  name_ko: string;
+  name_ja: string;
+  link: string;
+  categories: Category[];
+}
+
 const Category: React.FC<Props> = ({ posts }) => {
   // Utilities
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
+  const classificationLink = pathname.split("/")[2];
+  const categoryLink = pathname.split("/")[3];
 
+  const [categoryName, setCategoryName] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 8;
 
@@ -41,25 +57,46 @@ const Category: React.FC<Props> = ({ posts }) => {
     }
   };
 
-  const renderNoPostsMessage = () => {
-    if (lan === "ko") {
-      return "게시물이 없습니다.";
-    } else if (lan === "ja") {
-      return "投稿はありません。";
-    } else {
-      return "No posts available.";
-    }
-  };
+  useEffect(() => {
+    // JSON 파일에서 데이터를 가져와서 해당 카테고리만 필터링
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/category.json");
+        const data: Classification[] = await response.json();
+
+        // classification과 category가 일치하는 항목을 찾음
+        const foundClassification = data.find(
+          (classification) => classification.link === classificationLink
+        );
+
+        if (foundClassification) {
+          const foundCategory = foundClassification.categories.find(
+            (category) => category.link === categoryLink
+          );
+
+          if (foundCategory) {
+            setCategoryName(
+              lan === "ko" ? foundCategory.name_ko : foundCategory.name_ja
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [lan, classificationLink, categoryLink]);
 
   return (
     <>
       <div className="my-56"></div>
 
-      {/* Recent Posts */}
+      {/* Category Area */}
       <div className="dark:bg-neutral-900">
         {posts.length > 0 && (
           <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
-            Recent Posts
+            {categoryName}
           </h2>
         )}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">

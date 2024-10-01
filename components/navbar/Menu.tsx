@@ -11,6 +11,7 @@ import Search from "./Search";
 
 interface MenuProps {
   isMenuOpen: boolean;
+  closeMenu: () => void;
   menuColor: string;
   isProfileOpen: boolean;
   toggleMenu: () => void;
@@ -31,6 +32,7 @@ interface Classification {
 
 const Menu: React.FC<MenuProps> = ({
   isMenuOpen,
+  closeMenu,
   menuColor,
   isProfileOpen,
   toggleMenu: originalToggleMenu,
@@ -179,7 +181,7 @@ const Menu: React.FC<MenuProps> = ({
 
             {/* 검색창 */}
             <div className="mx-8 flex items-center">
-              <Search isMenuOpen={isMenuOpen} />
+              <Search isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
             </div>
 
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
