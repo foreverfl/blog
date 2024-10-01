@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { logout, loginSuccess } from "@/features/user/userSlice";
-import locales, { Locales } from "@/locale";
 
 interface ProfileProps {
   isProfileOpen: boolean;
@@ -24,8 +23,6 @@ const Profile: React.FC<ProfileProps> = ({
   const lan = pathname.split("/")[1];
   // Redux
   const dispatch = useAppDispatch();
-
-  const languageKey = lan as keyof Locales; // 타입 단언을 위한 Locales의 키
 
   // State
   const [isPostPage, setIsPostPage] = useState(pathname.startsWith("/post/"));
@@ -197,9 +194,6 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3 text-black">
-                      {locales[languageKey].categoryManagement}
-                    </span>
                   </li>
                   <li
                     onClick={() => handleViewChange("adminCommentList")}
@@ -212,9 +206,6 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3 text-black">
-                      {locales[languageKey].postManagement}
-                    </span>
                   </li>
                   <li
                     onClick={() => handleViewChange("adminCreatePost")}
@@ -227,9 +218,6 @@ const Profile: React.FC<ProfileProps> = ({
                       height={15}
                       className="flex-shrink-0"
                     />
-                    <span className="ml-3 text-black">
-                      {locales[languageKey].createPost}
-                    </span>
                   </li>
                 </>
               ) : (
