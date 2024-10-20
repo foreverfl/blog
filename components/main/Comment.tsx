@@ -32,10 +32,6 @@ const Comment = ({}) => {
   const cleanPath = pathname.split("/").slice(2).join("/");
   const pathHash = crypto.createHash("sha256").update(cleanPath).digest("hex");
 
-  useEffect(() => {
-    console.log(comments);
-  });
-
   // 사용자 정보 및 댓글 로드
   useEffect(() => {
     let isMounted = true;

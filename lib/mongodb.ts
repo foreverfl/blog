@@ -92,6 +92,9 @@ export async function upsertFilePathsToMongoDB() {
           $set: {
             pathHash: pathHash,
             path: filePath,
+          },
+          $setOnInsert: {
+            // 문서가 처음 생성될 때만 likes와 comments를 초기화
             likes: [],
             comments: [],
           },
