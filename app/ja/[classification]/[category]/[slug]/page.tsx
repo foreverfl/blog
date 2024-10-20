@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import "github-markdown-css";
 import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
 import Good from "@/components/main/Good";
+import Comment from "@/components/main/Comment";
 
 export default async function Page({
   params,
@@ -33,7 +34,7 @@ export default async function Page({
         <div className="my-56"></div>
 
         <Good />
-        {/* <Comment /> */}
+        <Comment />
       </div>
     </div>
   );
