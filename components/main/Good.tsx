@@ -16,21 +16,7 @@ const Good = () => {
   const cleanPath = pathname.split("/").slice(2).join("/");
   const pathHash = crypto.createHash("sha256").update(cleanPath).digest("hex");
 
-  // 페이지 로드 시 좋아요 상태와 개수를 서버에서 가져옴
   useEffect(() => {
-    // 사용자 이메일 가져오기
-    const fetchUserData = async () => {
-      try {
-        const res = await fetch("/api/auth/status");
-        const data = await res.json();
-        if (data?.user?.email) {
-          setUserEmail(data.user.email);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
     // 좋아요 상태 및 개수 가져오기
     const fetchLikeData = async () => {
       try {
@@ -39,25 +25,38 @@ const Good = () => {
         if (data && data.likeCount !== undefined) {
           setLikeCount(data.likeCount);
         }
-
-        const resStatus = await fetch(
-          `/api/like/check?pathHash=${pathHash}&userEmail=${userEmail}`
-        );
-        const statusData = await resStatus.json();
-        setHeartState(statusData.isLiked ? "after" : "before");
       } catch (error) {
-        console.error("Error fetching like data:", error);
+        console.error("Error fetching like count:", error);
       }
     };
 
-    if (userEmail) {
-      fetchLikeData();
-    }
+    fetchLikeData();
+  }, [pathHash]);
+
+  // 사용자 이메일 가져오기 및 좋아요 상태 가져오기
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch("/api/auth/status");
+        const data = await res.json();
+        if (data?.user?.email) {
+          setUserEmail(data.user.email);
+
+          // 사용자 좋아요 상태 가져오기
+          const resStatus = await fetch(
+            `/api/like/check?pathHash=${pathHash}&userEmail=${data.user.email}`
+          );
+          const statusData = await resStatus.json();
+          setHeartState(statusData.isLiked ? "after" : "before");
+        }
+      } catch (error) {
+        console.error("Error fetching user data or like status:", error);
+      }
+    };
 
     fetchUserData();
-  }, [pathHash, userEmail]);
+  }, [pathHash]);
 
-  // 좋아요 요청을 보내는 함수
   const addLike = async () => {
     try {
       const res = await fetch("/api/like/add", {
@@ -77,7 +76,6 @@ const Good = () => {
     }
   };
 
-  // 좋아요 취소 요청을 보내는 함수
   const removeLike = async () => {
     try {
       const res = await fetch("/api/like/remove", {
@@ -98,6 +96,11 @@ const Good = () => {
   };
 
   const handleClick = () => {
+    if (!userEmail) {
+      window.location.href = "/login";
+      return;
+    }
+
     if (heartState === "before") {
       addLike();
     } else {

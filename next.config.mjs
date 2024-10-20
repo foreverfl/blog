@@ -29,7 +29,7 @@ const nextConfig = {
     webpack: (config) => {
         // Alias 설정 추가
         return config;
-    },
+    }
 };
 
 const withMDX = createMDX({

@@ -164,4 +164,130 @@ export async function checkLikeStatus(pathHash: string, userEmail: string) {
   return post ? true : false; // 사용자가 이미 좋아요를 눌렀으면 true, 아니면 false 반환
 }
 
-// Comment CRUD
+// Comment CRUD - User
+export async function addUserCommentToPost(pathHash: string, commentData: any) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const comment = {
+    _id: new ObjectId(),
+    userEmail: commentData.userEmail,
+    username: commentData.username,
+    photo: commentData.photo,
+    comment: commentData.comment,
+    userCreatedAt: new Date(),
+    admincomment: "",
+    adminCreatedAt: null,
+  };
+
+  const result = await postsCollection.updateOne(
+    { pathHash },
+    {
+      $push: { comments: comment },
+    }
+  );
+  return result;
+}
+
+export async function updateUserComment(
+  pathHash: string,
+  commentId: string,
+  newComment: string
+) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const result = await postsCollection.updateOne(
+    { pathHash, "comments._id": new ObjectId(commentId) },
+    {
+      $set: { "comments.$.comment": newComment },
+    }
+  );
+  return result;
+}
+
+export async function deleteComment(
+  pathHash: string,
+  commentId: string,
+  userEmail: string
+) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const result = await postsCollection.updateOne(
+    { pathHash },
+    {
+      $pull: { comments: { _id: new ObjectId(commentId), userEmail } },
+    }
+  );
+  return result;
+}
+
+export async function getCommentsForPost(pathHash: string) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const post = await postsCollection.findOne(
+    { pathHash },
+    { projection: { comments: 1 } }
+  );
+
+  return post?.comments || [];
+}
+
+// Comment CRUD - Admin
+export async function addAdminComment(
+  pathHash: string,
+  commentId: string,
+  adminComment: string
+) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const result = await postsCollection.updateOne(
+    { pathHash, "comments._id": new ObjectId(commentId) },
+    {
+      $set: {
+        "comments.$.adminComment": adminComment,
+        "comments.$.adminCreatedAt": new Date(),
+      },
+    }
+  );
+  return result;
+}
+
+export async function updateAdminComment(
+  pathHash: string,
+  commentId: string,
+  newAdminComment: string
+) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const result = await postsCollection.updateOne(
+    { pathHash, "comments._id": new ObjectId(commentId) },
+    {
+      $set: {
+        "comments.$.adminComment": newAdminComment,
+        "comments.$.adminCreatedAt": new Date(),
+      },
+    }
+  );
+  return result;
+}
+
+export async function deleteAdminComment(pathHash: string, commentId: string) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const result = await postsCollection.updateOne(
+    { pathHash, "comments._id": new ObjectId(commentId) },
+    {
+      $set: {
+        "comments.$.adminComment": "",
+        "comments.$.adminCreatedAt": null,
+      },
+    }
+  );
+  return result;
+}

@@ -107,7 +107,7 @@ npm run dev
 
 - `npm init`: 새로운 Node.js 프로젝트를 시작할 때 사용. package.json 파일을 생성하고 프로젝트에 대한 정보(예: 이름, 버전, 설명)를 설정.
 - `npm install <패키지명>`: 특정 패키지를 프로젝트에 설치. --save 옵션을 함께 사용하면 package.json 파일에 의존성으로 추가됨.
-- `npm update`: 프로젝트의 모든 패키지를 최신 버전으로 업데이트. 특정 패키지만 업데이트하려면 npm update <패키지명>을 사용. npm 버전 5 이후부터는 `npm install <패키지명>` 명령어를 사용할 때 `--save` 옵션을 명시하지 않아도 자동으로 package.json 파일의 dependencies 섹션에 패키지가 추가됨.
+- `npm update`: 프로젝트의 모든 패키지를 최신 버전으로 업데이트. 특정 패키지만 업데이트하려면 `npm update <패키지명>`을 사용. npm 버전 5 이후부터는 `npm install <패키지명>` 명령어를 사용할 때 `--save` 옵션을 명시하지 않아도 자동으로 package.json 파일의 dependencies 섹션에 패키지가 추가됨.
 - `npm run <스크립트명>`: package.json 파일의 scripts 섹션에 정의된 스크립트를 실행함. 개발자는 자주 사용하는 작업(예: 테스트 실행, 빌드 등)을 스크립트로 정의하여 편리하게 사용할 수 있음.
 - `npm publish`: 작성한 패키지를 npm 저장소에 공개함. 이를 통해 다른 개발자들이 여러분의 패키지를 설치하고 사용할 수 있게 됨.
 - `npm cache clean --force`: npm의 캐시를 강제로 삭제함. npm은 패키지를 설치할 때 필요한 파일을 캐시에 저장하여, 다음 설치 시 속도를 향상시킴. 하지만 때때로 캐시가 손상되거나 문제를 일으킬 수 있어, 캐시를 완전히 지워야 할 필요가 생김. --force 플래그는 이 작업이 위험할 수 있음을 알리면서도 명령어의 실행을 강제함.
@@ -403,7 +403,7 @@ export default function handler(req, res) {
 
 #### 핵심 개념
 
-- **useDispatch**: useDispatch는 React 컴포넌트 내에서 Redux 스토어의 dispatch 함수를 사용할 수 있게 해주는 훅. 이 dispatch 함수를 통해 액션을 스토어에 전달하며, 이는 스토어의 상태를 변경하는 유일한 방법. 액션은 보통 { type: 'ACTION_TYPE', ...payload }의 형태로 정의됨.
+- **useDispatch**: useDispatch는 React 컴포넌트 내에서 Redux 스토어의 dispatch 함수를 사용할 수 있게 해주는 훅. 이 dispatch 함수를 통해 액션을 스토어에 전달하며, 이는 스토어의 상태를 변경하는 유일한 방법. 액션은 보통 `{ type: 'ACTION_TYPE', ...payload }`의 형태로 정의됨.
 - **useSelector**: useSelector는 Redux 스토어의 상태를 조회할 수 있는 훅. 이 훅을 사용하여 스토어의 특정 부분의 상태를 선택(select)하고, 그 상태를 컴포넌트에서 사용할 수 있음. useSelector는 주어진 선택 함수에 의해 반환된 값이 변경될 때마다 컴포넌트를 리렌더링함.
 - **useStore**: useStore는 컴포넌트 내에서 Redux 스토어 자체에 직접 접근할 수 있게 해주는 훅. 이를 통해 스토어의 dispatch 함수나 현재 상태를 조회하는 getState 함수 등 스토어의 메서드에 접근할 수 있음. 일반적으로는 useDispatch나 useSelector로 충분하지만, 특정 경우 스토어에 직접 접근해야 할 때 사용함.
 
