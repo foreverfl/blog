@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB, findUserByEmail, upsertUser } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -52,15 +52,9 @@ export async function GET(req: NextRequest) {
       createdAt: new Date(), // 현재 시간을 설정
     };
 
-    await db.collection("users").updateOne(
-      { email: userData.email }, // 이메일을 기준으로 사용자를 찾음
-      { $set: userData },
-      { upsert: true } // 문서가 없으면 삽입, 있으면 업데이트
-    );
+    await upsertUser(userData);
 
-    let userDataFromDb = await db
-      .collection("users")
-      .findOne({ email: userData.email });
+    const userDataFromDb = await findUserByEmail(userData.email);
 
     // JWT 토큰 생성
     const jwtToken = jwt.sign(

@@ -2,6 +2,7 @@
 
 import { Db, MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { filePaths } from "@/contents/mdxFiles";
+import crypto from "crypto";
 
 // 환경 변수에서 URI 가져오기
 const uri = process.env.MONGODB_URI!;
@@ -34,9 +35,22 @@ export async function connectDB() {
 }
 
 // User CRUD
-export async function getUsersInfoByIds(userIds: string[]) {
-  const objectIds = userIds.map((id) => new ObjectId(id)); // ObjectId 배열 생성
 
+export async function upsertUser(userData: any) {
+  const db = await connectDB();
+  const usersCollection = db.collection("users");
+
+  const result = await usersCollection.updateOne(
+    { email: userData.email },
+    { $set: userData },
+    { upsert: true }
+  );
+
+  return result;
+}
+
+export async function getUsersInfoByIds(userIds: string[]) {
+  const objectIds = userIds.map((id) => new ObjectId(id));
   const db = await connectDB();
 
   // 사용자 정보 조회
@@ -56,21 +70,30 @@ export async function getUsersInfoByIds(userIds: string[]) {
   return usersInfo;
 }
 
-// Post CRUD
+export async function findUserByEmail(email: string) {
+  const db = await connectDB();
+  const usersCollection = db.collection("users");
+  const user = await usersCollection.findOne({ email });
+  return user;
+}
 
-// 포스트 업서트
+// Post CRUD
 export async function upsertFilePathsToMongoDB() {
   const db = await connectDB();
   const postsCollection = db.collection("posts");
 
-  // 파일 경로들을 MongoDB에 업서트
   const bulkOperations = filePaths.map((filePath) => {
+    const pathHash = crypto.createHash("sha256").update(filePath).digest("hex"); // 파일 경로를 해시로 변환
+
     return {
       updateOne: {
-        filter: { path: filePath }, // 파일 경로로 중복 여부 확인
+        filter: { pathHash: pathHash },
         update: {
           $set: {
+            pathHash: pathHash,
             path: filePath,
+            likes: [],
+            comments: [],
           },
         },
         upsert: true,
@@ -82,22 +105,63 @@ export async function upsertFilePathsToMongoDB() {
   return result;
 }
 
-// 포스트 삭제
 export async function deleteAllPostsFromMongoDB() {
   const db = await connectDB();
   const postsCollection = db.collection("posts");
 
-  // MongoDB 컬렉션에서 모든 문서 삭제
   const result = await postsCollection.deleteMany({});
   return result;
 }
 
-// 좋아요
+// Like CRUD
+export async function addLikeToPost(pathHash: string, userEmail: string) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
 
-// 좋아요 취소
+  const result = await postsCollection.updateOne(
+    { pathHash },
+    {
+      $addToSet: { likes: userEmail }, // likes 배열에 사용자 이메일 추가, 중복 방지
+    }
+  );
+  return result;
+}
 
-// 댓글 추가
+export async function removeLikeFromPost(pathHash: string, userEmail: string) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
 
-// 댓글 수정
+  const result = await postsCollection.updateOne(
+    { pathHash },
+    {
+      $pull: { likes: userEmail }, // likes 배열에서 사용자 이메일 제거
+    }
+  );
+  return result;
+}
 
-// 댓글 삭제
+export async function getLikeCountForPost(pathHash: string) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const post = await postsCollection.findOne(
+    { pathHash },
+    { projection: { likes: 1 } } // likes 필드만 가져오기
+  );
+
+  return post?.likes.length || 0; // likes 배열의 길이를 반환
+}
+
+export async function checkLikeStatus(pathHash: string, userEmail: string) {
+  const db = await connectDB();
+  const postsCollection = db.collection("posts");
+
+  const post = await postsCollection.findOne(
+    { pathHash, likes: userEmail }, // 해당 게시글의 likes 배열에 사용자가 있는지 확인
+    { projection: { likes: 1 } }
+  );
+
+  return post ? true : false; // 사용자가 이미 좋아요를 눌렀으면 true, 아니면 false 반환
+}
+
+// Comment CRUD

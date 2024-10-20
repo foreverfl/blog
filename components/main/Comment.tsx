@@ -1,17 +1,7 @@
 // import React from "react";
 // import Image from "next/image";
 
-// const Comment = ({
-//   comments,
-//   usersInfo,
-//   lan,
-//   editingCommentId,
-//   isLoggedOut,
-//   photo,
-//   commentContent,
-//   setCommentContent,
-//   handleCreateComment,
-// }) => {
+// const Comment = ({}) => {
 //   return (
 //     <div className="space-y-4">
 //       {/* 사용자의 댓글 */}
@@ -19,41 +9,9 @@
 //         .filter((comment) => comment.lan === lan)
 //         .map((comment) => {
 //           if (comment._id === editingCommentId) {
-//             return (
-//               <CommentUserUpdate
-//                 key={comment._id}
-//                 userIdInComment={usersInfo[comment.user]?._id}
-//                 username={
-//                   usersInfo[comment.user]?.username ||
-//                   (lan === "ja" ? "存在しないユーザー" : "알 수 없는 사용자")
-//                 }
-//                 userPhoto={
-//                   usersInfo[comment.user]?.photo || "/images/smile.png"
-//                 }
-//                 commentId={comment._id}
-//                 content={comment.content}
-//                 updatedAt={comment.updatedAt}
-//               />
-//             );
+//             return <div key={index}>comment._id랑 editingCommentId랑 같음</div>;
 //           } else {
-//             return (
-//               <CommentUser
-//                 key={comment._id}
-//                 userIdInComment={usersInfo[comment.user]?._id}
-//                 username={
-//                   usersInfo[comment.user]?.username ||
-//                   (lan === "ja" ? "存在しないユーザー" : "알 수 없는 사용자")
-//                 }
-//                 userPhoto={
-//                   usersInfo[comment.user]?.photo || "/images/smile.png"
-//                 }
-//                 commentId={comment._id}
-//                 content={comment.content}
-//                 updatedAt={comment.updatedAt}
-//                 answer={comment.answer}
-//                 answeredAt={comment.answeredAt}
-//               />
-//             );
+//             return <div key={index}>comment._id랑 editingCommentId랑 다름</div>;
 //           }
 //         })}
 

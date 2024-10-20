@@ -1,25 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { upsertFilePathsToMongoDB } from "@/lib/mongodb";
 
-// POST 요청을 처리
-export async function GET() {
+export const POST = async (req: NextRequest) => {
   try {
     const result = await upsertFilePathsToMongoDB();
-    console.log("Upserted posts:", result);
     return NextResponse.json({
-      message: `Upserted ${result.upsertedCount} posts successfully.`,
-      status: "success",
+      message: "File paths upserted successfully",
+      result,
     });
   } catch (error) {
-    console.error("Error upserting posts:", error);
+    console.error(error);
     return NextResponse.json(
-      {
-        message: "Error upserting posts",
-        status: "error",
-      },
-      {
-        status: 500,
-      }
+      { message: "Failed to upsert file paths", error },
+      { status: 500 }
     );
   }
-}
+};

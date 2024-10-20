@@ -51,7 +51,6 @@ const Navbar: React.FC = () => {
         if (response.ok) {
           const data = await response.json();
           setPostInfo(data); // Set the post info in state
-          console.log(data);
         } else {
           console.error("Failed to fetch post metadata");
         }
