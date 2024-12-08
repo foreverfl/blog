@@ -185,19 +185,36 @@ const Comment = ({}) => {
   };
 
   // 관리자 댓글 핸들러
-  const handleAdminCommentChange = (commentId: string, value: string) => {
-    setNewAdminComments((prev) => ({ ...prev, [commentId]: value }));
-  };
+  const handleDeleteAdminComment = async (commentId: string) => {
+    try {
+      const res = await fetch("/api/comment/admin/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pathHash,
+          commentId,
+        }),
+      });
 
-  const toggleReplyMode = (commentId: string) => {
-    setIsReplying((prev) => ({ ...prev, [commentId]: !prev[commentId] }));
-
-    if (!isReplying[commentId]) {
-      setNewAdminComments((prev) => ({
-        ...prev,
-        [commentId]:
-          comments.find((c) => c._id === commentId)?.adminComment || "",
-      }));
+      if (res.ok) {
+        // 상태 업데이트
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment._id === commentId
+              ? {
+                  ...comment,
+                  adminComment: "",
+                  adminCreatedAt: null,
+                }
+              : comment
+          )
+        );
+        console.log("관리자 댓글 삭제 완료");
+      } else {
+        console.error("관리자 댓글 삭제 실패");
+      }
+    } catch (error) {
+      console.error("서버 오류: ", error);
     }
   };
 
@@ -352,50 +369,30 @@ const Comment = ({}) => {
 
                   {/* 관리자 버튼 */}
                   <div className="flex justify-end mt-2 px-4 space-x-2">
-                    {/* 수정 버튼 */}
-                    <button
-                      onClick={() => console.log("관리자 버튼 수정 클릭")}
-                    >
-                      <svg
-                        className="w-4 h-4 text-gray-800 dark:text-white"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                        />
-                      </svg>
-                    </button>
                     {/* 삭제 버튼 */}
-                    <button
-                      onClick={() => console.log("사용자 버튼 수정 클릭")}
-                    >
-                      <svg
-                        className="w-4 h-4 text-red-400 dark:text-red-400"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
+                    {adminEmails.includes(user.email) && (
+                      <button
+                        onClick={() => handleDeleteAdminComment(comment._id)}
                       >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M6 18 17.94 6M18 18 6.06 6"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          className="w-4 h-4 text-red-400 dark:text-red-400"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18 17.94 6M18 18 6.06 6"
+                          />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
