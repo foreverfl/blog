@@ -8,21 +8,31 @@ import Image from "next/image";
 const SetLanguage: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const currentLanguage = pathname.split("/")[1]; // URL에서 현재 로케일을 추출
-
+  const [currentLanguage, setCurrentLanguage] = useState(
+    pathname.split("/")[1]
+  );
   const [isReady, setIsReady] = useState(false); // 로딩 상태 관리
   const [isTransitioning, setIsTransitioning] = useState(false); // 애니메이션 상태 관리
 
   useEffect(() => {
-    setIsReady(true); // 언어 토글 스위치가 렌더링 준비가 완료되었다고 표시
+    setIsReady(true);
   }, []);
 
-  const toggleLanguage = () => {
+  const toggleLanguage = async () => {
     setIsTransitioning(true); // 애니메이션 시작
     const newLanguage = currentLanguage === "ko" ? "ja" : "ko";
+    setCurrentLanguage(newLanguage);
     const pathParts = pathname.split("/"); // 언어 코드만 변경하고 나머지 경로는 유지
     pathParts[1] = newLanguage; // 첫 번째 부분을 새로운 언어 코드로 교체
     const newPathname = pathParts.join("/");
+
+    try {
+      await fetch(`/api/language/${newLanguage}`, {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Failed to update language cookie", error);
+    }
 
     setTimeout(() => {
       router.push(newPathname, { scroll: false });

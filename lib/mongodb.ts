@@ -136,7 +136,7 @@ export async function removeLikeFromPost(pathHash: string, userEmail: string) {
   const result = await postsCollection.updateOne(
     { pathHash },
     {
-      $pull: { likes: userEmail }, // likes 배열에서 사용자 이메일 제거
+      $pull: { likes: { $eq: userEmail } }, // $eq 사용하여 조건 지정
     }
   );
   return result;

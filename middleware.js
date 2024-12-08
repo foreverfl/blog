@@ -16,24 +16,16 @@ function getLocale(request) {
 export function middleware(request) {
     const { pathname } = request.nextUrl
 
-    const locale = getLocale(request);
-    let response = NextResponse.next();
-    response.cookies.set('lan', locale);
-
     // 경로명에 지원되는 로케일이 있는지 확인함
     const pathnameHasLocale = locales.some(
         (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
     );
 
-    if (pathnameHasLocale) {
-        return response;
-    }
+    if (pathnameHasLocale) return;
 
-    // 로케일이 없으면 리디렉션
-    const url = new URL(`/${locale}${pathname}`, request.url);
-    response = NextResponse.redirect(url);
-
-    return response;
+    const locale = getLocale(request);
+    request.nextUrl.pathname = `/${locale}${pathname}`
+    return NextResponse.redirect(request.nextUrl)
 }
 
 export const config = {

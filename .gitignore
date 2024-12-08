@@ -37,3 +37,6 @@ next-env.d.ts
 
 # blog contents
 contents/images/
+
+# before in root
+/before/
