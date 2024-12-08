@@ -93,7 +93,7 @@ const Category: React.FC<Props> = ({ posts }) => {
       <div className="my-56"></div>
 
       {/* Category Area */}
-      <div className="dark:bg-neutral-900">
+      <div>
         {posts.length > 0 && (
           <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
             {categoryName}
