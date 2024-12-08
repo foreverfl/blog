@@ -4,6 +4,25 @@ import { Db, MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import { filePaths } from "@/contents/mdxFiles";
 import crypto from "crypto";
 
+interface Comment {
+  _id: ObjectId; // 댓글 ID
+  userEmail: string; // 작성자 이메일
+  username: string; // 작성자 이름
+  photo: string; // 프로필 사진 URL
+  comment: string; // 댓글 내용
+  userCreatedAt: Date; // 댓글 생성 시간
+  adminComment: string; // 관리자 댓글
+  adminCreatedAt: Date | null; // 관리자 댓글 생성 시간
+}
+
+interface Post {
+  _id: ObjectId; // 게시물 ID
+  pathHash: string; // 게시물 경로 해시
+  comments: Comment[]; // 댓글 배열
+  likes: string[]; // 좋아요 사용자 목록
+  path: string; // 게시물 경로
+}
+
 // 환경 변수에서 URI 가져오기
 const uri = process.env.MONGODB_URI!;
 const client = new MongoClient(uri, {
@@ -131,7 +150,7 @@ export async function addLikeToPost(pathHash: string, userEmail: string) {
 
 export async function removeLikeFromPost(pathHash: string, userEmail: string) {
   const db = await connectDB();
-  const postsCollection = db.collection("posts");
+  const postsCollection = db.collection<Post>("posts");
 
   const result = await postsCollection.updateOne(
     { pathHash },
@@ -169,7 +188,7 @@ export async function checkLikeStatus(pathHash: string, userEmail: string) {
 // Comment CRUD - User
 export async function addUserCommentToPost(pathHash: string, commentData: any) {
   const db = await connectDB();
-  const postsCollection = db.collection("posts");
+  const postsCollection = db.collection<Post>("posts");
 
   const comment = {
     _id: new ObjectId(),
@@ -178,7 +197,7 @@ export async function addUserCommentToPost(pathHash: string, commentData: any) {
     photo: commentData.photo,
     comment: commentData.comment,
     userCreatedAt: new Date(),
-    admincomment: "",
+    adminComment: "",
     adminCreatedAt: null,
   };
 
@@ -197,7 +216,7 @@ export async function updateUserComment(
   newComment: string
 ) {
   const db = await connectDB();
-  const postsCollection = db.collection("posts");
+  const postsCollection = db.collection<Post>("posts");
 
   const result = await postsCollection.updateOne(
     { pathHash, "comments._id": new ObjectId(commentId) },
@@ -214,7 +233,7 @@ export async function deleteComment(
   userEmail: string
 ) {
   const db = await connectDB();
-  const postsCollection = db.collection("posts");
+  const postsCollection = db.collection<Post>("posts");
 
   const result = await postsCollection.updateOne(
     { pathHash },
