@@ -257,13 +257,13 @@ export async function getCommentsForPost(pathHash: string) {
 }
 
 // Comment CRUD - Admin
-export async function addAdminComment(
+export async function upsertAdminComment(
   pathHash: string,
   commentId: string,
   adminComment: string
 ) {
   const db = await connectDB();
-  const postsCollection = db.collection("posts");
+  const postsCollection = db.collection<Post>("posts");
 
   const result = await postsCollection.updateOne(
     { pathHash, "comments._id": new ObjectId(commentId) },
@@ -272,28 +272,12 @@ export async function addAdminComment(
         "comments.$.adminComment": adminComment,
         "comments.$.adminCreatedAt": new Date(),
       },
-    }
-  );
-  return result;
-}
-
-export async function updateAdminComment(
-  pathHash: string,
-  commentId: string,
-  newAdminComment: string
-) {
-  const db = await connectDB();
-  const postsCollection = db.collection("posts");
-
-  const result = await postsCollection.updateOne(
-    { pathHash, "comments._id": new ObjectId(commentId) },
+    },
     {
-      $set: {
-        "comments.$.adminComment": newAdminComment,
-        "comments.$.adminCreatedAt": new Date(),
-      },
+      upsert: false,
     }
   );
+
   return result;
 }
 
