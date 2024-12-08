@@ -32,7 +32,6 @@ export default async function Page({
         <div className="my-56"></div>
         {content}
         <div className="my-56"></div>
-
         <Good />
         <Comment />
       </div>
