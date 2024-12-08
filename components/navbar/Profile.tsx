@@ -99,7 +99,7 @@ const Profile: React.FC<ProfileProps> = ({
         <>
           {/* 프로필 버튼 */}
           <button
-            className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black p-2 overflow-hidden"
+            className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black overflow-hidden"
             onClick={toggleProfile}
           >
             <Image
@@ -107,7 +107,7 @@ const Profile: React.FC<ProfileProps> = ({
               alt={userData?.username || "Profile"}
               width={100}
               height={100}
-              className="w-6 h-6 object-cover"
+              className="w-8 h-8 rounded-full object-cover"
             />
           </button>
 
