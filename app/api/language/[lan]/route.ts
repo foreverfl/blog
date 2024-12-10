@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { lan: string } }
+  context: { params: Promise<{ lan: string }> }
 ) {
-  const { lan } = params;
+  const { lan } = await context.params;
 
   if (!["ko", "ja"].includes(lan)) {
     return NextResponse.json(

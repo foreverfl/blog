@@ -8,7 +8,7 @@ export default async function Index({
 }: {
   params: { classification: string; category: string };
 }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const lan = cookieStore.get("lan")?.value || "ja";
   const { classification, category } = params;
 
