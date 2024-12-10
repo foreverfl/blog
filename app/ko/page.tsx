@@ -4,7 +4,7 @@ import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
 import { cookies } from "next/headers";
 
 export default async function Index() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const lan = cookieStore.get("lan")?.value || "ja";
   const frontMatters = await getAllPostFrontMatters(lan);
 

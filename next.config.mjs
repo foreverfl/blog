@@ -9,6 +9,7 @@ import rehypeSlug from "rehype-slug";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig = {
+    transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [
             {

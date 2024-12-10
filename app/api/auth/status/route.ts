@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export async function GET(req: NextRequest) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const authCookie = cookieStore.get("auth");
 
   if (!authCookie || typeof authCookie.value !== "string") {

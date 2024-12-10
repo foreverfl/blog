@@ -1,13 +1,13 @@
+import Footer from "@/components/main/Footer";
+import Navbar from "@/components/navbar/Navbar";
+import "@/styles/globals.css";
+import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 import Head from "next/head";
-import { Analytics } from "@vercel/analytics/react";
-
-import "@/styles/globals.css";
 import StoreProvider from "./StoreProvider";
-import { ThemeProvider } from "next-themes";
-import Navbar from "@/components/navbar/Navbar";
-import Footer from "@/components/main/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <Head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </Head>
@@ -32,6 +32,7 @@ export default function RootLayout({
             <Navbar />
             <main>
               {children}
+              <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID!} />
               <Analytics />
             </main>
             <Footer />

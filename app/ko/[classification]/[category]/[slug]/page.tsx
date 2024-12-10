@@ -8,13 +8,13 @@ import Comment from "@/components/main/Comment";
 export default async function Page({
   params,
 }: {
-  params: {
+  params: Promise<{
     classification: string;
     category: string;
     slug: string;
-  };
+  }>;
 }) {
-  const { classification, category, slug } = params;
+  const { classification, category, slug } = await params;
 
   const markdownFilePath = `ko/${classification}/${category}/${slug}`;
   const MarkdownComponent = mdxFiles[markdownFilePath];
