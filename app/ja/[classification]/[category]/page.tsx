@@ -6,11 +6,11 @@ import { cookies } from "next/headers";
 export default async function Index({
   params,
 }: {
-  params: { classification: string; category: string };
+  params: Promise<{ classification: string; category: string }>;
 }) {
   const cookieStore = await cookies();
   const lan = cookieStore.get("lan")?.value || "ja";
-  const { classification, category } = params;
+  const { classification, category } = await params;
 
   const frontMatters = await getAllPostFrontMatters(
     lan,
