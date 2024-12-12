@@ -1,7 +1,7 @@
 # Blog
 
 - Vercel, Cloudflare R2, MongoDB Atlas, Next.js, React, Redux를 이용해서 블로그입니다. 해당 자료는 웹서핑 및 GPT4를 참조해서 만들었습니다.
-- Mac Test!!s
+- Mac Test!! second teest!
 
 ## 목차
 
