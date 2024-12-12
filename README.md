@@ -1,6 +1,7 @@
 # Blog
 
 - Vercel, Cloudflare R2, MongoDB Atlas, Next.js, React, Redux를 이용해서 블로그입니다. 해당 자료는 웹서핑 및 GPT4를 참조해서 만들었습니다.
+- Mac Test!!s
 
 ## 목차
 
@@ -8,7 +9,7 @@
 - [프로젝트 기본 구조](#프로젝트-기본-구조)
 - [npm 기본 명령어](#npm-기본-명령어)
 - [배포 주의사항](#배포-주의사항)
-- [TypeScript](#typescript)
+- [TypeScript](#typescript)s
 - [MongoDB](#mongodb)
 - [Next.js](#nextjs)
 - [Redux in Next.js](#redux-in-nextjs)
