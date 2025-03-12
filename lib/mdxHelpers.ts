@@ -37,6 +37,14 @@ async function getFilesRecursively(dir: string): Promise<string[]> {
 }
 
 // 모든 .mdx 파일의 FrontMatter 가져오기
+/**
+ * 지정된 디렉토리의 마크다운 파일에서 모든 프론트매터를 가져옵니다.
+ *
+ * @param lan - 콘텐츠의 언어. 제공되지 않은 경우 기본 콘텐츠 디렉토리로 설정됩니다.
+ * @param classification - 콘텐츠의 분류. 디렉토리 경로를 더 좁히는 데 사용됩니다.
+ * @param category - 콘텐츠의 카테고리. 디렉토리 경로를 더 좁히는 데 사용됩니다.
+ * @returns 프론트매터 배열을 반환하는 프로미스.
+ */
 export async function getAllPostFrontMatters(
   lan?: string,
   classification?: string,
