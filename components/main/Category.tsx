@@ -62,6 +62,7 @@ const Category: React.FC<Props> = ({ posts }) => {
     const fetchData = async () => {
       try {
         const response = await fetch("/category.json");
+        console.log("response: ", response);
         const data: Classification[] = await response.json();
 
         // classification과 category가 일치하는 항목을 찾음
@@ -117,7 +118,7 @@ const Category: React.FC<Props> = ({ posts }) => {
                 <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
                   <div className="text-center w-full">
                     <p className="text-sm dark:text-neutral-300">
-                      {new Date(post.date).toISOString().split("T")[0]}
+                      {post.date}
                     </p>
                     <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
                       {post.title}
