@@ -17,7 +17,7 @@ interface Props {
   posts: FrontMatter[];
 }
 
-const Category: React.FC<Props> = ({ posts }) => {
+const AllCategory: React.FC<Props> = ({ posts }) => {
   // Utilities
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
@@ -125,4 +125,4 @@ const Category: React.FC<Props> = ({ posts }) => {
   );
 };
 
-export default Category;
+export default AllCategory;

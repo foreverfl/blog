@@ -40,3 +40,9 @@ contents/images/
 
 # before in root
 /before/
+
+# test
+.http
+
+# tmp files
+/tmp

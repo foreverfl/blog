@@ -27,9 +27,8 @@ const nextConfig = {
         ],
     },
     pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-    webpack: (config) => {
-        // Alias 설정 추가
-        return config;
+    webpack: (config) => {        
+        return config; // Alias 설정 추가
     }
 };
 
