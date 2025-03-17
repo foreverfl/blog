@@ -1,0 +1,902 @@
+[
+  {
+    "id": "de765ffcdc26e0cb",
+    "title": "Archival Storage",
+    "type": "story",
+    "url": "https://blog.dshr.org/2025/03/archival-storage.html",
+    "score": 133,
+    "by": "rbanffy",
+    "time": 1742236581
+  },
+  {
+    "id": "342000366bbdcf35",
+    "title": "Amazon plans to lay off 14,000 managerial positions to save $3.5B yearly",
+    "type": "story",
+    "url": "https://techstartups.com/2025/03/17/amazon-to-lay-off-14000-managerial-positions-to-save-3-5-billion-annually/",
+    "score": 60,
+    "by": "05bmckay",
+    "time": 1742248222
+  },
+  {
+    "id": "5d421e72bd6b75ff",
+    "title": "Show HN: OpenTimes – Free travel times between U.S. Census geographies",
+    "type": "story",
+    "url": "https://opentimes.org",
+    "score": 50,
+    "by": "dfsnow",
+    "time": 1742244052
+  },
+  {
+    "id": "5f49d4c6c364efe6",
+    "title": "Deep Learning Is Not So Mysterious or Different",
+    "type": "story",
+    "url": "https://arxiv.org/abs/2503.02113",
+    "score": 211,
+    "by": "wuubuu",
+    "time": 1742230022
+  },
+  {
+    "id": "e183d33ef53bb8cc",
+    "title": "The High Heel Problem",
+    "type": "story",
+    "url": "https://simonschreibt.de/gat/the-high-heel-problem/",
+    "score": 34,
+    "by": "lehi",
+    "time": 1742244215
+  },
+  {
+    "id": "36b18132a4272735",
+    "title": "Hidden Messages in Emojis and Hacking the US Treasury",
+    "type": "story",
+    "url": "https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking",
+    "score": 58,
+    "by": "nickagliano",
+    "time": 1741922006
+  },
+  {
+    "id": "b87a5ee9bda81953",
+    "title": "Alphabet spins out Taara – Internet over lasers",
+    "type": "story",
+    "url": "https://x.company/blog/posts/taara-graduation/",
+    "score": 72,
+    "by": "tadeegan",
+    "time": 1742230517
+  },
+  {
+    "id": "f40c8b3971e42235",
+    "title": "Luthor (YC F24) Is Hiring Ruby on Rails Engineers in San Francisco",
+    "type": "job",
+    "url": "https://www.ycombinator.com/companies/luthor/jobs/HKrdhp0-staff-senior-software-engineer-backend-fullstack",
+    "score": 1,
+    "by": "gxespino",
+    "time": 1742245228
+  },
+  {
+    "id": "785f7db8e0704360",
+    "title": "HTTP/3 is everywhere but nowhere",
+    "type": "story",
+    "url": "https://httptoolkit.com/blog/http3-quic-open-source-support-nowhere/",
+    "score": 278,
+    "by": "doener",
+    "time": 1741935759
+  },
+  {
+    "id": "de26ddb8a52e060e",
+    "title": "PrintedLabs – 3D printable optical experiment equipment",
+    "type": "story",
+    "url": "https://printedlabs.uni-bayreuth.de/en",
+    "score": 4,
+    "by": "aethertap",
+    "time": 1742123158
+  },
+  {
+    "id": "023661db9f3a9e9c",
+    "title": "Launching RDAP; sunsetting WHOIS",
+    "type": "story",
+    "url": "https://www.icann.org/en/announcements/details/icann-update-launching-rdap-sunsetting-whois-27-01-2025-en",
+    "score": 828,
+    "by": "radeeyate",
+    "time": 1742172528
+  },
+  {
+    "id": "d75a746210361179",
+    "title": "Show HN: Localscope–Limit scope of Python functions for reproducible execution",
+    "type": "story",
+    "url": "https://localscope.readthedocs.io/en/latest/",
+    "score": 49,
+    "by": "tillahoffmann",
+    "time": 1742232794
+  },
+  {
+    "id": "b5c677bb02d58e02",
+    "title": "Wall Street’s ‘Private Rooms’",
+    "type": "story",
+    "url": "https://www.bloomberg.com/news/features/2025-03-16/wall-street-s-dark-pools-grow-murkier-with-private-rooms",
+    "score": 72,
+    "by": "SirLJ",
+    "time": 1742231459
+  },
+  {
+    "id": "30860ff524d90b5a",
+    "title": "Dataminr tracked Gaza-related protests",
+    "type": "story",
+    "url": "https://theintercept.com/2025/03/17/lapd-surveillance-gaza-palestine-protests-dataminr/",
+    "score": 103,
+    "by": "jbegley",
+    "time": 1742232335
+  },
+  {
+    "id": "1bd46b6ebaaadfa2",
+    "title": "Show HN: Psychedelic animation generator; (p)art of your next trip",
+    "type": "story",
+    "url": "https://collidingscopes.github.io/liquid-shape-distortions/",
+    "score": 62,
+    "by": "getToTheChopin",
+    "time": 1741908416
+  },
+  {
+    "id": "558b3c0a0001455a",
+    "title": "Extracting content from an LCP “protected” ePub",
+    "type": "story",
+    "url": "https://shkspr.mobi/blog/2025/03/towards-extracting-content-from-an-lcp-protected-epub/",
+    "score": 128,
+    "by": "ColinWright",
+    "time": 1742129456
+  },
+  {
+    "id": "a7368846b291517f",
+    "title": "Coq-of-rust: Formal verification tool for Rust",
+    "type": "story",
+    "url": "https://github.com/formal-land/coq-of-rust",
+    "score": 103,
+    "by": "todsacerdoti",
+    "time": 1741941258
+  },
+  {
+    "id": "756bbec4d8e902ea",
+    "title": "The Alexa feature \"do not send voice recordings\" you enabled no longer available",
+    "type": "story",
+    "url": "https://discuss.systems/@dev/114161826926246661",
+    "score": 852,
+    "by": "luu",
+    "time": 1742186509
+  },
+  {
+    "id": "d7737f785d064360",
+    "title": "Occupry your next lease to negotiate a better deal",
+    "type": "story",
+    "url": "https://occupry.com",
+    "score": 27,
+    "by": "jason_archmint",
+    "time": 1742242360
+  },
+  {
+    "id": "8c617f1fd2bad38f",
+    "title": "Underware 2.0 – Open Source Infinite Cable Management",
+    "type": "story",
+    "url": "https://makerworld.com/en/models/783010-underware-2-0-infinite-cable-management",
+    "score": 119,
+    "by": "reimertz",
+    "time": 1742203773
+  },
+  {
+    "id": "b4a0d3f1f342a3a1",
+    "title": "Stupid Smart Pointers in C",
+    "type": "story",
+    "url": "http://blog.kevinalbs.com/stupid_smart_pointers",
+    "score": 57,
+    "by": "seansh",
+    "time": 1742210944
+  },
+  {
+    "id": "9e693ef2aec77d1f",
+    "title": "Copyright and the Demo Scene",
+    "type": "story",
+    "url": "https://www.datagubbe.se/scenecop/",
+    "score": 60,
+    "by": "zdw",
+    "time": 1741934333
+  },
+  {
+    "id": "f71b90f228ea6d2c",
+    "title": "Show HN: A bi-directional, persisted KV store that is faster than Redis",
+    "type": "story",
+    "url": "https://hpkv.io",
+    "score": 31,
+    "by": "mehrant",
+    "time": 1742214916
+  },
+  {
+    "id": "3d6ac1cfc5b04980",
+    "title": "The exceptional Jordan algebra (2020)",
+    "type": "story",
+    "url": "https://cp4space.hatsya.com/2020/10/28/the-exceptional-jordan-algebra/",
+    "score": 101,
+    "by": "gone35",
+    "time": 1742196626
+  },
+  {
+    "id": "7d66d851bbe16872",
+    "title": "Recommendations for designing magic numbers of binary file formats",
+    "type": "story",
+    "url": "https://hackers.town/@zwol/114155595855705796",
+    "score": 160,
+    "by": "_Microft",
+    "time": 1741982753
+  },
+  {
+    "id": "f2ded6ac24811aa8",
+    "title": "Chaos in the Cloudflare Lisbon Office",
+    "type": "story",
+    "url": "https://blog.cloudflare.com/chaos-in-cloudflare-lisbon-office-securing-the-internet-with-wave-motion/",
+    "score": 232,
+    "by": "jgrahamc",
+    "time": 1742222298
+  },
+  {
+    "id": "9e7260f6b10543e7",
+    "title": "Ogres Are Cool",
+    "type": "story",
+    "url": "https://www.lrb.co.uk/the-paper/v47/n05/colin-burrow/ogres-are-cool",
+    "score": 79,
+    "by": "Vigier",
+    "time": 1742009319
+  },
+  {
+    "id": "488dd30e6da8b01e",
+    "title": "Undergraduate Disproves 40-Year-Old Conjecture, Invents New Kind of Hash Table",
+    "type": "story",
+    "url": "https://www.wired.com/story/undergraduate-upends-a-40-year-old-data-science-conjecture/",
+    "score": 197,
+    "by": "robin_reala",
+    "time": 1742217577
+  },
+  {
+    "id": "7d5c5b56494f95d4",
+    "title": "Genomic study: our capacity for language emerged at least 135k years ago",
+    "type": "story",
+    "url": "https://phys.org/news/2025-03-genomic-capacity-language-emerged-years.html",
+    "score": 99,
+    "by": "wglb",
+    "time": 1742180968
+  },
+  {
+    "id": "16f8a236fb6b8a43",
+    "title": "Conducting forensics of mobile devices to find signs of a potential compromise",
+    "type": "story",
+    "url": "https://github.com/mvt-project/mvt",
+    "score": 135,
+    "by": "34679",
+    "time": 1742181926
+  },
+  {
+    "id": "e670e92d2fdb9df3",
+    "title": "Compression of Spectral Images Using Spectral JPEG XL",
+    "type": "story",
+    "url": "https://jcgt.org/published/0014/01/04/",
+    "score": 71,
+    "by": "ksec",
+    "time": 1742110640
+  },
+  {
+    "id": "b7ce32298e5345b3",
+    "title": "Going down the rabbit hole of Git's new bundle-URI",
+    "type": "story",
+    "url": "https://blog.gitbutler.com/going-down-the-rabbit-hole-of-gits-new-bundle-uri/",
+    "score": 278,
+    "by": "chmaynard",
+    "time": 1741873106
+  },
+  {
+    "id": "de9e7581940ada75",
+    "title": "When the Dotcom Bubble Burst",
+    "type": "story",
+    "url": "https://dfarq.homeip.net/when-the-dotcom-bubble-burst/",
+    "score": 282,
+    "by": "rbanffy",
+    "time": 1742144554
+  },
+  {
+    "id": "1658fdde02fde159",
+    "title": "Show HN: EnkiTask: Lightweight Project Management for Freelancers",
+    "type": "story",
+    "url": "https://enkitask.com/",
+    "score": 63,
+    "by": "booper",
+    "time": 1742205742
+  },
+  {
+    "id": "6cf6e17844644f1f",
+    "title": "Image Processing in C (2000) [pdf]",
+    "type": "story",
+    "url": "https://homepages.inf.ed.ac.uk/rbf/BOOKS/PHILLIPS/cips2ed.pdf",
+    "score": 127,
+    "by": "nill0",
+    "time": 1741923033
+  },
+  {
+    "id": "bfc1550aaa02af64",
+    "title": "Docs – Open source alternative to Notion or Outline",
+    "type": "story",
+    "url": "https://github.com/suitenumerique/docs",
+    "score": 1788,
+    "by": "maelito",
+    "time": 1742125132
+  },
+  {
+    "id": "3162d9f531afb12b",
+    "title": "Akira ransomware can be cracked with sixteen RTX 4090 GPUs in around ten hours",
+    "type": "story",
+    "url": "https://www.tomshardware.com/tech-industry/cyber-security/akira-ransomware-cracked-with-rtx-4090-new-exploit-to-brute-force-encryption-attack",
+    "score": 124,
+    "by": "Ozarkian",
+    "time": 1742209584
+  },
+  {
+    "id": "8500797f5f56171f",
+    "title": "Zlib-rs is faster than C",
+    "type": "story",
+    "url": "https://trifectatech.org/blog/zlib-rs-is-faster-than-c/",
+    "score": 331,
+    "by": "dochtman",
+    "time": 1742153707
+  },
+  {
+    "id": "2ffee8c7816f1edd",
+    "title": "Artificial photosynthesis directed toward organic synthesis",
+    "type": "story",
+    "url": "https://www.nature.com/articles/s41467-025-56374-z",
+    "score": 71,
+    "by": "PaulHoule",
+    "time": 1741890965
+  },
+  {
+    "id": "d61c4a85f48f4fd9",
+    "title": "Converting C to ASM to specs and then to a working Z/80 Speccy tape",
+    "type": "story",
+    "url": "https://ghuntley.com/z80/",
+    "score": 73,
+    "by": "ghuntley",
+    "time": 1742210229
+  },
+  {
+    "id": "7302e52aa195972d",
+    "title": "That Time I Recreated Photoshop in C++",
+    "type": "story",
+    "url": "https://f055.net/technology/that-time-i/that-time-i-recreated-photoshop-in-c/",
+    "score": 286,
+    "by": "f055",
+    "time": 1742062935
+  },
+  {
+    "id": "2bed454b0e6486ee",
+    "title": "DiceDB",
+    "type": "story",
+    "url": "https://dicedb.io/",
+    "score": 222,
+    "by": "rainhacker",
+    "time": 1742134802
+  },
+  {
+    "id": "5803c77bc455def9",
+    "title": "How Cursor (AI IDE) Works",
+    "type": "story",
+    "url": "https://blog.sshh.io/p/how-cursor-ai-ide-works",
+    "score": 41,
+    "by": "bchelli",
+    "time": 1742192842
+  },
+  {
+    "id": "1325c965aeed01f3",
+    "title": "Amiga 600: From the Amiga No One Wanted to Retro Favorite",
+    "type": "story",
+    "url": "https://dfarq.homeip.net/amiga-600-the-amiga-no-one-wanted/",
+    "score": 153,
+    "by": "rbanffy",
+    "time": 1742146135
+  },
+  {
+    "id": "731d321ce95e28e3",
+    "title": "Show HN: I made a free IndiePa.ge Alternative to track and show your startups",
+    "type": "story",
+    "url": "https://innovativ.es",
+    "score": 8,
+    "by": "Indiemarkus",
+    "time": 1742221549
+  },
+  {
+    "id": "a54219dab0dd34f6",
+    "title": "Edgar Allan Poe's life was a mess. But his work was in his command",
+    "type": "story",
+    "url": "https://www.washingtonpost.com/books/2025/03/13/edgar-allan-poe-biography-kopley-review/",
+    "score": 127,
+    "by": "apollinaire",
+    "time": 1741979532
+  },
+  {
+    "id": "2b875ce6dc8cfa7c",
+    "title": "From Languages to Language Sets",
+    "type": "story",
+    "url": "https://gist.github.com/xixixao/8e363dbd3663b6729cd5b6d74dbbf9d4",
+    "score": 58,
+    "by": "whatever3",
+    "time": 1741936363
+  },
+  {
+    "id": "53afe46cf5bd167f",
+    "title": "Time-Series vs. Streaming Databases: Key Differences and Use Cases",
+    "type": "story",
+    "url": "https://risingwave.com/blog/streaming-vs-time-series-database-comparison/",
+    "score": 17,
+    "by": "Sheldon_fun",
+    "time": 1742202105
+  },
+  {
+    "id": "22f88c444da90b25",
+    "title": "Peru's Great Urban Experiment (2023)",
+    "type": "story",
+    "url": "https://archaeology.org/issues/may-june-2023/features/peru-chimu-chan-chan/",
+    "score": 59,
+    "by": "Thevet",
+    "time": 1742096267
+  },
+  {
+    "id": "fd905e5753d62272",
+    "title": "Everything Picolisp can do, and more",
+    "type": "story",
+    "url": "https://picolisp.com/wiki/?Documentation",
+    "score": 98,
+    "by": "damir",
+    "time": 1742154542
+  },
+  {
+    "id": "f1dbfd14a6abc733",
+    "title": "Dioxus – Fullstack crossplatform app framework for Rust",
+    "type": "story",
+    "url": "https://dioxuslabs.com/",
+    "score": 52,
+    "by": "linkdd",
+    "time": 1742175839
+  },
+  {
+    "id": "c8546fc375553efe",
+    "title": "Comet open source remote KVM from GL-iNet",
+    "type": "story",
+    "url": "https://www.gl-inet.com/products/gl-rm1/",
+    "score": 96,
+    "by": "noja",
+    "time": 1742131625
+  },
+  {
+    "id": "f7c6705f8e7957b7",
+    "title": "Local-First and Ejectable",
+    "type": "story",
+    "url": "https://thymer.com/local-first-ejectable",
+    "score": 130,
+    "by": "yamrzou",
+    "time": 1741960834
+  },
+  {
+    "id": "96d0ba05b1283435",
+    "title": "Microsoft's 1986 IPO",
+    "type": "story",
+    "url": "https://dfarq.homeip.net/microsofts-1986-ipo/",
+    "score": 112,
+    "by": "giuliomagnifico",
+    "time": 1742150490
+  },
+  {
+    "id": "083d8c6da77c41fb",
+    "title": "Laplacian Mesh Smoothing by Throwing Vertices",
+    "type": "story",
+    "url": "https://nosferalatu.com/./LaplacianMeshSmoothing.html",
+    "score": 42,
+    "by": "nosferalatu123",
+    "time": 1741825819
+  },
+  {
+    "id": "ccb2e5558c994246",
+    "title": "Building a Personal Archive with Hoarder",
+    "type": "story",
+    "url": "https://brainsteam.co.uk/2025/2/15/personal-archive-hoarder/",
+    "score": 133,
+    "by": "edward",
+    "time": 1742139988
+  },
+  {
+    "id": "39597be891fc3cda",
+    "title": "Show HN: My high school team’s space probe",
+    "type": "story",
+    "url": "https://drive.google.com/file/d/1_9V6lBTIfDsPdKCohQBc5Ed5UzDbnsrI/view?usp=sharing",
+    "score": 146,
+    "by": "JohnOfOsgiliath",
+    "time": 1742114889
+  },
+  {
+    "id": "33d1e5db6ed9e196",
+    "title": "City simulator I made in Scratch",
+    "type": "story",
+    "url": "https://scratch.mit.edu/projects/1061728417/",
+    "score": 196,
+    "by": "Annulus",
+    "time": 1741877191
+  },
+  {
+    "id": "b092f90ded584bb9",
+    "title": "High-performance computing, with much less code",
+    "type": "story",
+    "url": "https://news.mit.edu/2025/high-performance-computing-with-much-less-code-0313",
+    "score": 110,
+    "by": "mpweiher",
+    "time": 1741960390
+  },
+  {
+    "id": "d0ed9b9604e86c4e",
+    "title": "Show HN: Barcode Scanner to check if a product is European",
+    "type": "story",
+    "url": "https://www.fragdaspdf.de/en/other-tools/food-origin-scanner-tool",
+    "score": 28,
+    "by": "mnewme",
+    "time": 1742233281
+  },
+  {
+    "id": "e00741c7a01c8a22",
+    "title": "Big LLMs weights are a piece of history",
+    "type": "story",
+    "url": "https://antirez.com/news/147",
+    "score": 284,
+    "by": "freeatnet",
+    "time": 1742127204
+  },
+  {
+    "id": "1b7697820e212400",
+    "title": "A 62M-year-old skeleton sheds light on an enigmatic mammal",
+    "type": "story",
+    "url": "https://www.sciencedaily.com/releases/2025/03/250311121514.htm",
+    "score": 28,
+    "by": "docmechanic",
+    "time": 1741878188
+  },
+  {
+    "id": "24370d72d609ec12",
+    "title": "zlib-ng: zlib replacement with optimizations for \"next generation\" systems",
+    "type": "story",
+    "url": "https://github.com/zlib-ng/zlib-ng",
+    "score": 53,
+    "by": "tosh",
+    "time": 1742125513
+  },
+  {
+    "id": "77d815ed995e5135",
+    "title": "Our interfaces have lost their senses",
+    "type": "story",
+    "url": "https://wattenberger.com/thoughts/our-interfaces-have-lost-their-senses",
+    "score": 352,
+    "by": "me_smith",
+    "time": 1742148671
+  },
+  {
+    "id": "8dcdb94d5e44380f",
+    "title": "Command A: Max performance, minimal compute – 256k context window",
+    "type": "story",
+    "url": "https://cohere.com/blog/command-a",
+    "score": 71,
+    "by": "lastdong",
+    "time": 1741935726
+  },
+  {
+    "id": "342ea48231c28ebe",
+    "title": "For Delivery Workers in Latin America, Affordable E-Bikes Are a Superpower",
+    "type": "story",
+    "url": "https://reasonstobecheerful.world/e-bike-boom-delivery-workers/",
+    "score": 45,
+    "by": "PaulHoule",
+    "time": 1742134530
+  },
+  {
+    "id": "7bae47de8ddd639b",
+    "title": "A Guide to Undefined Behavior in C and C++ (2010)",
+    "type": "story",
+    "url": "https://blog.regehr.org/archives/213",
+    "score": 74,
+    "by": "GarethX",
+    "time": 1741868193
+  },
+  {
+    "id": "defe0327ef518e21",
+    "title": "Apple's long-lost hidden recovery partition from 1994 has been found",
+    "type": "story",
+    "url": "https://www.downtowndougbrown.com/2025/03/apples-long-lost-hidden-recovery-partition-from-1994-has-been-found/",
+    "score": 309,
+    "by": "chmaynard",
+    "time": 1742083623
+  },
+  {
+    "id": "d11a36a66da705ca",
+    "title": "Watching nature scenes can reduce pain, new study shows",
+    "type": "story",
+    "url": "https://news.exeter.ac.uk/faculty-of-health-and-life-sciences/watching-nature-scenes-can-reduce-pain-new-study-shows/",
+    "score": 30,
+    "by": "jjp",
+    "time": 1742140620
+  },
+  {
+    "id": "b0acab4b667a55e2",
+    "title": "Show HN: Hyper-MCP – a single MCP server with WASM plugin system",
+    "type": "story",
+    "url": "https://github.com/tuananh/hyper-mcp",
+    "score": 14,
+    "by": "tuananh",
+    "time": 1742186906
+  },
+  {
+    "id": "c0480fe98bed343b",
+    "title": "Show HN: Nash, I made a standalone note with single HTML file",
+    "type": "story",
+    "url": "https://keepworking.github.io/nash/",
+    "score": 506,
+    "by": "yevgenyhong",
+    "time": 1741917082
+  },
+  {
+    "id": "475d28cb31fd46aa",
+    "title": "Did the Particle Go Through the Two Slits, or Did the Wave Function?",
+    "type": "story",
+    "url": "https://profmattstrassler.com/2025/03/13/did-the-particle-go-through-the-two-slits-or-did-the-wave-function/",
+    "score": 200,
+    "by": "Tomte",
+    "time": 1741877346
+  },
+  {
+    "id": "e5722a35c34c7beb",
+    "title": "Entropy is all you need? The quest for best tokens and the new physics of LLMs",
+    "type": "story",
+    "url": "https://cds.cern.ch/record/2916519",
+    "score": 31,
+    "by": "napsternxg",
+    "time": 1742140661
+  },
+  {
+    "id": "304eb9b0f1d988f3",
+    "title": "Tj-actions/changed-files GitHub Action Compromised – used by over 23K repos",
+    "type": "story",
+    "url": "https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised",
+    "score": 261,
+    "by": "varunsharma07",
+    "time": 1741991386
+  },
+  {
+    "id": "4a7e3d4723950c8d",
+    "title": "Teach, Don't Tell (2013)",
+    "type": "story",
+    "url": "https://stevelosh.com/blog/2013/09/teach-dont-tell/",
+    "score": 199,
+    "by": "Tomte",
+    "time": 1742147742
+  },
+  {
+    "id": "ac4cebb040cc14c2",
+    "title": "Sketch-of-Thought: Efficient LLM Reasoning",
+    "type": "story",
+    "url": "https://arxiv.org/abs/2503.05179",
+    "score": 40,
+    "by": "cal85",
+    "time": 1742131037
+  },
+  {
+    "id": "fdc30035ce726e03",
+    "title": "Are you cleaning your water bottle enough?",
+    "type": "story",
+    "url": "https://www.bbc.com/future/article/20250317-how-often-should-you-clean-your-water-bottle-and-what-is-the-best-way",
+    "score": 18,
+    "by": "dabinat",
+    "time": 1742224571
+  },
+  {
+    "id": "cd80176c39f1c2f5",
+    "title": "I'm Peter Roberts, immigration attorney who does work for YC and startups. AMA",
+    "type": "story",
+    "url": null,
+    "score": 288,
+    "by": "proberts",
+    "time": 1741963140
+  },
+  {
+    "id": "4b55720488755196",
+    "title": "A Princely Ploy: Inside the Ruse of a French-Armenian Scammer",
+    "type": "story",
+    "url": "https://publicdomainreview.org/essay/a-princely-ploy/",
+    "score": 29,
+    "by": "pepys",
+    "time": 1741930783
+  },
+  {
+    "id": "fa299b64b7a1b225",
+    "title": "Sign in as anyone: Bypassing SAML SSO authentication with parser differentials",
+    "type": "story",
+    "url": "https://github.blog/security/sign-in-as-anyone-bypassing-saml-sso-authentication-with-parser-differentials/",
+    "score": 303,
+    "by": "campuscodi",
+    "time": 1742065561
+  },
+  {
+    "id": "f992db6fb4aa0d47",
+    "title": "Decrypting encrypted files from Akira ransomware using a bunch of GPUs",
+    "type": "story",
+    "url": "https://tinyhack.com/2025/03/13/decrypting-encrypted-files-from-akira-ransomware-linux-esxi-variant-2024-using-a-bunch-of-gpus/",
+    "score": 253,
+    "by": "costco",
+    "time": 1741974333
+  },
+  {
+    "id": "96d3557210a799ad",
+    "title": "Milk Kanban",
+    "type": "story",
+    "url": "https://brodzinski.com/2025/03/milk-kanban.html",
+    "score": 424,
+    "by": "ladronevincet",
+    "time": 1742052722
+  },
+  {
+    "id": "dc709faf25ae3100",
+    "title": "More pro for the DEC Professional 380 (featuring PRO/VENIX)",
+    "type": "story",
+    "url": "http://oldvcr.blogspot.com/2025/03/more-pro-for-dec-professional-380.html",
+    "score": 49,
+    "by": "classichasclass",
+    "time": 1742092319
+  },
+  {
+    "id": "db0ef338caa03dbb",
+    "title": "Raytracing on Intel's Arc B580",
+    "type": "story",
+    "url": "https://chipsandcheese.com/p/raytracing-on-intels-arc-b580",
+    "score": 98,
+    "by": "rbanffy",
+    "time": 1742126470
+  },
+  {
+    "id": "56fe0015e709ae09",
+    "title": "380M-year-old fossils dumped in landfill after college didn't pay UPS bill",
+    "type": "story",
+    "url": "https://www.nbcnews.com/news/us-news/380-million-year-old-fossils-dumped-landfill-new-jersey-college-didnt-rcna196769",
+    "score": 7,
+    "by": "impish9208",
+    "time": 1742246480
+  },
+  {
+    "id": "bf3b8aaa5451cc83",
+    "title": "Gene Winfield, One of History's Greatest Hot-Rodders, Dies at 97",
+    "type": "story",
+    "url": "https://www.thedrive.com/news/gene-winfield-one-of-historys-greatest-hot-rodders-dies-at-97",
+    "score": 16,
+    "by": "PaulHoule",
+    "time": 1742175235
+  },
+  {
+    "id": "cf6d0c0c6fc29636",
+    "title": "The curious surge of productivity in U.S. restaurants",
+    "type": "story",
+    "url": "https://bfi.uchicago.edu/working-papers/the-curious-surge-of-productivity-in-u-s-restaurants/",
+    "score": 156,
+    "by": "ryan_j_naughton",
+    "time": 1741972338
+  },
+  {
+    "id": "a7a0613724078e2f",
+    "title": "Amazon Is Discontinuing the \"Do Not Send Voice Recordings\" Feature on Echo",
+    "type": "story",
+    "url": "https://www.resetera.com/threads/amazon-is-discontinuing-the-do-not-send-voice-recordings-feature-on-echo-devices-starting-march-28th-2025-voice-recordings-will-be-sent-to-amazon.1134942/",
+    "score": 177,
+    "by": "nickthegreek",
+    "time": 1741975820
+  },
+  {
+    "id": "7daa723960a4a1da",
+    "title": "Show HN: Metacheck – preview how any link appears on social media and chat apps",
+    "type": "story",
+    "url": "https://metacheck.appstate.co/",
+    "score": 155,
+    "by": "talljohnson1234",
+    "time": 1741726425
+  },
+  {
+    "id": "87f771e69ddae23e",
+    "title": "DeepSeek focuses on research over revenue",
+    "type": "story",
+    "url": "https://www.ft.com/content/fb5c11bb-1d4b-465f-8283-451a19a3d425",
+    "score": 189,
+    "by": "gitgudflea",
+    "time": 1741939673
+  },
+  {
+    "id": "ec8d359202d2279a",
+    "title": "Animation breakthrough makes it possible to better illustrate Black hair",
+    "type": "story",
+    "url": "https://www.npr.org/2025/03/16/nx-s1-5327498/an-animation-breakthrough-makes-it-possible-to-more-accurately-illustrates-black-hair",
+    "score": 13,
+    "by": "rak",
+    "time": 1742160393
+  },
+  {
+    "id": "efb3eef057bb9982",
+    "title": "Show HN: Aiopandas – Async .apply() and .map() for Pandas, Faster API/LLMs Calls",
+    "type": "story",
+    "url": "https://github.com/telekinesis-inc/aiopandas",
+    "score": 61,
+    "by": "eneuman",
+    "time": 1742065441
+  },
+  {
+    "id": "9a0ca26c20ab9308",
+    "title": "Strengthening AI Agent Hijacking Evaluations",
+    "type": "story",
+    "url": "https://www.nist.gov/news-events/news/2025/01/technical-blog-strengthening-ai-agent-hijacking-evaluations",
+    "score": 43,
+    "by": "StatsAreFun",
+    "time": 1741819083
+  },
+  {
+    "id": "ac4925143a6ff6f9",
+    "title": "Mayo Clinic's secret weapon against AI hallucinations: Reverse RAG in action",
+    "type": "story",
+    "url": "https://venturebeat.com/ai/mayo-clinic-secret-weapon-against-ai-hallucinations-reverse-rag-in-action/",
+    "score": 184,
+    "by": "ohjeez",
+    "time": 1741724503
+  },
+  {
+    "id": "c3e5be64b48d29b5",
+    "title": "Why SSDs slow down, and how to avoid it",
+    "type": "story",
+    "url": "https://eclecticlight.co/2025/03/17/why-ssds-slow-down-and-how-to-avoid-it/",
+    "score": 28,
+    "by": "ingve",
+    "time": 1742197608
+  },
+  {
+    "id": "219cb83201314a0d",
+    "title": "Ask HN: Any insider takes on Yann LeCun's push against current architectures?",
+    "type": "story",
+    "url": null,
+    "score": 371,
+    "by": "vessenes",
+    "time": 1741635697
+  },
+  {
+    "id": "c0291cd51c1fa934",
+    "title": "Finding Signal in the Noise: Machine Learning and the Markets (Jane Street)",
+    "type": "story",
+    "url": "https://signalsandthreads.com/finding-signal-in-the-noise/",
+    "score": 178,
+    "by": "lewiscarson",
+    "time": 1741950612
+  },
+  {
+    "id": "21d18aebb71ed604",
+    "title": "Leprechauns of Software Engineering",
+    "type": "story",
+    "url": "https://markgreville.ie/2025/03/17/book-review-leprechauns-of-software-engineering/",
+    "score": 41,
+    "by": "gHeadphone",
+    "time": 1742215860
+  },
+  {
+    "id": "1f066829220c93ea",
+    "title": "\"Wait, not like that\": Free and open access in the age of generative AI",
+    "type": "story",
+    "url": "https://www.citationneeded.news/free-and-open-access-in-the-age-of-generative-ai/",
+    "score": 122,
+    "by": "thinkingemote",
+    "time": 1742145813
+  },
+  {
+    "id": "2e27f639c8653472",
+    "title": "Career Advice in 2025",
+    "type": "story",
+    "url": "https://lethain.com/career-advice-2025/",
+    "score": 294,
+    "by": "herbertl",
+    "time": 1742082104
+  }
+]

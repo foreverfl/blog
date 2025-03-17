@@ -5,11 +5,11 @@ import path from "path";
 
 
 const HN_API_BASE = "https://hacker-news.firebaseio.com/v0";
-const TMP_DIR = path.join(process.cwd(), "tmp");
-const FILE_PATH = path.join(TMP_DIR, `${getTodayKST()}.json`);
+const HN_DIR = path.join(process.cwd(), "contents", "hackernews");
+const FILE_PATH = path.join(HN_DIR, `${getTodayKST()}.json`);
 
-if (!fs.existsSync(TMP_DIR)) {
-  fs.mkdirSync(TMP_DIR);
+if (!fs.existsSync(HN_DIR)) {
+  fs.mkdirSync(HN_DIR);
 }
 
 /**
@@ -35,16 +35,40 @@ function saveToFile(data: any) {
   fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2), "utf8");
 }
 
+/**
+ * Load data from file if exists
+ */
+function loadFromFile(filePath: string): any | null {
+  if (fs.existsSync(filePath)) {
+    console.log(`📂 Loading cached data from ${filePath}`);
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  }
+  return null;
+}
 
 export async function GET() {
   try {
-    // 1. Fetch the list of top story IDs from Hacker News
+
+    // 1. Check if the data is already cached for today
+    const todayFilePath = path.join(HN_DIR, `${getTodayKST()}.json`);
+
+    if (!fs.existsSync(HN_DIR)) {
+      fs.mkdirSync(HN_DIR, { recursive: true });
+    }
+
+    const cachedData = loadFromFile(todayFilePath);
+    if (cachedData) {
+      return NextResponse.json(cachedData);
+    }
+
+    // 2. Fetch the list of top story IDs from Hacker News
+    console.log("🔄 Fetching new data from HackerNews API...");
     const topStoriesRes = await fetch(`${HN_API_BASE}/topstories.json`);
     const topStoryIds: number[] = await topStoriesRes.json();
-    const top50Stories = topStoryIds.slice(0, 50); 
+    const top100Stories = topStoryIds.slice(0, 100); 
 
     // 3. Fetch detailed information for each story (parallel requests)
-    const newsPromises = top50Stories.map(async (id) => {
+    const newsPromises = top100Stories.map(async (id) => {
       const newsRes = await fetch(`${HN_API_BASE}/item/${id}.json`);
       const newsData = await newsRes.json();
 
@@ -56,7 +80,6 @@ export async function GET() {
         score: newsData.score,
         by: newsData.by,
         time: newsData.time,
-        content: null, 
       };
     });
 
