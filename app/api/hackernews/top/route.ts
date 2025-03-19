@@ -80,6 +80,7 @@ export async function GET() {
         score: newsData.score,
         by: newsData.by,
         time: newsData.time,
+        content: newsData.content || null,
       };
     });
 

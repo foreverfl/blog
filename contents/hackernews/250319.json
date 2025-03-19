@@ -1,0 +1,902 @@
+[
+  {
+    "id": "8c378ed9b2e8e874",
+    "title": "The Lost Art of Research as Leisure",
+    "type": "story",
+    "url": "https://kasurian.com/p/research-as-leisure",
+    "score": 152,
+    "by": "altilunium",
+    "time": 1742378955
+  },
+  {
+    "id": "e7ee0e9074a17dac",
+    "title": "Two new PebbleOS watches",
+    "type": "story",
+    "url": "https://ericmigi.com/blog/introducing-two-new-pebbleos-watches/",
+    "score": 1431,
+    "by": "griffinli",
+    "time": 1742313567
+  },
+  {
+    "id": "bacbf8401f95bccf",
+    "title": "Make Ubuntu packages 90% faster by rebuilding them",
+    "type": "story",
+    "url": "https://gist.github.com/jwbee/7e8b27e298de8bbbf8abfa4c232db097",
+    "score": 440,
+    "by": "jeffbee",
+    "time": 1742342117
+  },
+  {
+    "id": "a6dae6ac14ad6917",
+    "title": "Apple restricts Pebble from being awesome with iPhones",
+    "type": "story",
+    "url": "https://ericmigi.com/blog/apple-restricts-pebble-from-being-awesome-with-iphones/",
+    "score": 1539,
+    "by": "griffinli",
+    "time": 1742315001
+  },
+  {
+    "id": "3ff70908610a5991",
+    "title": "Visualising data structures and algorithms through animation",
+    "type": "story",
+    "url": "https://visualgo.net/en",
+    "score": 168,
+    "by": "tharuntechie",
+    "time": 1742127569
+  },
+  {
+    "id": "4cf4762ae53bcf95",
+    "title": "Show HN: I made a tool to port tweets to Bluesky mantaining their original date",
+    "type": "story",
+    "url": "https://bluemigrate.com",
+    "score": 434,
+    "by": "nols05",
+    "time": 1742317659
+  },
+  {
+    "id": "92f23f0fa1c9e23b",
+    "title": "Selective async commits in PostgreSQL – balancing durability and performance",
+    "type": "story",
+    "url": "https://www.shayon.dev/post/2025/75/selective-asynchronous-commits-in-postgresql-balancing-durability-and-performance/",
+    "score": 45,
+    "by": "shayonj",
+    "time": 1742145842
+  },
+  {
+    "id": "791a0c714571a12d",
+    "title": "Some notes on Grafana Loki's new \"structured metadata\"",
+    "type": "story",
+    "url": "https://utcc.utoronto.ca/~cks/space/blog/sysadmin/GrafanaLokiStructuredMetadata",
+    "score": 79,
+    "by": "valyala",
+    "time": 1742121537
+  },
+  {
+    "id": "318bdd854ded5e3f",
+    "title": "Google to buy Wiz for $32B",
+    "type": "story",
+    "url": "https://www.reuters.com/technology/cybersecurity/google-agrees-buy-cybersecurity-startup-wiz-32-bln-ft-reports-2025-03-18/",
+    "score": 520,
+    "by": "uncertainrhymes",
+    "time": 1742300309
+  },
+  {
+    "id": "b326c1dc8ca14ec0",
+    "title": "Designing Electronics That Work",
+    "type": "story",
+    "url": "https://www.hscott.net/designing-electronics-that-work/",
+    "score": 244,
+    "by": "teleforce",
+    "time": 1742314688
+  },
+  {
+    "id": "cfe168162fdc1492",
+    "title": "I think we need a bigger boot partition",
+    "type": "story",
+    "url": "https://blog.fernvenue.com/archives/i-think-we-need-a-bigger-boot-partition/",
+    "score": 7,
+    "by": "fernvenue",
+    "time": 1742045544
+  },
+  {
+    "id": "176428b1cab1695d",
+    "title": "Crew-9 Returns to Earth",
+    "type": "story",
+    "url": "https://www.spacex.com/launches/mission/?missionId=crew-9-return",
+    "score": 279,
+    "by": "saikatsg",
+    "time": 1742362372
+  },
+  {
+    "id": "aa4fd4201b807832",
+    "title": "HTTrack Website Copier",
+    "type": "story",
+    "url": "https://www.httrack.com/",
+    "score": 179,
+    "by": "yamrzou",
+    "time": 1742319013
+  },
+  {
+    "id": "f2e68331fbe53fbd",
+    "title": "Intel AVX10 Drops Optional 512-Bit: No AVX10 256-Bit Only E-Cores in the Future",
+    "type": "story",
+    "url": "https://www.phoronix.com/news/Intel-AVX10-Drops-256-Bit",
+    "score": 20,
+    "by": "doener",
+    "time": 1742383451
+  },
+  {
+    "id": "07441d85354f9b4b",
+    "title": "Indiana Pi Bill",
+    "type": "story",
+    "url": "https://en.wikipedia.org/wiki/Indiana_pi_bill",
+    "score": 11,
+    "by": "ZeljkoS",
+    "time": 1742384929
+  },
+  {
+    "id": "24b5b01735a14e76",
+    "title": "SheepShaver is an open source PowerPC Apple Macintosh emulator",
+    "type": "story",
+    "url": "https://www.emaculation.com/doku.php/sheepshaver",
+    "score": 104,
+    "by": "janandonly",
+    "time": 1742121122
+  },
+  {
+    "id": "f8b5cc5bb6502146",
+    "title": "Karatsuba Matrix Multiplication and Its Efficient Hardware Implementations",
+    "type": "story",
+    "url": "https://arxiv.org/abs/2501.08889",
+    "score": 120,
+    "by": "emacs28",
+    "time": 1742043310
+  },
+  {
+    "id": "6255871c852b811f",
+    "title": "US appeals court rules AI generated art cannot be copyrighted",
+    "type": "story",
+    "url": "https://www.reuters.com/world/us/us-appeals-court-rejects-copyrights-ai-generated-art-lacking-human-creator-2025-03-18/",
+    "score": 640,
+    "by": "rvz",
+    "time": 1742321853
+  },
+  {
+    "id": "16da57f692513ef1",
+    "title": "Show HN: \"Git who\" – A new CLI tool for industrial-scale Git blaming",
+    "type": "story",
+    "url": "https://github.com/sinclairtarget/git-who",
+    "score": 207,
+    "by": "weebst",
+    "time": 1742329209
+  },
+  {
+    "id": "4769f1ab3d0e892b",
+    "title": "Everything Is Broken: Shipping Rust-Minidump at Mozilla",
+    "type": "story",
+    "url": "https://hacks.mozilla.org/2022/06/everything-is-broken-shipping-rust-minidump-at-mozilla/",
+    "score": 19,
+    "by": "chautumn",
+    "time": 1742380920
+  },
+  {
+    "id": "4778e15ca9245351",
+    "title": "Small Archives",
+    "type": "story",
+    "url": "https://helloruby.substack.com/p/no-95-small-archives-without-blurs",
+    "score": 17,
+    "by": "benbreen",
+    "time": 1742161574
+  },
+  {
+    "id": "342ea48231c28ebe",
+    "title": "For Delivery Workers in Latin America, Affordable E-Bikes Are a Superpower",
+    "type": "story",
+    "url": "https://reasonstobecheerful.world/e-bike-boom-delivery-workers/",
+    "score": 67,
+    "by": "PaulHoule",
+    "time": 1742134530
+  },
+  {
+    "id": "3e2d2d888ab07221",
+    "title": "Tesla loses ground as Chinese EVs dominate global markets",
+    "type": "story",
+    "url": "https://restofworld.org/2025/tesla-loses-ground-chinese-ev-dominate-global-markets/",
+    "score": 65,
+    "by": "donohoe",
+    "time": 1742383558
+  },
+  {
+    "id": "bc64c3c0571508da",
+    "title": "This is no world for an axolotl",
+    "type": "story",
+    "url": "https://english.elpais.com/eps/2025-03-15/this-is-no-world-for-an-axolotl.html",
+    "score": 150,
+    "by": "geox",
+    "time": 1742056011
+  },
+  {
+    "id": "419931ac4a1ae069",
+    "title": "Nvidia Dynamo: A Datacenter Scale Distributed Inference Serving Framework",
+    "type": "story",
+    "url": "https://github.com/ai-dynamo/dynamo",
+    "score": 136,
+    "by": "ashvardanian",
+    "time": 1742330654
+  },
+  {
+    "id": "4ee2a382ce73e624",
+    "title": "The Document Culture of Amazon (2021)",
+    "type": "story",
+    "url": "https://justingarrison.com/blog/2021-03-15-the-document-culture-of-amazon/",
+    "score": 10,
+    "by": "Tomte",
+    "time": 1742383950
+  },
+  {
+    "id": "2cfa3df0e29a6544",
+    "title": "Show HN: I made a live multiplayer Minesweeper game",
+    "type": "story",
+    "url": "https://www.minesweeperpro.com/",
+    "score": 213,
+    "by": "bluelegacy",
+    "time": 1742296664
+  },
+  {
+    "id": "d1b41039c1f2ee27",
+    "title": "20 Years of YC / HN",
+    "type": "story",
+    "url": "https://vickiboykis.com/2025/03/17/20-years-of-yc/",
+    "score": 142,
+    "by": "mooreds",
+    "time": 1742262738
+  },
+  {
+    "id": "d68e7e35efbaec6b",
+    "title": "The \"Memory Cartography\" of Azerbaijani Emigrants",
+    "type": "story",
+    "url": "https://jam-news.net/memory-cartography-of-azerbaijani-emigrants/",
+    "score": 20,
+    "by": "bryanrasmussen",
+    "time": 1742275931
+  },
+  {
+    "id": "e2e27425bd8683c6",
+    "title": "SheepIt Render Farm server code goes open source",
+    "type": "story",
+    "url": "https://gitlab.com/sheepitrenderfarm",
+    "score": 156,
+    "by": "hyperific",
+    "time": 1741999342
+  },
+  {
+    "id": "5037200ebbd8edbe",
+    "title": "Spaceium Inc (YC S24) Is Hiring a Software Engineer",
+    "type": "job",
+    "url": "https://www.ycombinator.com/companies/spaceium-inc/jobs/XGMVnH3-software-engineer",
+    "score": 1,
+    "by": "Ashi24",
+    "time": 1742317276
+  },
+  {
+    "id": "1ae41f22bcb9e336",
+    "title": "Apple Loses Top Court Fight Over German Antitrust Crackdown",
+    "type": "story",
+    "url": "https://www.bloomberg.com/news/articles/2025-03-18/apple-loses-top-court-fight-against-german-antitrust-crackdown",
+    "score": 9,
+    "by": "jocaal",
+    "time": 1742380612
+  },
+  {
+    "id": "5082d49b030f5305",
+    "title": "Block YouTube ads on AppleTV by decrypting and stripping ads from Profobuf (2022)",
+    "type": "story",
+    "url": "https://ericdraken.com/pfsense-decrypt-ad-traffic/",
+    "score": 712,
+    "by": "udev4096",
+    "time": 1742284790
+  },
+  {
+    "id": "1a7131f2b6781f58",
+    "title": "Rippling sues Deel over spying",
+    "type": "story",
+    "url": "https://twitter.com/parkerconrad/status/1901615179718406276",
+    "score": 505,
+    "by": "amacneil",
+    "time": 1742216632
+  },
+  {
+    "id": "f8a1a51c9adb0b11",
+    "title": "Ask HN: How Do I Escape Homelessness After Rebuilding My Mental Health?",
+    "type": "story",
+    "url": null,
+    "score": 289,
+    "by": "gremlinsinc",
+    "time": 1742319741
+  },
+  {
+    "id": "eb8c9b21347f072b",
+    "title": "The Dark Crystal: Age of Resistance Is a Stone-Cold Masterpiece",
+    "type": "story",
+    "url": "https://gizmodo.com/reminder-the-dark-crystal-age-of-resistance-is-a-stone-cold-masterpiece-2000574613",
+    "score": 198,
+    "by": "adrian_mrd",
+    "time": 1741987135
+  },
+  {
+    "id": "6ed0368588c59660",
+    "title": "A Tale of Four Kernels [pdf] (2008)",
+    "type": "story",
+    "url": "https://users.csc.calpoly.edu/~djanzen/courses/509S09/papers/FourKernels.pdf",
+    "score": 57,
+    "by": "pcfwik",
+    "time": 1742329527
+  },
+  {
+    "id": "08eb9bb76f97f431",
+    "title": "Building AI agents to query your databases",
+    "type": "story",
+    "url": "https://blog.dust.tt/spreadsheets-databases-and-beyond-creating-a-universal-ai-query-layer/",
+    "score": 170,
+    "by": "vortex_ape",
+    "time": 1741949461
+  },
+  {
+    "id": "5336421afca042b9",
+    "title": "Dear hosters, you are selling wood, not furniture",
+    "type": "story",
+    "url": "https://berthub.eu/articles/posts/dear-hosting-providers-you-sell-lumber-and-not-furniture/",
+    "score": 32,
+    "by": "zdw",
+    "time": 1742342024
+  },
+  {
+    "id": "44374b58ca2a46cf",
+    "title": "Verification-First Development",
+    "type": "story",
+    "url": "https://buttondown.com/hillelwayne/archive/verification-first-development/",
+    "score": 54,
+    "by": "vinipolicena",
+    "time": 1742318811
+  },
+  {
+    "id": "4227b141824b2f71",
+    "title": "Apple M4 MacBook Air review: I have no notes",
+    "type": "story",
+    "url": "https://arstechnica.com/apple/2025/03/apple-m4-macbook-air-review-i-have-no-notes/",
+    "score": 47,
+    "by": "tosh",
+    "time": 1742385959
+  },
+  {
+    "id": "f32bf38160337529",
+    "title": "Fedora 42 Beta",
+    "type": "story",
+    "url": "https://www.redhat.com/en/blog/fedora-42-beta-now-available",
+    "score": 186,
+    "by": "meysamazad",
+    "time": 1742316497
+  },
+  {
+    "id": "24199570765a514e",
+    "title": "Show HN: I converted my notebook into a searchable database of IT keywords",
+    "type": "story",
+    "url": "https://techbook.digital/",
+    "score": 65,
+    "by": "jurajstefanic",
+    "time": 1742303077
+  },
+  {
+    "id": "fd169915a813a33d",
+    "title": "Amazon's robotaxi unit Zoox recalls 258 vehicles over unexpected braking issue",
+    "type": "story",
+    "url": "https://www.reuters.com/business/autos-transportation/amazons-robotaxi-unit-zoox-recalls-258-vehicles-over-unexpected-braking-issue-2025-03-19/",
+    "score": 3,
+    "by": "lopkeny12ko",
+    "time": 1742382351
+  },
+  {
+    "id": "71e2dfa00c16dd7e",
+    "title": "Stamina Is a Quiet Advantage",
+    "type": "story",
+    "url": "https://kupajo.com/stamina-is-a-quiet-advantage/",
+    "score": 196,
+    "by": "kolyder",
+    "time": 1742300752
+  },
+  {
+    "id": "9481a3a9ab7309e9",
+    "title": "Sesame CSM: A Conversational Speech Generation Model",
+    "type": "story",
+    "url": "https://github.com/SesameAILabs/csm",
+    "score": 105,
+    "by": "tosh",
+    "time": 1741960096
+  },
+  {
+    "id": "7c29e37d6ea7701b",
+    "title": "Europe is going after Trump's Red States for Tarriffs",
+    "type": "story",
+    "url": "https://studio.youtube.com/video/nE-DmDYmSio/edit",
+    "score": 6,
+    "by": "Jacquie11",
+    "time": 1742388432
+  },
+  {
+    "id": "dac4d988d40597d3",
+    "title": "The Intenet Slum: is abandoning the Internet the next big thing? (2004)",
+    "type": "story",
+    "url": "https://www.fourmilab.ch/documents/netslum/",
+    "score": 70,
+    "by": "kimi",
+    "time": 1742368403
+  },
+  {
+    "id": "da50d937410fd9b9",
+    "title": "The Molecule of the Month",
+    "type": "story",
+    "url": "https://www.chm.bris.ac.uk/motm/motm.htm",
+    "score": 30,
+    "by": "fhlu",
+    "time": 1742375271
+  },
+  {
+    "id": "4334a3c50482fa20",
+    "title": "Reviving the modprobe_path Technique: Overcoming search_binary_handler() Patch",
+    "type": "story",
+    "url": "https://blog.theori.io/reviving-the-modprobe-path-technique-overcoming-search-binary-handler-patch-2dcb8f0fae04",
+    "score": 7,
+    "by": "todsacerdoti",
+    "time": 1742069069
+  },
+  {
+    "id": "9c86660e26b6119d",
+    "title": "Breaking Up with On-Call",
+    "type": "story",
+    "url": "https://reflector.dev/articles/breaking-up-with-on-call/",
+    "score": 142,
+    "by": "0xlosh",
+    "time": 1742129869
+  },
+  {
+    "id": "2a1022e302296e50",
+    "title": "Extracting DNA from the air – DNA evidence of human occupancy in indoor premises",
+    "type": "story",
+    "url": "https://www.nature.com/articles/s41598-023-46151-7",
+    "score": 244,
+    "by": "punnerud",
+    "time": 1742063899
+  },
+  {
+    "id": "da4284149bf11cba",
+    "title": "Chrome disabling uBlock Origin is a serious security threat",
+    "type": "story",
+    "url": "https://nuage.quimerch.com/-/ewen/articles/chrome-disabling-ublock-origin-is-a-serious-security-threat",
+    "score": 74,
+    "by": "ewenquim",
+    "time": 1742376758
+  },
+  {
+    "id": "7fdd3b409824a7ff",
+    "title": "Opentorque actuator – A powerful, compliant actuator for legged robotics",
+    "type": "story",
+    "url": "https://www.gabrael.io/new-page",
+    "score": 9,
+    "by": "nill0",
+    "time": 1742347468
+  },
+  {
+    "id": "8e99351523f666ae",
+    "title": "Underrated Soft Skills: Charisma",
+    "type": "story",
+    "url": "https://utopianengineeringsociety.substack.com/p/new-series-underrated-soft-skills",
+    "score": 120,
+    "by": "andrewstetsenko",
+    "time": 1742315574
+  },
+  {
+    "id": "a47b11455961f2fa",
+    "title": "Show HN: Cascii – A portable ASCII diagram builder written in vanilla JavaScript",
+    "type": "story",
+    "url": "https://github.com/casparwylie/cascii-core",
+    "score": 207,
+    "by": "ftr1200",
+    "time": 1742119341
+  },
+  {
+    "id": "d95eebe19eea4b0f",
+    "title": "Apple loses German antitrust fight, faces greater scrutiny",
+    "type": "story",
+    "url": "https://www.reuters.com/technology/apple-loses-german-antitrust-appeal-opening-door-greater-controls-2025-03-18/",
+    "score": 24,
+    "by": "gostsamo",
+    "time": 1742361217
+  },
+  {
+    "id": "8fddcf55e336c946",
+    "title": "The model is the product",
+    "type": "story",
+    "url": "https://vintagedata.org/blog/posts/model-is-the-product",
+    "score": 225,
+    "by": "cocoflunchy",
+    "time": 1742291797
+  },
+  {
+    "id": "2e7749321fa50f0e",
+    "title": "Digital Hygiene",
+    "type": "story",
+    "url": "https://karpathy.bearblog.dev/digital-hygiene/",
+    "score": 26,
+    "by": "yamrzou",
+    "time": 1742319772
+  },
+  {
+    "id": "023661db9f3a9e9c",
+    "title": "Launching RDAP; sunsetting WHOIS",
+    "type": "story",
+    "url": "https://www.icann.org/en/announcements/details/icann-update-launching-rdap-sunsetting-whois-27-01-2025-en",
+    "score": 870,
+    "by": "radeeyate",
+    "time": 1742172528
+  },
+  {
+    "id": "b4a0d3f1f342a3a1",
+    "title": "Stupid Smart Pointers in C",
+    "type": "story",
+    "url": "http://blog.kevinalbs.com/stupid_smart_pointers",
+    "score": 136,
+    "by": "seansh",
+    "time": 1742210944
+  },
+  {
+    "id": "33dcc5385089b5fe",
+    "title": "North Korea Launders Billions in Stolen Crypto",
+    "type": "story",
+    "url": "https://www.coindesk.com/policy/2025/03/07/here-s-how-north-korea-launders-billions-of-stolen-crypto",
+    "score": 142,
+    "by": "PaulHoule",
+    "time": 1742304346
+  },
+  {
+    "id": "750db8444cd74ad2",
+    "title": "Shopkeeper",
+    "type": "story",
+    "url": "https://www.robinsloan.com/newsletters/shopkeeper/",
+    "score": 43,
+    "by": "herbertl",
+    "time": 1742082027
+  },
+  {
+    "id": "e9a18677db7de31a",
+    "title": "Why do people keep buying printers they hate?",
+    "type": "story",
+    "url": "https://www.ft.com/content/b48b0ca3-48c7-45b8-8bc3-25e96701ffac",
+    "score": 13,
+    "by": "austinallegro",
+    "time": 1742366504
+  },
+  {
+    "id": "bfc1550aaa02af64",
+    "title": "Docs – Open source alternative to Notion or Outline",
+    "type": "story",
+    "url": "https://github.com/suitenumerique/docs",
+    "score": 1888,
+    "by": "maelito",
+    "time": 1742125132
+  },
+  {
+    "id": "49f7b894ca82bdd1",
+    "title": "WMO report documents spiralling weather and climate impacts",
+    "type": "story",
+    "url": "https://wmo.int/news/media-centre/wmo-report-documents-spiralling-weather-and-climate-impacts",
+    "score": 33,
+    "by": "dakna",
+    "time": 1742345261
+  },
+  {
+    "id": "2f9a07287cfda476",
+    "title": "Learning to Love Dandelions (2021)",
+    "type": "story",
+    "url": "https://baynature.org/2021/11/04/learning-to-love-dandelions/",
+    "score": 18,
+    "by": "some-guy",
+    "time": 1742322426
+  },
+  {
+    "id": "175ad66249355b5b",
+    "title": "Show HN: I Built an iOS app to locate stray animals",
+    "type": "story",
+    "url": "https://apps.apple.com/us/app/straysync/id6742747753",
+    "score": 74,
+    "by": "Ic3creaM",
+    "time": 1742249104
+  },
+  {
+    "id": "d7048cb87feca746",
+    "title": "Six mistakes I made in my dioramas-and-felt Steam game and one I didn't",
+    "type": "story",
+    "url": "https://novalis.org/blog/2025-03-13-six-mistakes-i-made-and-one-i-avoided.html",
+    "score": 78,
+    "by": "mjd",
+    "time": 1741970486
+  },
+  {
+    "id": "5f49d4c6c364efe6",
+    "title": "Deep Learning Is Not So Mysterious or Different",
+    "type": "story",
+    "url": "https://arxiv.org/abs/2503.02113",
+    "score": 470,
+    "by": "wuubuu",
+    "time": 1742230022
+  },
+  {
+    "id": "b87a5ee9bda81953",
+    "title": "Alphabet spins out Taara – Internet over lasers",
+    "type": "story",
+    "url": "https://x.company/blog/posts/taara-graduation/",
+    "score": 292,
+    "by": "tadeegan",
+    "time": 1742230517
+  },
+  {
+    "id": "8c617f1fd2bad38f",
+    "title": "Underware 2.0 – Open Source Infinite Cable Management",
+    "type": "story",
+    "url": "https://makerworld.com/en/models/783010-underware-2-0-infinite-cable-management",
+    "score": 212,
+    "by": "reimertz",
+    "time": 1742203773
+  },
+  {
+    "id": "1b998684fa977acd",
+    "title": "FCC to get Republican majority and plans to \"delete\" as many rules as possible",
+    "type": "story",
+    "url": "https://arstechnica.com/tech-policy/2025/03/fcc-democrat-to-resign-cementing-republican-majority-for-chairman-carr/",
+    "score": 12,
+    "by": "FollowingTheDao",
+    "time": 1742383525
+  },
+  {
+    "id": "73a12b8cbcbaf56a",
+    "title": "Theory crafting a system for 1000 simultaneous micro SD card ingests",
+    "type": "story",
+    "url": "https://forum.level1techs.com/t/theory-crafting-a-system-for-maximum-simultaneous-micro-sd-card-ingest/227159",
+    "score": 60,
+    "by": "daemontus",
+    "time": 1741950041
+  },
+  {
+    "id": "dade2ccef71bdfaa",
+    "title": "How I Stay Motivated Working on My Solo SaaS (When It Feels Like Nobody Cares)",
+    "type": "story",
+    "url": null,
+    "score": 98,
+    "by": "Sayyidalijufri",
+    "time": 1742301222
+  },
+  {
+    "id": "a7368846b291517f",
+    "title": "Coq-of-rust: Formal verification tool for Rust",
+    "type": "story",
+    "url": "https://github.com/formal-land/coq-of-rust",
+    "score": 156,
+    "by": "todsacerdoti",
+    "time": 1741941258
+  },
+  {
+    "id": "54edf40bc0508bf2",
+    "title": "Practical Process Control: Methods and Best Practices for Automatic PID Control",
+    "type": "story",
+    "url": "https://controlguru.com/table-of-contents/",
+    "score": 45,
+    "by": "Tomte",
+    "time": 1742130111
+  },
+  {
+    "id": "785f7db8e0704360",
+    "title": "HTTP/3 is everywhere but nowhere",
+    "type": "story",
+    "url": "https://httptoolkit.com/blog/http3-quic-open-source-support-nowhere/",
+    "score": 410,
+    "by": "doener",
+    "time": 1741935759
+  },
+  {
+    "id": "0673e5a228096055",
+    "title": "Artificial Intelligence: Foundations of Computational Agents",
+    "type": "story",
+    "url": "https://artint.info/index.html",
+    "score": 111,
+    "by": "rramadass",
+    "time": 1742124983
+  },
+  {
+    "id": "a5f4fc6336791a70",
+    "title": "Past and Present Futures of User Interface Design",
+    "type": "story",
+    "url": "https://www.datagubbe.se/futui/",
+    "score": 206,
+    "by": "sedboyz",
+    "time": 1742254502
+  },
+  {
+    "id": "8891e0475073cb66",
+    "title": "The race is on to build the most complex machine",
+    "type": "story",
+    "url": "https://www.economist.com/science-and-technology/2025/03/12/the-race-is-on-to-build-the-worlds-most-complex-machine",
+    "score": 113,
+    "by": "_tk_",
+    "time": 1742112216
+  },
+  {
+    "id": "742e47ca9c44cd96",
+    "title": "How to Infect Your PC in Three Easy Steps",
+    "type": "story",
+    "url": "https://krebsonsecurity.com/2025/03/clickfix-how-to-infect-your-pc-in-three-easy-steps/",
+    "score": 47,
+    "by": "LinuxBender",
+    "time": 1742252311
+  },
+  {
+    "id": "57562cb4676f696b",
+    "title": "Turkish university annuls Erdogan rival's degree, preventing run for president",
+    "type": "story",
+    "url": "https://www.reuters.com/world/asia-pacific/istanbul-university-annuls-istanbul-mayor-imamoglus-diploma-over-irregularities-2025-03-18/",
+    "score": 557,
+    "by": "perihelions",
+    "time": 1742329882
+  },
+  {
+    "id": "34b0d50063f58f6f",
+    "title": "Matching Regexps 200 Times Faster",
+    "type": "story",
+    "url": "https://eregon.me/blog/2025/03/14/matching-regexps-200-times-faster.html",
+    "score": 26,
+    "by": "todsacerdoti",
+    "time": 1741987669
+  },
+  {
+    "id": "9364f54a1e825a0a",
+    "title": "Human intelligence peaked in the early 2010s and has been in decline since",
+    "type": "story",
+    "url": "https://www.ft.com/content/a8016c64-63b7-458b-a371-e0e1c54a13fc",
+    "score": 19,
+    "by": "feverzsj",
+    "time": 1742360424
+  },
+  {
+    "id": "75105c29177310a2",
+    "title": "Microsoft quantum computing claim still lacks evidence",
+    "type": "story",
+    "url": "https://www.nature.com/articles/d41586-025-00829-2",
+    "score": 58,
+    "by": "mathgenius",
+    "time": 1742336909
+  },
+  {
+    "id": "feedc64681c6d107",
+    "title": "The PhD Metagame: Don't try to reform science – not yet",
+    "type": "story",
+    "url": "https://maxwellforbes.com/posts/dont-try-to-reform-science/",
+    "score": 141,
+    "by": "jxmorris12",
+    "time": 1742067904
+  },
+  {
+    "id": "f71b90f228ea6d2c",
+    "title": "Show HN: A bi-directional, persisted KV store that is faster than Redis",
+    "type": "story",
+    "url": "https://hpkv.io",
+    "score": 72,
+    "by": "mehrant",
+    "time": 1742214916
+  },
+  {
+    "id": "f2425066057f4206",
+    "title": "Ubuntu 25.10 plans to swap GNU coreutils for Rust",
+    "type": "story",
+    "url": "https://www.theregister.com/2025/03/19/ubuntu_2510_rust/",
+    "score": 6,
+    "by": "beardyw",
+    "time": 1742384202
+  },
+  {
+    "id": "6d7a84bfa3b8b750",
+    "title": "The Best-Kept Secret of Dutch Biking: The Dutch Hardly Bike at All (2018)",
+    "type": "story",
+    "url": "https://www.peopleforbikes.org/news/best-kept-secret-dutch-biking-dutch-hardly-bike",
+    "score": 35,
+    "by": "Tomte",
+    "time": 1742327553
+  },
+  {
+    "id": "36b18132a4272735",
+    "title": "Hidden Messages in Emojis and Hacking the US Treasury",
+    "type": "story",
+    "url": "https://slamdunksoftware.substack.com/p/hidden-messages-in-emojis-and-hacking",
+    "score": 202,
+    "by": "nickagliano",
+    "time": 1741922006
+  },
+  {
+    "id": "de765ffcdc26e0cb",
+    "title": "Archival Storage",
+    "type": "story",
+    "url": "https://blog.dshr.org/2025/03/archival-storage.html",
+    "score": 351,
+    "by": "rbanffy",
+    "time": 1742236581
+  },
+  {
+    "id": "4550c8e583d10316",
+    "title": "So you wanna go on prem (2016)",
+    "type": "story",
+    "url": "https://blog.lusis.org/blog/2016/05/15/so-you-wanna-go-onprem-do-ya/",
+    "score": 32,
+    "by": "hackerthemonkey",
+    "time": 1742113263
+  },
+  {
+    "id": "31ea99a35c08d56f",
+    "title": "The Unofficial Guide to OpenAI Realtime WebRTC API",
+    "type": "story",
+    "url": "https://webrtchacks.com/the-unofficial-guide-to-openai-realtime-webrtc-api/",
+    "score": 48,
+    "by": "feross",
+    "time": 1742302038
+  },
+  {
+    "id": "e183d33ef53bb8cc",
+    "title": "The High Heel Problem",
+    "type": "story",
+    "url": "https://simonschreibt.de/gat/the-high-heel-problem/",
+    "score": 322,
+    "by": "lehi",
+    "time": 1742244215
+  },
+  {
+    "id": "30860ff524d90b5a",
+    "title": "Dataminr tracked Gaza-related protests",
+    "type": "story",
+    "url": "https://theintercept.com/2025/03/17/lapd-surveillance-gaza-palestine-protests-dataminr/",
+    "score": 235,
+    "by": "jbegley",
+    "time": 1742232335
+  },
+  {
+    "id": "e670e92d2fdb9df3",
+    "title": "Compression of Spectral Images Using Spectral JPEG XL",
+    "type": "story",
+    "url": "https://jcgt.org/published/0014/01/04/",
+    "score": 87,
+    "by": "ksec",
+    "time": 1742110640
+  },
+  {
+    "id": "e3f9c5ad81762c48",
+    "title": "FTC Removes Posts Critical of Amazon, Microsoft, and AI Companies",
+    "type": "story",
+    "url": "https://www.wired.com/story/federal-trade-commission-removed-blogs-critical-of-ai-amazon-microsoft/",
+    "score": 293,
+    "by": "gnabgib",
+    "time": 1742322462
+  },
+  {
+    "id": "36069ccc0c0030ab",
+    "title": "Apple has revealed a Passwords app vulnerability that lasted for months",
+    "type": "story",
+    "url": "https://www.theverge.com/news/632108/apple-ios-passwords-app-bug-vulnerability-phishing-attacks",
+    "score": 31,
+    "by": "quyleanh",
+    "time": 1742340963
+  },
+  {
+    "id": "63ef0a71aacbb645",
+    "title": "Sony's new RGB backlight tech smokes regular Mini LED TVs",
+    "type": "story",
+    "url": "https://www.theverge.com/news/628977/sony-rgb-led-backlight-announced-color-mini-led-tvs",
+    "score": 18,
+    "by": "ksec",
+    "time": 1742055454
+  }
+]
