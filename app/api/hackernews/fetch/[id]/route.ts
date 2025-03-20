@@ -14,6 +14,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "There is no id" });
   }
 
+  // Fetch from API
   const foundItem = await getHackernewsItemById(id);
 
   if (!foundItem || !foundItem.url) {
@@ -21,8 +22,8 @@ export async function GET(request: Request) {
   }
 
   const content = await fetchArticleContent(foundItem.url);
-  console.log("part of content:", content?.slice(0, 100));
 
+  // Fetch from file
   const dailyFilePath = await getDailyFilePath("contents/hackernews");
   let dailyData = await readJsonFile(dailyFilePath);
 
@@ -37,6 +38,6 @@ export async function GET(request: Request) {
   const updatedItem = dailyData.find(
     (item: { id: any }) => item.id === foundItem.id
   );
-
+  
   return NextResponse.json(updatedItem);
 }
