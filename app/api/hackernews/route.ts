@@ -1,8 +1,8 @@
+import { checkBearerAuth } from "@/lib/auth";
 import { createHash } from "crypto";
 import fs from "fs";
 import { NextResponse } from "next/server";
 import path from "path";
-
 
 const HN_API_BASE = "https://hacker-news.firebaseio.com/v0";
 const HN_DIR = path.join(process.cwd(), "contents", "hackernews");
@@ -46,10 +46,14 @@ function loadFromFile(filePath: string): any | null {
   return null;
 }
 
-export async function GET() {
-  try {
+export async function GET(req: Request) {
+  const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
+  if (authResult !== true) {
+    return authResult; 
+  }
 
-    // 1. Check if the data is already cached for today
+  try {
+    // Check if the data is already cached for today
     const todayFilePath = path.join(HN_DIR, `${getTodayKST()}.json`);
 
     if (!fs.existsSync(HN_DIR)) {
@@ -61,13 +65,13 @@ export async function GET() {
       return NextResponse.json(cachedData);
     }
 
-    // 2. Fetch the list of top story IDs from Hacker News
+    // Fetch the list of top story IDs from Hacker News
     console.log("🔄 Fetching new data from HackerNews API...");
     const topStoriesRes = await fetch(`${HN_API_BASE}/topstories.json`);
     const topStoryIds: number[] = await topStoriesRes.json();
-    const top100Stories = topStoryIds.slice(0, 100); 
+    const top100Stories = topStoryIds.slice(0, 100);
 
-    // 3. Fetch detailed information for each story (parallel requests)
+    // Fetch detailed information for each story (parallel requests)
     const newsPromises = top100Stories.map(async (id) => {
       const newsRes = await fetch(`${HN_API_BASE}/item/${id}.json`);
       const newsData = await newsRes.json();
@@ -86,7 +90,7 @@ export async function GET() {
 
     const news = await Promise.all(newsPromises);
     saveToFile(news);
-    console.log("✅ HackerNews data saved:", FILE_PATH);    
+    console.log("✅ HackerNews data saved:", FILE_PATH);
 
     return NextResponse.json(news);
   } catch (error) {
