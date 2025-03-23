@@ -15,12 +15,12 @@ export async function readJsonFile(filePath: string) {
     const file = await fs.readFile(filePath, "utf-8");
     return JSON.parse(file);
   } catch (err) {
-    console.log(`${filePath} 파일이 없어 새로 생성 예정입니다.`);
+    console.log(`${filePath} not found. Will create a new file.`);
     return [];
   }
 }
 
 export async function writeJsonFile(filePath: string, data: any) {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
-  console.log(`✅ ${filePath} 에 저장 완료`);
+  console.log(`✅ Saved to ${filePath}`);
 }

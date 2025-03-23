@@ -78,13 +78,22 @@ export async function GET(req: Request) {
 
       return {
         id: generateUUID(newsData.title),
-        title: newsData.title,
+        title: {
+          en: newsData.title,
+          ko: null, 
+          ja: null, 
+        },
         type: newsData.type,
         url: newsData.url || null,
         score: newsData.score,
         by: newsData.by,
         time: newsData.time,
-        content: newsData.content || null,
+        content: null,
+        summary: {
+          en: null,
+          ko: null,
+          ja: null,
+        }
       };
     });
 

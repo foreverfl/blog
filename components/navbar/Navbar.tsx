@@ -61,7 +61,6 @@ const Navbar: React.FC = () => {
   }, [pathname, lan, isPostPage]);
 
   const handleNavbarClick = () => {
-    console.log("handleNavbarClick");
     if (window.scrollY === 0) {
       if (lan === "ko") {
         window.location.href = "/ko";

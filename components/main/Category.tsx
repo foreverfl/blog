@@ -62,7 +62,6 @@ const Category: React.FC<Props> = ({ posts }) => {
     const fetchData = async () => {
       try {
         const response = await fetch("/category.json");
-        console.log("response: ", response);
         const data: Classification[] = await response.json();
 
         // classification과 category가 일치하는 항목을 찾음

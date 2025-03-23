@@ -1,0 +1,72 @@
+import { checkBearerAuth } from "@/lib/auth";
+import { fetchContent } from "@/lib/hackernews/fetchContent";
+import { fetchArxivAbstract } from "@/lib/hackernews/fetchArxiv";
+import { fetchEconomistContent } from "@/lib/hackernews/fetchEconomist";
+import { fetchPdfContent } from "@/lib/hackernews/fetchPdfContent";
+import {
+  getDailyFilePath,
+  readJsonFile,
+  writeJsonFile,
+} from "@/lib/hackernews/fileUtils";
+import { getHackernewsItemById } from "@/lib/hackernews/getHackernewItem";
+import { NextResponse } from "next/server";
+
+type FetchContentRequestBody = {
+  id: string;
+};
+
+export async function POST(req: Request) {
+  const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
+  if (authResult !== true) {
+    return authResult;
+  }
+
+  const body: FetchContentRequestBody = await req.json();
+
+  if (!body.id) {
+    return NextResponse.json({ ok: false, error: "There is no id" });
+  }
+
+  const { id } = body;
+
+  // Fetch from API
+  const foundItem = await getHackernewsItemById(id);
+
+  if (!foundItem || !foundItem.url) {
+    return NextResponse.json({ ok: false, error: "Item or URL not found" });
+  }
+
+  let content: string | null | undefined = null;
+
+  if (foundItem.url.includes(".pdf")) {
+    content = await fetchPdfContent(foundItem.url);
+    console.log(`📄 PDF content extracted for ${foundItem.url}`);
+  } else if (foundItem.url.includes("arxiv.org")) {
+    content = await fetchArxivAbstract(foundItem.url);
+    console.log(`📚 Arxiv abstract fetched for ${foundItem.url}`);
+  } else if (foundItem.url.includes("economist.com")) {
+    content = await fetchEconomistContent(foundItem.url);
+    console.log(`📚 Arxiv abstract fetched for ${foundItem.url}`);
+  } else {
+    content = await fetchContent(foundItem.url);
+    console.log(`🌐 General content fetched for ${foundItem.url}`);
+  }
+
+  // Fetch from file
+  const dailyFilePath = await getDailyFilePath("contents/hackernews");
+  let dailyData = await readJsonFile(dailyFilePath);
+
+  const existingIndex = dailyData.findIndex(
+    (item: { id: any }) => item.id === foundItem.id
+  );
+
+  dailyData[existingIndex].content = content;
+
+  await writeJsonFile(dailyFilePath, dailyData);
+
+  const updatedItem = dailyData.find(
+    (item: { id: any }) => item.id === foundItem.id
+  );
+
+  return NextResponse.json(updatedItem);
+}
