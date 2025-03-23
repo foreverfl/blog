@@ -1,5 +1,9 @@
 #!/bin/bash
 
+log_message() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+}
+
 if [ "$GITHUB_ACTIONS" != "true" ] && [ -f ".env.local" ]; then
   echo "📂 Loading environment variables from .env.local"
   export $(grep -v '^#' .env.local | xargs)
@@ -29,9 +33,8 @@ HTTP_BODY=$(echo "$HACKERNEWS_LIST" | head -n -1)
 HTTP_STATUS=$(echo "$HACKERNEWS_LIST" | tail -n1)
 
 if [ "$HTTP_STATUS" != "200" ]; then
-  echo "❌ Failed! HTTP Status: $HTTP_STATUS"
-  echo "Response:"
-  echo "$HTTP_BODY"
+  log_message "❌ Failed! HTTP Status: $HTTP_STATUS"
+  log_message "Response: $HTTP_BODY"
   exit 1
 fi
 

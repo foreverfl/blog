@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 import createMDX from "@next/mdx";
-import remarkGfm from 'remark-gfm';
 import rehypeSlug from "rehype-slug";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import remarkGfm from 'remark-gfm';
 
 const nextConfig = {
     transpilePackages: ['next-mdx-remote'],
