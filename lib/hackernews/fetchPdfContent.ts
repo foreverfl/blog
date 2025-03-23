@@ -1,7 +1,26 @@
-import { getDocument } from "pdfjs-dist";
+import { getDocument, GlobalWorkerOptions  } from "pdfjs-dist";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+
+GlobalWorkerOptions.workerSrc = path.join(
+  process.cwd(),
+  'node_modules/pdfjs-dist/build/pdf.worker.mjs'
+);
+
+const workerPath = path.join(
+  process.cwd(),
+  'node_modules/pdfjs-dist/build/pdf.worker.mjs'
+);
+
+async function checkWorkerPath() {
+  try {
+    await fs.access(workerPath);
+    console.log('📄 pdf.worker.mjs 파일이 존재합니다!');
+  } catch (err) {
+    console.error('❌ pdf.worker.mjs 파일을 찾을 수 없습니다:', err);
+  }
+}
 
 /**
  * pdfjs-dist
@@ -11,7 +30,9 @@ async function parsePdfBuffer(buffer: ArrayBuffer): Promise<string> {
   const pdf = await loadingTask.promise;
   let fullText = "";
 
-  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+  const totalPages = Math.min(pdf.numPages, 10);
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
     const page = await pdf.getPage(pageNum);
     const content = await page.getTextContent();
     const strings = content.items.map((item: any) => item.str);
@@ -25,10 +46,10 @@ async function parsePdfBuffer(buffer: ArrayBuffer): Promise<string> {
 }
 
 export async function fetchPdfContent(url: string): Promise<string | null> {
+  checkWorkerPath();
   const tempFilePath = path.join(os.tmpdir(), `temp-${Date.now()}.pdf`);
 
   try {
-    // PDF를 node-fetch를 통해 다운로드
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to fetch PDF from ${url}`);

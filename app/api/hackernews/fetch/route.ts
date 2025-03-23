@@ -10,6 +10,7 @@ import {
 } from "@/lib/hackernews/fileUtils";
 import { getHackernewsItemById } from "@/lib/hackernews/getHackernewItem";
 import { NextResponse } from "next/server";
+import {sliceTextByTokens} from "@/lib/text";
 
 type FetchContentRequestBody = {
   id: string;
@@ -38,20 +39,31 @@ export async function POST(req: Request) {
 
   let content: string | null | undefined = null;
 
-  if (foundItem.url.includes(".pdf")) {
-    content = await fetchPdfContent(foundItem.url);
-    console.log(`📄 PDF content extracted for ${foundItem.url}`);
-  } else if (foundItem.url.includes("arxiv.org")) {
-    content = await fetchArxivAbstract(foundItem.url);
-    console.log(`📚 Arxiv abstract fetched for ${foundItem.url}`);
-  } else if (foundItem.url.includes("economist.com")) {
-    content = await fetchEconomistContent(foundItem.url);
-    console.log(`📚 Arxiv abstract fetched for ${foundItem.url}`);
-  } else {
-    content = await fetchContent(foundItem.url);
-    console.log(`🌐 General content fetched for ${foundItem.url}`);
-  }
+  try {
+    if (foundItem.url.includes(".pdf")) {
+      content = await fetchPdfContent(foundItem.url);
+      console.log(`📄 PDF content extracted for ${foundItem.url}`);
+    } else if (foundItem.url.includes("arxiv.org")) {
+      content = await fetchArxivAbstract(foundItem.url);
+      console.log(`📚 Arxiv abstract fetched for ${foundItem.url}`);
+    } else if (foundItem.url.includes("economist.com")) {
+      content = await fetchEconomistContent(foundItem.url);
+      console.log(`📚 Economist content fetched for ${foundItem.url}`);
+    } else {
+      content = await fetchContent(foundItem.url);
+      console.log(`🌐 General content fetched for ${foundItem.url}`);
+    }
+    
+    // Only slice if content exists
+    if (content) {
+      content = await sliceTextByTokens(content, 15000);
+      console.log(`📄 Sliced content (up to 15000 tokens)`);
+    }
 
+  } catch (error) {
+    console.error("❌ Error fetching content: ", error);
+    return NextResponse.json({ ok: false, error: "Error fetching content" });
+  }
   // Fetch from file
   const dailyFilePath = await getDailyFilePath("contents/hackernews");
   let dailyData = await readJsonFile(dailyFilePath);

@@ -49,7 +49,7 @@ export async function sliceTextByTokens(
     const currentText = text.slice(0, mid);
     const currentTokenCount = await countTokens(currentText);
 
-    // console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
+    console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
 
     if (currentTokenCount === maxTokens) {
       return currentText; 

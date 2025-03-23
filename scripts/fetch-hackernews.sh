@@ -37,7 +37,7 @@ fi
 
 # id 값 추출
 IDS=$(echo "$HTTP_BODY" | jq -r '.[].id')
-echo "📝 Found IDs: $IDS"
+# echo "📝 Found IDs: $IDS"
 
 for id in $IDS; do
   echo "🚀 Fetching content for ID: $id"
