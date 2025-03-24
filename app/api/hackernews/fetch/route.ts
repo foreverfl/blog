@@ -30,6 +30,23 @@ export async function POST(req: Request) {
 
   const { id } = body;
 
+  // Fetch from file
+  const dailyFilePath = await getDailyFilePath("contents/hackernews");
+  let dailyData = await readJsonFile(dailyFilePath);
+
+  const existingIndex = dailyData.findIndex(
+    (item: { id: any }) => item.id === id
+  );
+
+  if (existingIndex === -1) {
+    return NextResponse.json({ ok: false, error: "Item not found in daily data" });
+  }
+
+  if (dailyData[existingIndex].content) {
+    console.log(`✅ Content already exists for ID: ${id}, skipping fetch.`);
+    return NextResponse.json(dailyData[existingIndex]);
+  }
+
   // Fetch from API
   const foundItem = await getHackernewsItemById(id);
 
@@ -64,21 +81,12 @@ export async function POST(req: Request) {
     console.error("❌ Error fetching content: ", error);
     return NextResponse.json({ ok: false, error: "Error fetching content" });
   }
-  // Fetch from file
-  const dailyFilePath = await getDailyFilePath("contents/hackernews");
-  let dailyData = await readJsonFile(dailyFilePath);
-
-  const existingIndex = dailyData.findIndex(
-    (item: { id: any }) => item.id === foundItem.id
-  );
 
   dailyData[existingIndex].content = content;
 
   await writeJsonFile(dailyFilePath, dailyData);
 
-  const updatedItem = dailyData.find(
-    (item: { id: any }) => item.id === foundItem.id
-  );
-
+  const updatedItem = dailyData[existingIndex];
+  
   return NextResponse.json(updatedItem);
 }
