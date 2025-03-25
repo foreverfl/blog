@@ -40,7 +40,11 @@ fi
 
 IDS=$(echo "$HTTP_BODY" | jq -r '.[] | select(.content != null and (.summary.en == null or .summary.en == "")) | .id')
 
-for id in $IDS; do
+echo "$IDS" | while read -r id; do
+  if [ -z "$id" ]; then
+    continue
+  fi
+
   echo "🚀 Sending summarize request for ID: $id"
   RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/summarize/" \
     -H "Content-Type: application/json" \
@@ -48,13 +52,11 @@ for id in $IDS; do
     -d "{\"id\": \"$id\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/summary\"}")
 
   SUCCESS=$(echo "$RESPONSE" | jq -r '.ok')
-  MESSAGE=$(echo "$RESPONSE" | jq -r '.message // empty')
   ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
-  
+
   if [ "$SUCCESS" == "true" ]; then
     echo "✅ Summarize request sent for ID: $id"
   else
-    ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
     echo "⚠️  Failed to summarize ID: $id"
     if [ ! -z "$ERROR_MSG" ]; then
       echo "🛑 Reason: $ERROR_MSG"

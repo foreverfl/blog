@@ -46,7 +46,10 @@ fi
 
 IDS=$(echo "$HTTP_BODY" | jq -r ".[] | select((.summary.en != null) and ((.summary[\"$LANG\"] == null) or (.summary[\"$LANG\"] == \"\"))) | .id")
 
-for id in $IDS; do
+echo "$IDS" | while read -r id; do
+  if [ -z "$id" ]; then
+    continue
+  fi
   echo "🌏 Sending translate request for ID: $id to $LANG"
   RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/translate/" \
     -H "Content-Type: application/json" \
@@ -54,7 +57,6 @@ for id in $IDS; do
     -d "{\"id\": \"$id\", \"lan\": \"$LANG\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/translate\"}")
 
   SUCCESS=$(echo "$RESPONSE" | jq -r '.ok')
-  MESSAGE=$(echo "$RESPONSE" | jq -r '.message // empty')
   ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
 
   if [ "$SUCCESS" == "true" ]; then
