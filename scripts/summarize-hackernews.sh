@@ -22,38 +22,44 @@ if [ -z "$HACKERNEWS_API_KEY" ]; then
   exit 1
 fi
 
-LANG=$1
-if [ -z "$LANG" ]; then
-  echo "❌ Error: Translation language not specified! (ex. ja or ko)"
-  exit 1
-fi
-
 AUTH_HEADER="Authorization: Bearer $HACKERNEWS_API_KEY"
 
-echo "📥 Fetching summarized HackerNews content from $BASE_URL"
-SUMMARIZED_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$BASE_URL/api/hackernews/summarized" \
+echo "📥 Fetching HackerNews content list from $BASE_URL"
+HACKERNEWS_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$BASE_URL/api/hackernews" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER")
 
-HTTP_BODY=$(echo "$SUMMARIZED_LIST" | head -n -1)
-HTTP_STATUS=$(echo "$SUMMARIZED_LIST" | tail -n1)
+HTTP_BODY=$(echo "$HACKERNEWS_LIST" | head -n -1)
+HTTP_STATUS=$(echo "$HACKERNEWS_LIST" | tail -n1)
 
 if [ "$HTTP_STATUS" != "200" ]; then
-  log_message "❌ Failed to get summarized list! HTTP Status: $HTTP_STATUS"
+  log_message "❌ Failed to get HackerNews list! HTTP Status: $HTTP_STATUS"
   log_message "Response: $HTTP_BODY"
   exit 1
 fi
 
-IDS=$(echo "$HTTP_BODY" | jq -r '.[].id')
+IDS=$(echo "$HTTP_BODY" | jq -r '.[] | select(.content != null and (.summary.en == null or .summary.en == "")) | .id')
 
 for id in $IDS; do
-  echo "🌍 Translating content for ID: $id to $LANG"
-  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/translate/" \
+  echo "🚀 Sending summarize request for ID: $id"
+  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/summarize/" \
     -H "Content-Type: application/json" \
     -H "$AUTH_HEADER" \
-    -d "{\"id\": \"$id\", \"lan\": \"$LANG\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/summary\"}")
+    -d "{\"id\": \"$id\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/summary\"}")
 
-  echo "✅ Translate triggered for ID: $id to $LANG"
+  SUCCESS=$(echo "$RESPONSE" | jq -r '.ok')
+  MESSAGE=$(echo "$RESPONSE" | jq -r '.message // empty')
+  ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
+  
+  if [ "$SUCCESS" == "true" ]; then
+    echo "✅ Summarize request sent for ID: $id"
+  else
+    ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
+    echo "⚠️  Failed to summarize ID: $id"
+    if [ ! -z "$ERROR_MSG" ]; then
+      echo "🛑 Reason: $ERROR_MSG"
+    fi
+  fi
 done
 
-echo "🏁 Translation requests completed!"
+echo "🏁 All summarization requests sent!"

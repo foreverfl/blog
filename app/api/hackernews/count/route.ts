@@ -19,15 +19,28 @@ export async function GET(req: Request) {
       });
     }
 
-    const nullContentCount = dailyData.filter(
-      (item: { content: string | null | undefined }) =>
-        !item.content || item.content.trim() === ""
-    ).length;
+    const result = {
+      nullContentCount: 0,
+      nullSummaryEnCount: 0,
+      nullSummaryJaCount: 0,
+      nullSummaryKoCount: 0,
+    };
+
+    dailyData.forEach((item: any) => {
+      if (!item.content || item.content.trim() === "")
+        result.nullContentCount++;
+      if (!item.summary?.en || item.summary.en.trim() === "")
+        result.nullSummaryEnCount++;
+      if (!item.summary?.ja || item.summary.ja.trim() === "")
+        result.nullSummaryJaCount++;
+      if (!item.summary?.ko || item.summary.ko.trim() === "")
+        result.nullSummaryKoCount++;
+    });
 
     return NextResponse.json({
       ok: true,
-      count: nullContentCount,
-      message: `The number of null contents: ${nullContentCount}`,
+      counts: result,
+      message: `Null fields count: content=${result.nullContentCount}, summary.en=${result.nullSummaryEnCount}, summary.ja=${result.nullSummaryJaCount}, summary.ko=${result.nullSummaryKoCount}`,
     });
   } catch (error) {
     console.error("❌ Error while reading daily data:", error);

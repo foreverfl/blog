@@ -1,14 +1,12 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { fetchContent } from "@/lib/hackernews/fetchContent";
-import { getHackernewsItemById } from "@/lib/hackernews/getHackernewItem";
-import { summarize } from "@/lib/openai/summarize";
-import { sendWebhookNotification } from "@/lib/webhook";
-import { NextResponse } from "next/server";
 import {
   getDailyFilePath,
   readJsonFile,
   writeJsonFile,
 } from "@/lib/hackernews/fileUtils";
+import { summarize } from "@/lib/openai/summarize";
+import { sendWebhookNotification } from "@/lib/webhook";
+import { NextResponse } from "next/server";
 
 type FetchContentRequestBody = {
   id: string;
@@ -28,17 +26,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "There is no id" });
   }
 
+  // Fetch from file
   const dailyFilePath = await getDailyFilePath("contents/hackernews");
   let dailyData = await readJsonFile(dailyFilePath);
 
   const existingIndex = dailyData.findIndex(
     (item: { id: any }) => item.id === id
   );
+
   if (existingIndex === -1) {
     return NextResponse.json({
       ok: false,
       error: "Item not found in daily data",
     });
+  }
+
+  const existingItem = dailyData[existingIndex];
+
+  if (existingItem.summary && existingItem.summary.en) {
+    console.log(`✅ Summary already exists for ID: ${id}, skipping summarize.`);
+    return NextResponse.json(existingItem);
   }
 
   let content = dailyData[existingIndex].content;
