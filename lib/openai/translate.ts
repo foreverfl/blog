@@ -5,20 +5,18 @@ import path from "path";
 
 dotenv.config({ path: "./.env.local" });
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function translate(
   text: string,
   lan: "ja" | "ko",
-  mode: "title" | "content" = "content" 
+  mode: "title" | "content" = "content"
 ): Promise<string> {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
   try {
     // Conclude the prompt file name based on the mode
-    const promptFileName = mode === "title"
-    ? `translate-title-${lan}.md`
-    : `translate-${lan}.md`;
+    const promptFileName =
+      mode === "title" ? `translate-title-${lan}.md` : `translate-${lan}.md`;
 
     const promptPath = path.resolve(
       new URL(import.meta.url).pathname,

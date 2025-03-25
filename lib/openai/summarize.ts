@@ -5,14 +5,17 @@ import path from "path";
 
 dotenv.config({ path: "./.env.local" });
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function summarize(text: string): Promise<string> {
   try {
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    
     // 현재 파일 경로를 기반으로 prompt 파일의 경로 계산
-    const promptPath = path.resolve(new URL(import.meta.url).pathname, "../../prompts/summary.md");
+    const promptPath = path.resolve(
+      new URL(import.meta.url).pathname,
+      "../../prompts/summary.md"
+    );
     console.log("Prompt file path:", promptPath);
 
     // 프롬프트 파일 읽기
