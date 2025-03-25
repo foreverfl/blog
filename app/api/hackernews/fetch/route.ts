@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const { id } = body;
 
   // Fetch from file
-  const dailyFilePath = await getDailyFilePath("contents/hackernews");
+  const dailyFilePath = await getDailyFilePath("contents/trends/hackernews");
   let dailyData = await readJsonFile(dailyFilePath);
 
   const existingIndex = dailyData.findIndex(

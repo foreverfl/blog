@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const dailyFilePath = await getDailyFilePath("contents/hackernews");
+    const dailyFilePath = await getDailyFilePath("contents/trends/hackernews");
     const dailyData = await readJsonFile(dailyFilePath);
 
     if (!Array.isArray(dailyData)) {

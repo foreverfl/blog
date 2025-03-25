@@ -1,13 +1,13 @@
 [
   {
-    "name_ko": "해커뉴스",
-    "name_ja": "ハッカーニュース",
-    "link": "hacker-news",
+    "name_ko": "트렌드",
+    "name_ja": "トレンド",
+    "link": "trends",
     "categories": [
       {
-        "name_ko": "요약",
-        "name_ja": "要約",
-        "link": "summary"
+        "name_ko": "해커뉴스",
+        "name_ja": "ハッカーニュース",
+        "link": "hackernews"
       }
     ]
   },

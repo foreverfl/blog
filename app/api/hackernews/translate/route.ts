@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const dailyFilePath = await getDailyFilePath("contents/hackernews");
+  const dailyFilePath = await getDailyFilePath("contents/trends/hackernews");
   let dailyData = await readJsonFile(dailyFilePath);
 
   const existingIndex = dailyData.findIndex(
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     translate(titleEn, lan, "title"),
   ])
     .then(async ([translatedSummary, translatedTitle]) => {
-      const dailyFilePath = await getDailyFilePath("contents/hackernews");
+      const dailyFilePath = await getDailyFilePath("contents/trends/hackernews");
       let dailyData = await readJsonFile(dailyFilePath);
 
       const existingIndex = dailyData.findIndex(

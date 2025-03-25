@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   }
 
   // Fetch from file
-  const dailyFilePath = await getDailyFilePath("contents/hackernews");
+  const dailyFilePath = await getDailyFilePath("contents/trends/hackernews");
   let dailyData = await readJsonFile(dailyFilePath);
 
   const existingIndex = dailyData.findIndex(
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
   summarize(content)
     .then(async (summary) => {
-      const dailyFilePath = await getDailyFilePath("contents/hackernews");
+      const dailyFilePath = await getDailyFilePath("contents/trends/hackernews");
       let dailyData = await readJsonFile(dailyFilePath);
 
       const existingIndex = dailyData.findIndex(

@@ -21,6 +21,11 @@ interface MdxFileData {
 
 // 재귀적으로 폴더를 탐색하며 .mdx 파일 찾기
 async function getFilesRecursively(dir: string): Promise<string[]> {
+  if (!fs.existsSync(dir)) {
+    console.warn(`⚠️ Directory not found: ${dir}`);
+    return [];
+  }
+  
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const files = entries
     .filter((file) => !file.isDirectory() && file.name.endsWith(".mdx"))

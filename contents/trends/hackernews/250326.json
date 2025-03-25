@@ -1,0 +1,1902 @@
+[
+  {
+    "id": "8cad349fd68f13a5",
+    "title": {
+      "en": "VGGT: Visual Geometry Grounded Transformer",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/facebookresearch/vggt",
+    "score": 32,
+    "by": "xnx",
+    "time": 1742907566,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fe4536a67db801ea",
+    "title": {
+      "en": "Polypane, The browser for ambitious web developers",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://polypane.app/",
+    "score": 28,
+    "by": "ulrischa",
+    "time": 1742720837,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fff7d9904f659462",
+    "title": {
+      "en": "Hann: A Fast Approximate Nearest Neighbor Search Library for Go",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/habedi/hann",
+    "score": 26,
+    "by": "habedi0",
+    "time": 1742903831,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "29803211a6f61815",
+    "title": {
+      "en": "German parliament votes as a Git contribution graph",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://abstimmung.eu/git/2024",
+    "score": 504,
+    "by": "mxschll",
+    "time": 1742858943,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "781d9ca14c79dac7",
+    "title": {
+      "en": "Writing your own C++ standard library from scratch",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://nibblestew.blogspot.com/2025/03/writing-your-own-c-standard-library.html",
+    "score": 109,
+    "by": "JNRowe",
+    "time": 1742890236,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a802eba4eeccd3c4",
+    "title": {
+      "en": "If you get the chance, always run more extra network fiber cabling",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://utcc.utoronto.ca/~cks/space/blog/sysadmin/RunMoreExtraNetworkFiber",
+    "score": 32,
+    "by": "hggh",
+    "time": 1742910059,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b058438edaa5d019",
+    "title": {
+      "en": "Samsung CEO Jong-hee Han has died",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.engadget.com/big-tech/samsung-ceo-jong-hee-han-has-died-120029286.html",
+    "score": 140,
+    "by": "ksec",
+    "time": 1742907894,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "dd21d9bbd9e6583f",
+    "title": {
+      "en": "Search My Site – open-source search engine for personal and independent websites",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://searchmysite.net",
+    "score": 182,
+    "by": "OuterVale",
+    "time": 1742869143,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "9e37172a8989477d",
+    "title": {
+      "en": "Closing the Chapter on OpenH264",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://bbhtt.space/posts/closing-the-chapter-on-openh264/",
+    "score": 45,
+    "by": "todsacerdoti",
+    "time": 1742896798,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f88a1ebe6f3936bd",
+    "title": {
+      "en": "OpenID Coming to SSH",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.cloudflare.com/open-sourcing-openpubkey-ssh-opkssh-integrating-single-sign-on-with-ssh/",
+    "score": 48,
+    "by": "PranaFlux",
+    "time": 1742908929,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e49db46a233384da",
+    "title": {
+      "en": "Reflecting on WikiTok",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.aizk.sh/posts/reflecting-on-wikitok",
+    "score": 94,
+    "by": "aizk",
+    "time": 1742882951,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "691d28780a329a49",
+    "title": {
+      "en": "What Killed Innovation?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.shirleywu.studio/notebook/2025-02-innovation-killer",
+    "score": 5,
+    "by": "speckx",
+    "time": 1742909161,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "39377b593bb66aa1",
+    "title": {
+      "en": "A study reveals that deciduous trees' roots remain active in winter",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.creaf.cat/en/articules/deciduous-trees-roots-remain-active-winter",
+    "score": 35,
+    "by": "bryanrasmussen",
+    "time": 1742671996,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "94dd7a5cb320f1fa",
+    "title": {
+      "en": "Spammers are better at SPF, DKIM, and DMARC than everyone else",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://toad.social/@grumpybozo/114213600922816869",
+    "score": 253,
+    "by": "pabs3",
+    "time": 1742890490,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2c6f01f2468a616d",
+    "title": {
+      "en": "Qwen2.5-VL-32B: Smarter and Lighter",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://qwenlm.github.io/blog/qwen2.5-vl-32b/",
+    "score": 504,
+    "by": "tosh",
+    "time": 1742841312,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "dece63737e377a4b",
+    "title": {
+      "en": "Status as a Service (2019)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.eugenewei.com/blog/2019/2/19/status-as-a-service",
+    "score": 59,
+    "by": "simonebrunozzi",
+    "time": 1742885984,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "4ea41d504e487ba9",
+    "title": {
+      "en": "The Lost Towers of the Guelph-Ghibelline Wars",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.exurbe.com/the-lost-towers-of-the-guelph-ghibelline-wars/",
+    "score": 71,
+    "by": "wallflower",
+    "time": 1742734721,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "668e4ef58314431a",
+    "title": {
+      "en": "Beej's Guide to C Programming [pdf]",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://beej.us/guide/bgc/pdf/bgc_a4_c_1.pdf",
+    "score": 37,
+    "by": "krykp",
+    "time": 1742911087,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "88a87dff7a187fb5",
+    "title": {
+      "en": "Coding Isn't Programming",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.socallinuxexpo.org/scale/22x/presentations/closing-keynote-leslie-lamport",
+    "score": 125,
+    "by": "todsacerdoti",
+    "time": 1742898863,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "5c05b01fda081727",
+    "title": {
+      "en": "The Hartlib Papers",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.dhi.ac.uk/hartlib/",
+    "score": 11,
+    "by": "sebg",
+    "time": 1742899158,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "8049440cfd9b45fd",
+    "title": {
+      "en": "Three Hundred Years Later, a Tool from Isaac Newton Gets an Update",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.quantamagazine.org/three-hundred-years-later-a-tool-from-isaac-newton-gets-an-update-20250324/",
+    "score": 127,
+    "by": "rbanffy",
+    "time": 1742854616,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7e39dddaa6c78814",
+    "title": {
+      "en": "The Practical Limitations of End-to-End Encryption",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://soatok.blog/2025/03/25/the-practical-limitations-of-end-to-end-encryption/",
+    "score": 10,
+    "by": "todsacerdoti",
+    "time": 1742910301,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "d9f28312a418739d",
+    "title": {
+      "en": "The Great Barefoot Running Hysteria of 2010",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://runningshoescore.com/blog/barefoot-running-hysteria-of-2010",
+    "score": 133,
+    "by": "jonnycat",
+    "time": 1742898502,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "36cbb80ba911a295",
+    "title": {
+      "en": "WWI's 'Dazzle' Camouflage Seemed Effective Due to Unexpected Optical Trick",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://gizmodo.com/wwis-famous-dazzle-camouflage-seemed-effective-due-to-unexpected-optical-trick-study-finds-2000577568",
+    "score": 96,
+    "by": "ilamont",
+    "time": 1742680378,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "8e6a6966822b8556",
+    "title": {
+      "en": "X’s director of engineering, Haofei Wang, has left the company",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.theverge.com/twitter/634833/x-head-engineering-leaves-elon-musk",
+    "score": 90,
+    "by": "JumpCrisscross",
+    "time": 1742907299,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "bd9ab8acef055291",
+    "title": {
+      "en": "Brain Scans of Infants Reveal the Moment We Start Making Memories",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://singularityhub.com/2025/03/20/new-baby-brain-scans-reveal-the-moment-we-start-making-memories/",
+    "score": 88,
+    "by": "Brajeshwar",
+    "time": 1742574750,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "53444c1c7df643ad",
+    "title": {
+      "en": "We chose LangGraph to build our coding agent",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.qodo.ai/blog/why-we-chose-langgraph-to-build-our-coding-agent/",
+    "score": 53,
+    "by": "jimminyx",
+    "time": 1742881836,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "dfc013cd9b62a96e",
+    "title": {
+      "en": "Battling the Blaze: Artifacts from the history of firefighting",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://worldhistory.substack.com/p/battling-the-blaze",
+    "score": 12,
+    "by": "crescit_eundo",
+    "time": 1742737584,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a75affe91b207eea",
+    "title": {
+      "en": "CO2 laser enables long-range detection of radioactive material",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://physicsworld.com/a/co2-laser-enables-long-range-detection-of-radioactive-material/",
+    "score": 101,
+    "by": "EA-3167",
+    "time": 1742593278,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7cf3540b3765823d",
+    "title": {
+      "en": "Gene drive modified mosquitoes offer new tool for malaria elimination efforts",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.imperial.ac.uk/news/261995/gene-drive-modified-mosquitoes-offer-tool/",
+    "score": 20,
+    "by": "gmays",
+    "time": 1742581491,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "462735f2d1f833c4",
+    "title": {
+      "en": "I won't connect my dishwasher to your cloud",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.jeffgeerling.com/blog/2025/i-wont-connect-my-dishwasher-your-stupid-cloud",
+    "score": 842,
+    "by": "HieronymusBosch",
+    "time": 1742836147,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b971314826d6a318",
+    "title": {
+      "en": "Critical Unauthenticated Remote Code Execution Vulnerabilities in Ingress NGINX",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.wiz.io/blog/ingress-nginx-kubernetes-vulnerabilities",
+    "score": 57,
+    "by": "puppion",
+    "time": 1742897537,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "6e96c28d86e44d47",
+    "title": {
+      "en": "Show HN: I'm a teacher and built an AI presentation tool",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": null,
+    "score": 224,
+    "by": "slidehero",
+    "time": 1742709515,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2fe01a4dc45a027a",
+    "title": {
+      "en": "Triforce – a beamformer for Apple Silicon laptops",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/chadmed/triforce",
+    "score": 556,
+    "by": "tosh",
+    "time": 1742827534,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "76fe87c1edde5391",
+    "title": {
+      "en": "MRubyD: A new mruby virtual machine implemented in pure C#",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/hadashiA/MRubyD",
+    "score": 84,
+    "by": "ksec",
+    "time": 1742712779,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7cca7b2df00539d9",
+    "title": {
+      "en": "Good drug news – More important things happening in biotechnology and medicine",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.worksinprogress.news/p/links-in-progress-good-drug-news",
+    "score": 4,
+    "by": "therabbithole",
+    "time": 1742899855,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "69d49cc6504c4fff",
+    "title": {
+      "en": "Intel: A Bug and a Pro",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.abortretry.fail/p/intel-a-bug-and-a-pro",
+    "score": 64,
+    "by": "rbanffy",
+    "time": 1742851213,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "983d11f977fb37a9",
+    "title": {
+      "en": "600M years of shared environmental stress response found in algae and plants",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://phys.org/news/2025-03-million-years-environmental-stress-response.html",
+    "score": 96,
+    "by": "PaulHoule",
+    "time": 1742567418,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "737094bdcb6123f7",
+    "title": {
+      "en": "EuroTcl2025/OpenACS conference: 10-11 July, Bologna, Italy",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://openacs.km.at/evaluate/org/129998253/conferencenews/",
+    "score": 5,
+    "by": "cmacleod4",
+    "time": 1742897893,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f887ef31119c7994",
+    "title": {
+      "en": "The Prospero Challenge",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.mattkeeter.com/projects/prospero/",
+    "score": 95,
+    "by": "jstanley",
+    "time": 1742807083,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "d68321f58287208e",
+    "title": {
+      "en": "Can Parrot Brains Teach Us About Human Speech?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.smithsonianmag.com/smart-news/can-parrot-brains-teach-us-about-human-speech-study-finds-budgies-have-language-producing-regions-that-resemble-our-own-180986282/",
+    "score": 27,
+    "by": "ulrischa",
+    "time": 1742580619,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7dab4e26703d5c25",
+    "title": {
+      "en": "Mastering Delphi 5 2025 Annotated Edition Is Now Complete",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.marcocantu.com/blog/2025-march-mastering-delphi5-annotated-complete.html",
+    "score": 190,
+    "by": "mariuz",
+    "time": 1742830808,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "cd0595c431043e34",
+    "title": {
+      "en": "A sodium-ion portable power bank comes to market",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.theverge.com/news/631357/elecom-power-bank-battery-sodium-ion",
+    "score": 41,
+    "by": "namanyayg",
+    "time": 1742699433,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0894f185902b17cb",
+    "title": {
+      "en": "Project Operation Whitecoat (2010)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://scholarworks.lib.csusb.edu/cgi/viewcontent.cgi?article=1201&context=history-in-the-making",
+    "score": 103,
+    "by": "smegger001",
+    "time": 1742834107,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "3dda6c3c9002f24d",
+    "title": {
+      "en": "Chrono Trigger Still Blows Me Away 30 Years Later",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://kotaku.com/chrono-trigger-jrpg-snes-30th-anniversary-square-1851769192",
+    "score": 53,
+    "by": "PaulHoule",
+    "time": 1742911471,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ffd247af135b4fee",
+    "title": {
+      "en": "Teardown, Optimization: Comsol 8Gb USB Flash Stick (2015)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://goughlui.com/2015/04/05/teardown-optimization-comsol-8gb-usb-flash-stick-au6989sn-gt-sdtnrcama-008g/",
+    "score": 21,
+    "by": "userbinator",
+    "time": 1742546665,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "361dc226f099cf47",
+    "title": {
+      "en": "Rickover's Lessons",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.chinatalk.media/p/rickovers-lessons-how-to-build-a",
+    "score": 114,
+    "by": "pepys",
+    "time": 1742703526,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "1e53cc181f8923ea",
+    "title": {
+      "en": "Peano's Axioms",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://principlesofcryptography.com/number-theory-primer-an-axiomatic-study-of-natural-numbers-peano-axioms/",
+    "score": 87,
+    "by": "ulugh",
+    "time": 1742844365,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "032d1709dd3e46ca",
+    "title": {
+      "en": "I made AI fix my bugs in production for 27 days straight – lessons learned",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://old.reddit.com/r/ChatGPTCoding/comments/1jibmtc/i_made_ai_fix_my_bugs_in_production_for_27_days/",
+    "score": 4,
+    "by": "simonpure",
+    "time": 1742909303,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "542f250f45f190b5",
+    "title": {
+      "en": "Langfuse (YC W23) Is Hiring in Berlin, Germany",
+      "ko": null,
+      "ja": null
+    },
+    "type": "job",
+    "url": "https://langfuse.com/careers",
+    "score": 1,
+    "by": "clemo_ra",
+    "time": 1742810172,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "20bb7511fe9936ea",
+    "title": {
+      "en": "Aircraft detection at planetary scale",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.planet.com/pulse/aircraft-detection-at-planetary-scale/",
+    "score": 88,
+    "by": "jjwiseman",
+    "time": 1742848821,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "6cc369689d7a0ca5",
+    "title": {
+      "en": "Researchers search for more precise ways to measure pain",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.washingtonpost.com/science/2025/03/23/pain-measure-precision-research/",
+    "score": 90,
+    "by": "Petiver",
+    "time": 1742788622,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "19e0e815410e9b28",
+    "title": {
+      "en": "A proof checker meant for education",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://jsiek.github.io/deduce/index.html",
+    "score": 142,
+    "by": "alabhyajindal",
+    "time": 1742557657,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a6b20273c3a0d2a3",
+    "title": {
+      "en": "Next stop for Waymo One: Washington, D.C",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://waymo.com/blog/2025/03/next-stop-for-waymo-one-washingtondc",
+    "score": 18,
+    "by": "ra7",
+    "time": 1742908228,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "1d4dbb39829ebfa4",
+    "title": {
+      "en": "Marginalia Search receives second nlnet grant",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.marginalia.nu/log/a_116_grant_2.0/",
+    "score": 61,
+    "by": "marginalia_nu",
+    "time": 1742909524,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ee355585c207f567",
+    "title": {
+      "en": "An AI bubble threatens Silicon Valley, and all of us",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://prospect.org/power/2025-03-25-bubble-trouble-ai-threat/",
+    "score": 104,
+    "by": "semiquaver",
+    "time": 1742908383,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c56eb27af2750a49",
+    "title": {
+      "en": "The surreal joy of having an overprovisioned homelab",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://xeiaso.net/talks/2025/surreal-joy-homelab/",
+    "score": 6,
+    "by": "xena",
+    "time": 1742913382,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "62a9bc4fcf507116",
+    "title": {
+      "en": "RNA function follows form – why is it so hard to predict?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.nature.com/articles/d41586-025-00920-8",
+    "score": 4,
+    "by": "sohkamyung",
+    "time": 1742907279,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b1a4fad7c98c2484",
+    "title": {
+      "en": "Mruby/C and picoruby: high level langs in low-level devices?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/picoruby/picoruby",
+    "score": 69,
+    "by": "rahil627",
+    "time": 1742721642,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "67fe06f9f7bb45bc",
+    "title": {
+      "en": "Quad9 – A public and free DNS service for a better security and privacy",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.quad9.net/",
+    "score": 49,
+    "by": "janandonly",
+    "time": 1742895588,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fd9bcc9f99741e1b",
+    "title": {
+      "en": "Fuckarounditis (2011)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://leangains.com/fuckarounditis/",
+    "score": 21,
+    "by": "fzliu",
+    "time": 1742856856,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e5bcbc9609f02ec9",
+    "title": {
+      "en": "The earliest versions of the first C compiler known to exist",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/mortdeus/legacy-cc",
+    "score": 354,
+    "by": "diginova",
+    "time": 1742545039,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2007b33bda208fc1",
+    "title": {
+      "en": "An Interview with Zen Chief Architect Mike Clark",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.computerenhance.com/p/an-interview-with-zen-chief-architect",
+    "score": 36,
+    "by": "Smaug123",
+    "time": 1742843149,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ba3512ae44fff864",
+    "title": {
+      "en": "Arc-AGI-2 and ARC Prize 2025",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://arcprize.org/blog/announcing-arc-agi-2-and-arc-prize-2025",
+    "score": 179,
+    "by": "gkamradt",
+    "time": 1742848530,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "13d4eb798a832725",
+    "title": {
+      "en": "The Vatican's Latinist (2017)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://newcriterion.com/article/the-vaticans-latinist/",
+    "score": 139,
+    "by": "bookofjoe",
+    "time": 1742779791,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0916eacf2b59aebb",
+    "title": {
+      "en": "Don't Buy into Apple's Hype About AirPods Max Gaining Lossless Audio",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.macrumors.com/2025/03/24/airpods-max-lossless-audio-overhyped/",
+    "score": 11,
+    "by": "ksec",
+    "time": 1742902674,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "9c8dde4906b72fde",
+    "title": {
+      "en": "Gatehouse – a composable, async-friendly authorization policy framework in Rust",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/thepartly/gatehouse",
+    "score": 71,
+    "by": "hardbyte",
+    "time": 1742856647,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "5a6b64c7bd1b498a",
+    "title": {
+      "en": "Supply Chain Attacks on Linux Distributions – Fedora Pagure",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://fenrisk.com/pagure",
+    "score": 204,
+    "by": "akyuu",
+    "time": 1742414317,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "616488f05e0e9d76",
+    "title": {
+      "en": "Show HN: My iOS app to practice sight reading (10 years in the App Store)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://apps.apple.com/us/app/notes-sight-reading-trainer/id874386416",
+    "score": 298,
+    "by": "rooster117",
+    "time": 1742765108,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7141c6c92b9df51f",
+    "title": {
+      "en": "Open Source Mythology",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://lgug2z.com/articles/on-open-source-mythology/",
+    "score": 15,
+    "by": "yreew",
+    "time": 1742864007,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c32c7963edc80997",
+    "title": {
+      "en": "Show HN: LinkedIn sucks, so I built a better one",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://heyopenspot.com/",
+    "score": 445,
+    "by": "fliellerjulian",
+    "time": 1742755960,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b8521acaff2ed2e2",
+    "title": {
+      "en": "Yahoo is selling TechCrunch to private equity firm Regent",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://techcrunch.com/2025/03/21/techcrunch-has-personal-news/",
+    "score": 81,
+    "by": "Garbage",
+    "time": 1742626489,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fa5bbe9249635585",
+    "title": {
+      "en": "The game designer playing through his own psyche",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.newyorker.com/culture/persons-of-interest/the-game-designer-playing-through-his-own-psyche",
+    "score": 140,
+    "by": "FinnLobsien",
+    "time": 1742812772,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b3941b721341aca7",
+    "title": {
+      "en": "David Lynch Presents Interview Project",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.youtube.com/channel/UC4lrTWEywA3JfR-N_dv0d4A",
+    "score": 50,
+    "by": "toomuchtodo",
+    "time": 1742878067,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c1017d760737a62f",
+    "title": {
+      "en": "Osgint – OSINT tool to find information about GitHub user",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/hippiiee/osgint",
+    "score": 111,
+    "by": "CHEF-KOCH",
+    "time": 1742795502,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2159168a750d76f2",
+    "title": {
+      "en": "Autology: A Lisp with access to its own interpreter",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/Kimbsy/autology",
+    "score": 133,
+    "by": "simonpure",
+    "time": 1742553436,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "522a6ccd367a86e3",
+    "title": {
+      "en": "Goblin.tools: simple, single-task tools to help neurodivergent people with tasks",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://goblin.tools/",
+    "score": 322,
+    "by": "ValentineC",
+    "time": 1742825717,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ed5299a42cd7c383",
+    "title": {
+      "en": "Btrfs Adding Fast/Realtime ZSTD Compression and Other Performance Optimizations",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.phoronix.com/news/Linux-6.15-Btrfs",
+    "score": 14,
+    "by": "todsacerdoti",
+    "time": 1742888476,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ac72d66503620b34",
+    "title": {
+      "en": "First Known Photographs of Living Specimens",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.inaturalist.org/projects/first-known-photographs-of-living-specimens",
+    "score": 121,
+    "by": "Morizero",
+    "time": 1742501985,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "449a2c2ef5726266",
+    "title": {
+      "en": "Japanese scientists use stem cell treatment to restore movement in spinal injury",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://medicalxpress.com/news/2025-03-japanese-scientists-stem-cell-treatment.html",
+    "score": 249,
+    "by": "pseudolus",
+    "time": 1742811919,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "72c8f64ceeefa7f5",
+    "title": {
+      "en": "The Mystery of the Oldest Writing System Remained Unsolved Until 1856",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.smithsonianmag.com/history/mystery-worlds-oldest-writing-system-remained-unsolved-until-four-scholars-raced-decipher-it-180985954/",
+    "score": 78,
+    "by": "wyclif",
+    "time": 1742729075,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2349423c5fce781f",
+    "title": {
+      "en": "Total lunar eclipse over Teide crater, Tenerife – a project with many obstacles",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://lrtimelapse.com/news/total-lunar-eclipse-over-teide-crater-tenerife/",
+    "score": 165,
+    "by": "elijahparker",
+    "time": 1742569456,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "84af1fd35b76d30e",
+    "title": {
+      "en": "The Wright brothers invented the airplane, right? Not if you're in Brazil",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.washingtonpost.com/world/2025/03/21/brazil-airplane-wright-brothers-santos-dumont/",
+    "score": 235,
+    "by": "benbreen",
+    "time": 1742608551,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "66e0dedfb6cf531e",
+    "title": {
+      "en": "Microbes can capture carbon and degrade plastic – why aren't we using them more?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.nature.com/articles/d41586-025-00875-w",
+    "score": 5,
+    "by": "GavCo",
+    "time": 1742901557,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e3f4dd00492cfe4a",
+    "title": {
+      "en": "Play the Virtual Organ from Arp Schnitger",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.orgelstadt-hamburg.de/play-arp/",
+    "score": 124,
+    "by": "ohjeez",
+    "time": 1742754706,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "26514204ccd4c95d",
+    "title": {
+      "en": "Samsung co-CEO Han Jong-hee has died",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.reuters.com/world/asia-pacific/samsung-electronics-says-co-ceo-han-jong-hee-has-died-cardiac-arrest-2025-03-25/",
+    "score": 13,
+    "by": "glimshe",
+    "time": 1742887108,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "059ded92dec3320a",
+    "title": {
+      "en": "Project Aardvark: reimagining AI weather prediction",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.turing.ac.uk/blog/project-aardvark-reimagining-ai-weather-prediction",
+    "score": 299,
+    "by": "bentobean",
+    "time": 1742772819,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a984f46e7f77422e",
+    "title": {
+      "en": "Ask HN: Should I leave the company I co-founded?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": null,
+    "score": 42,
+    "by": "throwaway03902",
+    "time": 1742864412,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2577d1b6b5eb6922",
+    "title": {
+      "en": "LangManus: An Open-Source Manus Agent with LangChain + LangGraph",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/langmanus/langmanus",
+    "score": 125,
+    "by": "gfortaine",
+    "time": 1742554860,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a8de69e131cf93a9",
+    "title": {
+      "en": "Show HN: I built a website for sharing drum patterns",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "http://drumpatterns.onether.com",
+    "score": 477,
+    "by": "wesz",
+    "time": 1742735121,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "08222b77479d8480",
+    "title": {
+      "en": "Palantir suggests 'common operating system' for UK govt data",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.theregister.com/2025/03/25/palantir_covid_inquiry_comments/",
+    "score": 47,
+    "by": "rntn",
+    "time": 1742902335,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7f1f99c13740279a",
+    "title": {
+      "en": "Cottagecore Programmers",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://tjmorley.com/blogposts/cottagecoreprogrammers.html",
+    "score": 108,
+    "by": "morleytj",
+    "time": 1742846905,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "4e1d365d65298255",
+    "title": {
+      "en": "BeeFormer: CF and CBF hybrid approach for recommendation systems",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/recombee/beeformer",
+    "score": 42,
+    "by": "klaussilveira",
+    "time": 1742732424,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "caba56a5a2afb958",
+    "title": {
+      "en": "The Software Engineering Identity Crisis",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://annievella.com/posts/the-software-engineering-identity-crisis/",
+    "score": 131,
+    "by": "napolux",
+    "time": 1742755045,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "cf047133cd50e135",
+    "title": {
+      "en": "Quadlet: Running Podman containers under systemd",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://mo8it.com/blog/quadlet/",
+    "score": 285,
+    "by": "gjvc",
+    "time": 1742776025,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "bc798ab915ad080e",
+    "title": {
+      "en": "The case of the critical section that let multiple threads enter a block of code",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://devblogs.microsoft.com/oldnewthing/20250321-00/?p=110984",
+    "score": 136,
+    "by": "luu",
+    "time": 1742717665,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b5943bb62ae43b9d",
+    "title": {
+      "en": "Move on to ESM-Only",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://antfu.me/posts/move-on-to-esm-only",
+    "score": 113,
+    "by": "bpierre",
+    "time": 1742776525,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "8d6f400bc4fd96b8",
+    "title": {
+      "en": "To Win Trust and Admiration, Fix Your Microphone",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.scientificamerican.com/article/to-win-trust-and-admiration-fix-your-microphone/",
+    "score": 19,
+    "by": "jimminyx",
+    "time": 1742881602,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "59c3d3c0405f7a06",
+    "title": {
+      "en": "The belay test and the modern American climbing gym",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.climbing.com/people/peter-mayfield-belay-test-modern-american-climbing-gym-history/",
+    "score": 152,
+    "by": "vasco",
+    "time": 1742408381,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "dc82356fa3518944",
+    "title": {
+      "en": "Most AI value will come from broad automation, not from R & D",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://epoch.ai/gradient-updates/most-ai-value-will-come-from-broad-automation-not-from-r-d",
+    "score": 202,
+    "by": "ydnyshhh",
+    "time": 1742668500,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  }
+]

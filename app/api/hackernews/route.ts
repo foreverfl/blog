@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 
 const HN_API_BASE = "https://hacker-news.firebaseio.com/v0";
-const HN_DIR = path.join(process.cwd(), "contents", "hackernews");
+const HN_DIR = path.join(process.cwd(), "contents", "trends", "hackernews");
 const FILE_PATH = path.join(HN_DIR, `${getTodayKST()}.json`);
 
 if (!fs.existsSync(HN_DIR)) {

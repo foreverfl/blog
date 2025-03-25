@@ -1,7 +1,9 @@
-import React from "react";
 import Category from "@/components/main/Category";
+import CategoryTrends from "@/components/main/CategoryTrends";
+import { getContentsStructure } from "@/lib/jsonHelpers";
 import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
 import { cookies } from "next/headers";
+
 
 export default async function Index({
   params,
@@ -18,10 +20,16 @@ export default async function Index({
     category
   );
 
+  const jsonContents = await getContentsStructure();
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full md:w-3/5">
-        <Category posts={frontMatters} />
+      {classification === "trends" ? (
+          <CategoryTrends jsonContents={jsonContents} />
+        ) : (
+          <Category posts={frontMatters} />
+        )}
       </div>
     </div>
   );
