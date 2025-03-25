@@ -1,5 +1,11 @@
 #!/bin/bash
 
+LANG=$1
+if [ -z "$LANG" ]; then
+  echo "❌ Error: Translation language not specified! (ex. ja or ko)"
+  exit 1
+fi
+
 log_message() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
@@ -25,7 +31,7 @@ fi
 AUTH_HEADER="Authorization: Bearer $HACKERNEWS_API_KEY"
 
 echo "📥 Fetching saved HackerNews contents from $BASE_URL"
-SAVED_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$BASE_URL/api/hackernews/saved" \
+SAVED_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$BASE_URL/api/hackernews" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER")
 
@@ -38,16 +44,27 @@ if [ "$HTTP_STATUS" != "200" ]; then
   exit 1
 fi
 
-IDS=$(echo "$HTTP_BODY" | jq -r '.[].id')
+IDS=$(echo "$HTTP_BODY" | jq -r ".[] | select((.summary.en != null) and ((.summary[\"$LANG\"] == null) or (.summary[\"$LANG\"] == \"\"))) | .id")
 
 for id in $IDS; do
-  echo "📝 Summarizing content for ID: $id"
-  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/summarize/" \
+  echo "🌏 Sending translate request for ID: $id to $LANG"
+  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/translate/" \
     -H "Content-Type: application/json" \
     -H "$AUTH_HEADER" \
-    -d "{\"id\": \"$id\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/summary\"}")
+    -d "{\"id\": \"$id\", \"lan\": \"$LANG\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/translate\"}")
 
-  echo "✅ Summarize triggered for ID: $id"
+  SUCCESS=$(echo "$RESPONSE" | jq -r '.ok')
+  MESSAGE=$(echo "$RESPONSE" | jq -r '.message // empty')
+  ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
+
+  if [ "$SUCCESS" == "true" ]; then
+    echo "✅ Translate request sent for ID: $id ($LANG)"
+  else
+    echo "⚠️  Failed to translate ID: $id"
+    if [ ! -z "$ERROR_MSG" ]; then
+      echo "🛑 Reason: $ERROR_MSG"
+    fi
+  fi
 done
 
-echo "🏁 Summarizing requests completed!"
+echo "🏁 All translation requests sent for language: $LANG!"

@@ -54,7 +54,23 @@ export async function POST(req: Request) {
     });
   }
 
-  Promise.all([translate(summaryEn, lan, "content"), translate(titleEn, lan, "title")])
+  const existingTranslation = item?.summary?.[lan];
+  const existingTranslatedTitle = item?.title?.[lan];
+
+  if (existingTranslation && existingTranslatedTitle) {
+    console.log(
+      `✅ Translation already exists for ID: ${id}, language: ${lan}. Skipping translation.`
+    );
+    return NextResponse.json({
+      ok: true,
+      message: `Translation for ${lan} already exists for ID: ${id}`,
+    });
+  }
+
+  Promise.all([
+    translate(summaryEn, lan, "content"),
+    translate(titleEn, lan, "title"),
+  ])
     .then(async ([translatedSummary, translatedTitle]) => {
       const dailyFilePath = await getDailyFilePath("contents/hackernews");
       let dailyData = await readJsonFile(dailyFilePath);
@@ -76,7 +92,6 @@ export async function POST(req: Request) {
 
         await writeJsonFile(dailyFilePath, dailyData);
         console.log(`✅ summary.${lan} saved for id ${id}`);
-
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving translation`);
       }
