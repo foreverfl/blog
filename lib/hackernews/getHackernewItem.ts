@@ -11,6 +11,7 @@ export async function getHackernewsItemById(id: string) {
   const filePath = path.join(
     process.cwd(),
     "contents",
+    "trends",
     "hackernews",
     `${dateString}.json`
   );

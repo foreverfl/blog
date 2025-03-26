@@ -19,18 +19,25 @@ export async function GET(req: Request) {
     );
   }
 
-  // 프론트매터 메타데이터 가져오기
-  const frontMatter = await getPostFrontMatter(
-    lan,
-    classification,
-    category,
-    slug
-  );
+  const trendsPage = classification === "trends";
+  console.log("trendsPage: ", trendsPage);
 
-  // 메타데이터 반환 또는 404 처리
-  if (frontMatter) {
-    return NextResponse.json(frontMatter);
+  if (trendsPage) {
+    return NextResponse.json("trends");
   } else {
-    return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    // 프론트매터 메타데이터 가져오기
+    const frontMatter = await getPostFrontMatter(
+      lan,
+      classification,
+      category,
+      slug
+    );
+
+    // 메타데이터 반환 또는 404 처리
+    if (frontMatter) {
+      return NextResponse.json(frontMatter);
+    } else {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
   }
 }

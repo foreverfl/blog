@@ -18,3 +18,21 @@ export async function getContentsStructure() {
 
   return structure;
 }
+
+export async function getContents(folder: string, date: string) {
+  const filePath = path.join(
+    process.cwd(),
+    "contents",
+    "trends",
+    folder,
+    `${date}.json`
+  );
+
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`File not found: ${filePath}`);
+  }
+
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  const data = JSON.parse(fileContent);
+  return data; 
+}
