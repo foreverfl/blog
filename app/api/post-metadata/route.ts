@@ -1,5 +1,6 @@
 import { getPostFrontMatter } from "@/lib/mdxHelpers";
 import { NextResponse } from "next/server";
+import { parse, format } from "date-fns";
 
 // API route handler
 export async function GET(req: Request) {
@@ -20,10 +21,23 @@ export async function GET(req: Request) {
   }
 
   const trendsPage = classification === "trends";
-  console.log("trendsPage: ", trendsPage);
 
   if (trendsPage) {
-    return NextResponse.json("trends");
+    try {
+      // 날짜 포맷 변경 (250327 -> 2025-03-27)
+      const parsedDate = parse(slug, "yyMMdd", new Date());
+      const formattedDate = format(parsedDate, "yyyy-MM-dd");
+
+      // trends response
+      return NextResponse.json({
+        title: "해커뉴스 다이제스트",
+        date: formattedDate,
+        classification: "trends",
+        category: "hackernews",
+      });
+    } catch (error) {
+      return NextResponse.json({ error: "Trend data not found" }, { status: 404 });
+    }
   } else {
     // 프론트매터 메타데이터 가져오기
     const frontMatter = await getPostFrontMatter(
