@@ -60,6 +60,7 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "remove-markdown": "^0.5.5",
+    "sharp": "^0.33.5",
     "shiki": "^1.18.0",
     "tiktoken": "^1.0.20"
   },
