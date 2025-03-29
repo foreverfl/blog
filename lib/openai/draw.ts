@@ -1,31 +1,32 @@
+import { keywords } from "@/lib/openai/keywords";
 import dotenv from "dotenv";
 import fs from "fs";
-import path from "path";
 import { OpenAI } from "openai";
+import path from "path";
 
 dotenv.config({ path: "./.env.local" });
 
-export async function draw(promptText: string): Promise<string> {
+export async function draw(date: string): Promise<string> {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
   try {
-    console.log("promptText:", promptText);
+    const extractedKeywords = await keywords(date);
 
     const stylePath = path.resolve(
       new URL(import.meta.url).pathname,
-      "../../prompts/picture-style.txt"
+      "../../prompts/picture-style.md"
     );
-    console.log("Style file path:", stylePath);
     const stylePrompt = fs.readFileSync(stylePath, "utf-8");
+    const styleKeywords = parseStylePrompt(stylePrompt);
 
     const fullPrompt = `
-        ${stylePrompt}
-
+        ${styleKeywords}
         Now, illustrate the following theme with the style described above:
-        ${promptText}
+        ${extractedKeywords}
     `.trim();
+    console.log("Full prompt for image generation:", fullPrompt);
 
     const response = await openai.images.generate({
       model: "dall-e-3",
@@ -47,4 +48,19 @@ export async function draw(promptText: string): Promise<string> {
     console.error("❌ Error generating image:", error);
     throw new Error("Failed to generate image");
   }
+}
+
+function parseStylePrompt(stylePrompt: string): string {
+  const lines = stylePrompt.split("\n").filter(line => line.trim() !== "");
+
+  let formattedKeywords = "";
+
+  lines.forEach(line => {
+    if (line.startsWith("-")) {
+      const keyword = line.slice(1).trim(); 
+      formattedKeywords += `${keyword}, `;
+    }
+  });
+
+  return formattedKeywords.trim().replace(/,$/, "");
 }

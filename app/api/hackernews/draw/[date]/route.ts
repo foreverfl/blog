@@ -20,7 +20,6 @@ export async function POST(
 
   // Date formatting
   const today = new Date();
-  today.setHours(today.getHours() + 9);
   const defaultDate = today.toISOString().slice(2, 10).replace(/-/g, "");
   const dateString = date ?? defaultDate;
 
@@ -54,28 +53,32 @@ export async function POST(
     });
   }
 
-  const promptText = topItem.summary.en;
-
   drawQueue.add(async () => {
     try {
-      const imageUrl = await draw(promptText);
+      const imageUrl = await draw(dateString);
       const outputDir = path.join(
         process.cwd(),
         "public",
         "images",
-        "hackernews",
-        dateString
+        "hackernews"
       );
       await fs.mkdir(outputDir, { recursive: true });
 
       // 파일 경로 설정
       const files = await fs.readdir(outputDir);
       const imageFiles = files.filter((file) => file.endsWith(".png"));
-      const nextIndex = imageFiles.length + 1;
+
+      // 파일 인덱스 설정
+      const existingIndexes = imageFiles
+        .filter((file) => file.startsWith(`dall-${dateString}`))
+        .map((file) => parseInt(file.match(/-(\d{2})\.png/)?.[1] ?? "0"));
+      const nextIndex = Math.max(...existingIndexes) + 1;
       const paddedIndex = String(nextIndex).padStart(2, "0");
 
+      // 파일 이름 설정
       const fileName = `dall-${dateString}-${paddedIndex}.png`;
       const filePath = path.join(outputDir, fileName);
+      console.log(`fileName: ${fileName}`);
 
       // 이미지 저장
       const response = await axios.get(imageUrl, {
