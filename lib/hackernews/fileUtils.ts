@@ -1,12 +1,25 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-export async function getDailyFilePath(baseFolder: string) {
-  const now = new Date();
-  const dateString = `${now.getFullYear().toString().slice(2)}${String(
-    now.getMonth() + 1
-  ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+export async function getDailyFilePath(baseFolder: string, dateStr?: string) {
+  let dateString: string;
 
+  if (dateStr) {
+    if (!/^\d{6}$/.test(dateStr)) {
+      throw new Error("Invalid date format. Expected 'YYMMDD'.");
+    }
+    dateString = dateStr;
+  } else {
+    const now = new Date();
+
+    const year = now.getFullYear() % 100;
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+
+    dateString = `${year.toString().padStart(2, "0")}${month
+      .toString()
+      .padStart(2, "0")}${day.toString().padStart(2, "0")}`;
+  }
   return path.join(process.cwd(), baseFolder, `${dateString}.json`);
 }
 

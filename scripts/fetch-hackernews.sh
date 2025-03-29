@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TARGET_DATE=$1
+
 log_message() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
@@ -43,8 +45,14 @@ IDS=$(echo "$HTTP_BODY" | jq -r '.[].id')
 # echo "📝 Found IDs: $IDS"
 
 for id in $IDS; do
-  echo "🚀 Fetching content for ID: $id"
-  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/fetch/" \
+  if [ -n "$TARGET_DATE" ]; then
+    ENDPOINT="$BASE_URL/api/hackernews/fetch/$TARGET_DATE"
+  else
+    ENDPOINT="$BASE_URL/api/hackernews/fetch"
+  fi
+
+  echo "🚀 Fetching content for ID: $id (Date: ${TARGET_DATE:-today})"
+  RESPONSE=$(curl -L -s -X POST "$ENDPOINT" \
     -H "Content-Type: application/json" \
     -H "$AUTH_HEADER" \
     -d "{\"id\": \"$id\"}")

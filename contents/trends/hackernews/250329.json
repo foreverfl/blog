@@ -1,0 +1,1902 @@
+[
+  {
+    "id": "981caf3cbe377770",
+    "title": {
+      "en": "We hacked Gemini's Python sandbox and leaked its source code (at least some)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.landh.tech/blog/20250327-we-hacked-gemini-source-code/",
+    "score": 277,
+    "by": "topsycatt",
+    "time": 1743185578,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "861c898eec47ed74",
+    "title": {
+      "en": "There's a psychological burden of digital life even heavier than distraction",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.chrbutler.com/digital-echoes-and-unquiet-minds",
+    "score": 34,
+    "by": "delaugust",
+    "time": 1743193772,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f068670bb2ee81fe",
+    "title": {
+      "en": "Xee: A Modern XPath and XSLT Engine in Rust",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.startifact.com/posts/xee/",
+    "score": 229,
+    "by": "robin_reala",
+    "time": 1743144498,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "551e20eaab8852f1",
+    "title": {
+      "en": "How Kerala got rich",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://aeon.co/essays/how-did-kerala-go-from-poor-to-prosperous-among-indias-states",
+    "score": 256,
+    "by": "lordleft",
+    "time": 1743179264,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f9d177a202e349e0",
+    "title": {
+      "en": "Show HN: Hexi – Modern header-only network binary serialisation for C++",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/EmberEmu/Hexi",
+    "score": 59,
+    "by": "Chaosvex",
+    "time": 1743183462,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "74fec543d154070c",
+    "title": {
+      "en": "Decomposing a Factorial into Large Factors",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://terrytao.wordpress.com/2025/03/26/decomposing-a-factorial-into-large-factors/",
+    "score": 93,
+    "by": "surprisetalk",
+    "time": 1743173754,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "725d856e594facb9",
+    "title": {
+      "en": "Finley (YC W21) Is Hiring a Technical Implementations Specialist",
+      "ko": null,
+      "ja": null
+    },
+    "type": "job",
+    "url": "https://ats.rippling.com/finley-technologies/jobs",
+    "score": 1,
+    "by": "festinalente",
+    "time": 1743195709,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "143a7a518678cbf9",
+    "title": {
+      "en": "The Art of DJing: Avalon Emerson (2019)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://it.ra.co/features/3392",
+    "score": 39,
+    "by": "easyThrowaway",
+    "time": 1743189734,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "bd620a437d6eb2ae",
+    "title": {
+      "en": "Superhyperbola",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.johndcook.com/blog/2025/03/27/superhyperbola/",
+    "score": 28,
+    "by": "jihadjihad",
+    "time": 1743186321,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7edca9dd2a61648d",
+    "title": {
+      "en": "How to Write Blog Posts that Developers Read",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://refactoringenglish.com/chapters/write-blog-posts-developers-read/",
+    "score": 245,
+    "by": "rbanffy",
+    "time": 1743159679,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "bd81f570e9c669f3",
+    "title": {
+      "en": "Swiftly 1.0",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://swift.org/blog/introducing-swiftly_10/",
+    "score": 34,
+    "by": "todsacerdoti",
+    "time": 1743193761,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "81b904731d3c64d7",
+    "title": {
+      "en": "The Real Book (2021)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://99percentinvisible.org/episode/the-real-book/",
+    "score": 61,
+    "by": "Tomte",
+    "time": 1743179950,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f5d064ce994c8f87",
+    "title": {
+      "en": "xAI has acquired X, xAI now valued at $80 billion",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://twitter.com/elonmusk/status/1905731750275510312",
+    "score": 46,
+    "by": "rvz",
+    "time": 1743197022,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "bb49980e2d39f614",
+    "title": {
+      "en": "SignalBotOne – Notification Webhooks for Signal",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://signalbot.one/",
+    "score": 36,
+    "by": "danslo",
+    "time": 1743181616,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a77b776dfe11cf48",
+    "title": {
+      "en": "A cretaceous fly trap? Remarkable abdominal modification in a fossil wasp",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-025-02190-2",
+    "score": 16,
+    "by": "gnabgib",
+    "time": 1743188100,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a5bb7b71df5c21ed",
+    "title": {
+      "en": "Cross-Platform P2P Wi-Fi: How the EU Killed AWDL",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.ditto.com/blog/cross-platform-p2p-wi-fi-how-the-eu-killed-awdl",
+    "score": 158,
+    "by": "stusmall",
+    "time": 1743167584,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7265932f6ff4bdeb",
+    "title": {
+      "en": "Optimizing Matrix Multiplication on RDNA3",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://seb-v.github.io/optimization/update/2025/01/20/Fast-GPU-Matrix-multiplication.html",
+    "score": 18,
+    "by": "skidrow",
+    "time": 1742896521,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "4080a392bd1c945c",
+    "title": {
+      "en": "Building Statically Linked Go Executables with CGO and Zig",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://calabro.io/zig-cgo",
+    "score": 81,
+    "by": "todsacerdoti",
+    "time": 1743171067,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "541246337a07996d",
+    "title": {
+      "en": "Architecture Patterns with Python",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.cosmicpython.com/book/preface.html",
+    "score": 398,
+    "by": "asicsp",
+    "time": 1743141447,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "9ceda24309032b3b",
+    "title": {
+      "en": "The Biology of B-Movie Monsters (2003)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://fathom.lib.uchicago.edu/2/21701757/",
+    "score": 48,
+    "by": "cainxinth",
+    "time": 1743169241,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "4eb49c6d920d4f18",
+    "title": {
+      "en": "Getting hit by lightning is good for some tropical trees",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.caryinstitute.org/news-insights/press-release/getting-hit-lightning-good-some-tropical-trees",
+    "score": 116,
+    "by": "sohkamyung",
+    "time": 1743169978,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "5ea5b028361048ce",
+    "title": {
+      "en": "Disk I/O bottlenecks in GitHub Actions",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://depot.dev/blog/uncovering-disk-io-bottlenecks-github-actions-ci",
+    "score": 82,
+    "by": "jacobwg",
+    "time": 1743175356,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fe85c9fb8a23bd2d",
+    "title": {
+      "en": "MilliForth-6502: The smallest Forth real programming language for 6502",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/agsb/milliForth-6502",
+    "score": 89,
+    "by": "rbanffy",
+    "time": 1743159880,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a8137c3c4854deab",
+    "title": {
+      "en": "Building a modern durable execution engine from first principles",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://restate.dev/blog/building-a-modern-durable-execution-engine-from-first-principles/",
+    "score": 38,
+    "by": "whoiskatrin",
+    "time": 1743083504,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0d3dbde9a74eb778",
+    "title": {
+      "en": "Ask HN: can Wireless-CarPlay dongles steal your data?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": null,
+    "score": 7,
+    "by": "concerned_citi",
+    "time": 1742905228,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "327ccb524a039975",
+    "title": {
+      "en": "Show HN: Cursor IDE now remembers your coding prefs using MCP",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": null,
+    "score": 70,
+    "by": "roseway4",
+    "time": 1743173099,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c1c0ec42735e15d9",
+    "title": {
+      "en": "Framework 13 AMD Setup with FreeBSD",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://euroquis.nl/freebsd/2025/03/16/framework.html",
+    "score": 33,
+    "by": "hggh",
+    "time": 1742909640,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "44e224563abf2956",
+    "title": {
+      "en": "I asked police to send me their public surveillance footage of my car",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://cardinalnews.org/2025/03/28/i-drove-300-miles-in-rural-virginia-then-asked-police-to-send-me-their-public-surveillance-footage-of-my-car-heres-what-i-learned/",
+    "score": 449,
+    "by": "bookofjoe",
+    "time": 1743164046,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "957629cb9498aa3f",
+    "title": {
+      "en": "Japanese scientists create new plastic that dissolves in saltwater overnight",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://newatlas.com/materials/plastic-dissolves-ocean-overnight-no-microplastics/",
+    "score": 138,
+    "by": "bentobean",
+    "time": 1743170950,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fba455c66aeef148",
+    "title": {
+      "en": "Apple needs a Snow Sequoia",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://reviews.ofb.biz/safari/article/1300.html",
+    "score": 909,
+    "by": "trbutler",
+    "time": 1743114765,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2c99611a163fcd4a",
+    "title": {
+      "en": "TV is watching you – Companies inventing new ways to make money off your data",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.vox.com/technology/405879/roku-amazon-netflix-moana-disney",
+    "score": 8,
+    "by": "rmason",
+    "time": 1743194265,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b55976a927b034b2",
+    "title": {
+      "en": "The Biology of a Large Language Model",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://transformer-circuits.pub/2025/attribution-graphs/biology.html",
+    "score": 96,
+    "by": "frozenseven",
+    "time": 1743171508,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c8926decaaaf557b",
+    "title": {
+      "en": "Entropy Attacks",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.cr.yp.to/20140205-entropy.html",
+    "score": 79,
+    "by": "todsacerdoti",
+    "time": 1742905238,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c21af1bea42bc001",
+    "title": {
+      "en": "Moiré Than Meets the Eye: Uncovering the Quantum Potential of Phasons",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://newscenter.lbl.gov/2025/03/24/moire-than-meets-the-eye/",
+    "score": 17,
+    "by": "gnabgib",
+    "time": 1742834975,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "83b73cf6b28b436f",
+    "title": {
+      "en": "Are Levi's from Amazon different from Levi's from Levi's?",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://nymag.com/strategist/article/levis-amazon-jeans-testing.html",
+    "score": 120,
+    "by": "randycupertino",
+    "time": 1743164306,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "d91c6896e5ca9717",
+    "title": {
+      "en": "FDIC says banks can engage in crypto activities without prior approval",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.reuters.com/business/finance/fdic-says-banks-can-engage-crypto-activities-without-prior-approval-2025-03-28/",
+    "score": 6,
+    "by": "speckx",
+    "time": 1743194880,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a243f5c5e6b75df5",
+    "title": {
+      "en": "Europe's Battle for Tech Sovereignty: Why OpenStack Matters [video]",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://vpetersson.com/podcast/S02E06.html",
+    "score": 7,
+    "by": "mvip",
+    "time": 1743191518,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e1174069efe65757",
+    "title": {
+      "en": "Giant, fungus-like organism may be a completely unknown branch of life",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.livescience.com/animals/giant-fungus-like-organism-may-be-a-completely-unknown-branch-of-life",
+    "score": 274,
+    "by": "wglb",
+    "time": 1743117328,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "70215fcdb07c50d1",
+    "title": {
+      "en": "7.7 magnitude earthquake hits Southeast Asia, affecting Myanmar and Thailand",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://twitter.com/TaraBull808/status/1905534938558157139",
+    "score": 246,
+    "by": "testrun",
+    "time": 1743154324,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c673589ef5c8aa74",
+    "title": {
+      "en": "Let's Take a Look at JEP 483: Ahead-of-Time Class Loading and Linking",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.morling.dev/blog/jep-483-aot-class-loading-linking/",
+    "score": 43,
+    "by": "ingve",
+    "time": 1743160315,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "10129d8b3a81dd85",
+    "title": {
+      "en": "Knowledge Library MCP",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://devpost.com/software/knowledge-library-mcp",
+    "score": 3,
+    "by": "thstart",
+    "time": 1743195670,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "10097a15cc5088c4",
+    "title": {
+      "en": "Things I would have told myself before building an autorouter",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.autorouting.com/p/13-things-i-would-have-told-myself",
+    "score": 345,
+    "by": "seveibar",
+    "time": 1743122333,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "42d0a8d891c71102",
+    "title": {
+      "en": "Tracing the thoughts of a large language model",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.anthropic.com/research/tracing-thoughts-language-model",
+    "score": 945,
+    "by": "Philpax",
+    "time": 1743095136,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "4ecf757c0bc474ad",
+    "title": {
+      "en": "How I Choose What to Work On (2023)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://tynan.com/workonwhat/",
+    "score": 90,
+    "by": "freemh",
+    "time": 1742903659,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f87726de8694d123",
+    "title": {
+      "en": "ByteDance Releases MegaTTS3",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/bytedance/MegaTTS3",
+    "score": 39,
+    "by": "nmfisher",
+    "time": 1743151584,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "92403d609b4fdb25",
+    "title": {
+      "en": "How to Use Em Dashes (–), En Dashes (–), and Hyphens (-)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.merriam-webster.com/grammar/em-dash-en-dash-how-to-use",
+    "score": 584,
+    "by": "Stratoscope",
+    "time": 1743106778,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "25013395192a7d77",
+    "title": {
+      "en": "Every Flop Counts: Scaling a 300B LLM Without Premium GPUs",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://arxiv.org/abs/2503.05139",
+    "score": 107,
+    "by": "bretpiatt",
+    "time": 1742820496,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "37d2b7611a1e31d6",
+    "title": {
+      "en": "A note on the USB-to-PS/2 mouse adapter that came with Microsoft mouse devices",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://devblogs.microsoft.com/oldnewthing/20250325-00/?p=110993",
+    "score": 350,
+    "by": "luu",
+    "time": 1743120989,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f40cf8f6b86c632d",
+    "title": {
+      "en": "Launch HN: Continue (YC S23) – Create custom AI code assistants",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://hub.continue.dev/explore/assistants",
+    "score": 163,
+    "by": "sestinj",
+    "time": 1743087986,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7739e5a883bfe5d6",
+    "title": {
+      "en": "GitHub has gone – long live Forgejo",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://mastodon.social/@organicmaps/114233788700982882",
+    "score": 6,
+    "by": "Helithumper",
+    "time": 1743192299,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "3f3afac5c4778cff",
+    "title": {
+      "en": "A decompilation and port of Sonic Advance 2-a GameBoy Advance game written in C",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/SAT-R/sa2",
+    "score": 169,
+    "by": "bane",
+    "time": 1743128509,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "8bec9b672ff16617",
+    "title": {
+      "en": "Estimating Camera Motion from a Single Motion-Blurred Image",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://jerredchen.github.io/image-as-imu/",
+    "score": 62,
+    "by": "smusamashah",
+    "time": 1743142059,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "212a03a3801f11de",
+    "title": {
+      "en": "I tried making artificial sunlight at home",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://victorpoughon.fr/i-tried-making-artificial-sunlight-at-home/",
+    "score": 552,
+    "by": "fouronnes3",
+    "time": 1743104968,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f0e60f9213a8b5b0",
+    "title": {
+      "en": "Mid-pregnancy pollution exposure linked to postpartum depression",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.bps.org.uk/research-digest/mid-pregnancy-pollution-exposure-linked-postpartum-depression-new-study-suggests",
+    "score": 52,
+    "by": "wjb3",
+    "time": 1743146735,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c833c735ec962236",
+    "title": {
+      "en": "Preschoolers can reason better than we think, study suggests",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://phys.org/news/2025-03-preschoolers.html",
+    "score": 160,
+    "by": "PaulHoule",
+    "time": 1742903610,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "8c244607c023de64",
+    "title": {
+      "en": "Using uv and PEP 723 for Self-Contained Python Scripts",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://thisdavej.com/share-python-scripts-like-a-pro-uv-and-pep-723-for-easy-deployment/",
+    "score": 228,
+    "by": "thisdavej",
+    "time": 1743123226,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f9535b307df11e08",
+    "title": {
+      "en": "A Debugger is a REPL is a Debugger",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://matklad.github.io/2025/03/25/debugger-is-repl-is-debugger.html",
+    "score": 40,
+    "by": "ingve",
+    "time": 1742900776,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "4044c51131ead424",
+    "title": {
+      "en": "Percentage of parents financially supporting adult children reaches 3-year high",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.savings.com/insights/financial-support-for-adult-children-study",
+    "score": 28,
+    "by": "walterbell",
+    "time": 1743144765,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2f1afeb135a718da",
+    "title": {
+      "en": "The Great Chatbot Debate",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://computerhistory.org/events/great-chatbot-debate/",
+    "score": 14,
+    "by": "rbanffy",
+    "time": 1742894549,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b14fe2b0ae814586",
+    "title": {
+      "en": "My team loved to ship fast and sink later",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://rosesecurity.dev/blog/2025/03/26/rushing-toward-rewrite",
+    "score": 9,
+    "by": "r0nan",
+    "time": 1743182467,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "1660dc158bf5387e",
+    "title": {
+      "en": "Plasmonic Modulators Break Wireless Terahertz Barrier",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://spectrum.ieee.org/terahertz-waves-2671362433",
+    "score": 24,
+    "by": "rbanffy",
+    "time": 1742894904,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c66679f23c539bad",
+    "title": {
+      "en": "Emacs Solo: A Surprise System Crafters Live Demo",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.rahuljuliato.com/posts/emacs-solo-demo",
+    "score": 102,
+    "by": "JNRowe",
+    "time": 1743112983,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "80e0206c30be9f7f",
+    "title": {
+      "en": "Show HN: We are building the next DocuSign",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://sgnly.com",
+    "score": 64,
+    "by": "esaidm",
+    "time": 1743108702,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0d813d8915548310",
+    "title": {
+      "en": "The Unbearable Loudness of Chewing",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://asteriskmag.com/issues/09/the-unbearable-loudness-of-chewing/",
+    "score": 77,
+    "by": "k2enemy",
+    "time": 1742906464,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c3cc09f7c3386ef2",
+    "title": {
+      "en": "Clean, a formal verification DSL for ZK circuits in Lean4",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.zksecurity.xyz/posts/clean/",
+    "score": 71,
+    "by": "vons",
+    "time": 1743100380,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "aa8902d9590d3643",
+    "title": {
+      "en": "Anti-Orbit Laser Submarines (2017)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "http://toughsf.blogspot.com/2017/10/anti-orbit-laser-submarines.html",
+    "score": 55,
+    "by": "EA-3167",
+    "time": 1743120377,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0f9ecfa7eec46811",
+    "title": {
+      "en": "Unofficial Windows 7 Service Pack 2",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/i486girl/win7-sp2",
+    "score": 248,
+    "by": "XzetaU8",
+    "time": 1742643903,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "71fc049725fae7c3",
+    "title": {
+      "en": "Hyperlegibility",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.notboring.co/p/hyperlegibility",
+    "score": 18,
+    "by": "jger15",
+    "time": 1742907743,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "aa1e29b0af3950ea",
+    "title": {
+      "en": "LibreOffice downloads on the rise as users look to avoid subscription costs",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.computerworld.com/article/3840480/libreoffice-downloads-on-the-rise-as-users-look-to-avoid-subscription-costs.html",
+    "score": 284,
+    "by": "cable2600",
+    "time": 1743121248,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2480187f412ae58a",
+    "title": {
+      "en": "Blender releases their Oscar winning version tool",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.blender.org/download/releases/4-4/",
+    "score": 777,
+    "by": "babuloseo",
+    "time": 1743035223,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "aad4bbdfbd20907f",
+    "title": {
+      "en": "Source code art in the Rivulet language",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/rottytooth/Rivulet",
+    "score": 162,
+    "by": "cranbor",
+    "time": 1743076519,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "1c2129988d9f3279",
+    "title": {
+      "en": "That Hit Song You Love Was a Total Fluke",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://hbr.org/2013/11/was-gangnam-style-a-fluke",
+    "score": 13,
+    "by": "gradus_ad",
+    "time": 1743181011,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "269a5770b10e72b6",
+    "title": {
+      "en": "FPGA-Based Implementation of Signal Processing Systems (2nd Edition)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.wiley.com/en-us/FPGA-based+Implementation+of+Signal+Processing+Systems%2C+2nd+Edition-p-9781119077954",
+    "score": 3,
+    "by": "teleforce",
+    "time": 1743185817,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "1c11fc82d110a67f",
+    "title": {
+      "en": "Learn to code, ignore AI, then use AI to code even better",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://kyrylo.org/software/2025/03/27/learn-to-code-ignore-ai-then-use-ai-to-code-even-better.html",
+    "score": 141,
+    "by": "kyrylo",
+    "time": 1743154594,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ab1107866375ce2d",
+    "title": {
+      "en": "Asking good questions is harder than giving great answers",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://newsletter.dancohen.org/archive/asking-good-questions-is-harder-than-giving-great-answers/",
+    "score": 145,
+    "by": "speckx",
+    "time": 1743112103,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "12e39ff4c61a5f07",
+    "title": {
+      "en": "Better Shell History Search",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://tratt.net/laurie/blog/2025/better_shell_history_search.html",
+    "score": 55,
+    "by": "todsacerdoti",
+    "time": 1742904165,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "9a7110f17d414461",
+    "title": {
+      "en": "They Might Be Giants Flood EPK Promo (1990) [video]",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.youtube.com/watch?v=C-tQSFQ-ESY",
+    "score": 181,
+    "by": "CaliforniaKarl",
+    "time": 1743046675,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "da0bac5307a59bd8",
+    "title": {
+      "en": "Golang on the Playstation 2",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://rgsilva.com/blog/ps2-go-part-1/",
+    "score": 189,
+    "by": "donatj",
+    "time": 1743111466,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "c3a9091d32d97723",
+    "title": {
+      "en": "I genuinely don't understand why some people are still bullish about LLMs",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://twitter.com/skdh/status/1905132853672784121",
+    "score": 654,
+    "by": "ksec",
+    "time": 1743110562,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e4f517c188f4dad1",
+    "title": {
+      "en": "Philosophy of Coroutines (2023)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.chiark.greenend.org.uk/~sgtatham/quasiblog/coroutines-philosophy/",
+    "score": 81,
+    "by": "HeliumHydride",
+    "time": 1743096215,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "efa56325d333129f",
+    "title": {
+      "en": "Building Node.js on Windows with Clang-cl",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://joyeecheung.github.io/blog/2025/02/16/building-nodejs-on-windows-with-clang-cl/",
+    "score": 7,
+    "by": "mpweiher",
+    "time": 1742907540,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "fea5b956630dbb77",
+    "title": {
+      "en": "Abundance isn't going to happen unless politicians are scared of the status quo",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://inpractice.yimbyaction.org/p/abundance-isnt-going-to-happen-unless",
+    "score": 321,
+    "by": "viajante1882",
+    "time": 1743095353,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "14f7ff8f6ae0bd5e",
+    "title": {
+      "en": "Learning Theory from First Principles [pdf]",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.di.ens.fr/~fbach/ltfp_book.pdf",
+    "score": 190,
+    "by": "Anon84",
+    "time": 1743108313,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e9ae83fde3e64616",
+    "title": {
+      "en": "Banned Books: Analysis of Censorship on Amazon.com (2024)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://citizenlab.ca/2024/11/analysis-of-censorship-on-amazon-com/",
+    "score": 98,
+    "by": "gnabgib",
+    "time": 1743104270,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "ce64f63b9d59fbed",
+    "title": {
+      "en": "Plastic-like materials that dissolve in the sea",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.riken.jp/en/news_pubs/research_news/rr/20250327_1/index.html",
+    "score": 3,
+    "by": "geox",
+    "time": 1743189029,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0bba5f1428db36d1",
+    "title": {
+      "en": "AI models miss disease in Black and female patients",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.science.org/content/article/ai-models-miss-disease-black-female-patients",
+    "score": 316,
+    "by": "pseudolus",
+    "time": 1743100701,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "d552523a0f5f9a5e",
+    "title": {
+      "en": "Piranesi's Perspective Trick (2019)",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://medium.com/@brunopostle/piranesis-perspective-trick-6bcd7a754da9",
+    "score": 339,
+    "by": "amatheus",
+    "time": 1743075690,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "dce4b0938311310a",
+    "title": {
+      "en": "Retreating Glaciers Expose 1,500 Miles of Coastline",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://e360.yale.edu/digest/climate-glaciers-coastline-study",
+    "score": 29,
+    "by": "YaleE360",
+    "time": 1742828475,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "5c09f290955ffdb2",
+    "title": {
+      "en": "Alkanes on Mars",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.science.org/content/blog-post/alkanes-mars",
+    "score": 70,
+    "by": "nick__m",
+    "time": 1743095458,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "2bfa44bc1d84798a",
+    "title": {
+      "en": "Trapping misbehaving bots in an AI Labyrinth",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://blog.cloudflare.com/ai-labyrinth/",
+    "score": 236,
+    "by": "pabs3",
+    "time": 1742391067,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "d0d4221bad257bc0",
+    "title": {
+      "en": "Jensen, We're with You. But We're Not There Yet",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.chipstrat.com/p/jensen-were-with-you-but-were-not",
+    "score": 4,
+    "by": "austinlyons",
+    "time": 1743183529,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "1ac5efb447be78d8",
+    "title": {
+      "en": "Show HN: An open source alternative to Wakatime",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://wakana.io",
+    "score": 36,
+    "by": "jemiluv8",
+    "time": 1742899923,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "e762d69afa7de586",
+    "title": {
+      "en": "Scientists Discover New Heavy-Metal Molecule 'Berkelocene'",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://newscenter.lbl.gov/2025/03/11/scientists-discover-new-heavy-metal-molecule-berkelocene/",
+    "score": 126,
+    "by": "gmays",
+    "time": 1742821658,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "7bd15553d47fa6e5",
+    "title": {
+      "en": "Todo.txt",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://github.com/todotxt/todo.txt",
+    "score": 9,
+    "by": "1sembiyan",
+    "time": 1743179110,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "a5620036423b6eb7",
+    "title": {
+      "en": "Blasting Past WebP - An analysis of the NSO BLASTPASS iMessage exploit",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://googleprojectzero.blogspot.com/2025/03/blasting-past-webp.html",
+    "score": 253,
+    "by": "el_duderino",
+    "time": 1743079784,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "0da8cdfb63befb78",
+    "title": {
+      "en": "OpenAI adds MCP support to Agents SDK",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://openai.github.io/openai-agents-python/mcp/",
+    "score": 786,
+    "by": "gronky_",
+    "time": 1743015329,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "00fa45d791273b04",
+    "title": {
+      "en": "The Hole Story: How Woodpeckers Make Homes for the Rest of the Forest",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.allaboutbirds.org/news/hole-story-how-woodpeckers-make-homes-forest/",
+    "score": 3,
+    "by": "hn_acker",
+    "time": 1743183144,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b26e597ec37b62f6",
+    "title": {
+      "en": "Writing an HTTP Server in Go from Scratch: Part 2",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://www.krayorn.com/posts/http-server-go-2/",
+    "score": 34,
+    "by": "krayorn",
+    "time": 1743111771,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "b4913c0a45c1dfa9",
+    "title": {
+      "en": "Debian bookworm live images now reproducible",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://lwn.net/Articles/1015402/",
+    "score": 745,
+    "by": "bertman",
+    "time": 1743009742,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  },
+  {
+    "id": "f7e6bb533a9dd9d0",
+    "title": {
+      "en": "What it takes to add a new back end to Futhark",
+      "ko": null,
+      "ja": null
+    },
+    "type": "story",
+    "url": "https://futhark-lang.org/blog/2025-03-04-adding-a-new-backend.html",
+    "score": 28,
+    "by": "PaulHoule",
+    "time": 1742812288,
+    "content": null,
+    "summary": {
+      "en": null,
+      "ko": null,
+      "ja": null
+    }
+  }
+]

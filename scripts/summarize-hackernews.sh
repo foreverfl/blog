@@ -4,6 +4,8 @@ log_message() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
+TARGET_DATE="$1"
+
 if [ "$GITHUB_ACTIONS" != "true" ] && [ -f ".env.local" ]; then
   echo "📂 Loading environment variables from .env.local"
   export $(grep -v '^#' .env.local | xargs)
@@ -24,8 +26,14 @@ fi
 
 AUTH_HEADER="Authorization: Bearer $HACKERNEWS_API_KEY"
 
-echo "📥 Fetching HackerNews content list from $BASE_URL"
-HACKERNEWS_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$BASE_URL/api/hackernews" \
+if [ -n "$TARGET_DATE" ]; then
+  LIST_ENDPOINT="$BASE_URL/api/hackernews/$TARGET_DATE"
+else
+  LIST_ENDPOINT="$BASE_URL/api/hackernews"
+fi
+
+echo "📥 Fetching HackerNews content list from $LIST_ENDPOINT"
+HACKERNEWS_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$LIST_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER")
 
@@ -45,8 +53,14 @@ echo "$IDS" | while read -r id; do
     continue
   fi
 
-  echo "🚀 Sending summarize request for ID: $id"
-  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/summarize/" \
+  if [ -n "$TARGET_DATE" ]; then
+    ENDPOINT="$BASE_URL/api/hackernews/summarize/$TARGET_DATE"
+  else
+    ENDPOINT="$BASE_URL/api/hackernews/summarize/"
+  fi
+
+  echo "🚀 Sending summarize request for ID: $id (Date: ${TARGET_DATE:-today})"
+  RESPONSE=$(curl -L -s -X POST "$ENDPOINT" \
     -H "Content-Type: application/json" \
     -H "$AUTH_HEADER" \
     -d "{\"id\": \"$id\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/summary\"}")

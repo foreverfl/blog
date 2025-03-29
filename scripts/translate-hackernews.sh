@@ -1,6 +1,8 @@
 #!/bin/bash
 
 LANG=$1
+TARGET_DATE=$2
+
 if [ -z "$LANG" ]; then
   echo "❌ Error: Translation language not specified! (ex. ja or ko)"
   exit 1
@@ -30,8 +32,14 @@ fi
 
 AUTH_HEADER="Authorization: Bearer $HACKERNEWS_API_KEY"
 
-echo "📥 Fetching saved HackerNews contents from $BASE_URL"
-SAVED_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$BASE_URL/api/hackernews" \
+if [ -n "$TARGET_DATE" ]; then
+  LIST_ENDPOINT="$BASE_URL/api/hackernews/$TARGET_DATE"
+else
+  LIST_ENDPOINT="$BASE_URL/api/hackernews"
+fi
+
+echo "📥 Fetching saved HackerNews contents from $LIST_ENDPOINT"
+SAVED_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$LIST_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER")
 
@@ -50,8 +58,15 @@ echo "$IDS" | while read -r id; do
   if [ -z "$id" ]; then
     continue
   fi
-  echo "🌏 Sending translate request for ID: $id to $LANG"
-  RESPONSE=$(curl -L -s -X POST "$BASE_URL/api/hackernews/translate/" \
+
+  if [ -n "$TARGET_DATE" ]; then
+    ENDPOINT="$BASE_URL/api/hackernews/translate/$TARGET_DATE"
+  else
+    ENDPOINT="$BASE_URL/api/hackernews/translate"
+  fi
+
+  echo "🌏 Sending translate request for ID: $id to $LANG (Date: ${TARGET_DATE:-today})"
+  RESPONSE=$(curl -L -s -X POST "$ENDPOINT" \
     -H "Content-Type: application/json" \
     -H "$AUTH_HEADER" \
     -d "{\"id\": \"$id\", \"lan\": \"$LANG\", \"webhookUrl\": \"$BASE_URL/api/hackernews/webhook/translate\"}")
