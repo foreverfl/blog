@@ -28,7 +28,6 @@ export async function convertImagesToWebp(
 
     console.log(`Found ${imageFiles.length} image(s) to convert...`);
 
-    // 각 이미지 파일에 대해 변환 작업
     for (const file of imageFiles) {
       const inputPath = path.join(sourceDir, file);
       const outputPath = path.join(destDir, `${path.parse(file).name}.webp`);

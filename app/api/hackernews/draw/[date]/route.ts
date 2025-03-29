@@ -6,6 +6,7 @@ import axios from "axios";
 import fs from "fs/promises";
 import { NextResponse } from "next/server";
 import path from "path";
+import sharp from "sharp";
 
 export async function POST(
   req: Request,
@@ -66,13 +67,26 @@ export async function POST(
 
       // 파일 경로 설정
       const files = await fs.readdir(outputDir);
-      const imageFiles = files.filter((file) => file.endsWith(".png"));
+      const imageFiles = files.filter((file) => file.endsWith(".webp"));
+
+      // 'dall-<date>.webp' 형식의 파일이 있는지 확인
+      const matchingFiles = imageFiles.filter((file) =>
+        file.startsWith(`dall-${dateString}`)
+      );
 
       // 파일 인덱스 설정
-      const existingIndexes = imageFiles
-        .filter((file) => file.startsWith(`dall-${dateString}`))
-        .map((file) => parseInt(file.match(/-(\d{2})\.png/)?.[1] ?? "0"));
-      const nextIndex = Math.max(...existingIndexes) + 1;
+      let nextIndex = 1;
+
+      if (matchingFiles.length > 0) {
+        const existingIndexes = matchingFiles
+          .map((file) => {
+            const match = file.match(/-(\d{2})\.webp/);
+            return match ? parseInt(match[1], 10) : 0;
+          })
+          .sort((a, b) => b - a); 
+        nextIndex = existingIndexes[0] + 1;
+      }
+
       const paddedIndex = String(nextIndex).padStart(2, "0");
 
       // 파일 이름 설정
@@ -84,8 +98,8 @@ export async function POST(
       const response = await axios.get(imageUrl, {
         responseType: "arraybuffer",
       });
-      await fs.writeFile(filePath, response.data);
-      console.log(`✅ Saved image to ${filePath}`);
+      await sharp(response.data).webp().toFile(filePath);
+      console.log(`✅ Saved image as WebP to ${filePath}`);
 
       if (webhookUrl) {
         await axios.post(webhookUrl, {
