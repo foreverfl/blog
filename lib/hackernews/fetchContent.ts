@@ -3,6 +3,7 @@ import { chromium } from "playwright";
 function logError(message: string) {
   const timestamp = new Date().toISOString();
   const logMessage = `${timestamp} - ERROR: ${message}\n`;
+  console.error(logMessage);
 }
 
 function cleanText(text: string) {
@@ -26,9 +27,10 @@ export async function fetchContent(url: string) {
     "Accept-Language": "en-US,en;q=0.9",
     "Accept-Encoding": "gzip, deflate, br",
   });
-  await page.goto(url, { waitUntil: "networkidle" });
 
   try {
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
+    
     const rawContent = await page.evaluate(() => {
       // <article>
       const article = document.querySelector("article");
