@@ -54,7 +54,7 @@ export async function draw(date: string): Promise<string> {
     }
 
     console.log("🎨 Image generated:", imageUrl);
-    return "tested!!";
+    return imageUrl;
   } catch (error) {
     console.error("❌ Error generating image:", error);
     throw new Error("Failed to generate image");

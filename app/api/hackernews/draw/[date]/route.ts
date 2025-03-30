@@ -69,35 +69,27 @@ export async function POST(
       const files = await fs.readdir(outputDir);
       const imageFiles = files.filter((file) => file.endsWith(".webp"));
 
-      // Check if files - dall-<date>.webp - with the specific date already exist
-      const matchingFiles = imageFiles.filter((file) =>
-        file.startsWith(`dall-${dateString}`)
-      );
+      const baseFileName = `dall-${dateString}.webp`;
+      let fileName = baseFileName;
+      let filePath = path.join(outputDir, fileName);
 
-      // Set the index for the new file
-      let nextIndex = 1;
+      if (imageFiles.includes(baseFileName)) {
+        let index = 1;
 
-      if (matchingFiles.length > 0) {
-        const existingIndexes = matchingFiles
-          .map((file) => {
-            const match = file.match(/-(\d{2})\.webp/);
-            return match ? parseInt(match[1], 10) : 0;
-          })
-          .sort((a, b) => b - a);
-        nextIndex = existingIndexes[0] + 1;
+        while (true) {
+          const paddedIndex = String(index).padStart(2, "0");
+          fileName = `dall-${dateString}-${paddedIndex}.webp`;
+          filePath = path.join(outputDir, fileName);
+
+          try {
+            await fs.access(filePath); 
+            index++; 
+          } catch {
+            break; 
+          }
+        }
       }
-
-      const paddedIndex =
-        nextIndex === 1 ? "" : `-${String(nextIndex).padStart(2, "0")}`;
-
-      // Set the file name
-      let fileName;
-      if (!paddedIndex) {
-        fileName = `dall-${dateString}.webp`;
-      } else {
-        fileName = `dall-${dateString}-${paddedIndex}.webp`;
-      }
-      const filePath = path.join(outputDir, fileName);
+      console.log("File name for saving:", fileName);
 
       // Save the image as WebP
       const response = await axios.get(imageUrl, {

@@ -48,6 +48,7 @@ export async function keywords(date: string): Promise<string> {
       .sort((a: any, b: any) => b.score - a.score)[0];
 
     const summary = topItem?.summary?.en || "No valid item found";
+    console.log("Extracted summary:", summary);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -68,7 +69,6 @@ export async function keywords(date: string): Promise<string> {
       throw new Error("Content is null or undefined");
     }
     const parsedResponse = ImageInfoSchema.parse(JSON.parse(content));
-    console.log("Parsed response:", parsedResponse);
     return JSON.stringify(parsedResponse);
   } catch (error) {
     console.error("❌ Error extracting keywords:", error);
