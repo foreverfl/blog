@@ -103,7 +103,7 @@ export async function getPostFrontMatter(
     // 파일 경로 설정
     const filePath = path.join(
       process.cwd(),
-      `contents/${classification}/${category}/${slug}-${lan}.mdx`
+      `contents/${classification}/${category}/${slug}.mdx`
     );
 
     // 파일 존재 여부 확인
@@ -144,7 +144,7 @@ export function getMdxFileContent(
   const contentDir = path.resolve(process.cwd(), "contents");
   const filePath = path.resolve(
     contentDir,
-    `${classification}/${category}/${slug}-${lan}.mdx`
+    `${classification}/${category}/${slug}.mdx`
   );
   const fileContent = fs.readFileSync(filePath, "utf8");
   return fileContent;
