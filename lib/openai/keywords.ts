@@ -3,6 +3,8 @@ import { OpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { getDailyFilePath, readJsonFile } from "../hackernews/fileUtils";
+import path from "path";
+import fs from "fs";
 
 dotenv.config({ path: "./.env.local" });
 
@@ -40,23 +42,31 @@ export async function keywords(date: string): Promise<string> {
     );
     const items = await readJsonFile(filePath);
 
-    const topItem = items
-      .filter((item: any) => {
-        const en = item.summary?.en;
-        return typeof en === "string" && en.trim().length > 0;
-      })
-      .sort((a: any, b: any) => b.score - a.score)[0];
+    const topItem = items.filter((item: any) => {
+      const en = item.summary?.en;
+      return typeof en === "string" && en.trim().length > 0;
+    })[0];
+    // .sort((a: any, b: any) => b.score - a.score)[0];
 
     const summary = topItem?.summary?.en || "No valid item found";
     console.log("Extracted summary:", summary);
+
+    const keywordsPromptPath = path.resolve(
+      new URL(import.meta.url).pathname,
+      "../../prompts/picture-keywords.md"
+    );
+    console.log("Keywords prompt file path:", keywordsPromptPath);
+
+    // 프롬프트 파일 읽기
+    const keywordsPrompt = fs.readFileSync(keywordsPromptPath, "utf-8");
+    console.log("Keywords prompt file content loaded successfully");
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content:
-            "You are a helpful assistant that extracts image-related details from a summary text. Please extract the following details: person (gender, age, emotion), object, action, and background (indoor/outdoor, time of day). Use your imagination to create a vivid scenario based on the summary.",
+          content: keywordsPrompt,
         },
         { role: "user", content: summary },
       ],
@@ -69,6 +79,7 @@ export async function keywords(date: string): Promise<string> {
       throw new Error("Content is null or undefined");
     }
     const parsedResponse = ImageInfoSchema.parse(JSON.parse(content));
+    console.log("keywords:", parsedResponse);
     return JSON.stringify(parsedResponse);
   } catch (error) {
     console.error("❌ Error extracting keywords:", error);

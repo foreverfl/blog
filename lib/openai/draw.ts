@@ -37,8 +37,6 @@ export async function draw(date: string): Promise<string> {
       background: flattenedKeywords.background,
     };
 
-    console.log("Full prompt for image generation:", fullPrompt);
-
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: JSON.stringify(fullPrompt),
