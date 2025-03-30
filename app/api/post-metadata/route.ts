@@ -22,6 +22,14 @@ export async function GET(req: Request) {
 
   const trendsPage = classification === "trends";
 
+  let hackerNewsTitle = "Hacker News Digest"; // 기본값
+
+  if (lan === "ja") {
+    hackerNewsTitle = "ハッカーニュースダイジェスト";
+  } else if (lan === "ko") {
+    hackerNewsTitle = "해커뉴스 다이제스트";
+  }
+
   if (trendsPage) {
     try {
       // 날짜 포맷 변경 (250327 -> 2025-03-27)
@@ -30,13 +38,16 @@ export async function GET(req: Request) {
 
       // trends response
       return NextResponse.json({
-        title: "해커뉴스 다이제스트",
+        title: hackerNewsTitle,
         date: formattedDate,
         classification: "trends",
         category: "hackernews",
       });
     } catch (error) {
-      return NextResponse.json({ error: "Trend data not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Trend data not found" },
+        { status: 404 }
+      );
     }
   } else {
     // 프론트매터 메타데이터 가져오기

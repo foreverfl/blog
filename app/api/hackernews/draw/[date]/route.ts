@@ -21,6 +21,7 @@ export async function POST(
 
   // Date formatting
   const today = new Date();
+  today.setHours(today.getHours() + 9);
   const defaultDate = today.toISOString().slice(2, 10).replace(/-/g, "");
   const dateString = date ?? defaultDate;
 

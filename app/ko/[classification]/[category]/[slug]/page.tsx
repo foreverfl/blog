@@ -4,8 +4,8 @@ import Trends from "@/components/main/Trends";
 import { getContents } from "@/lib/jsonHelpers";
 import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
 import "github-markdown-css";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers"; 
 
 export default async function Page({
   params,
@@ -17,7 +17,7 @@ export default async function Page({
   }>;
 }) {
   const cookiesList = await cookies();
-  const lan = cookiesList.get("lan")?.value; 
+  const lan = cookiesList.get("lan")?.value;
 
   const { classification, category, slug } = await params;
   const trendsPage = classification === "trends";

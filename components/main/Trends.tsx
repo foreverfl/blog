@@ -101,7 +101,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  {item.title[lan as "ko" | "ja"] || item.title.en}
+                  {item.title[lan as "en" | "ja" | "ko"] || item.title.en}
                 </a>
                 <div className="text-sm text-neutral-400 mt-2">
                   ({item.title.en})
@@ -110,7 +110,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
             </h2>
 
             <div className="mt-2 text-neutral-400">
-              {item.summary[lan as "ko" | "ja"] || localeLabel.noSummary}
+              {item.summary[lan as "en" | "ja" | "ko"] || localeLabel.noSummary}
             </div>
 
             <div className="mt-5 text-sm text-neutral-400 text-right">

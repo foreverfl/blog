@@ -1,10 +1,11 @@
-import { notFound } from "next/navigation";
-import "github-markdown-css";
-import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
-import Good from "@/components/main/Good";
 import Comment from "@/components/main/Comment";
-import { cookies } from "next/headers";
+import Good from "@/components/main/Good";
+import Trends from "@/components/main/Trends";
 import { getContents } from "@/lib/jsonHelpers";
+import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
+import "github-markdown-css";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
 export default async function Page({
   params,
@@ -16,7 +17,7 @@ export default async function Page({
   }>;
 }) {
   const cookiesList = await cookies();
-  const lan = cookiesList.get("lan")?.value; 
+  const lan = cookiesList.get("lan")?.value;
 
   const { classification, category, slug } = await params;
   const trendsPage = classification === "trends";
@@ -36,11 +37,12 @@ export default async function Page({
     const { content: mdxContent } = await compileMdxContent(fileContent);
     content = mdxContent;
   }
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="markdown-body w-full md:w-3/5">
-        <div className="my-56"></div>
-        {content}
+        <div className="my-56" />
+        {trendsPage ? <Trends items={content} /> : <>{content}</>}
         <div className="my-56"></div>
         <Good />
         <Comment />

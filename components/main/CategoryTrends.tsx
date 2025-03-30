@@ -16,15 +16,28 @@ interface Props {
 const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
+  console.log("test");
+  console.log("lan: ", lan);
+
+  let localizedTitle = "Hacker News Digest";
+
+  if (lan === "ja") {
+    localizedTitle = "ハッカーニュースダイジェスト";
+  } else if (lan === "ko") {
+    localizedTitle = "해커뉴스 요약";
+  }
 
   return (
     <>
       <div className="my-56"></div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10 pb-20 md:pb-0">
         {jsonContents.map((content) =>
           content.dates.map((date) => {
-            const imageUrl = `/images/hackernews/dall-${date.replace(/-/g, "")}.webp`;
+            const imageUrl = `/images/hackernews/dall-${date.replace(
+              /-/g,
+              ""
+            )}.webp`;
 
             return (
               <Link
@@ -42,7 +55,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
                     <div className="text-center w-full">
                       <p className="text-sm dark:text-neutral-300">{date}</p>
                       <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
-                        {`해커뉴스`}
+                        {localizedTitle}
                       </h3>
                     </div>
                   </div>
