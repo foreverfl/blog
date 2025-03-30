@@ -62,7 +62,8 @@
     "remove-markdown": "^0.5.5",
     "sharp": "^0.33.5",
     "shiki": "^1.18.0",
-    "tiktoken": "^1.0.20"
+    "tiktoken": "^1.0.20",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",

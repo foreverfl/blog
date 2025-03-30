@@ -24,7 +24,7 @@ export async function POST(
   const defaultDate = today.toISOString().slice(2, 10).replace(/-/g, "");
   const dateString = date ?? defaultDate;
 
-  // 날짜 파일에서 데이터 읽기
+  // Read data from the file based on the date
   const filePath = await getDailyFilePath(
     "contents/trends/hackernews",
     dateString
@@ -65,16 +65,16 @@ export async function POST(
       );
       await fs.mkdir(outputDir, { recursive: true });
 
-      // 파일 경로 설정
+      // Set up file path and check for existing images
       const files = await fs.readdir(outputDir);
       const imageFiles = files.filter((file) => file.endsWith(".webp"));
 
-      // 'dall-<date>.webp' 형식의 파일이 있는지 확인
+      // Check if files - dall-<date>.webp - with the specific date already exist
       const matchingFiles = imageFiles.filter((file) =>
         file.startsWith(`dall-${dateString}`)
       );
 
-      // 파일 인덱스 설정
+      // Set the index for the new file
       let nextIndex = 1;
 
       if (matchingFiles.length > 0) {
@@ -83,18 +83,23 @@ export async function POST(
             const match = file.match(/-(\d{2})\.webp/);
             return match ? parseInt(match[1], 10) : 0;
           })
-          .sort((a, b) => b - a); 
+          .sort((a, b) => b - a);
         nextIndex = existingIndexes[0] + 1;
       }
 
-      const paddedIndex = String(nextIndex).padStart(2, "0");
+      const paddedIndex =
+        nextIndex === 1 ? "" : `-${String(nextIndex).padStart(2, "0")}`;
 
-      // 파일 이름 설정
-      const fileName = `dall-${dateString}-${paddedIndex}.png`;
+      // Set the file name
+      let fileName;
+      if (!paddedIndex) {
+        fileName = `dall-${dateString}.webp`;
+      } else {
+        fileName = `dall-${dateString}-${paddedIndex}.webp`;
+      }
       const filePath = path.join(outputDir, fileName);
-      console.log(`fileName: ${fileName}`);
 
-      // 이미지 저장
+      // Save the image as WebP
       const response = await axios.get(imageUrl, {
         responseType: "arraybuffer",
       });

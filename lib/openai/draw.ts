@@ -12,7 +12,8 @@ export async function draw(date: string): Promise<string> {
   });
 
   try {
-    const extractedKeywords = await keywords(date);
+    const extractedKeywordsString = await keywords(date);
+    const extractedKeywords = JSON.parse(extractedKeywordsString);
 
     const stylePath = path.resolve(
       new URL(import.meta.url).pathname,
@@ -21,16 +22,26 @@ export async function draw(date: string): Promise<string> {
     const stylePrompt = fs.readFileSync(stylePath, "utf-8");
     const styleKeywords = parseStylePrompt(stylePrompt);
 
-    const fullPrompt = `
-        ${styleKeywords}
-        Now, illustrate the following theme with the style described above:
-        ${extractedKeywords}
-    `.trim();
+    const flattenedKeywords = {
+      "whatisInTheImage": flattenToArray(extractedKeywords.whatIsInTheImage),
+      "background": flattenToArray(extractedKeywords.background),
+    };
+
+    const fullPrompt = {
+      style: styleKeywords.style,
+      mood: styleKeywords.mood,
+      perspective: styleKeywords.perspective,
+      colors: styleKeywords.colors,
+      additionalEffects: styleKeywords.additionalEffects,
+      whatisInTheImage: flattenedKeywords.whatisInTheImage, 
+      background: flattenedKeywords.background,
+    };
+
     console.log("Full prompt for image generation:", fullPrompt);
 
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: fullPrompt,
+      prompt: JSON.stringify(fullPrompt),
       n: 1,
       size: "1024x1024",
       quality: "hd",
@@ -43,24 +54,62 @@ export async function draw(date: string): Promise<string> {
     }
 
     console.log("🎨 Image generated:", imageUrl);
-    return imageUrl;
+    return "tested!!";
   } catch (error) {
     console.error("❌ Error generating image:", error);
     throw new Error("Failed to generate image");
   }
 }
 
-function parseStylePrompt(stylePrompt: string): string {
+function parseStylePrompt(stylePrompt: string): any {
   const lines = stylePrompt.split("\n").filter(line => line.trim() !== "");
 
-  let formattedKeywords = "";
+  const result: any = {
+    style: [],
+    mood: [],
+    perspective: [],
+    colors: [],
+    additionalEffects: []
+  };
+
+  let currentCategory = '';
 
   lines.forEach(line => {
-    if (line.startsWith("-")) {
-      const keyword = line.slice(1).trim(); 
-      formattedKeywords += `${keyword}, `;
+    const trimmedLine = line.trim();
+    if (trimmedLine.startsWith('## ')) {
+      // Category detected (Style, Mood, etc.)
+      currentCategory = trimmedLine.slice(3).toLowerCase();
+    } else if (trimmedLine.startsWith('-')) {
+      const keyword = trimmedLine.slice(1).trim();
+
+      // Add the keyword to the corresponding category
+      if (currentCategory) {
+        result[currentCategory].push(keyword);
+      }
     }
   });
 
-  return formattedKeywords.trim().replace(/,$/, "");
+  return result;
+}
+
+function flattenToArray(obj: any): any[] {
+  const result: any[] = [];
+
+  // If obj is an array, iterate over each item and recursively flatten
+  if (Array.isArray(obj)) {
+    obj.forEach(item => {
+      result.push(...flattenToArray(item));
+    });
+  } else if (obj && typeof obj === 'object') {
+    // If obj is an object, iterate over each key and recursively flatten its value
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        result.push(...flattenToArray(obj[key])); 
+      }
+    }
+  } else {
+    result.push(obj);
+  }
+
+  return result;
 }

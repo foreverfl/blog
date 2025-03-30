@@ -1,10 +1,27 @@
 import dotenv from "dotenv";
-import fs from "fs";
 import { OpenAI } from "openai";
-import path from "path";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { z } from "zod";
 import { getDailyFilePath, readJsonFile } from "../hackernews/fileUtils";
 
 dotenv.config({ path: "./.env.local" });
+
+const ImageInfoSchema = z.object({
+  whatIsInTheImage: z.object({
+    person: z.object({
+      gender: z.literal("female"),
+      age: z.literal("teenager"),
+      emotion: z.string().optional(),
+    }),
+    object: z.string().optional(),
+    action: z.string().optional(),
+  }),
+  background: z.object({
+    indoorOutdoor: z.string().optional(),
+    background: z.string().optional(),
+    timeOfDay: z.string().optional(),
+  }),
+});
 
 export async function keywords(date: string): Promise<string> {
   const openai = new OpenAI({
@@ -17,13 +34,6 @@ export async function keywords(date: string): Promise<string> {
   const dateString = date ?? defaultDate;
 
   try {
-    const stylePath = path.resolve(
-      new URL(import.meta.url).pathname,
-      "../../prompts/keywords.md"
-    );
-    console.log("Style file path:", stylePath);
-    const keywordsPrompt = fs.readFileSync(stylePath, "utf-8");
-
     const filePath = await getDailyFilePath(
       "contents/trends/hackernews",
       dateString
@@ -39,23 +49,27 @@ export async function keywords(date: string): Promise<string> {
 
     const summary = topItem?.summary?.en || "No valid item found";
 
-    const combinedPrompt = `${keywordsPrompt}\n\nSummary:\n${summary}`;
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content:
-            "You are a helpful assistant that extracts keywords for generating an image.",
+            "You are a helpful assistant that extracts image-related details from a summary text. Please extract the following details: person (gender, age, emotion), object, action, and background (indoor/outdoor, time of day). Use your imagination to create a vivid scenario based on the summary.",
         },
-        { role: "user", content: combinedPrompt },
+        { role: "user", content: summary },
       ],
+      temperature: 1.0,
+      response_format: zodResponseFormat(ImageInfoSchema, "event"),
     });
 
-    const keywords =
-      response.choices[0].message?.content?.trim() || "No keywords found";
-    return keywords;
+    const content = completion.choices[0].message.content;
+    if (!content) {
+      throw new Error("Content is null or undefined");
+    }
+    const parsedResponse = ImageInfoSchema.parse(JSON.parse(content));
+    console.log("Parsed response:", parsedResponse);
+    return JSON.stringify(parsedResponse);
   } catch (error) {
     console.error("❌ Error extracting keywords:", error);
     throw new Error("Failed to extract keywords");
