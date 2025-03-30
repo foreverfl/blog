@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 
-let locales = ['ja', 'ko']
+let locales = ['en', 'ja', 'ko']
 
 // 선호하는 로케일을 가져옴
 function getLocale(request) {
     const negotiator = new Negotiator({ headers: { 'accept-language': request.headers.get('accept-language') || '' } });
     const languages = negotiator.languages();
-    const defaultLocale = 'ja';
+    const defaultLocale = 'en';
 
     return match(languages, locales, defaultLocale);
 }

@@ -20,21 +20,24 @@ interface MdxFileData {
 }
 
 // 재귀적으로 폴더를 탐색하며 .mdx 파일 찾기
-async function getFilesRecursively(dir: string): Promise<string[]> {
+async function getFilesRecursively(
+  dir: string,
+  lan: string
+): Promise<string[]> {
   if (!fs.existsSync(dir)) {
     console.warn(`⚠️ Directory not found: ${dir}`);
     return [];
   }
-  
+
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const files = entries
-    .filter((file) => !file.isDirectory() && file.name.endsWith(".mdx"))
+    .filter((file) => !file.isDirectory() && file.name.endsWith(`-${lan}.mdx`))
     .map((file) => path.join(dir, file.name));
   const folders = entries.filter((folder) => folder.isDirectory());
 
   for (const folder of folders) {
     const folderPath = path.join(dir, folder.name);
-    const folderFiles = await getFilesRecursively(folderPath);
+    const folderFiles = await getFilesRecursively(folderPath, lan);
     files.push(...folderFiles);
   }
 
@@ -55,17 +58,16 @@ export async function getAllPostFrontMatters(
   classification?: string,
   category?: string
 ): Promise<FrontMatter[]> {
-  // 기본 경로 설정
-  let contentDirectory = path.join(process.cwd(), `contents/${lan}/`);
+  let contentDirectory = path.join(process.cwd(), `contents`);
 
   if (classification && category) {
     contentDirectory = path.join(
       process.cwd(),
-      `contents/${lan}/${classification}/${category}`
+      `contents/${classification}/${category}`
     );
   }
 
-  const filePaths = await getFilesRecursively(contentDirectory);
+  const filePaths = await getFilesRecursively(contentDirectory, lan || "en");
 
   const frontMatters: FrontMatter[] = [];
 
@@ -101,7 +103,7 @@ export async function getPostFrontMatter(
     // 파일 경로 설정
     const filePath = path.join(
       process.cwd(),
-      `contents/${lan}/${classification}/${category}/${slug}.mdx`
+      `contents/${classification}/${category}/${slug}-${lan}.mdx`
     );
 
     // 파일 존재 여부 확인
@@ -139,11 +141,11 @@ export function getMdxFileContent(
   category: string,
   slug: string
 ) {
-  const filePath = path.join(
-    process.cwd(),
-    `contents/${lan}/${classification}/${category}/${slug}.mdx`
+  const contentDir = path.resolve(process.cwd(), "contents");
+  const filePath = path.resolve(
+    contentDir,
+    `${classification}/${category}/${slug}-${lan}.mdx`
   );
-
   const fileContent = fs.readFileSync(filePath, "utf8");
   return fileContent;
 }
@@ -175,17 +177,17 @@ export async function getAllMdxFilesWithFrontMatter(
   category?: string
 ): Promise<MdxFileData[]> {
   // 기본 경로 설정
-  let contentDirectory = path.join(process.cwd(), `contents/${lan}/`);
+  let contentDirectory = path.join(process.cwd(), `contents`);
 
   if (classification && category) {
     contentDirectory = path.join(
       process.cwd(),
-      `contents/${lan}/${classification}/${category}`
+      `contents/${classification}/${category}-${lan}`
     );
   }
 
   // 모든 .mdx 파일 경로 가져오기
-  const filePaths = await getFilesRecursively(contentDirectory);
+  const filePaths = await getFilesRecursively(contentDirectory, lan || "en");
 
   const mdxFilesData: MdxFileData[] = [];
 

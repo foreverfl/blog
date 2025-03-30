@@ -1,7 +1,6 @@
 "use server";
 
 import { Db, MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-import { filePaths } from "@/contents/mdxFiles";
 import crypto from "crypto";
 
 interface Comment {
@@ -97,35 +96,6 @@ export async function findUserByEmail(email: string) {
 }
 
 // Post CRUD
-export async function upsertFilePathsToMongoDB() {
-  const db = await connectDB();
-  const postsCollection = db.collection("posts");
-
-  const bulkOperations = filePaths.map((filePath) => {
-    const pathHash = crypto.createHash("sha256").update(filePath).digest("hex"); // 파일 경로를 해시로 변환
-
-    return {
-      updateOne: {
-        filter: { pathHash: pathHash },
-        update: {
-          $set: {
-            pathHash: pathHash,
-            path: filePath,
-          },
-          $setOnInsert: {
-            likes: [],
-            comments: [],
-          },
-        },
-        upsert: true,
-      },
-    };
-  });
-
-  const result = await postsCollection.bulkWrite(bulkOperations);
-  return result;
-}
-
 export async function deleteAllPostsFromMongoDB() {
   const db = await connectDB();
   const postsCollection = db.collection("posts");

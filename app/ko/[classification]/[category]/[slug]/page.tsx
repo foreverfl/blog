@@ -1,11 +1,11 @@
 import Comment from "@/components/main/Comment";
 import Good from "@/components/main/Good";
 import Trends from "@/components/main/Trends";
-import mdxFiles from "@/contents/mdxFiles";
 import { getContents } from "@/lib/jsonHelpers";
 import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
 import "github-markdown-css";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers"; 
 
 export default async function Page({
   params,
@@ -16,9 +16,11 @@ export default async function Page({
     slug: string;
   }>;
 }) {
+  const cookiesList = await cookies();
+  const lan = cookiesList.get("lan")?.value; 
+
   const { classification, category, slug } = await params;
   const trendsPage = classification === "trends";
-  console.log("trendsPage: ", trendsPage);
 
   let content;
 
@@ -26,10 +28,8 @@ export default async function Page({
     const jsonContents = await getContents(category, slug);
     content = jsonContents;
   } else {
-    const markdownFilePath = `ko/${classification}/${category}/${slug}`;
-    const MarkdownComponent = mdxFiles[markdownFilePath];
-
-    if (!MarkdownComponent) {
+    const markdownFilePath = `${classification}/${category}/${slug}-${lan}`;
+    if (!markdownFilePath) {
       notFound(); // 컴포넌트가 없을 경우 처리
     }
 
@@ -42,11 +42,7 @@ export default async function Page({
     <div className="flex items-center justify-center min-h-screen">
       <div className="markdown-body w-full md:w-3/5">
         <div className="my-56" />
-        {trendsPage ? (
-          <Trends items={content} />
-        ) : (
-          <>{content}</>
-        )}
+        {trendsPage ? <Trends items={content} /> : <>{content}</>}
         <div className="my-56"></div>
         <Good />
         <Comment />
