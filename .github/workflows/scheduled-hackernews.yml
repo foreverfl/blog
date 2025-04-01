@@ -1,0 +1,17 @@
+name: Debug Scheduled Task
+
+on:
+  schedule:
+    - cron: '34 15 * * *'  # 한국시간 KST (UTC+9) 00:25
+  workflow_dispatch:  # 수동으로도 실행할 수 있게 추가
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Print debug info
+      run: |
+        echo "현재 시간: $(date)"
+        echo "환경 정보: $(uname -a)"
+        echo "디버그 테스트 워크플로우가 실행되었습니다!"
