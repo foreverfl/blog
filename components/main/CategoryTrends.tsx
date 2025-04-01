@@ -16,8 +16,6 @@ interface Props {
 const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
-  console.log("test");
-  console.log("lan: ", lan);
 
   let localizedTitle = "Hacker News Digest";
 

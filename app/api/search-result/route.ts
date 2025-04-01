@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { getContents, getContentsStructure } from "@/lib/jsonHelpers";
 import { getAllMdxFilesWithFrontMatter } from "@/lib/mdxHelpers";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   // URL에서 쿼리 파라미터를 가져옴
@@ -8,11 +9,38 @@ export async function GET(req: Request) {
   const classification = searchParams.get("classification");
   const category = searchParams.get("category");
 
+  // MDX files
   const posts = await getAllMdxFilesWithFrontMatter(
     lang,
     classification!,
     category!
   );
 
-  return NextResponse.json(posts);
+  const foldersAndDates = await getContentsStructure();
+
+  const trendsDataPromises = foldersAndDates.map(async ({ folder, dates }) => {
+    const dateDataPromises = dates.map(async (date) => {
+      try {
+        const data = await getContents(folder, date);
+        const summary = data.summary
+          ? { en: data.summary.en, ko: data.summary.ko, ja: data.summary.ja }
+          : null;
+        console.log("summary: ", summary);
+        return { date, summary };
+      } catch (error) {
+        console.error(`Error fetching data for ${folder} - ${date}:`, error);
+        return { date, summary: null };
+      }
+    });
+
+    const dateData = await Promise.all(dateDataPromises);
+    return { folder, dateData };
+  });
+
+  const trendsData = await Promise.all(trendsDataPromises);
+  // console.log("trendsData: ", JSON.stringify(trendsData, null, 2));
+
+  return NextResponse.json({
+    posts,
+  });
 }

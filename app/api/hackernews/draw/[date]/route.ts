@@ -39,8 +39,6 @@ export async function POST(
     })
     .sort((a: any, b: any) => b.score - a.score)[0];
 
-  console.log("score: ", topItem?.score);
-
   if (!topItem) {
     return NextResponse.json({
       ok: false,
@@ -90,7 +88,6 @@ export async function POST(
           }
         }
       }
-      console.log("File name for saving:", fileName);
 
       // Save the image as WebP
       const response = await axios.get(imageUrl, {
