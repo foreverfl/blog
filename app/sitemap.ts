@@ -1,46 +1,56 @@
 import fs from "fs";
-import path from "path";
-import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
 import type { MetadataRoute } from "next";
+import path from "path";
+
+const baseUrl = (
+  process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev"
+).replace(/\/$/, "");
+
+const languages = ["ko", "ja"];
+const contentsRoot = path.join(process.cwd(), "contents");
+
+function getAllFiles(dir: string): string[] {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  return entries.flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      return getAllFiles(fullPath);
+    }
+    if (
+      entry.isFile() &&
+      (fullPath.endsWith(".mdx") || fullPath.endsWith(".json"))
+    ) {
+      return [fullPath];
+    }
+    return [];
+  });
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const languages = ["ko", "ja"];
-  const baseUrl = (
-    process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev"
-  ).replace(/\/$/, ""); // 끝 슬래시 제거
+  const allSitemapEntries: MetadataRoute.Sitemap = [];
 
-  let allSitemapEntries: MetadataRoute.Sitemap = [];
-  const menuFilePath = path.join(process.cwd(), "public", "category.json");
+  const files = getAllFiles(contentsRoot);
 
-  for (const lan of languages) {
-    // 메뉴 기반
-    const menuData = JSON.parse(fs.readFileSync(menuFilePath, "utf8"));
-    for (const classification of menuData) {
-      for (const category of classification.categories) {
-        const sitemapEntry = {
-          url: `${baseUrl}/${lan}/${classification.link}/${category.link}`,
-          lastModified: new Date(),
-          changeFrequency: "weekly" as const,
-          priority: 0.7, // 분류/카테고리 페이지의 우선순위 설정
-        };
-        allSitemapEntries.push(sitemapEntry);
-      }
-    }
+  languages.forEach((lan) => {
+    files.forEach((filePath) => {
+      const relativePath = path
+        .relative(path.join(contentsRoot), filePath)
+        .replace(/\\/g, "/");
 
-    // 포스트 기반
-    const posts = await getAllPostFrontMatters(lan);
-    const sitemapEntries = posts.map((post) => ({
-      url: `${baseUrl}/${lan}/${post.classification}/${
-        post.category
-      }/${post.fileName?.replace(".mdx", "")}`,
-      lastModified: new Date(post.date),
-      changeFrequency: "weekly" as const,
-      priority: 0.8, // 우선순위 설정
-    }));
+      const urlPath = relativePath.replace(/\.(mdx|json)$/, "");
 
-    // Sitemap에 추가
-    allSitemapEntries = allSitemapEntries.concat(sitemapEntries);
-  }
+      const url = `${baseUrl}/${lan}/${urlPath}`;
+
+      const stats = fs.statSync(filePath);
+
+      allSitemapEntries.push({
+        url,
+        lastModified: stats.mtime,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+    });
+  });
 
   return allSitemapEntries;
 }
