@@ -25,7 +25,6 @@ export async function GET(req: Request) {
         const summary = data.summary
           ? { en: data.summary.en, ko: data.summary.ko, ja: data.summary.ja }
           : null;
-        console.log("summary: ", summary);
         return { date, summary };
       } catch (error) {
         console.error(`Error fetching data for ${folder} - ${date}:`, error);
