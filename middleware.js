@@ -2,37 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 
-let locales = ['en', 'ja', 'ko']
+let locales = ['ja', 'ko']
+const defaultLocale = 'ko';
 
 // 선호하는 로케일을 가져옴
 function getLocale(request) {
     const negotiator = new Negotiator({ headers: { 'accept-language': request.headers.get('accept-language') || '' } });
     const languages = negotiator.languages();
-    const defaultLocale = 'en';
 
     return match(languages, locales, defaultLocale);
 }
 
-function isGoogleBot(userAgent) {
-    return userAgent?.includes("Googlebot") || false;
-}
 
 export function middleware(request) {
     const { pathname } = request.nextUrl;
-    const userAgent = request.headers.get('user-agent');
 
     // 경로명에 지원되는 로케일이 있는지 확인함
     const pathnameHasLocale = locales.some(
         (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
     );
-
-    if (isGoogleBot(userAgent)) {
-        console.log('User-Agent:', userAgent);
-        console.log('Locale redirect to:', request.nextUrl.pathname);
-
-        request.nextUrl.pathname = `/ko${pathname}`;
-        return NextResponse.redirect(request.nextUrl);
-    }
 
     if (pathnameHasLocale) return;
 
