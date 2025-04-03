@@ -13,13 +13,26 @@ function getLocale(request) {
     return match(languages, locales, defaultLocale);
 }
 
+function isGoogleBot(userAgent) {
+    return userAgent?.includes("Googlebot") || false;
+}
+
 export function middleware(request) {
-    const { pathname } = request.nextUrl
+    const { pathname } = request.nextUrl;
+    const userAgent = request.headers.get('user-agent');
 
     // 경로명에 지원되는 로케일이 있는지 확인함
     const pathnameHasLocale = locales.some(
         (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
     );
+
+    if (isGoogleBot(userAgent)) {
+        console.log('User-Agent:', userAgent);
+        console.log('Locale redirect to:', request.nextUrl.pathname);
+
+        request.nextUrl.pathname = `/ko${pathname}`;
+        return NextResponse.redirect(request.nextUrl);
+    }
 
     if (pathnameHasLocale) return;
 
