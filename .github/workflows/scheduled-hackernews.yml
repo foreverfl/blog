@@ -1,4 +1,4 @@
-name: Debug Scheduled Task
+name: HackerNews Daily Workflow
 
 on:
   schedule:
