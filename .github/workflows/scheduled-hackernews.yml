@@ -13,11 +13,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up environment variables
-        run: |
-          echo "Setting up environment variables"
-          export HACKERNEWS_API_KEY=${{ secrets.HACKERNEWS_API_KEY }}
-          echo "HACKERNEWS_API_KEY=${{ secrets.HACKERNEWS_API_KEY }}"
+      # - name: Set up environment variables
+      #   run: |
+      #     echo "Setting up environment variables"
+      #     export HACKERNEWS_API_KEY=${{ secrets.HACKERNEWS_API_KEY }}
+      #     echo "HACKERNEWS_API_KEY=${{ secrets.HACKERNEWS_API_KEY }}"
 
     # # Step 3: Fetch HackerNews data
     # - name: Fetch HackerNews data

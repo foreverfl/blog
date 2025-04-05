@@ -1,13 +1,9 @@
 import { checkBearerAuth } from "@/lib/auth";
-import {
-  getDailyFilePath,
-  readJsonFile,
-  writeJsonFile,
-} from "@/lib/hackernews/fileUtils";
+import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { translate } from "@/lib/openai/translate";
+import { translationQueue } from "@/lib/queue";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
-import { translationQueue } from "@/lib/queue";
 
 type TranslateRequestBody = {
   id: string;
@@ -19,13 +15,14 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ date?: string }> }
 ) {
-  const { date } = await params;
-
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;
   }
 
+  const { date } = await params;
+  const targetDate = date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const key = `${targetDate}.json`;
   const body: TranslateRequestBody = await req.json();
   const { id, lan, webhookUrl } = body;
 
@@ -36,8 +33,8 @@ export async function POST(
     });
   }
 
-  const dailyFilePath = await getDailyFilePath("contents/trends/hackernews", date);
-  let dailyData = await readJsonFile(dailyFilePath);
+  let dailyData = await getFromR2({ bucket: "hackernews", key });
+
   const existingIndex = dailyData.findIndex(
     (item: { id: any }) => item.id === id
   );
@@ -80,21 +77,20 @@ export async function POST(
         translate(titleEn, lan, "title"),
       ]);
 
-      const dailyFilePath = await getDailyFilePath("contents/trends/hackernews", date);
-      const dailyData = await readJsonFile(dailyFilePath);
-      const existingIndex = dailyData.findIndex((item: { id: any }) => item.id === id);
+      const latestData = await getFromR2({ bucket: "hackernews", key });
+      const idx = latestData.findIndex((item: { id: any }) => item.id === id);
 
-      if (existingIndex !== -1) {
-        dailyData[existingIndex].summary = {
-          ...(dailyData[existingIndex].summary || {}),
+      if (idx !== -1) {
+        latestData[idx].summary = {
+          ...(latestData[idx].summary || {}),
           [lan]: translatedSummary,
         };
-        dailyData[existingIndex].title = {
-          ...(dailyData[existingIndex].title || {}),
+        latestData[idx].title = {
+          ...(latestData[idx].title || {}),
           [lan]: translatedTitle,
         };
 
-        await writeJsonFile(dailyFilePath, dailyData);
+        await putToR2({ bucket: "hackernews", key }, latestData);
         console.log(`✅ Translations saved for ${lan}, id: ${id}`);
       }
 

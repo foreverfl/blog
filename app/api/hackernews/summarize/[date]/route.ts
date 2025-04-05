@@ -1,43 +1,39 @@
 import { checkBearerAuth } from "@/lib/auth";
-import {
-  getDailyFilePath,
-  readJsonFile,
-  writeJsonFile,
-} from "@/lib/hackernews/fileUtils";
+import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { summarize } from "@/lib/openai/summarize";
 import { summaryQueue } from "@/lib/queue";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
-type FetchContentRequestBody = {
-  id: string;
-  webhookUrl: string;
-};
-
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ date?: string }> }
 ) {
-  const { date } = await params; 
-
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;
   }
 
-  const body: FetchContentRequestBody = await req.json();
+  const { date } = await params;
+  const targetDate =
+    date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const key = `${targetDate}.json`;
+
+  const body = await req.json();
   const { id, webhookUrl } = body;
 
   if (!id) {
     return NextResponse.json({ ok: false, error: "There is no id" });
   }
 
-  // Fetch from file
-  const dailyFilePath = await getDailyFilePath(
-    "contents/trends/hackernews",
-    date
-  );
-  let dailyData = await readJsonFile(dailyFilePath);
+  let dailyData = await getFromR2({ bucket: "hackernews", key });
+
+  if (!dailyData) {
+    return NextResponse.json({
+      ok: false,
+      error: "Daily file not found in R2",
+    });
+  }
 
   const existingIndex = dailyData.findIndex(
     (item: { id: any }) => item.id === id
@@ -57,7 +53,7 @@ export async function POST(
     return NextResponse.json(existingItem);
   }
 
-  let content = dailyData[existingIndex].content;
+  let content = existingItem.content;
 
   if (!content) {
     return NextResponse.json({
@@ -70,22 +66,15 @@ export async function POST(
     try {
       const summary = await summarize(content);
 
-      const dailyFilePath = await getDailyFilePath(
-        "contents/trends/hackernews",
-        date
-      );
-      let dailyData = await readJsonFile(dailyFilePath);
+      const updatedData = await getFromR2({ bucket: "hackernews", key });
+      const idx = updatedData.findIndex((item: { id: string }) => item.id === id);
 
-      const existingIndex = dailyData.findIndex(
-        (item: { id: any }) => item.id === id
-      );
-
-      if (existingIndex !== -1) {
-        dailyData[existingIndex].summary = {
-          ...(dailyData[existingIndex].summary || {}),
+      if (idx !== -1) {
+        dailyData[idx].summary = {
+          ...(dailyData[idx].summary || {}),
           en: summary,
         };
-        await writeJsonFile(dailyFilePath, dailyData);
+        await putToR2({ bucket: "hackernews", key }, dailyData);
         console.log(`✅ summary.en saved for id ${id}`);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);
