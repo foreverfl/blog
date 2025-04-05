@@ -22,25 +22,25 @@ jobs:
       #   run: ./scripts/fetch-hackernews.sh
 
       - name: ⏳ Wait until content fetch is stabilized
-        run: ./scripts/check-hackernews summary
+        run: ./scripts/check-hackernews.sh summary
   
       - name: 🧠 Summarize HackerNews content
         run: ./scripts/summarize-hackernews.sh
 
       - name: ⏳ Wait until summary is stabilized
-        run: ./scripts/check-hackernews translation-ko
+        run: ./scripts/check-hackernews.sh translation-ko
 
       - name:  Translate HackerNews to Korean
         run: ./scripts/translate-hackernews.sh ko
 
       - name: ⏳ Wait until summary is stabilized
-        run: ./scripts/check-hackernews translation-ko
+        run: ./scripts/check-hackernews.sh translation-ko
 
       - name: 🌍 Translate HackerNews to Japanese
         run: ./scripts/translate-hackernews.sh ja
 
       - name: ⏳ Wait until summary is stabilized
-        run: ./scripts/check-hackernews translation-ko
+        run: ./scripts/check-hackernews.sh translation-ko
 
       - name: ✅ Final message
         run: echo "All HackerNews tasks completed successfully!"
