@@ -60,15 +60,9 @@ export async function POST(
     if (foundItem.url.includes(".pdf")) {
       content = await fetchPdfContent(foundItem.url);
       console.log(`📄 PDF content extracted for ${foundItem.url}`);
-    } else if (foundItem.url.includes("arxiv.org")) {
-      content = await fetchArxivAbstract(foundItem.url);
-      console.log(`📚 Arxiv abstract fetched for ${foundItem.url}`);
-    } else if (foundItem.url.includes("economist.com")) {
-      content = await fetchEconomistContent(foundItem.url);
-      console.log(`📚 Economist content fetched for ${foundItem.url}`);
     } else {
       content = await fetchContent(foundItem.url);
-      console.log(`🌐 General content fetched for ${foundItem.url}`);
+      console.log(`🌐 Smart content fetched for ${foundItem.url}`);
     }
     
     // Only slice if content exists

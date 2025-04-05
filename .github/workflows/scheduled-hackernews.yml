@@ -18,8 +18,8 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Fetch HackerNews data
-        run: ./scripts/fetch-hackernews.sh
+      # - name: Fetch HackerNews data
+      #   run: ./scripts/fetch-hackernews.sh
 
       - name: ⏳ Wait until content fetch is stabilized
         run: ./scripts/check-hackernews summary
