@@ -15,34 +15,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # - name: Install dependencies
-      #   run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      # - name: Fetch HackerNews data
-      #   run: |
-      #     echo "📰 Fetching HackerNews data..."
-      #     ./scripts/fetch-hackernews.sh
+      - name: Fetch HackerNews data
+        run: ./scripts/fetch-hackernews.sh
 
-      # - name: ⏳ Wait until content fetch is stabilized
-      #   run: ./scripts/check-hackernews summary
+      - name: ⏳ Wait until content fetch is stabilized
+        run: ./scripts/check-hackernews summary
   
-      # - name: 🧠 Summarize HackerNews content
-      #   run: ./scripts/summarize-hackernews.sh
+      - name: 🧠 Summarize HackerNews content
+        run: ./scripts/summarize-hackernews.sh
 
-      # - name: ⏳ Wait until summary is stabilized
-      #   run: ./scripts/check-hackernews translation-ko
+      - name: ⏳ Wait until summary is stabilized
+        run: ./scripts/check-hackernews translation-ko
 
-      # - name:  Translate HackerNews to Korean
-      #   run: ./scripts/translate-hackernews.sh ko
+      - name:  Translate HackerNews to Korean
+        run: ./scripts/translate-hackernews.sh ko
 
-      # - name: ⏳ Wait until summary is stabilized
-      #   run: ./scripts/check-hackernews translation-ko
+      - name: ⏳ Wait until summary is stabilized
+        run: ./scripts/check-hackernews translation-ko
 
-      # - name: 🌍 Translate HackerNews to Japanese
-      #   run: ./scripts/translate-hackernews.sh ja
+      - name: 🌍 Translate HackerNews to Japanese
+        run: ./scripts/translate-hackernews.sh ja
 
-      # - name: ⏳ Wait until summary is stabilized
-      #   run: ./scripts/check-hackernews translation-ko
+      - name: ⏳ Wait until summary is stabilized
+        run: ./scripts/check-hackernews translation-ko
 
-      # - name: ✅ Final message
-      #   run: echo "All HackerNews tasks completed successfully!"
+      - name: ✅ Final message
+        run: echo "All HackerNews tasks completed successfully!"
