@@ -1,8 +1,6 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
-import { fetchArxivAbstract } from "@/lib/hackernews/fetchArxiv";
 import { fetchContent } from "@/lib/hackernews/fetchContent";
-import { fetchEconomistContent } from "@/lib/hackernews/fetchEconomist";
 import { fetchPdfContent } from "@/lib/hackernews/fetchPdfContent";
 import { getHackernewsItemById } from "@/lib/hackernews/getHackernewItem";
 import { sliceTextByTokens } from "@/lib/text";
@@ -25,21 +23,27 @@ export async function POST(
     return NextResponse.json({ ok: false, error: "There is no id" });
   }
 
-  const dateKey = date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const dateKey =
+    date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
   const key = `${dateKey}.json`;
 
   let dailyData = await getFromR2({ bucket: "hackernews", key });
   if (!dailyData) {
-    return NextResponse.json({ ok: false, error: "Daily file not found in R2" });
+    return NextResponse.json({
+      ok: false,
+      error: "Daily file not found in R2",
+    });
   }
 
   const existingIndex = dailyData.findIndex(
     (item: { id: any }) => item.id === id
   );
 
-  
   if (existingIndex === -1) {
-    return NextResponse.json({ ok: false, error: "Item not found in daily data" });
+    return NextResponse.json({
+      ok: false,
+      error: "Item not found in daily data",
+    });
   }
 
   if (dailyData[existingIndex].content) {
@@ -64,20 +68,25 @@ export async function POST(
       content = await fetchContent(foundItem.url);
       console.log(`🌐 Smart content fetched for ${foundItem.url}`);
     }
-    
+
     // Only slice if content exists
     if (content) {
       content = await sliceTextByTokens(content, 15000);
       console.log(`📄 Sliced content (up to 15000 tokens)`);
     }
-
   } catch (error) {
     console.error("❌ Error fetching content: ", error);
     return NextResponse.json({ ok: false, error: "Error fetching content" });
   }
 
   dailyData[existingIndex].content = content;
-  await putToR2({ bucket: "hackernews", key }, dailyData);
+
+  const preview = dailyData[existingIndex].content
+    ? dailyData[existingIndex].content.slice(0, 100)
+    : "[⚠️ content is null]";
+  console.log("DailyData:", preview);
   
+  await putToR2({ bucket: "hackernews", key }, dailyData);
+
   return NextResponse.json(dailyData[existingIndex]);
 }
