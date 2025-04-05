@@ -1,21 +1,23 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { getDailyFilePath, readJsonFile } from "@/lib/hackernews/fileUtils";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ date?: string }> }
 ) {
-  const { date } = await params;
-
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;
   }
 
+  const { date } = await params;
+  const targetDate =
+    date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const key = `${targetDate}.json`;
+
   try {
-    const dailyFilePath = await getDailyFilePath("contents/trends/hackernews", date);
-    const dailyData = await readJsonFile(dailyFilePath);
+    const dailyData = await getFromR2({ bucket: "hackernews", key });
 
     if (!Array.isArray(dailyData)) {
       return NextResponse.json({

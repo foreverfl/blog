@@ -3,49 +3,46 @@ name: Debug Scheduled Task
 on:
   schedule:
     - cron: "00 16 * * *" # 한국시간 KST (UTC+9) 01:00
-  workflow_dispatch:
+  workflow_dispatch:  
 
 jobs:
   run-tasks:
     runs-on: ubuntu-latest
+    env:
+      HACKERNEWS_API_KEY: ${{ secrets.HACKERNEWS_API_KEY }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # - name: Set up environment variables
+      # - name: Install dependencies
+      #   run: sudo apt-get update && sudo apt-get install -y jq
+
+      # - name: Fetch HackerNews data
       #   run: |
-      #     echo "Setting up environment variables"
-      #     export HACKERNEWS_API_KEY=${{ secrets.HACKERNEWS_API_KEY }}
-      #     echo "HACKERNEWS_API_KEY=${{ secrets.HACKERNEWS_API_KEY }}"
+      #     echo "📰 Fetching HackerNews data..."
+      #     ./scripts/fetch-hackernews.sh
 
-    # # Step 3: Fetch HackerNews data
-    # - name: Fetch HackerNews data
-    #   run: |
-    #     echo "Fetching HackerNews data..."
-    #     ./scripts/fetch-hackernews.sh
+      # - name: ⏳ Wait until content fetch is stabilized
+      #   run: ./scripts/check-hackernews summary
+  
+      # - name: 🧠 Summarize HackerNews content
+      #   run: ./scripts/summarize-hackernews.sh
 
-    # # Step 4: Sleep for 1 minute to give a small gap between tasks
-    # - name: Wait for 1 minute before summarizing
-    #   run: sleep 60
+      # - name: ⏳ Wait until summary is stabilized
+      #   run: ./scripts/check-hackernews translation-ko
 
-    # # Step 5: Summarize HackerNews data
-    # - name: Summarize HackerNews data
-    #   run: |
-    #     echo "Summarizing HackerNews data..."
-    #     ./scripts/summarize-hackernews.sh
+      # - name:  Translate HackerNews to Korean
+      #   run: ./scripts/translate-hackernews.sh ko
 
-    # # Step 6: Sleep for 2 minutes to give a small gap between tasks
-    # - name: Wait for 2 minutes before translating
-    #   run: sleep 120
+      # - name: ⏳ Wait until summary is stabilized
+      #   run: ./scripts/check-hackernews translation-ko
 
-    # # Step 7: Translate HackerNews data
-    # - name: Translate HackerNews data
-    #   run: |
-    #     echo "Translating HackerNews data..."
-    #     ./scripts/translate-hackernews.sh ko  # 예시로 한국어로 번역
+      # - name: 🌍 Translate HackerNews to Japanese
+      #   run: ./scripts/translate-hackernews.sh ja
 
-    # # Step 8: Final success message
-    # - name: Final message
-    #   run: |
-    #     echo "All tasks completed successfully!"
+      # - name: ⏳ Wait until summary is stabilized
+      #   run: ./scripts/check-hackernews translation-ko
+
+      # - name: ✅ Final message
+      #   run: echo "All HackerNews tasks completed successfully!"
