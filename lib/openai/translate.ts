@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
-import fs from "fs";
 import { OpenAI } from "openai";
-import path from "path";
 
 dotenv.config({ path: "./.env.local" });
 
@@ -18,13 +16,14 @@ export async function translate(
     const promptFileName =
       mode === "title" ? `translate-title-${lan}.md` : `translate-${lan}.md`;
 
-    const promptPath = path.resolve(
-      new URL(import.meta.url).pathname,
-      `../../prompts/${promptFileName}`
-    );
-    console.log("Prompt file path:", promptPath);
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
+    const res = await fetch(`${siteUrl}/prompts/${promptFileName}`);
 
-    const prompt = fs.readFileSync(promptPath, "utf-8");
+    if (!res.ok) {
+      throw new Error(`Prompt file fetch failed: ${promptFileName}`);
+    }
+
+    const prompt = await res.text();
     console.log("Prompt file content loaded successfully");
 
     const response = await openai.chat.completions.create({

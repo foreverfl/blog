@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
-import fs from "fs";
 import { OpenAI } from "openai";
-import path from "path";
 import { z } from "zod";
 
 dotenv.config({ path: "./.env.local" });
@@ -38,12 +36,13 @@ export async function drawDirectly(
       }),
     });
 
-    const stylePath = path.resolve(
-      new URL(import.meta.url).pathname,
-      "../../prompts/picture-style.md"
-    );
-    const stylePrompt = fs.readFileSync(stylePath, "utf-8");
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
+    const res = await fetch(`${siteUrl}/prompts/picture-style.md`);
+    if (!res.ok) throw new Error("Style prompt fetch failed");
+
+    const stylePrompt = await res.text();
     const styleKeywords = parseStylePrompt(stylePrompt);
+
 
     const flattenedKeywords = {
       whatIsInTheImage: flattenToArray({

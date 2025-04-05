@@ -1,4 +1,4 @@
-import { getFromR2 } from "../cloudflare/r2";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 
 export async function getHackernewsItemById(id: string) {
   const now = new Date();

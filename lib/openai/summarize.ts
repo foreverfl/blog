@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
-import fs from "fs";
 import { OpenAI } from "openai";
-import path from "path";
 
 dotenv.config({ path: "./.env.local" });
 
@@ -11,16 +9,12 @@ export async function summarize(text: string): Promise<string> {
       apiKey: process.env.OPENAI_API_KEY,
     });
     
-    // 현재 파일 경로를 기반으로 prompt 파일의 경로 계산
-    const promptPath = path.resolve(
-      new URL(import.meta.url).pathname,
-      "../../prompts/summary.md"
-    );
-    console.log("Prompt file path:", promptPath);
-
-    // 프롬프트 파일 읽기
-    const prompt = fs.readFileSync(promptPath, "utf-8");
-    console.log("Prompt file content loaded successfully");
+    // Get the prompt file from the server
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const res = await fetch(`${siteUrl}/prompts/summary.md`);
+    
+    if (!res.ok) throw new Error("Prompt file fetch failed");
+    const prompt = await res.text();
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",

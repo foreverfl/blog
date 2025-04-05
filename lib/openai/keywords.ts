@@ -2,9 +2,7 @@ import dotenv from "dotenv";
 import { OpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
-import { getDailyFilePath, readJsonFile } from "../hackernews/fileUtils";
-import path from "path";
-import fs from "fs";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 
 dotenv.config({ path: "./.env.local" });
 
@@ -36,11 +34,13 @@ export async function keywords(date: string): Promise<string> {
   const dateString = date ?? defaultDate;
 
   try {
-    const filePath = await getDailyFilePath(
-      "contents/trends/hackernews",
-      dateString
-    );
-    const items = await readJsonFile(filePath);
+    const key = `${dateString}.json`;
+    const items = await getFromR2({ bucket: "hackernews", key });
+
+    if (!items || !Array.isArray(items)) {
+      throw new Error("No valid items found in R2");
+    }
+
 
     const topItem = items.filter((item: any) => {
       const en = item.summary?.en;
@@ -51,14 +51,10 @@ export async function keywords(date: string): Promise<string> {
     const summary = topItem?.summary?.en || "No valid item found";
     console.log("Extracted summary:", summary);
 
-    const keywordsPromptPath = path.resolve(
-      new URL(import.meta.url).pathname,
-      "../../prompts/picture-keywords.md"
-    );
-    console.log("Keywords prompt file path:", keywordsPromptPath);
-
-    // 프롬프트 파일 읽기
-    const keywordsPrompt = fs.readFileSync(keywordsPromptPath, "utf-8");
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
+    const res = await fetch(`${siteUrl}/prompts/picture-keywords.md`);
+    if (!res.ok) throw new Error("Prompt file fetch failed");
+    const keywordsPrompt = await res.text();
     console.log("Keywords prompt file content loaded successfully");
 
     const completion = await openai.chat.completions.create({
