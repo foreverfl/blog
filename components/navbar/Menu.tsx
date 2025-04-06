@@ -187,7 +187,7 @@ const Menu: React.FC<MenuProps> = ({
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
               {/* 내 정보 */}
               <a
-                href="https://foreverfl.github.io/web-portfolio/"
+                href="https://foreverfl.github.io/portfolio-v2/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2"

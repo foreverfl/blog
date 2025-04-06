@@ -3,7 +3,7 @@ title: "Next.js で自分だけのブログを作成"
 date: "2024-09-22"
 classification: "development"
 category: "project"
-image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-07-pagination.png"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/240922-07.webp"
 ---
 
 # Next.js で自分だけのブログを作成
@@ -32,16 +32,16 @@ image: "https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-wit
 
 ## Cloudflare R2 vs AWS S3 価格比較
 
-![vercel_connect](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-01-vercel-connect.png)
+![vercel_connect](https://blog_workers.forever-fl.workers.dev/posts-images/240922-01.webp)
 
 そして、Cloudflare R2 は画像ファイルを保存するためのストレージとして使用しました。通常、実際の開発では AWS S3 Bucket を主に使用していますが、コスト的に大きな差があるため、友人から Cloudflare R2 が安価だと聞いてすぐに Cloudflare R2 を使用することにしました。一度、2 つの価格を比較してみましょうか？
 
-![R2_Pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-02-R2-Pricing.png)
+![R2_Pricing](https://blog_workers.forever-fl.workers.dev/posts-images/240922-02.webp)
 
 R2 のコストは、ストレージは基本的には月 10GB まで無料で、その後は 1GB あたり 0.015 ドル、データ入力(Class A)は 100 万リクエストまで無料で、その後は 100 万リクエストあたり 4.5 ドル、データ読み取り(Class B)は 100 万リクエストまで無料で、その後は 100 万リクエストあたり 0.36 ドルです。
 
-![S3_storage_pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-03-S3-storage-pricing.png)
-![S3_request_pricing](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-04-S3-request-pricing.png)
+![S3_storage_pricing](https://blog_workers.forever-fl.workers.dev/posts-images/240922-03.webp)
+![S3_request_pricing](https://blog_workers.forever-fl.workers.dev/posts-images/240922-04.webp)
 
 一方、S3 のコストを見ると、月 1GB あたり 0.023 ドル、データ入力は 100 万リクエストあたり 5 ドル、データ読み取りは 100 万リクエストあたり 0.4 ドルです。
 
@@ -53,7 +53,7 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
 
 ### 1. ログイン
 
-![login_page](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-05-login_page.png)
+![login_page](https://blog_workers.forever-fl.workers.dev/posts-images/240922-05.webp)
 
 - 私は OAuth2.0 + JWT で実装しました。以前 Wordpress を運営していた時には定期的にスパムコメントが付いていたので、最低限の安全装置だと考えてログイン機能を実装しました。本来は Next.js で OAuth2.0 を簡単に実装できる NextAuth.js というライブラリが存在しますが、Page Router でのコードはあるものの App Router でのマイグレーションされたコードを別途提供していないため、App Router では直接実装しました。
 - OAuth2.0 アクセストークンリクエストコード
@@ -67,7 +67,7 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
       ),
       loginUrl: (clientId, redirectUri) =>
         `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`,
-      imageUrl: "/logo/github.png",
+      imageUrl: "/logo/github.webp",
       imageAlt: "Github",
     },
     google: {
@@ -77,7 +77,7 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
       ),
       loginUrl: (clientId, redirectUri) =>
         `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`,
-      imageUrl: "/logo/google.png",
+      imageUrl: "/logo/google.webp",
       imageAlt: "Google",
     },
   };
@@ -93,7 +93,7 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
 
     const getImageSrc = () => {
       if (provider === "github") {
-        return isHovered ? "/logo/github_black.png" : "/logo/github.png";
+        return isHovered ? "/logo/github_black.webp" : "/logo/github.webp";
       } else {
         return socialLogins[provider].imageUrl;
       }
@@ -102,7 +102,7 @@ R2 のコストは、ストレージは基本的には月 10GB まで無料で�
 
 ### 2. ファイルアップロード
 
-![file_upload](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-06-file_upload.png)
+![file_upload](https://blog_workers.forever-fl.workers.dev/posts-images/240922-06.webp)
 
 - ブログをテキストのみで作成する場合は問題ありませんが、通常、ブログには多くの写真資料が含まれます。そのため、投稿作成中に必要なファイルアップロードを実装しました。ドラッグでファイルを持ってくると'tmp\_日付\_ファイル名'でファイルが作成され、投稿が完了すると'objectId\_日付\_ファイル名'に画像が変わるように実装しました。投稿の編集も同様に実装しました。
 - 投稿登録時に Cloudflare R2 にアップロードするコード
@@ -191,7 +191,7 @@ const handleSubmit = async (event: React.FormEvent) => {
 
 ### 3. ページネーション
 
-![pagination](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-07-pagination.png)
+![pagination](https://blog_workers.forever-fl.workers.dev/posts-images/240922-07.webp)
 
 - 投稿を一度にすべて取得するとローディング速度が遅くなり、UI に悪影響を及ぼすため、必須で実装すべきです。Next.js では api で実装する部分で、それほど難しくはありませんでした。
 - ページネーション Rest API コード
@@ -243,7 +243,7 @@ export async function GET(
 
 ### 1. 日本語・韓国語投稿の同時管理
 
-![posting_bilingual](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-08_posting-bilingual.png)
+![posting_bilingual](https://blog_workers.forever-fl.workers.dev/posts-images/240922-08.webp)
 
 - 私のブログの目的は、同じ記事を韓国語と日本語で同時に書いて発行し、それぞれを SEO 最適化することにありました。そのため、ERD を設計する際に、Post Collection に content_ko、content_ja を同時に入れ、Redux で管理する言語の状態によって異なる部分ページを表示するように実装しました。
 - 多言語処理する部分
@@ -270,7 +270,7 @@ export async function GET(
 
 ### 2. 言語モード選択ボタン
 
-![navbar](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-09_navbar.png)
+![navbar](https://blog_workers.forever-fl.workers.dev/posts-images/240922-09.webp)
 
 - 日本語・韓国語の投稿の同時管理のため、それぞれの言語を選択するボタンが必要でした。
 - **言語選択のための状態管理をする`SetLanguage.tsx`モジュール**: ただ全体のコードを入れました。見れば大体理解できると思います。
@@ -350,8 +350,8 @@ const SetLanguage: React.FC = () => {
             <Image
               src={
                 currentLanguage === "ko"
-                  ? "/images/korea.png"
-                  : "/images/japan.png"
+                  ? "/images/korea.webp"
+                  : "/images/japan.webp"
               }
               alt={currentLanguage === "ko" ? "Korean Flag" : "Japanese Flag"}
               width={24}
@@ -374,7 +374,7 @@ export default SetLanguage;
 
 ### 4. 投稿内で Markdown 言語をパースして表示する
 
-![post_parsed](https://blog_workers.forever-fl.workers.dev/001-how-to-create-a-blog-with-nextjs-10-post-parsed.png)
+![post_parsed](https://blog_workers.forever-fl.workers.dev/posts-images/240922-10.webp)
 
 - 普段、学習資料を Markdown 言語で整理することが多いので、ブログも Markdown 言語で投稿すると表示する時は HTML にパースして表示するようにしました。この問題は私が Tailwind を最上位で宣言し、投稿を表示する部分では[github-markdown-css](https://www.npmjs.com/package/github-markdown-css?activeTab=readme)ライブラリをダウンロードして適用したのですが、2 つのコードが重なってしまい、問題が発生しました。Next.js の App Router では`global.css`でグローバルに css を変更することができるのですが、重なる部分を`!important`処理して解決しました。
 - **投稿をパースするコード**: [react-markdown](!https://www.npmjs.com/package/react-markdown)ライブラリを利用して統合しました。

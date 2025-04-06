@@ -2,34 +2,38 @@ import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 
+const DELETE_ORIGINAL = true;
+
 (async () => {
-  const args = process.argv.slice(2);
-  const prefix = args[0];
-
-  if (!prefix) {
-    console.error("❗ Usage: tsx convert-to-webp.ts <prefix>");
-    process.exit(1);
-  }
-
-  const targetDir = path.join(process.cwd(), "public/images/contents");
+  const targetDir = path.join(process.cwd(), "public/images/00images/documentation/translation-notes/");
   const files = fs.readdirSync(targetDir);
 
-  const matchedFiles = files.filter((file) => file.startsWith(prefix));
+  const imageFiles = files.filter((file) => {
+    const ext = path.extname(file).toLowerCase();
+    return [".jpg", ".jpeg", ".png"].includes(ext);
+  });
 
-  if (matchedFiles.length === 0) {
-    console.log("⚠️ No matching files found.");
+  if (imageFiles.length === 0) {
+    console.log("⚠️ No image files to process.");
     return;
   }
 
-  for (const file of matchedFiles) {
+  for (const file of imageFiles) {
     const filePath = path.join(targetDir, file);
     const fileNameWithoutExt = path.parse(file).name;
     const outputPath = path.join(targetDir, `${fileNameWithoutExt}.webp`);
 
     try {
-      await sharp(filePath).webp({ quality: 90 }).toFile(outputPath);
-      fs.unlinkSync(filePath);
-      console.log(`✅ Converted and removed: ${file}`);
+      await sharp(filePath)
+        .webp({ quality: 90 })
+        .toFile(outputPath);
+
+      if (DELETE_ORIGINAL) {
+        fs.unlinkSync(filePath);
+        console.log(`✅ Converted and deleted: ${file}`);
+      } else {
+        console.log(`✅ Converted (kept original): ${file}`);
+      }
     } catch (error) {
       console.error(`❌ Failed to process ${file}:`, error);
     }
