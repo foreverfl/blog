@@ -36,12 +36,14 @@ log_message "📊 Checking HackerNews progress for '$TYPE' on $DATE..."
 
 STABLE_COUNT=-1
 STABLE_REPEAT=0
-STABLE_THRESHOLD=3  # 몇 번 연속 유지되면 종료할지
+STABLE_THRESHOLD=5
+MAX_LOOP=100
+SLEEP_SEC=60
 
-for i in {1..50}; do
+for ((i=1; i<=MAX_LOOP; i++)); do
   response=$(curl -s -H "$AUTH_HEADER" "$COUNT_URL")
-
   padded_index=$(printf "%02d" $i)
+  enCount=$(echo "$response" | jq ".counts.nullSummaryEnCount")
 
   case "$TYPE" in
     summary)
@@ -50,11 +52,19 @@ for i in {1..50}; do
       ;;
     translation-ko)
       count=$(echo "$response" | jq ".counts.nullSummaryKoCount")
-      log_message "⏱️ [$padded_index] nullSummaryKoCount=$count"
+      log_message "⏱️ [$padded_index] nullSummaryKoCount=$count (nullSummaryEnCount: $enCount)"
+      if [ "$count" -eq "$enCount" ]; then
+        log_message "✅ 'translation-ko' step done (count matched EN)"
+        exit 0
+      fi
       ;;
     translation-ja)
       count=$(echo "$response" | jq ".counts.nullSummaryJaCount")
-      log_message "⏱️ [$padded_index] nullSummaryJaCount=$count"
+      log_message "⏱️ [$padded_index] nullSummaryJaCount=$count (nullSummaryEnCount: $enCount)"
+      if [ "$count" -eq "$enCount" ]; then
+        log_message "✅ 'translation-ja' step done (count matched EN)"
+        exit 0
+      fi
       ;;
     *)
       log_message "❌ Unknown TYPE: $TYPE"
@@ -74,7 +84,7 @@ for i in {1..50}; do
     STABLE_REPEAT=0
   fi
 
-  sleep 20
+  sleep "$SLEEP_SEC"
 done
 
 log_message "⚠️ Timeout reached. '$TYPE' step may be incomplete."
