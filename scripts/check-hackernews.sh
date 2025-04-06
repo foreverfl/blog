@@ -37,8 +37,8 @@ log_message "📊 Checking HackerNews progress for '$TYPE' on $DATE..."
 STABLE_COUNT=-1
 STABLE_REPEAT=0
 STABLE_THRESHOLD=5
-MAX_LOOP=100
-SLEEP_SEC=60
+MAX_LOOP=180
+SLEEP_SEC=90
 
 for ((i=1; i<=MAX_LOOP; i++)); do
   response=$(curl -s -H "$AUTH_HEADER" "$COUNT_URL")

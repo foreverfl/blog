@@ -29,23 +29,6 @@
     ]
   },
   {
-    "name_ko": "취업",
-    "name_ja": "就職",
-    "link": "career",
-    "categories": [
-      {
-        "name_ko": "면접",
-        "name_ja": "面接",
-        "link": "interviews"
-      },
-      {
-        "name_ko": "코딩 테스트",
-        "name_ja": "コ딩テスト",
-        "link": "coding-tests"
-      }
-    ]
-  },
-  {
     "name_ko": "공식 문서",
     "name_ja": "公式ドキュメント",
     "link": "documentation",
