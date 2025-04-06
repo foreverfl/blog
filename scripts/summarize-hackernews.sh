@@ -7,20 +7,20 @@ log_message() {
 TARGET_DATE="$1"
 
 if [ "$GITHUB_ACTIONS" != "true" ] && [ -f ".env.local" ]; then
-  echo "📂 Loading environment variables from .env.local"
+  log_message "📂 Loading environment variables from .env.local"
   export $(grep -v '^#' .env.local | xargs)
 fi
 
 if [ "$GITHUB_ACTIONS" = "true" ]; then
-  echo "🌐 Running in GitHub Actions"
+  log_message "🌐 Running in GitHub Actions"
   BASE_URL="https://mogumogu.dev"
 else
-  echo "💻 Running locally"
+  log_message "💻 Running locally"
   BASE_URL="http://localhost:3000"
 fi
 
 if [ -z "$HACKERNEWS_API_KEY" ]; then
-  echo "❌ Error: HACKERNEWS_API_KEY environment variable not set!"
+  log_message "❌ Error: HACKERNEWS_API_KEY environment variable not set!"
   exit 1
 fi
 
@@ -32,7 +32,7 @@ else
   LIST_ENDPOINT="$BASE_URL/api/hackernews"
 fi
 
-echo "📥 Fetching HackerNews content list from $LIST_ENDPOINT"
+log_message "📥 Fetching HackerNews content list from $LIST_ENDPOINT"
 HACKERNEWS_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$LIST_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER")
@@ -48,10 +48,13 @@ fi
 
 IDS=$(echo "$HTTP_BODY" | jq -r '.[] | select(.content != null and (.summary.en == null or .summary.en == "")) | .id')
 
+i=1
 echo "$IDS" | while read -r id; do
   if [ -z "$id" ]; then
     continue
   fi
+
+  padded_index=$(printf "%02d" $i)
 
   if [ -n "$TARGET_DATE" ]; then
     ENDPOINT="$BASE_URL/api/hackernews/summarize/$TARGET_DATE"
@@ -59,7 +62,7 @@ echo "$IDS" | while read -r id; do
     ENDPOINT="$BASE_URL/api/hackernews/summarize/"
   fi
 
-  echo "🚀 Sending summarize request for ID: $id (Date: ${TARGET_DATE:-today})"
+  log_message "🚀 [$padded_index] Sending summarize request for ID: $id (Date: ${TARGET_DATE:-today})"
   RESPONSE=$(curl -L -s -X POST "$ENDPOINT" \
     -H "Content-Type: application/json" \
     -H "$AUTH_HEADER" \
@@ -69,13 +72,15 @@ echo "$IDS" | while read -r id; do
   ERROR_MSG=$(echo "$RESPONSE" | jq -r '.error // empty')
 
   if [ "$SUCCESS" == "true" ]; then
-    echo "✅ Summarize request sent for ID: $id"
+    log_message "✅ Summarize request sent for ID: $id"
   else
-    echo "⚠️  Failed to summarize ID: $id"
+    log_message "⚠️  Failed to summarize ID: $id"
     if [ ! -z "$ERROR_MSG" ]; then
-      echo "🛑 Reason: $ERROR_MSG"
+      log_message "🛑 Reason: $ERROR_MSG"
     fi
   fi
+
+  i=$((i + 1))
 done
 
-echo "🏁 All summarization requests sent!"
+log_message "🏁 All summarization requests sent!"

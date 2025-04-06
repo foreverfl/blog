@@ -3,15 +3,12 @@ import { getFromR2 } from "@/lib/cloudflare/r2";
 export async function getContentsStructure(
   bucket: string
 ): Promise<{ folder: string; dates: string[] }[]> {
-  console.log("bucket: ", bucket);
-
   if (!bucket || bucket === "null") {
     throw new Error("❌ Bucket name is invalid or null");
   }
 
   const listUrl = `${process.env.NEXT_PUBLIC_R2_URI}/${bucket}`;
   const res = await fetch(listUrl);
-  console.log("res: ", res.body);
 
   if (!res.ok) {
     throw new Error(
@@ -40,7 +37,6 @@ export async function getContents(folder: string, date: string) {
   const bucket = "hackernews";
 
   const data = await getFromR2({ bucket, key });
-  console.log("data: ", data);
 
   if (!data) {
     throw new Error(`❌ No content found for ${folder}/${date}`);
