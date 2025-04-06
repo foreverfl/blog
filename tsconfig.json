@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "test/**/*.ts",
+    "test/**/*.ts", "scripts/fetchContents.ts",
   ],
   "exclude": ["node_modules"]
 }

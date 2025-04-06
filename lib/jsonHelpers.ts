@@ -1,38 +1,50 @@
-import fs from "fs";
-import path from "path";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 
-export async function getContentsStructure() {
-  const contentsPath = path.resolve(process.cwd(), "contents", "trends");
-  const folders = fs
-    .readdirSync(contentsPath)
-    .filter((file) => fs.statSync(path.join(contentsPath, file)).isDirectory());
+export async function getContentsStructure(
+  bucket: string
+): Promise<{ folder: string; dates: string[] }[]> {
+  console.log("bucket: ", bucket);
 
-  const structure = folders.map((folder) => {
-    const folderPath = path.join(contentsPath, folder);
-    const dates = fs
-      .readdirSync(folderPath)
-      .filter((file) => file.endsWith(".json"))
-      .map((file) => file.replace(".json", ""));
-    return { folder, dates };
-  });
+  if (!bucket || bucket === "null") {
+    throw new Error("❌ Bucket name is invalid or null");
+  }
 
-  return structure;
+  const listUrl = `${process.env.NEXT_PUBLIC_R2_URI}/${bucket}`;
+  const res = await fetch(listUrl);
+  console.log("res: ", res.body);
+
+  if (!res.ok) {
+    throw new Error(
+      `❌ Failed to list R2 contents from bucket "${bucket}": ${res.statusText}`
+    );
+  }
+
+  const result = await res.json();
+
+  const files = result.files || result.dates || [];
+
+  const dates = files
+    .map((filename: string) => filename.replace(/\.[^/.]+$/, ""))
+    .filter((v: string) => !!v);
+
+  return [
+    {
+      folder: bucket,
+      dates,
+    },
+  ];
 }
 
 export async function getContents(folder: string, date: string) {
-  const filePath = path.join(
-    process.cwd(),
-    "contents",
-    "trends",
-    folder,
-    `${date}.json`
-  );
+  const key = `${date}.json`;
+  const bucket = "hackernews";
 
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
+  const data = await getFromR2({ bucket, key });
+  console.log("data: ", data);
+
+  if (!data) {
+    throw new Error(`❌ No content found for ${folder}/${date}`);
   }
 
-  const fileContent = fs.readFileSync(filePath, "utf-8");
-  const data = JSON.parse(fileContent);
-  return data; 
+  return data;
 }

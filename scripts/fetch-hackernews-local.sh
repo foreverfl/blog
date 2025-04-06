@@ -40,7 +40,7 @@ if [ "$HTTP_STATUS" != "200" ]; then
   exit 1
 fi
 
-# id 값 추출
+# extract IDs from the JSON response
 IDS=$(echo "$HTTP_BODY" | jq -r '.[].id')
 # echo "📝 Found IDs: $IDS"
 

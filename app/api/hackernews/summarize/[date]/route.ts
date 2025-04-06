@@ -66,15 +66,15 @@ export async function POST(
     try {
       const summary = await summarize(content);
 
-      const updatedData = await getFromR2({ bucket: "hackernews", key });
-      const idx = updatedData.findIndex((item: { id: string }) => item.id === id);
+      const latestData = await getFromR2({ bucket: "hackernews", key });
+      const idx = latestData.findIndex((item: { id: string }) => item.id === id);
 
       if (idx !== -1) {
-        dailyData[idx].summary = {
-          ...(dailyData[idx].summary || {}),
+        latestData[idx].summary = {
+          ...(latestData[idx].summary || {}),
           en: summary,
         };
-        await putToR2({ bucket: "hackernews", key }, dailyData);
+        await putToR2({ bucket: "hackernews", key }, latestData);
         console.log(`✅ summary.en saved for id ${id}`);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);

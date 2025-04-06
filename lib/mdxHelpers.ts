@@ -24,6 +24,10 @@ async function getFilesRecursively(
   dir: string,
   lan: string
 ): Promise<string[]> {
+  if (dir.includes("/trends")) {
+    return [];
+  }
+
   if (!fs.existsSync(dir)) {
     console.warn(`⚠️ Directory not found: ${dir}`);
     return [];
@@ -176,6 +180,11 @@ export async function getAllMdxFilesWithFrontMatter(
   classification?: string,
   category?: string
 ): Promise<MdxFileData[]> {
+
+  if (classification === "trends") {
+    return []; // trends면 아무것도 반환하지 않음
+  }
+
   // 기본 경로 설정
   let contentDirectory = path.join(process.cwd(), `contents`);
 

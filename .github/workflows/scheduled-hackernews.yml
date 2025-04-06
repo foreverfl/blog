@@ -2,13 +2,14 @@ name: HackerNews Daily Workflow
 
 on:
   schedule:
-    - cron: "00 16 * * *" # 한국시간 KST (UTC+9) 01:00
+    - cron: "00 16 * * *" # KST (UTC+9) 01:00
   workflow_dispatch:  
 
 jobs:
   run-tasks:
     runs-on: ubuntu-latest
     env:
+      NEXT_PUBLIC_R2_URI: ${{ secrets.NEXT_PUBLIC_R2_URI }}
       HACKERNEWS_API_KEY: ${{ secrets.HACKERNEWS_API_KEY }}
 
     steps:
@@ -18,8 +19,14 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # - name: Fetch HackerNews data
-      #   run: ./scripts/fetch-hackernews.sh
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Fetch HackerNews data
+        run: ./scripts/fetch-hackernews-prod.sh
  
       - name: 🧠 Summarize HackerNews content
         run: ./scripts/summarize-hackernews.sh
@@ -35,9 +42,9 @@ jobs:
 
       - name: 🌍 Translate HackerNews to Japanese
         run: ./scripts/translate-hackernews.sh ja
-
+        
       - name: ⏳ Wait until summary is stabilized
-        run: ./scripts/check-hackernews.sh translation-ko
+        run: ./scripts/check-hackernews.sh translation-ja
 
       - name: ✅ Final message
         run: echo "All HackerNews tasks completed successfully!"

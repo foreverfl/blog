@@ -20,7 +20,7 @@ export default async function Index({
     category
   );
 
-  const jsonContents = await getContentsStructure();
+  const jsonContents = await getContentsStructure(category);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
