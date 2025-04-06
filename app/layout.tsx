@@ -1,13 +1,13 @@
+import LoadingOverlay from "@/components/common/LoadingOverLay";
 import Footer from "@/components/main/Footer";
 import Navbar from "@/components/navbar/Navbar";
+import { LoadingProvider } from "@/lib/context/loading-context";
 import "@/styles/globals.css";
-import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
-import Head from "next/head";
-import StoreProvider from "./StoreProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,7 +36,8 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class">
-          <StoreProvider>
+          <LoadingProvider>
+            <LoadingOverlay />
             <Navbar />
             <main>
               {children}
@@ -44,7 +45,7 @@ export default function RootLayout({
               <Analytics />
             </main>
             <Footer />
-          </StoreProvider>
+          </LoadingProvider>
         </ThemeProvider>
       </body>
     </html>
