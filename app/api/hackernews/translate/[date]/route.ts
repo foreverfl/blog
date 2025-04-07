@@ -91,6 +91,7 @@ export async function POST(
         };
 
         await putToR2({ bucket: "hackernews", key }, latestData);
+        await new Promise((res) => setTimeout(res, 500)); 
         console.log(`✅ Translations saved for ${lan}, id: ${id}`);
       }
 

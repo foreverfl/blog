@@ -50,7 +50,10 @@ export async function POST(
 
   if (existingItem.summary && existingItem.summary.en) {
     console.log(`✅ Summary already exists for ID: ${id}, skipping summarize.`);
-    return NextResponse.json(existingItem);
+    return NextResponse.json({
+      ok: true,
+      message: `Summary already exists for ID: ${id}, skipping summarize.`,
+    });
   }
 
   let content = existingItem.content;
@@ -75,6 +78,7 @@ export async function POST(
           en: summary,
         };
         await putToR2({ bucket: "hackernews", key }, latestData);
+        await new Promise((res) => setTimeout(res, 500)); 
         console.log(`✅ summary.en saved for id ${id}`);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);

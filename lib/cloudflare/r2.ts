@@ -37,8 +37,6 @@ function getContentTypeFromExtension(key: string): string {
 }
 
 export async function putToR2({ bucket, key }: R2Params, data: any) {
-  console.log("bucket: ", bucket);
-  console.log("key: ", key);
   const contentType = getContentTypeFromExtension(key);
 
   let body: BodyInit;
@@ -56,7 +54,9 @@ export async function putToR2({ bucket, key }: R2Params, data: any) {
     body = JSON.stringify(data);
   }
 
-  const res = await fetch(`${R2_BASE}/${bucket}/${key}`, {
+  const now = Date.now();
+  const url = `${R2_BASE}/${bucket}/${key}?t=${now}`;
+  const res = await fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": contentType,
@@ -70,7 +70,9 @@ export async function putToR2({ bucket, key }: R2Params, data: any) {
 }
 
 export async function getFromR2({ bucket, key }: R2Params) {
-  const res = await fetch(`${R2_BASE}/${bucket}/${key}`);
+  const now = Date.now();
+  const url = `${R2_BASE}/${bucket}/${key}?t=${now}`;
+  const res = await fetch(url);
 
   if (res.status === 404) return null;
   if (!res.ok) {

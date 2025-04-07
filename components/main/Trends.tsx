@@ -1,7 +1,10 @@
 "use client";
 
+import { Copy } from "@geist-ui/icons";
+import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 type TrendItem = {
   id: string;
@@ -27,6 +30,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
   const pathname = usePathname();
   const lan = pathname.split("/")[1] as "en" | "ko" | "ja";
   const [sortBy, setSortBy] = useState<"default" | "score">("default");
+  const [copiedList, setCopiedList] = useState<string[]>([]);
 
   const labels = {
     en: {
@@ -59,6 +63,16 @@ export default function Trends({ items }: { items: TrendItem[] }) {
 
   const sortedItems =
     sortBy === "score" ? [...items].sort((a, b) => b.score - a.score) : items;
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      const id = uuidv4(); // ✅ string 타입
+      setCopiedList((prev) => [...prev, id]);
+      setTimeout(() => {
+        setCopiedList((prev) => prev.filter((item) => item !== id));
+      }, 1500);
+    });
+  };
 
   if (!items || items.length === 0) {
     return <div>{localeLabel.noData}</div>;
@@ -109,17 +123,47 @@ export default function Trends({ items }: { items: TrendItem[] }) {
               </div>
             </h2>
 
-            <div className="mt-2 text-neutral-400">
+            <div className="mt-2 text-neutral-700 dark:text-neutral-400">
               {item.summary[lan as "en" | "ja" | "ko"] || localeLabel.noSummary}
             </div>
 
-            <div className="mt-5 text-sm text-neutral-400 text-right">
-              {localeLabel.author}: {item.by} | {localeLabel.score}:{" "}
-              {item.score}
+            <div className="mt-5 text-sm text-neutral-400 flex justify-between items-center">
+              <button
+                onClick={() =>
+                  handleCopy(
+                    `${item.title[lan] || item.title.en}\n\n${
+                      item.summary[lan] || localeLabel.noSummary
+                    }`
+                  )
+                }
+                className="text-neutral-400 hover:text-white transition-colors"
+              >
+                <Copy size={16} />
+              </button>
+
+              <div className="text-right">
+                {localeLabel.author}: {item.by} | {localeLabel.score}:{" "}
+                {item.score}
+              </div>
             </div>
           </section>
         ))}
       </article>
+
+      <AnimatePresence>
+        {copiedList.map((id, idx) => (
+          <motion.div
+            key={id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: -idx * 60 }} // 💡 Y축 offset 위로 쌓이게
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed bottom-6 right-6 w-[320px] min-h-[48px] bg-blue-600 text-white px-6 py-3 text-sm rounded shadow-md z-50 flex items-center"
+          >
+            Copied to clipboard!
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </>
   );
 }
