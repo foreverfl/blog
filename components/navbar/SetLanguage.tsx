@@ -22,8 +22,20 @@ const SetLanguage: React.FC = () => {
     setIsTransitioning(true); // 애니메이션 시작
     const newLanguage = currentLanguage === "ko" ? "ja" : "ko";
     setCurrentLanguage(newLanguage);
-    const pathParts = pathname.split("/"); // 언어 코드만 변경하고 나머지 경로는 유지
-    pathParts[1] = newLanguage; // 첫 번째 부분을 새로운 언어 코드로 교체
+
+    const pathParts = pathname.split("/");
+    // first part
+    pathParts[1] = newLanguage;
+
+    // last part
+    const last = pathParts[pathParts.length - 1];
+    const slugLangMatch = last.match(/-(ko|ja)$/);
+    if (slugLangMatch) {
+      const newSlug = last.replace(/-(ko|ja)$/, `-${newLanguage}`);
+      pathParts[pathParts.length - 1] = newSlug;
+    }
+
+    // combine the path parts
     const newPathname = pathParts.join("/");
 
     try {
