@@ -1,5 +1,6 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -12,8 +13,7 @@ export async function GET(
   }
 
   const { date } = await params;
-  const targetDate =
-    date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const targetDate = date ?? getTodayKST();
   const key = `${targetDate}.json`;
 
   try {

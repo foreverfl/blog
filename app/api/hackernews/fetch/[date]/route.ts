@@ -1,5 +1,6 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import { fetchContent } from "@/lib/hackernews/fetchContent";
 import { fetchPdfContent } from "@/lib/hackernews/fetchPdfContent";
 import { getHackernewsItemById } from "@/lib/hackernews/getHackernewItem";
@@ -23,8 +24,7 @@ export async function POST(
     return NextResponse.json({ ok: false, error: "There is no id" });
   }
 
-  const dateKey =
-    date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const dateKey = date ?? getTodayKST();
   const key = `${dateKey}.json`;
 
   let dailyData = await getFromR2({ bucket: "hackernews", key });
@@ -85,7 +85,7 @@ export async function POST(
     ? dailyData[existingIndex].content.slice(0, 100)
     : "[⚠️ content is null]";
   console.log("DailyData:", preview);
-  
+
   await putToR2({ bucket: "hackernews", key }, dailyData);
 
   return NextResponse.json(dailyData[existingIndex]);

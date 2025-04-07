@@ -1,5 +1,6 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import { translate } from "@/lib/openai/translate";
 import { translationQueue } from "@/lib/queue";
 import { sendWebhookNotification } from "@/lib/webhook";
@@ -21,7 +22,7 @@ export async function POST(
   }
 
   const { date } = await params;
-  const targetDate = date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const targetDate = date ?? getTodayKST();
   const key = `${targetDate}.json`;
   const body: TranslateRequestBody = await req.json();
   const { id, lan, webhookUrl } = body;

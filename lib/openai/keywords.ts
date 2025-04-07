@@ -1,8 +1,9 @@
+import { getFromR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import dotenv from "dotenv";
 import { OpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
-import { getFromR2 } from "@/lib/cloudflare/r2";
 
 dotenv.config({ path: "./.env.local" });
 
@@ -28,10 +29,7 @@ export async function keywords(date: string): Promise<string> {
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  const today = new Date();
-  today.setHours(today.getHours() + 9);
-  const defaultDate = today.toISOString().slice(2, 10).replace(/-/g, "");
-  const dateString = date ?? defaultDate;
+  const dateString = date ?? getTodayKST();
 
   try {
     const key = `${dateString}.json`;
@@ -40,7 +38,6 @@ export async function keywords(date: string): Promise<string> {
     if (!items || !Array.isArray(items)) {
       throw new Error("No valid items found in R2");
     }
-
 
     const topItem = items.filter((item: any) => {
       const en = item.summary?.en;

@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
+import { getTodayKST } from "@/lib/date";
 
 function logError(message: string) {
-  const timestamp = new Date().toISOString();
+  const timestamp = getTodayKST();
   const logMessage = `${timestamp} - ERROR: ${message}\n`;
   console.error(logMessage);
 }

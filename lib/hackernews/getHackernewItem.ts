@@ -1,15 +1,13 @@
 import { getFromR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 
 export async function getHackernewsItemById(id: string) {
-  const now = new Date();
-  const dateString = `${now.getFullYear().toString().slice(2)}${String(
-    now.getMonth() + 1
-  ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+  const today = getTodayKST();
 
   try {
     const json = await getFromR2({
       bucket: "hackernews",
-      key: `${dateString}.json`,
+      key: `${today}.json`,
     });
     const foundItem = json.find((item: any) => item.id === id);
 

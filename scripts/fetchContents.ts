@@ -1,4 +1,5 @@
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import { fetchContent } from "@/lib/hackernews/fetchContent";
 import { fetchPdfContent } from "@/lib/hackernews/fetchPdfContent";
 import { getHackernewsItemById } from "@/lib/hackernews/getHackernewItem";
@@ -6,12 +7,6 @@ import { sliceTextByTokens } from "@/lib/text";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-function getTodayKST(): string {
-  const now = new Date();
-  now.setHours(now.getHours() + 9); // Adjust to KST (UTC+9)
-  return now.toISOString().slice(2, 10).replace(/-/g, "");
-}
 
 async function run(inputDate?: string) {
   const fallbackDate = getTodayKST();

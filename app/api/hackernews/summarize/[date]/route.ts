@@ -1,5 +1,6 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import { summarize } from "@/lib/openai/summarize";
 import { summaryQueue } from "@/lib/queue";
 import { sendWebhookNotification } from "@/lib/webhook";
@@ -15,8 +16,7 @@ export async function POST(
   }
 
   const { date } = await params;
-  const targetDate =
-    date ?? new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const targetDate = date ?? getTodayKST();
   const key = `${targetDate}.json`;
 
   const body = await req.json();
@@ -70,7 +70,9 @@ export async function POST(
       const summary = await summarize(content);
 
       const latestData = await getFromR2({ bucket: "hackernews", key });
-      const idx = latestData.findIndex((item: { id: string }) => item.id === id);
+      const idx = latestData.findIndex(
+        (item: { id: string }) => item.id === id
+      );
 
       if (idx !== -1) {
         latestData[idx].summary = {
@@ -78,7 +80,7 @@ export async function POST(
           en: summary,
         };
         await putToR2({ bucket: "hackernews", key }, latestData);
-        await new Promise((res) => setTimeout(res, 500)); 
+        await new Promise((res) => setTimeout(res, 500));
         console.log(`✅ summary.en saved for id ${id}`);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);

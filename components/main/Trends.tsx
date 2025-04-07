@@ -130,11 +130,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
             <div className="mt-5 text-sm text-neutral-400 flex justify-between items-center">
               <button
                 onClick={() =>
-                  handleCopy(
-                    `${item.title[lan] || item.title.en}\n\n${
-                      item.summary[lan] || localeLabel.noSummary
-                    }`
-                  )
+                  handleCopy(item.summary[lan] || localeLabel.noSummary)
                 }
                 className="text-neutral-400 hover:text-white transition-colors"
               >
@@ -155,7 +151,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
           <motion.div
             key={id}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: -idx * 60 }} // 💡 Y축 offset 위로 쌓이게
+            animate={{ opacity: 1, y: -idx * 60 }} // Y축 offset 위로 쌓이게
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="fixed bottom-6 right-6 w-[320px] min-h-[48px] bg-blue-600 text-white px-6 py-3 text-sm rounded shadow-md z-50 flex items-center"

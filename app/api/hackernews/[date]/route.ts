@@ -1,18 +1,10 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getTodayKST } from "@/lib/date";
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 
 const HN_API_BASE = "https://hacker-news.firebaseio.com/v0";
-
-/**
- * Get today's date in YYMMDD format (KST)
- */
-function getTodayKST(): string {
-  const now = new Date();
-  now.setHours(now.getHours() + 9); // Adjust to KST (UTC+9)
-  return now.toISOString().slice(2, 10).replace(/-/g, "");
-}
 
 /**
  * Generate a unique ID for each entry based on title
