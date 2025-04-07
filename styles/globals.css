@@ -99,8 +99,8 @@ figure figcaption {
   font-size: 14px;
   text-align: left;
   padding: 10px;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: #24292E;
+  color: #ffffff;
   border-radius: 5px;
 }
 
@@ -114,9 +114,9 @@ figure figcaption {
 }
 
 .markdown-body pre {
-  border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
+  margin-top: 3px !important;
 }
 
 .markdown-body blockquote {
@@ -156,22 +156,6 @@ code[data-line-numbers-max-digits="4"] > [data-line]::before {
   width: 2.25rem;
 }
 
-/* diff */
-code.diff {
-  background-color: #f7f7f7;
-}
-
-/* 삭제된 라인의 배경색 설정 */
-code.diff .deletion {
-  background-color: #ffecec;
-  color: inherit;
-}
-
-/* 추가된 라인의 배경색 설정 */
-code.diff .addition {
-  background-color: #eaffea;
-  color: inherit;
-}
 
 /* 마크내운 내에서 이미지 투명 */
 .markdown-body img {

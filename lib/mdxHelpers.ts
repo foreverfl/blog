@@ -1,6 +1,6 @@
 import fs from "fs";
-import path from "path";
 import { compileMDX } from "next-mdx-remote/rsc";
+import path from "path";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import removeMarkdown from "remove-markdown";
@@ -166,7 +166,7 @@ export async function compileMdxContent(fileContent: string) {
           [
             rehypePrettyCode,
             {
-              theme: "github-light",
+              theme: "github-dark",
             },
           ],
         ],
@@ -180,7 +180,6 @@ export async function getAllMdxFilesWithFrontMatter(
   classification?: string,
   category?: string
 ): Promise<MdxFileData[]> {
-
   if (classification === "trends") {
     return []; // trends면 아무것도 반환하지 않음
   }
