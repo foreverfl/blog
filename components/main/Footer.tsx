@@ -66,6 +66,9 @@ const Footer: React.FC = () => {
             transform: "translate(-50%, -50%)",
             padding: "0",
             border: "none",
+            width: "95vw",
+            maxWidth: "720px",
+            borderRadius: "8px", 
           },
           overlay: {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
