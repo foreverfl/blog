@@ -37,8 +37,8 @@ HACKERNEWS_LIST=$(curl -L -s -w "\n%{http_code}" -X GET "$LIST_ENDPOINT" \
   -H "Content-Type: application/json" \
   -H "$AUTH_HEADER")
 
-HTTP_BODY=$(echo "$HACKERNEWS_LIST" | head -n -1)
-HTTP_STATUS=$(echo "$HACKERNEWS_LIST" | tail -n1)
+HTTP_STATUS=$(echo "$HACKERNEWS_LIST" | tail -n 1)
+HTTP_BODY=$(echo "$HACKERNEWS_LIST" | sed '$d')
 
 if [ "$HTTP_STATUS" != "200" ]; then
   log_message "❌ Failed to get HackerNews list! HTTP Status: $HTTP_STATUS"
