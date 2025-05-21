@@ -24,11 +24,13 @@ async function retry<T>(
       return await fn();
     } catch (err) {
       lastError = err;
+      console.warn(`⚠️ Retry ${i + 1}/${retries} failed:`, err instanceof Error ? err.message : String(err));
       if (i < retries - 1) {
         await delay(delayMs);
       }
     }
   }
+  console.error("❌ All retries failed.");
   throw lastError;
 }
 
@@ -79,6 +81,7 @@ export async function putToR2({ bucket, key }: R2Params, data: any) {
 
   const now = Date.now();
   const url = `${R2_BASE}/${bucket}/${key}?t=${now}`;
+  console.log(`📤 [R2 PUT] Uploading: ${key} (${contentType})`);
   
   await retry(async () => {
     const res = await fetch(url, {
