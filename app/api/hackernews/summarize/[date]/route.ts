@@ -81,7 +81,6 @@ export async function POST(
           en: summary,
         };
         await redis.set(`en:${id}`, summary, "EX", 60 * 60 * 24);
-        // await putToR2({ bucket: "hackernews", key }, latestData);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);
       }

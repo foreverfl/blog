@@ -13,7 +13,6 @@ export async function sendWebhookNotification(url: string, data: any) {
     if (!response.ok) {
       throw new Error('Failed to send webhook notification');
     }
-    console.log('✅ Webhook notification sent successfully');
   } catch (error) {
     console.error('❌ Error sending webhook notification:', error);
   }

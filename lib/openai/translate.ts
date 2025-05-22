@@ -24,7 +24,6 @@ export async function translate(
     }
 
     const prompt = await res.text();
-    console.log("Prompt file content loaded successfully");
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -41,8 +40,6 @@ export async function translate(
       throw new Error("Failed to get translated content");
     }
     const translated = content;
-    console.log("mode:", mode);
-    console.log("Translated text:", translated);
     return translated;
   } catch (error) {
     console.error("Error translating text:", error);

@@ -3,6 +3,7 @@ import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { translate } from "@/lib/openai/translate";
 import { translateQueue } from "@/lib/queue";
+import { redis } from "@/lib/redis";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
@@ -58,18 +59,7 @@ export async function POST(
     });
   }
 
-  const existingTranslation = item?.summary?.[lan];
-  const existingTranslatedTitle = item?.title?.[lan];
-
-  if (existingTranslation && existingTranslatedTitle) {
-    console.log(
-      `✅ Translation already exists for ID: ${id}, language: ${lan}. Skipping translation.`
-    );
-    return NextResponse.json({
-      ok: true,
-      message: `Translation for ${lan} already exists for ID: ${id}`,
-    });
-  }
+  const redisKey = `${lan}:${id}:translation`;
 
   translateQueue.add(async () => {
     try {
@@ -78,39 +68,32 @@ export async function POST(
         translate(titleEn, lan, "title"),
       ]);
 
-      const latestData = await getFromR2({ bucket: "hackernews", key });
-      const idx = latestData.findIndex((item: { id: any }) => item.id === id);
-
-      if (idx !== -1) {
-        latestData[idx].summary = {
-          ...(latestData[idx].summary || {}),
-          [lan]: translatedSummary,
-        };
-        latestData[idx].title = {
-          ...(latestData[idx].title || {}),
-          [lan]: translatedTitle,
-        };
-
-        await putToR2({ bucket: "hackernews", key }, latestData);
-        await new Promise((res) => setTimeout(res, 500));
-        console.log(`✅ Translations saved for ${lan}, id: ${id}`);
-      }
+      await redis.set(
+        redisKey,
+        JSON.stringify({
+          translatedSummary,
+          translatedTitle,
+        }),
+        "EX",
+        60 * 60 * 24
+      );
 
       if (webhookUrl) {
         await sendWebhookNotification(webhookUrl, {
           id,
           language: lan,
-          translatedTitle,
-          translatedSummary,
+          date: targetDate,
         });
-        console.log("📬 Sent translation to webhook");
+        console.log(`✅ Translation for ID: ${id} saved successfully.`);
       }
     } catch (error) {
       console.error("❌ Error translating:", error);
       if (webhookUrl) {
         await sendWebhookNotification(webhookUrl, {
           id,
-          error: "Failed to translate the summary or title",
+          language: lan,
+          date: targetDate,
+          error: "Translation failed",
         });
       }
     }

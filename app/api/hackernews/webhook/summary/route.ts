@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   if (classification === "en" && id) {
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/hackernews/polling`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/hackernews/polling/summarize`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
