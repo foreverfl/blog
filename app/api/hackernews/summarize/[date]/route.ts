@@ -1,8 +1,9 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { summarize } from "@/lib/openai/summarize";
-import { summaryQueue } from "@/lib/queue";
+import { summarizeQueue } from "@/lib/queue";
+import { redis } from "@/lib/redis";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
@@ -49,7 +50,7 @@ export async function POST(
   const existingItem = dailyData[existingIndex];
 
   if (existingItem.summary && existingItem.summary.en) {
-    console.log(`✅ Summary already exists for ID: ${id}, skipping summarize.`);
+    console.warn(`✅ Summary already exists for ID: ${id}, skipping summarize.`);
     return NextResponse.json({
       ok: true,
       message: `Summary already exists for ID: ${id}, skipping summarize.`,
@@ -65,7 +66,7 @@ export async function POST(
     });
   }
 
-  summaryQueue.add(async () => {
+  summarizeQueue.add(async () => {
     try {
       const summary = await summarize(content);
 
@@ -79,19 +80,24 @@ export async function POST(
           ...(latestData[idx].summary || {}),
           en: summary,
         };
-        await putToR2({ bucket: "hackernews", key }, latestData);
-        await new Promise((res) => setTimeout(res, 500));
-        console.log(`✅ summary.en saved for id ${id}`);
+        await redis.set(`en:${id}`, summary, "EX", 60 * 60 * 24);
+        // await putToR2({ bucket: "hackernews", key }, latestData);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);
       }
 
-      await sendWebhookNotification(webhookUrl, { id, summary });
-      console.log("📬 Sent summary to webhook");
+      await sendWebhookNotification(webhookUrl, {
+        classification: "en",
+        id,
+        date: targetDate, 
+      });
+      console.log(`✅ Summary for ID: ${id} saved successfully.`);
     } catch (error) {
       console.error("❌ Error summarizing content:", error);
       await sendWebhookNotification(webhookUrl, {
+        classification: "en",
         id,
+        date: targetDate, 
         error: "Failed to summarize the content",
       });
     }

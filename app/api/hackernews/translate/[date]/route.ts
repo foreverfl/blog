@@ -2,7 +2,7 @@ import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { translate } from "@/lib/openai/translate";
-import { translationQueue } from "@/lib/queue";
+import { translateQueue } from "@/lib/queue";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
@@ -71,7 +71,7 @@ export async function POST(
     });
   }
 
-  translationQueue.add(async () => {
+  translateQueue.add(async () => {
     try {
       const [translatedSummary, translatedTitle] = await Promise.all([
         translate(summaryEn, lan, "content"),
@@ -92,7 +92,7 @@ export async function POST(
         };
 
         await putToR2({ bucket: "hackernews", key }, latestData);
-        await new Promise((res) => setTimeout(res, 500)); 
+        await new Promise((res) => setTimeout(res, 500));
         console.log(`✅ Translations saved for ${lan}, id: ${id}`);
       }
 
