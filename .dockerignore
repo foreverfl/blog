@@ -6,4 +6,3 @@ Dockerfile*
 .dockerignore
 *.log
 .DS_Store
-.env
