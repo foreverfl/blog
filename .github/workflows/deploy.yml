@@ -18,6 +18,12 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > /tmp/ci-key.pem
           chmod 600 /tmp/ci-key.pem
 
+      - name: List files after checkout (root)
+        run: ls -al
+
+      - name: List files inside ansible
+        run: ls -al ansible
+
       - name: Deploy with Ansible
         uses: dawidd6/action-ansible-playbook@v2
         with:
