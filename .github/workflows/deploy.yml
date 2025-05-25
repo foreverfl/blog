@@ -21,8 +21,8 @@ jobs:
       - name: Deploy with Ansible
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: deploy.yml
-          directory: ./ansible
+          playbook: ansible/deploy.yml
+          directory: .
           inventory: |
             [web]
             ec2-instance ansible_host=${{ secrets.HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem

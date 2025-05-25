@@ -8,13 +8,21 @@
 
     - name: Copy source code to server
       synchronize:
-        src: ../  # actions에서 ansible/보다 한단계 상위 (=프로젝트 루트)
+        src: . 
         dest: /home/ubuntu/app/blog
         rsync_opts:
           - "--exclude=.git"
           - "--exclude=node_modules"
           - "--exclude=dist"
           - "--exclude=.env"
+
+    - name: List files after synchronize
+      shell: ls -al /home/ubuntu/app/blog
+      register: list_result
+
+    - name: Show files in blog dir
+      debug:
+        var: list_result.stdout_lines
     
     - name: Copy .env.prod to .env
       shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
