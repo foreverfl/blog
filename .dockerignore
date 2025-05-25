@@ -5,3 +5,5 @@ node_modules
 Dockerfile*
 .dockerignore
 *.log
+.DS_Store
+.env

@@ -33,31 +33,31 @@ jobs:
       - name: Fetch HackerNews data
         run: ./scripts/fetch-hackernews-prod.sh
  
-      - name: 🧠 Summarize HackerNews content
-        run: ./scripts/summarize-hackernews.sh
+      # - name: 🧠 Summarize HackerNews content
+      #   run: ./scripts/summarize-hackernews.sh
 
-      - name: ⏳ Wait until summary is stabilized
-        run: ./scripts/check-hackernews.sh summary
+      # - name: ⏳ Wait until summary is stabilized
+      #   run: ./scripts/check-hackernews.sh summary
 
-      - name:  Translate HackerNews to Korean
-        run: ./scripts/translate-hackernews.sh ko
+      # - name:  Translate HackerNews to Korean
+      #   run: ./scripts/translate-hackernews.sh ko
 
-      - name: ⏳ Wait until translation-ko is stabilized
-        run: ./scripts/check-hackernews.sh translation-ko
+      # - name: ⏳ Wait until translation-ko is stabilized
+      #   run: ./scripts/check-hackernews.sh translation-ko
 
-      - name: 🌍 Translate HackerNews to Japanese
-        run: ./scripts/translate-hackernews.sh ja
+      # - name: 🌍 Translate HackerNews to Japanese
+      #   run: ./scripts/translate-hackernews.sh ja
         
-      - name: ⏳ Wait until translation-ja is stabilized
-        run: ./scripts/check-hackernews.sh translation-ja
+      # - name: ⏳ Wait until translation-ja is stabilized
+      #   run: ./scripts/check-hackernews.sh translation-ja
 
-      - name: 🎨 Generate HackerNews image
-        run: |
-          TODAY=$(date -d '9 hours' +'%y%m%d')
-          curl -X POST http://mogumogu.dev/api/hackernews/draw/$TODAY/ \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY" \
-            -d '{"webhookUrl": "http://mogumogu.dev/api/hackernews/webhook/draw"}'
+      # - name: 🎨 Generate HackerNews image
+      #   run: |
+      #     TODAY=$(date -d '9 hours' +'%y%m%d')
+      #     curl -X POST http://mogumogu.dev/api/hackernews/draw/$TODAY/ \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY" \
+      #       -d '{"webhookUrl": "http://mogumogu.dev/api/hackernews/webhook/draw"}'
 
-      - name: ✅ Final message
-        run: echo "All HackerNews tasks completed successfully!"
+      # - name: ✅ Final message
+      #   run: echo "All HackerNews tasks completed successfully!"
