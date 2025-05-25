@@ -6,16 +6,6 @@
         path: /home/ubuntu/app/blog
         state: directory
 
-    - name: Copy source code to server
-      synchronize:
-        src: . 
-        dest: /home/ubuntu/app/blog
-        rsync_opts:
-          - "--exclude=.git"
-          - "--exclude=node_modules"
-          - "--exclude=dist"
-          - "--exclude=.env"
-
     - name: List files after synchronize
       shell: ls -al /home/ubuntu/app/blog
       register: list_result

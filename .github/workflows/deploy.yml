@@ -18,11 +18,9 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > /tmp/ci-key.pem
           chmod 600 /tmp/ci-key.pem
 
-      - name: List files after checkout (root)
-        run: ls -al
-
-      - name: List files inside ansible
-        run: ls -al ansible
+      - name: Rsync source code to EC2
+        run: |
+          rsync -avz --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='.env' -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.HOST }}:/home/ubuntu/app/blog
 
       - name: Deploy with Ansible
         uses: dawidd6/action-ansible-playbook@v2
