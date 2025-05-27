@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import Pagination from "../molecules/Pagination";
 
 interface JsonContentsStructure {
   folder: string;
@@ -113,37 +114,11 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-10">
-          <button
-            className="mx-2 px-3 py-1 border border-gray-400 rounded disabled:opacity-50 text-gray-800 dark:text-white"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          {[...Array(totalPages)].map((_, index) => (
-            <button
-              key={index}
-              className={`mx-1 px-3 py-1 border border-gray-400 rounded ${
-                currentPage === index + 1
-                  ? "bg-gray-400 text-white"
-                  : "bg-white text-gray-800 dark:text-gray-800"
-              }`}
-              onClick={() => handlePageChange(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <button
-            className="mx-2 px-3 py-1 border border-gray-400 rounded disabled:opacity-50 text-gray-800 dark:text-gray-800"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       <div className="my-56"></div>
     </>

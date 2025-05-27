@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Pagination from "../molecules/Pagination";
 
 interface FrontMatter {
   fileName?: string;
@@ -87,37 +88,11 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-10">
-            <button
-              className="mx-2 px-3 py-1 border border-gray-400 rounded disabled:opacity-50"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                className={`mx-1 px-3 py-1 border border-gray-400 rounded ${
-                  currentPage === index + 1
-                    ? "bg-gray-400 text-white"
-                    : "bg-white"
-                }`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              className="mx-2 px-3 py-1 border border-gray-400 rounded disabled:opacity-50"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       <div className="my-56"></div>
