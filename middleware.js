@@ -16,17 +16,28 @@ function getLocale(request) {
 
 export function middleware(request) {
     const { pathname } = request.nextUrl;
+    const [, firstPath, ...restParts] = pathname.split('/');
+    const restPath = '/' + restParts.join('/');
 
-    // 경로명에 지원되는 로케일이 있는지 확인함
-    const pathnameHasLocale = locales.some(
-        (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-    );
+    // set cookie if first path is a locale
+    if (locales.includes(firstPath)) {
+        const response = NextResponse.next();
+        response.cookies.set('lan', firstPath, {
+            path: '/',
+            maxAge: 60 * 60 * 24 * 30,
+        });
+        return response;
+    }
 
-    if (pathnameHasLocale) return;
+    // when first path is not a locale
+    const newPath = `/${defaultLocale}${pathname === '/' ? '' : restPath}`;
+    const response = NextResponse.redirect(new URL(newPath, request.url));
+    response.cookies.set('lan', defaultLocale, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30,
+    });
 
-    const locale = getLocale(request);
-    request.nextUrl.pathname = `/${locale}${pathname}`
-    return NextResponse.redirect(request.nextUrl)
+    return response;
 }
 
 export const config = {
