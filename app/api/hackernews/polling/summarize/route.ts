@@ -1,7 +1,7 @@
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { modifyQueue } from "@/lib/queue";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 
 const validLangKeys = ["en", "ko", "ja"] as const;
@@ -21,6 +21,14 @@ export async function POST(req: Request) {
     return NextResponse.json({
       ok: false,
       error: "Missing id or classification",
+    });
+  }
+
+  const redis = getRedis();
+  if (!redis) {
+    return NextResponse.json({
+      ok: false,
+      error: "Redis not available",
     });
   }
 

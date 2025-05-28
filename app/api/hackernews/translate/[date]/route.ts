@@ -3,7 +3,7 @@ import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { translate } from "@/lib/openai/translate";
 import { translateQueue } from "@/lib/queue";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
@@ -67,16 +67,18 @@ export async function POST(
         translate(summaryEn, lan, "content"),
         translate(titleEn, lan, "title"),
       ]);
-
-      await redis.set(
-        redisKey,
-        JSON.stringify({
-          translatedSummary,
-          translatedTitle,
-        }),
-        "EX",
-        60 * 60 * 24
-      );
+      
+      const redis = getRedis();
+      if (redis)
+        redis.set(
+          redisKey,
+          JSON.stringify({
+            translatedSummary,
+            translatedTitle,
+          }),
+          "EX",
+          60 * 60 * 24
+        );
 
       if (webhookUrl) {
         await sendWebhookNotification(webhookUrl, {

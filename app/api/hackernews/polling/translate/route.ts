@@ -1,7 +1,7 @@
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { modifyQueue } from "@/lib/queue";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 
 const MAX_RETRIES = 10;
@@ -12,6 +12,14 @@ export async function POST(req: Request) {
 
   if (!id || !language) {
     return NextResponse.json({ ok: false, error: "Missing id or language" });
+  }
+
+  const redis = getRedis();
+  if (!redis) {
+    return NextResponse.json({
+      ok: false,
+      error: "Redis not available",
+    });
   }
 
   const redisKey = `${language}:${id}:translation`;
@@ -50,11 +58,16 @@ export async function POST(req: Request) {
       await putToR2({ bucket: "hackernews", key: r2key }, data);
       await redis.del(redisKey);
 
-      console.log(`✅ ${language} translation for ${id} flushed to R2 and Redis`);
+      console.log(
+        `✅ ${language} translation for ${id} flushed to R2 and Redis`
+      );
     } else {
       console.warn(`⚠️ ID ${id} not found in R2 for translation`);
     }
   });
 
-  return NextResponse.json({ ok: true, message: `Translation polling started for ${id}` });
+  return NextResponse.json({
+    ok: true,
+    message: `Translation polling started for ${id}`,
+  });
 }

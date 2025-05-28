@@ -3,7 +3,7 @@ import { getFromR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { summarize } from "@/lib/openai/summarize";
 import { summarizeQueue } from "@/lib/queue";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
@@ -50,7 +50,9 @@ export async function POST(
   const existingItem = dailyData[existingIndex];
 
   if (existingItem.summary && existingItem.summary.en) {
-    console.warn(`✅ Summary already exists for ID: ${id}, skipping summarize.`);
+    console.warn(
+      `✅ Summary already exists for ID: ${id}, skipping summarize.`
+    );
     return NextResponse.json({
       ok: true,
       message: `Summary already exists for ID: ${id}, skipping summarize.`,
@@ -80,7 +82,8 @@ export async function POST(
           ...(latestData[idx].summary || {}),
           en: summary,
         };
-        await redis.set(`en:${id}`, summary, "EX", 60 * 60 * 24);
+        const redis = getRedis();
+        if (redis) await redis.set(`en:${id}`, summary, "EX", 60 * 60 * 24);
       } else {
         console.warn(`⚠️ No entry found for id ${id} when saving summary`);
       }
@@ -88,7 +91,7 @@ export async function POST(
       await sendWebhookNotification(webhookUrl, {
         classification: "en",
         id,
-        date: targetDate, 
+        date: targetDate,
       });
       console.log(`✅ Summary for ID: ${id} saved successfully.`);
     } catch (error) {
@@ -96,7 +99,7 @@ export async function POST(
       await sendWebhookNotification(webhookUrl, {
         classification: "en",
         id,
-        date: targetDate, 
+        date: targetDate,
         error: "Failed to summarize the content",
       });
     }
