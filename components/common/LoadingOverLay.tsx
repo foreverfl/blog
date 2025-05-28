@@ -1,6 +1,6 @@
 "use client";
 
-import Spinner from "@/components/common/Spinner";
+import Spinner from "@/components/atom/Spinner";
 import {
   useLoadingDispatch,
   useLoadingState,

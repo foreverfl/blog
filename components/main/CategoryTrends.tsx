@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Pagination from "../molecules/Pagination";
+import Spinner from "../atom/Spinner";
 
 interface JsonContentsStructure {
   folder: string;
@@ -26,6 +27,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   const lan = pathname.split("/")[1];
   const R2_BASE = process.env.NEXT_PUBLIC_R2_URI;
 
+  const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<PostItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -51,7 +53,6 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
     currentPage * postsPerPage
   );
 
-
   useEffect(() => {
     const checkImageExists = async (url: string) => {
       try {
@@ -63,6 +64,8 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
     };
 
     const processItems = async () => {
+      setIsLoading(true);
+
       const promises = jsonContents.flatMap((content) =>
         content.dates.map(async (date) => {
           const formatted = date.replace(/-/g, "");
@@ -80,10 +83,16 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
       const resolvedItems = await Promise.all(promises);
       resolvedItems.sort((a, b) => (a.date < b.date ? 1 : -1));
       setItems(resolvedItems);
+
+      setIsLoading(false);
     };
 
     processItems();
   }, [jsonContents, lan, R2_BASE]);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>

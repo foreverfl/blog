@@ -109,44 +109,48 @@ const Good = () => {
   };
 
   return (
-    <div className="flex items-center justify-between my-4">
-      {/* 하트 버튼 */}
-      <div className="flex items-center space-x-2 py-2 px-4 rounded-full shadow">
-        <motion.button
-          onClick={handleClick}
-          className="flex items-center justify-center p-1 rounded-full"
-          whileTap={{ scale: 0.8 }} // 클릭 시 애니메이션
-          transition={{ duration: 0.2, ease: "easeInOut" }} // 애니메이션 트랜지션
-        >
-          <Image
-            src={
-              heartState === "before"
-                ? "/images/heart_before.png"
-                : "/images/heart_after.png"
-            }
-            alt="Like"
-            width={40}
-            height={40}
-            className="h-5 w-5 object-cover"
-          />
-        </motion.button>
-        <span>{likeCount}</span>
-      </div>
-      {/* Creative Commons */}
-      <div>
-        <Link
-          href={"https://creativecommons.org/licenses/by-nc-nd/4.0/"}
-          target="_blank"
-        >
-          <Image
-            src={"/images/by-nc-nd.svg"}
-            alt={"Creative Commons"}
-            width={100}
-            height={100}
-            priority={true}
-            className="w-32 object-cover"
-          />
-        </Link>
+    <div className="flex items-center justify-center">
+      <div className="w-full md:w-3/5">
+        <div className="flex items-center justify-between my-4">
+          {/* 하트 버튼 */}
+          <div className="flex items-center space-x-2 py-2 px-4 rounded-full shadow">
+            <motion.button
+              onClick={handleClick}
+              className="flex items-center justify-center p-1 rounded-full"
+              whileTap={{ scale: 0.8 }} // 클릭 시 애니메이션
+              transition={{ duration: 0.2, ease: "easeInOut" }} // 애니메이션 트랜지션
+            >
+              <Image
+                src={
+                  heartState === "before"
+                    ? "/images/heart_before.png"
+                    : "/images/heart_after.png"
+                }
+                alt="Like"
+                width={40}
+                height={40}
+                className="h-5 w-5 object-cover"
+              />
+            </motion.button>
+            <span>{likeCount}</span>
+          </div>
+          {/* Creative Commons */}
+          <div>
+            <Link
+              href={"https://creativecommons.org/licenses/by-nc-nd/4.0/"}
+              target="_blank"
+            >
+              <Image
+                src={"/images/by-nc-nd.svg"}
+                alt={"Creative Commons"}
+                width={100}
+                height={100}
+                priority={true}
+                className="w-32 object-cover"
+              />
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

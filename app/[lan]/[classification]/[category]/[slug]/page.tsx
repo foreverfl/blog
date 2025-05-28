@@ -1,6 +1,6 @@
 import Comment from "@/components/main/Comment";
 import Good from "@/components/main/Good";
-import Trends from "@/components/main/Trends";
+import Article from "@/components/organism/Article";
 import { getContents } from "@/lib/jsonHelpers";
 import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
 import "github-markdown-css";
@@ -39,14 +39,10 @@ export default async function Page({
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="markdown-body w-full md:w-3/5">
-        <div className="my-56" />
-        {trendsPage ? <Trends items={content} /> : <>{content}</>}
-        <div className="my-56"></div>
-        <Good />
-        <Comment />
-      </div>
-    </div>
+    <>
+      <Article trendsPage={trendsPage} content={content} />
+      <Good />
+      <Comment />
+    </>
   );
 }
