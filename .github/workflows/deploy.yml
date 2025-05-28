@@ -18,6 +18,13 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > /tmp/ci-key.pem
           chmod 600 /tmp/ci-key.pem
 
+      - name: Clean up contents folder on EC2
+        run: |
+          ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} "
+            cd /home/ubuntu/app/blog
+            rm -rf contents/
+          "
+
       - name: Rsync source code to EC2
         run: |
           rsync -avz --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='.env' -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.HOST }}:/home/ubuntu/app/blog
