@@ -22,26 +22,14 @@
         "link": "project"
       },
       {
-        "name_ko": "디버깅 노트",
+        "name_ko": "개발 노트",
         "name_ja": "デバッグノート",
-        "link": "debugging"
-      }
-    ]
-  },
-  {
-    "name_ko": "공식 문서",
-    "name_ja": "公式ドキュメント",
-    "link": "documentation",
-    "categories": [
-      {
-        "name_ko": "번역 후기",
-        "name_ja": "翻訳後記",
-        "link": "translation-notes"
+        "link": "devnotes"
       },
       {
-        "name_ko": "오픈 소스 기여",
-        "name_ja": "オープンソースへの貢献",
-        "link": "open-source"
+        "name_ko": "트렌드",
+        "name_ja": "トレンド",
+        "link": "trends"
       }
     ]
   },
