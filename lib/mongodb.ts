@@ -1,7 +1,7 @@
 "use server";
 
 import { Db, MongoClient, ObjectId, ServerApiVersion } from "mongodb";
-import crypto from "crypto";
+import logger from "@/lib/logger";
 
 interface Comment {
   _id: ObjectId; // 댓글 ID
@@ -38,12 +38,12 @@ let db: Db | null = null; // 전역 변수로 데이터베이스 인스턴스를
 export async function connectDB() {
   // 이미 데이터베이스 인스턴스가 있는 경우, 재사용
   if (db) {
-    console.log("Reusing existing database connection.");
+    logger.info("Reusing existing database connection.");
     return db;
   }
 
   // 클라이언트 연결
-  console.log("Establishing new database connection.");
+  logger.info("Establishing new database connection.");
   await client.connect();
   db = client.db("blog");
 

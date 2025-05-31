@@ -49,5 +49,9 @@ contents/images/
 /tmp
 /test-data
 
+# logs
+logs/
+*.log
+
 # vscode
 .vscode

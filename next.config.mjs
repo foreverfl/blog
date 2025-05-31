@@ -5,6 +5,12 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from 'remark-gfm';
 
 const nextConfig = {
+    logging: {
+        fetches: {
+            fullUrl: true, 
+            hmrRefreshes: true,
+        },
+    },
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [
@@ -23,7 +29,7 @@ const nextConfig = {
         ],
     },
     pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-    webpack: (config) => {        
+    webpack: (config) => {
         return config; // Alias 설정 추가
     }
 };
