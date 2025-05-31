@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
+import Negotiator from "negotiator";
+import { NextResponse } from 'next/server';
+import { logRequest } from '@/lib/logger';
 
 let locales = ['ja', 'ko']
 const defaultLocale = 'ko';
 
-// 선호하는 로케일을 가져옴
 function getLocale(request) {
     const negotiator = new Negotiator({ headers: { 'accept-language': request.headers.get('accept-language') || '' } });
     const languages = negotiator.languages();
@@ -13,8 +13,10 @@ function getLocale(request) {
     return match(languages, locales, defaultLocale);
 }
 
-
 export function middleware(request) {
+    // logging
+    logRequest(request);
+
     const { pathname } = request.nextUrl;
     const [, firstPath, ...restParts] = pathname.split('/');
     const restPath = '/' + restParts.join('/');

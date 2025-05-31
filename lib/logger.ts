@@ -1,26 +1,24 @@
-import { createLogger, format, transports } from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
+import type { NextRequest } from "next/server";
 
-const logger = createLogger({
-  level: 'info',
-  format: format.combine(
-    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    format.printf((info) => {
-      const { timestamp, level, message } = info;
-      return `${timestamp} [${level}] ${message}`;
-    })
-  ),
-  transports: [
-    new transports.Console(),
-    new DailyRotateFile({
-      dirname: 'logs',
-      filename: '%DATE%.log', // ex: 2025-05-31.log
-      datePattern: 'YYYY-MM-DD',
-      zippedArchive: false,
-      maxSize: '200m',
-      maxFiles: '30d',
-    }),
-  ],
-});
+export function logRequest(request: NextRequest, level: string = "info") {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const timestamp =
+    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
 
-export default logger;
+  const logMsg = `${timestamp} [${level}] ${request.method} ${request.nextUrl.pathname} from ${ip}`;
+  console.log(logMsg);
+}
+
+export function logMessage(message: string, level: string = "info") {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const timestamp =
+    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+  const logMsg = `${timestamp} [${level}] ${message}`;
+  console.log(logMsg);
+}
