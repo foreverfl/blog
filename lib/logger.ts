@@ -7,8 +7,13 @@ export function logRequest(request: NextRequest, level: string = "info") {
     `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
     `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  const country = request.headers.get("cf-ipcountry") || "unknown";
+  const ua = request.headers.get("user-agent") || "unknown";
+  const referer = request.headers.get("referer") || "none";
+  const host = request.headers.get("host") || "unknown";
+  const qs = request.nextUrl.search || "";
 
-  const logMsg = `${timestamp} [${level}] ${request.method} ${request.nextUrl.pathname} from ${ip}`;
+  const logMsg = `${timestamp} [${level}] ${request.method} ${request.nextUrl.pathname}${qs} from ${ip} (${country}) ua="${ua}" referer="${referer}" host="${host}"`;
   console.log(logMsg);
 }
 
