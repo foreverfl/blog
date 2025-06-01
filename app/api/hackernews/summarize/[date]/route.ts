@@ -1,16 +1,18 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { getFromR2 } from "@/lib/cloudflare/r2";
+import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
+import { logMessage } from "@/lib/logger";
 import { summarize } from "@/lib/openai/summarize";
 import { summarizeQueue } from "@/lib/queue";
 import { getRedis } from "@/lib/redis";
-import { sendWebhookNotification } from "@/lib/webhook";
 import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ date?: string }> }
+  { params }: { params: Promise<{ date?: string }> },
 ) {
+  const start = Date.now();
+
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;
@@ -20,93 +22,63 @@ export async function POST(
   const targetDate = date ?? getTodayKST();
   const key = `${targetDate}.json`;
 
-  const body = await req.json();
-  const { id, webhookUrl } = body;
+  let data = await getFromR2({ bucket: "hackernews", key });
+  if (!data) return NextResponse.json({ ok: false, error: "File not found" });
 
-  if (!id) {
-    return NextResponse.json({ ok: false, error: "There is no id" });
-  }
+  const redis = getRedis();
+  if (!redis) return NextResponse.json({ ok: false, error: "No Redis" });
 
-  let dailyData = await getFromR2({ bucket: "hackernews", key });
-
-  if (!dailyData) {
-    return NextResponse.json({
-      ok: false,
-      error: "Daily file not found in R2",
-    });
-  }
-
-  const existingIndex = dailyData.findIndex(
-    (item: { id: any }) => item.id === id
+  const toSummarize = data.filter(
+    (item: any) => item.content && (!item.summary || !item.summary.en),
   );
 
-  if (existingIndex === -1) {
-    return NextResponse.json({
-      ok: false,
-      error: "Item not found in daily data",
-    });
-  }
+  logMessage("toSummerize.length: " + toSummarize.length);
 
-  const existingItem = dailyData[existingIndex];
-
-  if (existingItem.summary && existingItem.summary.en) {
-    console.warn(
-      `✅ Summary already exists for ID: ${id}, skipping summarize.`
-    );
-    return NextResponse.json({
-      ok: true,
-      message: `Summary already exists for ID: ${id}, skipping summarize.`,
-    });
-  }
-
-  let content = existingItem.content;
-
-  if (!content) {
-    return NextResponse.json({
-      ok: false,
-      error: "Content not found for the item",
-    });
-  }
-
-  summarizeQueue.add(async () => {
-    try {
-      const summary = await summarize(content);
-
-      const latestData = await getFromR2({ bucket: "hackernews", key });
-      const idx = latestData.findIndex(
-        (item: { id: string }) => item.id === id
-      );
-
-      if (idx !== -1) {
-        latestData[idx].summary = {
-          ...(latestData[idx].summary || {}),
-          en: summary,
-        };
-        const redis = getRedis();
-        if (redis) await redis.set(`en:${id}`, summary, "EX", 60 * 60 * 24);
-      } else {
-        console.warn(`⚠️ No entry found for id ${id} when saving summary`);
+  for (const [idx, item] of toSummarize.entries()) {
+    summarizeQueue.add(async () => {
+      try {
+        logMessage(
+          `[${idx + 1}/${toSummarize.length}] Summerizing: ${item.id}...`,
+        );
+        const summary = await summarize(item.content);
+        await redis.set(`en:${item.id}`, summary, "EX", 60 * 60 * 24);
+        logMessage(`[${idx + 1}/${toSummarize.length}] ✅ Done: ${item.id}`);
+      } catch (error) {
+        logMessage(
+          `[${idx + 1}/${toSummarize.length}] ❌ Error: ${item.id} (${error})`,
+        );
       }
+    });
+  }
 
-      await sendWebhookNotification(webhookUrl, {
-        classification: "en",
-        id,
-        date: targetDate,
-      });
-      console.log(`✅ Summary for ID: ${id} saved successfully.`);
-    } catch (error) {
-      console.error("❌ Error summarizing content:", error);
-      await sendWebhookNotification(webhookUrl, {
-        classification: "en",
-        id,
-        date: targetDate,
-        error: "Failed to summarize the content",
-      });
+  logMessage("▶️ All summarize tasks enqueued. Waiting for completion...");
+  await summarizeQueue.onIdle();
+  logMessage("✅ All summarize tasks completed. Flushing to R2...");
+
+  let flushed = 0;
+  let modifiedData = data.map((item: any) => ({ ...item }));
+  for (const item of toSummarize) {
+    const summary = await redis.get(`en:${item.id}`);
+    if (summary) {
+      const idx = modifiedData.findIndex((d: any) => d.id === item.id);
+      if (idx !== -1) {
+        if (!modifiedData[idx].summary) modifiedData[idx].summary = {};
+        modifiedData[idx].summary.en = summary;
+        await redis.del(`en:${item.id}`);
+        flushed++;
+      }
     }
-  });
+  }
+
+  await putToR2({ bucket: "hackernews", key }, modifiedData);
+
+  const elapsed = Date.now() - start;
+  logMessage(`Elapsed time: ${elapsed / 1000} seconds (${elapsed}ms)`);
 
   return NextResponse.json({
     ok: true,
-    message: `Summary request for ${date ?? "today"} queued.`,
+    total: toSummarize.length,
+    flushed,
+    message: `Flushed ${flushed} out of ${toSummarize.length} summaries to R2. (Elapsed: ${(elapsed / 1000).toFixed(2)} sec)`,
   });
 }
