@@ -70,7 +70,7 @@ jobs:
 
       - name: Translate HackerNews to Korean
         run: |
-          curl -X POST "hhttps://mogumogu.dev/api/hackernews/translate?lang=ko" \
+          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
@@ -83,7 +83,7 @@ jobs:
       - name: 🎨 Generate HackerNews image
         run: |
           TODAY=$(date -d '9 hours' +'%y%m%d')
-          curl -X POST http://mogumogu.dev/api/hackernews/draw/$TODAY/ \
+          curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY" \
             -d '{"webhookUrl": "http://mogumogu.dev/api/hackernews/webhook/draw"}'
