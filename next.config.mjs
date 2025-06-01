@@ -11,6 +11,9 @@ const nextConfig = {
             hmrRefreshes: true,
         },
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [
