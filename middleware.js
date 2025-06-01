@@ -18,6 +18,11 @@ export function middleware(request) {
     logRequest(request);
 
     const { pathname } = request.nextUrl;
+
+    if (pathname.startsWith("/api")) {
+        return NextResponse.next();
+    }
+    
     const [, firstPath, ...restParts] = pathname.split('/');
     const restPath = '/' + restParts.join('/');
 
