@@ -5,7 +5,12 @@
       file:
         path: /home/ubuntu/app/blog
         state: directory
-    
+
+    - name: Remove old build artifacts before Docker build
+      shell: |
+        cd /home/ubuntu/app/blog
+        rm -rf .next dist build out
+
     - name: Copy .env.prod to .env
       shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
 
