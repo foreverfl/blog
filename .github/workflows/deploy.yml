@@ -15,12 +15,12 @@ jobs:
 
       - name: Create SSH key file
         run: |
-          echo "${{ secrets.SSH_KEY }}" > /tmp/ci-key.pem
+          echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/ci-key.pem
           chmod 600 /tmp/ci-key.pem
 
       - name: Clean up contents folder on EC2
         run: |
-          ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.HOST }} "
+          ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} "
             cd /home/ubuntu/app/blog
             rm -rf contents/
           "

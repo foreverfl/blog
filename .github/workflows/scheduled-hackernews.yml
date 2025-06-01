@@ -9,7 +9,9 @@ jobs:
   run-tasks:
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_R2_URI: ${{ secrets.NEXT_PUBLIC_R2_URI }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ap-northeast-1
       HACKERNEWS_API_KEY: ${{ secrets.HACKERNEWS_API_KEY }}
 
     steps:
@@ -17,7 +19,34 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq
+        run: sudo apt-get update && sudo apt-get install -y jq awscli
+
+      - name: Turn on Redis (Fargate)
+        run: |
+          aws ecs update-service \
+            --cluster mogumogu \
+            --service mogumogu-service-dr9p94qm \
+            --desired-count 1
+          echo "⏳ Waiting for Redis task to start..."
+          sleep 30
+
+      - name: Get Redis private IP
+        id: get_redis_ip
+        run: |
+          REDIS_IP=$(aws ecs describe-tasks \
+            --cluster mogumogu \
+            --tasks $(aws ecs list-tasks --cluster mogumogu \
+              --service-name mogumogu-service-dr9p94qm \
+              --desired-status RUNNING \
+              --query 'taskArns[0]' --output text) \
+            --query 'tasks[0].attachments[0].details[?name==`privateIPv4Address`].value' \
+            --output text)
+          echo "Redis IP is $REDIS_IP"
+          echo "REDIS_HOST=$REDIS_IP" >> $GITHUB_ENV
+          echo "REDIS_PORT=6379" >> $GITHUB_ENV
+
+      - name: Print Redis env (for debugging)
+        run: echo "REDIS_HOST=$REDIS_HOST, REDIS_PORT=$REDIS_PORT"
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
@@ -33,31 +62,39 @@ jobs:
       - name: Fetch HackerNews data
         run: ./scripts/fetch-hackernews-prod.sh
  
-      # - name: 🧠 Summarize HackerNews content
-      #   run: ./scripts/summarize-hackernews.sh
+      - name: Summarize HackerNews content
+        run: |
+          curl -X POST http://localhost:3000/api/hackernews/summarize/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: ⏳ Wait until summary is stabilized
-      #   run: ./scripts/check-hackernews.sh summary
+      - name: Translate HackerNews to Korean
+        run: |
+          curl -X POST "http://localhost:3000/api/hackernews/translate?lang=ko" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name:  Translate HackerNews to Korean
-      #   run: ./scripts/translate-hackernews.sh ko
+      - name: Translate HackerNews to Japanese
+        run: |
+          curl -X POST "http://localhost:3000/api/hackernews/translate?lang=ja" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: ⏳ Wait until translation-ko is stabilized
-      #   run: ./scripts/check-hackernews.sh translation-ko
+      - name: 🎨 Generate HackerNews image
+        run: |
+          TODAY=$(date -d '9 hours' +'%y%m%d')
+          curl -X POST http://mogumogu.dev/api/hackernews/draw/$TODAY/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY" \
+            -d '{"webhookUrl": "http://mogumogu.dev/api/hackernews/webhook/draw"}'
 
-      # - name: 🌍 Translate HackerNews to Japanese
-      #   run: ./scripts/translate-hackernews.sh ja
-        
-      # - name: ⏳ Wait until translation-ja is stabilized
-      #   run: ./scripts/check-hackernews.sh translation-ja
+      - name: ✅ Final message
+        run: echo "All HackerNews tasks completed successfully!"
 
-      # - name: 🎨 Generate HackerNews image
-      #   run: |
-      #     TODAY=$(date -d '9 hours' +'%y%m%d')
-      #     curl -X POST http://mogumogu.dev/api/hackernews/draw/$TODAY/ \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY" \
-      #       -d '{"webhookUrl": "http://mogumogu.dev/api/hackernews/webhook/draw"}'
-
-      # - name: ✅ Final message
-      #   run: echo "All HackerNews tasks completed successfully!"
+      - name: Turn off Redis (Fargate)
+        if: always()
+        run: |
+          aws ecs update-service \
+            --cluster mogumogu \
+            --service mogumogu-service-dr9p94qm \
+            --desired-count 0
