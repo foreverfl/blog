@@ -19,7 +19,20 @@ export function middleware(request) {
 
     const { pathname } = request.nextUrl;
 
-    if (pathname.startsWith("/api")) {
+    // skip if the request is for a static file or API route
+    if (
+        pathname.startsWith('/api') ||
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/fonts') ||
+        pathname.startsWith('/images') ||
+        pathname.startsWith('/prompts') ||
+        pathname.startsWith('/logo') ||
+        pathname.startsWith('/login') ||
+        pathname === '/category.json' ||
+        pathname === '/favicon.ico' ||
+        pathname === '/sitemap.xml' ||
+        pathname.endsWith('.txt')
+    ) {
         return NextResponse.next();
     }
     
@@ -49,9 +62,5 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: [
-        // 'api'와 'login'으로 시작하는 경로를 제외하고 모든 경로에 적용
-        // '/((?!api|login|_next|fonts|category\.json|images|prompts|favicon\.ico|logo|sitemap\.xml|.*\\.txt).*)',
-        '/((?!^api/|^api$|^login|^_next|^fonts|^category\\.json|^images|^prompts|^favicon\\.ico|^logo|^sitemap\\.xml|.*\\.txt).*)',
-    ],
-}
+    matcher: '/:path*'
+};

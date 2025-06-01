@@ -1,6 +1,7 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
+import { logMessage } from "@/lib/logger";
 import { draw } from "@/lib/openai/draw";
 import { drawQueue } from "@/lib/queue";
 import axios from "axios";
@@ -15,7 +16,6 @@ export async function POST(
   if (authResult !== true) return authResult;
 
   const { date } = await params;
-  const { webhookUrl } = await req.json();
 
   // Date formatting
   const dateString = date ?? getTodayKST();
@@ -65,23 +65,9 @@ export async function POST(
       const bucket = "hackernews-images";
 
       await putToR2({ bucket, key }, webpBuffer);
-      console.log(`✅ Uploaded image to R2: ${bucket}/${key}`);
-
-      if (webhookUrl) {
-        await axios.post(webhookUrl, {
-          ok: true,
-          fileName: key,
-        });
-        console.log(`📬 Sent webhook to ${webhookUrl}`);
-      }
+      logMessage(`✅ Uploaded image to R2: ${bucket}/${key}`);
     } catch (err) {
       console.error("❌ Failed to generate or save image in queue:", err);
-      if (webhookUrl) {
-        await axios.post(webhookUrl, {
-          ok: false,
-          error: "Failed to generate or save image",
-        });
-      }
     }
   });
 
