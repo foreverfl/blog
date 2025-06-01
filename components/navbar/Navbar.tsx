@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
 
       try {
         const response = await fetch(
-          `/api/post-metadata?lan=${lan}&classification=${classification}&category=${category}&slug=${slug}`
+          `/api/post-metadata?lan=${lan}&classification=${classification}&category=${category}&slug=${slug}`,
         );
 
         if (response.ok) {
@@ -110,22 +110,22 @@ const Navbar: React.FC = () => {
 
   // 스타일
   const [titleColor, setTitleColor] = useState(
-    isPost ? "text-transparent" : "text-black dark:text-white"
+    isPost ? "text-transparent" : "text-black dark:text-white",
   );
   const [subNavbarTitleColor, setSubNavbarTitleColor] = useState(
-    isPost ? "text-white dark:text-white" : "text-black dark:text-white"
+    isPost ? "text-white dark:text-white" : "text-black dark:text-white",
   );
   const [titleBackgroundColor, setTitleBackgroundColor] = useState(
-    isPost ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800"
+    isPost ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800",
   );
   const [menuColor, setMenuColor] = useState(
-    isPost ? "text-white dark:text-white" : "text-black dark:text-white"
+    isPost ? "text-white dark:text-white" : "text-black dark:text-white",
   );
 
   // 스크롤바
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollColor, setScrollColor] = useState(
-    "bg-gray-900 dark:bg-neutral-50"
+    "bg-gray-900 dark:bg-neutral-50",
   );
 
   // 기타

@@ -48,7 +48,7 @@ export async function POST(
     logMessage("❌ Redis ping failed: " + err);
     return NextResponse.json({ ok: false, error: "Redis connection failed" });
   }
-  
+
   let toTranslateKo: any[] = [];
   let toTranslateJa: any[] = [];
 

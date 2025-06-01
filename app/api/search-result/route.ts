@@ -32,8 +32,7 @@ export async function GET(req: Request) {
 
   // const trendsData = await Promise.all(trendsDataPromises);
   // console.log("trendsData: ", JSON.stringify(trendsData, null, 2));
-  return NextResponse.json({
-  });
+  return NextResponse.json({});
 
   return NextResponse.json({
     posts,

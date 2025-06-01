@@ -17,7 +17,7 @@ const SetMode: React.FC = () => {
 
   const toggleTheme = () => {
     setTheme(
-      theme === "dark" || (systemTheme === "dark" && !theme) ? "light" : "dark"
+      theme === "dark" || (systemTheme === "dark" && !theme) ? "light" : "dark",
     );
   };
 

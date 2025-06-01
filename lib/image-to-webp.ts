@@ -9,7 +9,7 @@ import sharp from "sharp";
  */
 export async function convertImagesToWebp(
   sourceDir: string,
-  destDir: string
+  destDir: string,
 ): Promise<void> {
   try {
     if (!fs.existsSync(destDir)) {
@@ -23,7 +23,7 @@ export async function convertImagesToWebp(
         file.endsWith(".jpg") ||
         file.endsWith(".jpeg") ||
         file.endsWith(".gif") ||
-        file.endsWith(".svg")
+        file.endsWith(".svg"),
     );
 
     console.log(`Found ${imageFiles.length} image(s) to convert...`);
@@ -32,9 +32,7 @@ export async function convertImagesToWebp(
       const inputPath = path.join(sourceDir, file);
       const outputPath = path.join(destDir, `${path.parse(file).name}.webp`);
 
-      await sharp(inputPath)
-        .webp()
-        .toFile(outputPath);
+      await sharp(inputPath).webp().toFile(outputPath);
 
       console.log(`✅ Converted: ${file} -> ${outputPath}`);
     }

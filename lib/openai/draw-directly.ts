@@ -12,7 +12,7 @@ export async function drawDirectly(
   action: string = "",
   indoorOutdoor: string = "",
   background: string = "",
-  timeOfDay: string = ""
+  timeOfDay: string = "",
 ): Promise<string> {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -42,7 +42,6 @@ export async function drawDirectly(
 
     const stylePrompt = await res.text();
     const styleKeywords = parseStylePrompt(stylePrompt);
-
 
     const flattenedKeywords = {
       whatIsInTheImage: flattenToArray({

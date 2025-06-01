@@ -9,7 +9,7 @@ export const POST = async (req: NextRequest) => {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to upsert file paths", error },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

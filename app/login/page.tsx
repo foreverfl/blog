@@ -6,7 +6,7 @@ const Login: React.FC = () => {
     github: {
       clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
       redirectUri: encodeURIComponent(
-        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI!
+        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI!,
       ),
       providerUrl: "https://github.com/login/oauth/authorize", // 베이스 URL
       imageUrl: "/logo/github.png",
@@ -15,7 +15,7 @@ const Login: React.FC = () => {
     google: {
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
       redirectUri: encodeURIComponent(
-        process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!
+        process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
       ),
       providerUrl:
         "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&scope=openid%20email%20profile", // 베이스 URL

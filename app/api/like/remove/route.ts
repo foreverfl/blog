@@ -8,20 +8,20 @@ export async function POST(req: NextRequest) {
     if (!pathHash || !userEmail) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     await removeLikeFromPost(pathHash, userEmail);
     return NextResponse.json(
       { message: "Like removed successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error removing like:", error);
     return NextResponse.json(
       { error: "Failed to remove like" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

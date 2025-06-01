@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
             border: "none",
             width: "95vw",
             maxWidth: "720px",
-            borderRadius: "8px", 
+            borderRadius: "8px",
           },
           overlay: {
             backgroundColor: "rgba(0, 0, 0, 0.5)",

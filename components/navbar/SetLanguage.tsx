@@ -9,7 +9,7 @@ const SetLanguage: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [currentLanguage, setCurrentLanguage] = useState(
-    pathname.split("/")[1]
+    pathname.split("/")[1],
   );
   const [isReady, setIsReady] = useState(false); // 로딩 상태 관리
   const [isTransitioning, setIsTransitioning] = useState(false); // 애니메이션 상태 관리

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
           client_secret: process.env.GITHUB_CLIENT_SECRET,
           code,
         }),
-      }
+      },
     );
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     await db.collection("users").updateOne(
       { email: userData.email }, // 이메일을 기준으로 사용자를 찾음
       { $set: userData },
-      { upsert: true } // 문서가 없으면 삽입, 있으면 업데이트
+      { upsert: true }, // 문서가 없으면 삽입, 있으면 업데이트
     );
 
     let userDataFromDb = await db
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
         photo: userDataFromDb?.photo,
       },
       process.env.JWT_SECRET!, // Non-null assertion operator
-      { expiresIn: "2h" } // 토큰 만료 시간
+      { expiresIn: "2h" }, // 토큰 만료 시간
     );
 
     // JWT 내부 확인

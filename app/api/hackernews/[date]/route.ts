@@ -15,7 +15,7 @@ function generateUUID(title: string): string {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ date?: string }> }
+  { params }: { params: Promise<{ date?: string }> },
 ) {
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
@@ -27,14 +27,13 @@ export async function GET(
   const key = `${targetDate}.json`;
 
   try {
-
     // Check if the data for the given date already exists in R2
     const existingData = await getFromR2({ bucket: "hackernews", key });
     if (existingData) {
       console.log(`⏩ Skipping fetch: hackernews/${key} already exists in R2`);
       return NextResponse.json(existingData);
     }
-    
+
     // Fetch the list of top story IDs from Hacker News
     console.log("🔄 Fetching new data from HackerNews API...");
     const topStoriesRes = await fetch(`${HN_API_BASE}/topstories.json`);
@@ -77,7 +76,7 @@ export async function GET(
     console.error("Error fetching HackerNews data:", error);
     return NextResponse.json(
       { error: "Failed to fetch HackerNews data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

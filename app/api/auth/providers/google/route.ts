@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
           redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
           grant_type: "authorization_code",
         }).toString(),
-      }
+      },
     );
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
     const googleUserData = await userResponse.json();
 
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
         photo: userDataFromDb?.photo,
       }, // 페이로드에 사용자 ID 포함
       process.env.JWT_SECRET!, // Non-null assertion operator
-      { expiresIn: "2h" } // 토큰 만료 시간
+      { expiresIn: "2h" }, // 토큰 만료 시간
     );
 
     const decoded = jwt.decode(jwtToken); // JWT 내부

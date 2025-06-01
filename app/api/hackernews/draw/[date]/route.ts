@@ -10,7 +10,7 @@ import sharp from "sharp";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ date?: string }> }
+  { params }: { params: Promise<{ date?: string }> },
 ) {
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) return authResult;
@@ -21,7 +21,7 @@ export async function POST(
   const dateString = date ?? getTodayKST();
 
   // Read data from the file based on R2
-  const key = `${dateString}.json`
+  const key = `${dateString}.json`;
   const bucket = "hackernews";
   const items = await getFromR2({ bucket, key });
 

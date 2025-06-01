@@ -42,7 +42,7 @@ export async function GET() {
     console.error("Failed to fetch Google Analytics data:", error);
     return NextResponse.json(
       { error: "Failed to fetch analytics data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

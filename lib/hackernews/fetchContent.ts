@@ -42,7 +42,7 @@ export async function fetchContent(url: string) {
 
       // Economist
       const economistParagraphs = document.querySelectorAll(
-        'p[data-component="paragraph"]'
+        'p[data-component="paragraph"]',
       );
       if (economistParagraphs.length > 0) {
         return Array.from(economistParagraphs)
@@ -85,9 +85,7 @@ export async function fetchContent(url: string) {
 
     await browser.close();
     return content ? cleanText(content) : null;
-
   } catch (error) {
-    
     await browser.close();
     const errorMessage = `Failed to fetch content from ${url}: ${
       (error as Error).message

@@ -36,7 +36,7 @@ function loadingReducer(state: State, action: Action): State {
 // Contexts
 const LoadingStateContext = createContext<State | undefined>(undefined);
 const LoadingDispatchContext = createContext<Dispatch<Action> | undefined>(
-  undefined
+  undefined,
 );
 
 // Provider

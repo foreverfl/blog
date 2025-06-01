@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ date?: string }> }
+  { params }: { params: Promise<{ date?: string }> },
 ) {
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
@@ -36,7 +36,7 @@ export async function POST(
   }
 
   const existingIndex = dailyData.findIndex(
-    (item: { id: any }) => item.id === id
+    (item: { id: any }) => item.id === id,
   );
 
   if (existingIndex === -1) {

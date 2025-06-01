@@ -2,10 +2,12 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 
-export async function drawWithStableDiffusion(promptText: string): Promise<string> {
+export async function drawWithStableDiffusion(
+  promptText: string,
+): Promise<string> {
   const stylePath = path.resolve(
     new URL(import.meta.url).pathname,
-    "../../prompts/picture-style.txt"
+    "../../prompts/picture-style.txt",
   );
 
   const stylePrompt = fs.readFileSync(stylePath, "utf-8");
@@ -33,9 +35,13 @@ ${promptText.trim()}
   };
 
   try {
-    const response = await axios.post("http://127.0.0.1:7860/sdapi/v1/txt2img", payload);
+    const response = await axios.post(
+      "http://127.0.0.1:7860/sdapi/v1/txt2img",
+      payload,
+    );
     const imageBase64 = response.data.images?.[0];
-    if (!imageBase64) throw new Error("No image returned from Stable Diffusion");
+    if (!imageBase64)
+      throw new Error("No image returned from Stable Diffusion");
 
     // 저장하고 URL로 반환
     const outputPath = path.resolve("output", `image-${Date.now()}.png`);

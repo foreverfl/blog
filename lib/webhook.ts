@@ -1,19 +1,19 @@
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
 
 export async function sendWebhookNotification(url: string, data: any) {
   try {
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to send webhook notification');
+      throw new Error("Failed to send webhook notification");
     }
   } catch (error) {
-    console.error('❌ Error sending webhook notification:', error);
+    console.error("❌ Error sending webhook notification:", error);
   }
 }

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   if (!pathHash) {
     return NextResponse.json(
       { error: "pathHash is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

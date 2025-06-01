@@ -44,7 +44,7 @@ const Good = () => {
 
           // 사용자 좋아요 상태 가져오기
           const resStatus = await fetch(
-            `/api/like/check?pathHash=${pathHash}&userEmail=${data.user.email}`
+            `/api/like/check?pathHash=${pathHash}&userEmail=${data.user.email}`,
           );
           const statusData = await resStatus.json();
           setHeartState(statusData.isLiked ? "after" : "before");

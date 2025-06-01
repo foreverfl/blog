@@ -111,8 +111,8 @@ const Comment = ({}) => {
                 ...comment,
                 comment: updatedComment,
               }
-            : comment
-        )
+            : comment,
+        ),
       );
       setIsEditing((prev) => ({ ...prev, [commentId]: false }));
     }
@@ -144,7 +144,7 @@ const Comment = ({}) => {
       const { deletedCommentId } = await res.json();
 
       setComments((prevComments) =>
-        prevComments.filter((comment) => comment._id !== deletedCommentId)
+        prevComments.filter((comment) => comment._id !== deletedCommentId),
       );
     }
   };
@@ -172,8 +172,8 @@ const Comment = ({}) => {
                 adminComment: adminComment, // 새 댓글 값
                 adminCreatedAt: new Date().toISOString(), // 현재 시간 추가
               }
-            : comment
-        )
+            : comment,
+        ),
       );
       setIsReplying((prev) => ({ ...prev, [commentId]: false }));
     }
@@ -208,8 +208,8 @@ const Comment = ({}) => {
                   adminComment: "",
                   adminCreatedAt: null,
                 }
-              : comment
-          )
+              : comment,
+          ),
         );
       } else {
         console.error("관리자 댓글 삭제 실패");
@@ -302,7 +302,7 @@ const Comment = ({}) => {
                           <span className="hidden md:block">|</span>
                           <span className="hidden md:block">
                             {new Date(
-                              comment.userCreatedAt
+                              comment.userCreatedAt,
                             ).toLocaleDateString()}
                           </span>
                         </div>

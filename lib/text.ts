@@ -28,7 +28,7 @@ export function countWords(text: string): number {
  */
 export async function sliceTextByTokens(
   text: string,
-  maxTokens: number = 15000
+  maxTokens: number = 15000,
 ): Promise<string> {
   const wordCount = countWords(text);
   console.log("The number of words:", wordCount);
@@ -44,7 +44,7 @@ export async function sliceTextByTokens(
   let end = countWords(text);
 
   // Binary search
-  while (start <= end ) {
+  while (start <= end) {
     const mid = Math.floor((start + end) / 2);
     const currentText = text.slice(0, mid);
     const currentTokenCount = await countTokens(currentText);
@@ -52,16 +52,16 @@ export async function sliceTextByTokens(
     console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
 
     if (currentTokenCount === maxTokens) {
-      return currentText; 
+      return currentText;
     } else if (currentTokenCount <= maxTokens) {
       start = mid + 1;
     } else {
-      end = mid; 
+      end = mid;
     }
   }
 
   const finalText = text.slice(0, start);
-  const finalTokenCount = await countTokens(finalText); 
+  const finalTokenCount = await countTokens(finalText);
   console.log("Final Token Count after slicing:", finalTokenCount);
 
   return finalText;

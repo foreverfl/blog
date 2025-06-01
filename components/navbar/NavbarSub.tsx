@@ -45,7 +45,7 @@ const NavbarSub = forwardRef<HTMLDivElement, NavbarSubProps>(
         ) : null}
       </div>
     );
-  }
+  },
 );
 
 NavbarSub.displayName = "NavbarSub";

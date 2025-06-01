@@ -20,8 +20,8 @@ export async function draw(date: string): Promise<string> {
     const styleKeywords = parseStylePrompt(stylePrompt);
 
     const flattenedKeywords = {
-      "whatisInTheImage": flattenToArray(extractedKeywords.whatIsInTheImage),
-      "background": flattenToArray(extractedKeywords.background),
+      whatisInTheImage: flattenToArray(extractedKeywords.whatIsInTheImage),
+      background: flattenToArray(extractedKeywords.background),
     };
 
     const fullPrompt = {
@@ -30,7 +30,7 @@ export async function draw(date: string): Promise<string> {
       perspective: styleKeywords.perspective,
       colors: styleKeywords.colors,
       additionalEffects: styleKeywords.additionalEffects,
-      whatisInTheImage: flattenedKeywords.whatisInTheImage, 
+      whatisInTheImage: flattenedKeywords.whatisInTheImage,
       background: flattenedKeywords.background,
     };
 
@@ -57,24 +57,24 @@ export async function draw(date: string): Promise<string> {
 }
 
 function parseStylePrompt(stylePrompt: string): any {
-  const lines = stylePrompt.split("\n").filter(line => line.trim() !== "");
+  const lines = stylePrompt.split("\n").filter((line) => line.trim() !== "");
 
   const result: any = {
     style: [],
     mood: [],
     perspective: [],
     colors: [],
-    additionalEffects: []
+    additionalEffects: [],
   };
 
-  let currentCategory = '';
+  let currentCategory = "";
 
-  lines.forEach(line => {
+  lines.forEach((line) => {
     const trimmedLine = line.trim();
-    if (trimmedLine.startsWith('## ')) {
+    if (trimmedLine.startsWith("## ")) {
       // Category detected (Style, Mood, etc.)
       currentCategory = trimmedLine.slice(3).toLowerCase();
-    } else if (trimmedLine.startsWith('-')) {
+    } else if (trimmedLine.startsWith("-")) {
       const keyword = trimmedLine.slice(1).trim();
 
       // Add the keyword to the corresponding category
@@ -92,14 +92,14 @@ function flattenToArray(obj: any): any[] {
 
   // If obj is an array, iterate over each item and recursively flatten
   if (Array.isArray(obj)) {
-    obj.forEach(item => {
+    obj.forEach((item) => {
       result.push(...flattenToArray(item));
     });
-  } else if (obj && typeof obj === 'object') {
+  } else if (obj && typeof obj === "object") {
     // If obj is an object, iterate over each key and recursively flatten its value
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        result.push(...flattenToArray(obj[key])); 
+        result.push(...flattenToArray(obj[key]));
       }
     }
   } else {

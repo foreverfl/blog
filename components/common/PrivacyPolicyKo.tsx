@@ -38,12 +38,14 @@ export default function PrivacyPolicyKo() {
         </li>
         <li>
           <strong>계열사</strong>는 당사와 통제, 지배 또는 공동 통제 하에 있는
-          법인을 의미하며, 여기서 &quot;통제&quot;란 이사 선출권 또는 기타 관리 권한을
-          가진 주식, 지분 또는 기타 증권의 50% 이상을 소유하는 것을 의미합니다.
+          법인을 의미하며, 여기서 &quot;통제&quot;란 이사 선출권 또는 기타 관리
+          권한을 가진 주식, 지분 또는 기타 증권의 50% 이상을 소유하는 것을
+          의미합니다.
         </li>
         <li>
-          <strong>회사</strong> (본 계약에서 &quot;회사&quot;, &quot;당사&quot;, &quot;우리&quot; 또는
-          &quot;당사의&quot;로 지칭됨)는 mogumogu를 의미합니다.
+          <strong>회사</strong> (본 계약에서 &quot;회사&quot;, &quot;당사&quot;,
+          &quot;우리&quot; 또는 &quot;당사의&quot;로 지칭됨)는 mogumogu를
+          의미합니다.
         </li>
         <li>
           <strong>쿠키</strong>는 웹사이트가 귀하의 컴퓨터, 모바일 기기 또는
@@ -187,10 +189,10 @@ export default function PrivacyPolicyKo() {
         </li>
       </ul>
       <p className="mb-4">
-        쿠키는 &quot;지속적&quot; 쿠키 또는 &quot;세션&quot; 쿠키일 수 있습니다. 지속적 쿠키는
-        귀하가 오프라인 상태일 때 귀하의 개인 컴퓨터 또는 모바일 기기에 남아
-        있는 반면, 세션 쿠키는 귀하가 웹 브라우저를 닫으면 삭제됩니다. 쿠키에
-        대한 자세한 내용은
+        쿠키는 &quot;지속적&quot; 쿠키 또는 &quot;세션&quot; 쿠키일 수 있습니다.
+        지속적 쿠키는 귀하가 오프라인 상태일 때 귀하의 개인 컴퓨터 또는 모바일
+        기기에 남아 있는 반면, 세션 쿠키는 귀하가 웹 브라우저를 닫으면
+        삭제됩니다. 쿠키에 대한 자세한 내용은
         <a
           href="https://www.privacypolicies.com/blog/privacy-policy-template/#Use_Of_Cookies_Log_Files_And_Tracking"
           target="_blank"
@@ -451,8 +453,8 @@ export default function PrivacyPolicyKo() {
       </p>
       <p className="mb-4">
         당사는 변경 사항이 적용되기 전에 이메일 및/또는 당사의 서비스에 대한
-        눈에 띄는 공지를 통해 귀하에게 알리고 본 개인정보 처리방침 상단의 &quot;최종
-        업데이트&quot; 날짜를 업데이트할 것입니다.
+        눈에 띄는 공지를 통해 귀하에게 알리고 본 개인정보 처리방침 상단의
+        &quot;최종 업데이트&quot; 날짜를 업데이트할 것입니다.
       </p>
       <p className="mb-4">
         귀하는 변경 사항이 있는지 주기적으로 본 개인정보 처리방침을 검토할 것을

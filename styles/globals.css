@@ -78,7 +78,8 @@ html {
 @font-face {
   font-family: "NavbarFont";
   src: url("/fonts/Yomogi-Regular.ttf") format("truetype");
-  unicode-range: U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF; /* 구두점, 히라가나, 카타카나, 일본어 반각 카타카나, 한자 */
+  unicode-range:
+    U+3000-303F, U+3040-309F, U+30A0-30FF, U+FF00-FFEF, U+4E00-9FAF; /* 구두점, 히라가나, 카타카나, 일본어 반각 카타카나, 한자 */
   font-display: block;
 }
 
@@ -99,7 +100,7 @@ figure figcaption {
   font-size: 14px;
   text-align: left;
   padding: 10px;
-  background-color: #24292E;
+  background-color: #24292e;
   color: #ffffff;
   border-radius: 5px;
 }
@@ -155,7 +156,6 @@ code[data-line-numbers-max-digits="3"] > [data-line]::before {
 code[data-line-numbers-max-digits="4"] > [data-line]::before {
   width: 2.25rem;
 }
-
 
 /* 마크내운 내에서 이미지 투명 */
 .markdown-body img {

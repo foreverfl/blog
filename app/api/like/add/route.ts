@@ -8,14 +8,14 @@ export async function POST(req: NextRequest) {
     if (!pathHash || !userEmail) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     await addLikeToPost(pathHash, userEmail);
     return NextResponse.json(
       { message: "Like added successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error adding like:", error);

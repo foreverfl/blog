@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     .sort(
       (a: Comment, b: Comment) =>
         new Date(b.userCreatedAt).getTime() -
-        new Date(a.userCreatedAt).getTime()
+        new Date(a.userCreatedAt).getTime(),
     )[0];
 
   return NextResponse.json(latestComment);

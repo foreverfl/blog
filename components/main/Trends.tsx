@@ -131,7 +131,8 @@ export default function Trends({ items }: { items: TrendItem[] }) {
 
             <div className="mt-2 text-neutral-700 dark:text-neutral-400">
               <ReactMarkdown>
-              {item.summary[lan as "en" | "ja" | "ko"] || localeLabel.noSummary}
+                {item.summary[lan as "en" | "ja" | "ko"] ||
+                  localeLabel.noSummary}
               </ReactMarkdown>
             </div>
 

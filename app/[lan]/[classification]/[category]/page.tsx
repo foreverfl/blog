@@ -16,12 +16,12 @@ export default async function Index({
   const frontMatters = await getAllPostFrontMatters(
     lan,
     classification,
-    category
+    category,
   );
 
   const jsonContents =
     classification === "trends" ? await getContentsStructure(category) : [];
-    
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full md:w-3/5">

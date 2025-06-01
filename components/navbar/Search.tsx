@@ -64,7 +64,7 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
             threshold: 0.1, // 퍼지 검색을 허용할 범위
           })
         : null, // posts가 없을 때는 null로 설정
-    [posts]
+    [posts],
   );
 
   // 디바운스된 검색 함수
@@ -85,7 +85,7 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
           setIsSearching(false);
         }
       }, 300), // 300ms 지연 후 검색 실행
-    [fuse]
+    [fuse],
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +97,7 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
   const getHighlightedText = (
     content: string,
     query: string,
-    snippetLength = 20
+    snippetLength = 20,
   ) => {
     const regex = new RegExp(query, "gi");
     const match = regex.exec(content);
@@ -106,13 +106,13 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
       const start = Math.max(0, match.index - snippetLength);
       const end = Math.min(
         content.length,
-        match.index + query.length + snippetLength
+        match.index + query.length + snippetLength,
       );
 
       const before = content.slice(start, match.index);
       const matchedText = content.slice(
         match.index,
-        match.index + query.length
+        match.index + query.length,
       );
       const after = content.slice(match.index + query.length, end);
 
@@ -167,12 +167,12 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
             {lan === "ko"
               ? "검색 결과가 없습니다."
               : lan === "ja"
-              ? "結果が見つかりません。"
-              : "No results found."}
+                ? "結果が見つかりません。"
+                : "No results found."}
           </div>
         ) : null}
       </div>,
-      document.body // Portal을 사용하여 body 아래에 렌더링
+      document.body, // Portal을 사용하여 body 아래에 렌더링
     );
   };
 

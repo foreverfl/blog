@@ -1,24 +1,24 @@
-import { getDocument, GlobalWorkerOptions  } from "pdfjs-dist";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
 GlobalWorkerOptions.workerSrc = path.join(
   process.cwd(),
-  'node_modules/pdfjs-dist/build/pdf.worker.mjs'
+  "node_modules/pdfjs-dist/build/pdf.worker.mjs",
 );
 
 const workerPath = path.join(
   process.cwd(),
-  'node_modules/pdfjs-dist/build/pdf.worker.mjs'
+  "node_modules/pdfjs-dist/build/pdf.worker.mjs",
 );
 
 async function checkWorkerPath() {
   try {
     await fs.access(workerPath);
-    console.log('📄 pdf.worker.mjs 파일이 존재합니다!');
+    console.log("📄 pdf.worker.mjs 파일이 존재합니다!");
   } catch (err) {
-    console.error('❌ pdf.worker.mjs 파일을 찾을 수 없습니다:', err);
+    console.error("❌ pdf.worker.mjs 파일을 찾을 수 없습니다:", err);
   }
 }
 
@@ -69,14 +69,16 @@ export async function fetchPdfContent(url: string): Promise<string | null> {
   }
 }
 
-export async function fetchPdfContentLocal(filePath: string): Promise<string | null> {
+export async function fetchPdfContentLocal(
+  filePath: string,
+): Promise<string | null> {
   try {
     const buffer = await fs.readFile(filePath);
     console.log(`✅ PDF loaded from ${filePath}`);
 
     const arrayBuffer: ArrayBuffer = (buffer.buffer as ArrayBuffer).slice(
       buffer.byteOffset,
-      buffer.byteOffset + buffer.byteLength
+      buffer.byteOffset + buffer.byteLength,
     );
 
     const text = await parsePdfBuffer(arrayBuffer);

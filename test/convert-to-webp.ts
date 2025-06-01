@@ -5,7 +5,10 @@ import sharp from "sharp";
 const DELETE_ORIGINAL = true;
 
 (async () => {
-  const targetDir = path.join(process.cwd(), "public/images/00images/documentation/translation-notes/");
+  const targetDir = path.join(
+    process.cwd(),
+    "public/images/00images/documentation/translation-notes/",
+  );
   const files = fs.readdirSync(targetDir);
 
   const imageFiles = files.filter((file) => {
@@ -24,9 +27,7 @@ const DELETE_ORIGINAL = true;
     const outputPath = path.join(targetDir, `${fileNameWithoutExt}.webp`);
 
     try {
-      await sharp(filePath)
-        .webp({ quality: 90 })
-        .toFile(outputPath);
+      await sharp(filePath).webp({ quality: 90 }).toFile(outputPath);
 
       if (DELETE_ORIGINAL) {
         fs.unlinkSync(filePath);

@@ -128,30 +128,30 @@ const handleSubmit = async (event: React.FormEvent) => {
       content_ko,
       content_ja,
       images,
-      representativeImage
+      representativeImage,
     );
 
     // R2 내부에서 이미지 파일명 변경
     const newImageUrls = await renameAndOverwriteFiles(
       images,
       "tmp",
-      insertedId
+      insertedId,
     );
 
     // 대표 이미지 파일명 변경
     const newRepresentativeImageUrl = representativeImage.replace(
       /(https:\/\/blog_workers\.forever-fl\.workers\.dev\/)tmp_/,
-      `$1${insertedId}_`
+      `$1${insertedId}_`,
     );
 
     // 콘텐츠 내의 모든 'tmp' URL을 'insertedId'로 대체
     const updatedContentKo = content_ko.replace(
       /https:\/\/blog_workers\.forever-fl\.workers\.dev\/tmp/g,
-      `https://blog_workers.forever-fl.workers.dev/${insertedId}`
+      `https://blog_workers.forever-fl.workers.dev/${insertedId}`,
     );
     const updatedContentJa = content_ja.replace(
       /https:\/\/blog_workers\.forever-fl\.workers\.dev\/tmp/g,
-      `https://blog_workers.forever-fl.workers.dev/${insertedId}`
+      `https://blog_workers.forever-fl.workers.dev/${insertedId}`,
     );
 
     // DB 업데이트
@@ -162,7 +162,7 @@ const handleSubmit = async (event: React.FormEvent) => {
       updatedContentKo,
       updatedContentJa,
       newImageUrls.imageUrls,
-      newRepresentativeImageUrl
+      newRepresentativeImageUrl,
     );
 
     // 불필요한 이미지 제거
@@ -199,7 +199,7 @@ const handleSubmit = async (event: React.FormEvent) => {
 ```typescript
 export async function GET(
   req: NextRequest,
-  { params }: { params: { categoryId: string; page: string } }
+  { params }: { params: { categoryId: string; page: string } },
 ) {
   const categoryId = params.categoryId;
   const pageNumber = parseInt(params.page, 10);
@@ -210,7 +210,7 @@ export async function GET(
     const { posts, total } = await getPostsByCategory(
       categoryId,
       pageNumber,
-      itemsPerPage
+      itemsPerPage,
     );
 
     // 응답 데이터 생성

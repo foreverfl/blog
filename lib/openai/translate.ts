@@ -6,7 +6,7 @@ dotenv.config({ path: "./.env.local" });
 export async function translate(
   text: string,
   lan: "ja" | "ko",
-  mode: "title" | "content" = "content"
+  mode: "title" | "content" = "content",
 ): Promise<string> {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,

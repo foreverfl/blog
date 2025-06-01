@@ -1,7 +1,7 @@
 import { getFromR2 } from "@/lib/cloudflare/r2";
 
 export async function getContentsStructure(
-  bucket: string
+  bucket: string,
 ): Promise<{ folder: string; dates: string[] }[]> {
   if (!bucket || bucket === "null") {
     throw new Error("❌ Bucket name is invalid or null");
@@ -12,7 +12,7 @@ export async function getContentsStructure(
 
   if (!res.ok) {
     throw new Error(
-      `❌ Failed to list R2 contents from bucket "${bucket}": ${res.statusText}`
+      `❌ Failed to list R2 contents from bucket "${bucket}": ${res.statusText}`,
     );
   }
 

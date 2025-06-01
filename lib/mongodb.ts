@@ -61,7 +61,7 @@ export async function upsertUser(userData: any) {
   const result = await usersCollection.updateOne(
     { email: userData.email },
     { $set: userData },
-    { upsert: true }
+    { upsert: true },
   );
 
   return result;
@@ -113,7 +113,7 @@ export async function addLikeToPost(pathHash: string, userEmail: string) {
     { pathHash },
     {
       $addToSet: { likes: userEmail }, // likes 배열에 사용자 이메일 추가, 중복 방지
-    }
+    },
   );
   return result;
 }
@@ -126,7 +126,7 @@ export async function removeLikeFromPost(pathHash: string, userEmail: string) {
     { pathHash },
     {
       $pull: { likes: { $eq: userEmail } }, // $eq 사용하여 조건 지정
-    }
+    },
   );
   return result;
 }
@@ -137,7 +137,7 @@ export async function getLikeCountForPost(pathHash: string) {
 
   const post = await postsCollection.findOne(
     { pathHash },
-    { projection: { likes: 1 } } // likes 필드만 가져오기
+    { projection: { likes: 1 } }, // likes 필드만 가져오기
   );
 
   return post?.likes.length || 0; // likes 배열의 길이를 반환
@@ -149,7 +149,7 @@ export async function checkLikeStatus(pathHash: string, userEmail: string) {
 
   const post = await postsCollection.findOne(
     { pathHash, likes: userEmail }, // 해당 게시글의 likes 배열에 사용자가 있는지 확인
-    { projection: { likes: 1 } }
+    { projection: { likes: 1 } },
   );
 
   return post ? true : false; // 사용자가 이미 좋아요를 눌렀으면 true, 아니면 false 반환
@@ -175,7 +175,7 @@ export async function addUserCommentToPost(pathHash: string, commentData: any) {
     { pathHash },
     {
       $push: { comments: comment },
-    }
+    },
   );
   return result;
 }
@@ -183,7 +183,7 @@ export async function addUserCommentToPost(pathHash: string, commentData: any) {
 export async function updateUserComment(
   pathHash: string,
   commentId: string,
-  newComment: string
+  newComment: string,
 ) {
   const db = await connectDB();
   const postsCollection = db.collection<Post>("posts");
@@ -192,7 +192,7 @@ export async function updateUserComment(
     { pathHash, "comments._id": new ObjectId(commentId) },
     {
       $set: { "comments.$.comment": newComment },
-    }
+    },
   );
   return result;
 }
@@ -200,7 +200,7 @@ export async function updateUserComment(
 export async function deleteComment(
   pathHash: string,
   commentId: string,
-  userEmail: string
+  userEmail: string,
 ) {
   const db = await connectDB();
   const postsCollection = db.collection<Post>("posts");
@@ -209,7 +209,7 @@ export async function deleteComment(
     { pathHash },
     {
       $pull: { comments: { _id: new ObjectId(commentId), userEmail } },
-    }
+    },
   );
   return result;
 }
@@ -220,7 +220,7 @@ export async function getCommentsForPost(pathHash: string) {
 
   const post = await postsCollection.findOne(
     { pathHash },
-    { projection: { comments: 1 } }
+    { projection: { comments: 1 } },
   );
 
   return post?.comments || [];
@@ -230,7 +230,7 @@ export async function getCommentsForPost(pathHash: string) {
 export async function upsertAdminComment(
   pathHash: string,
   commentId: string,
-  adminComment: string
+  adminComment: string,
 ) {
   const db = await connectDB();
   const postsCollection = db.collection<Post>("posts");
@@ -245,7 +245,7 @@ export async function upsertAdminComment(
     },
     {
       upsert: false,
-    }
+    },
   );
 
   return result;
@@ -262,7 +262,7 @@ export async function deleteAdminComment(pathHash: string, commentId: string) {
         "comments.$.adminComment": "",
         "comments.$.adminCreatedAt": null,
       },
-    }
+    },
   );
   return result;
 }

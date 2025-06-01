@@ -3,7 +3,9 @@ import { fetchPdfContent } from "../lib/hackernews/fetchPdfContent";
 (async () => {
   const startTime = performance.now(); // 시작 시간 기록
 
-  const result = await fetchPdfContent("https://www.ma.imperial.ac.uk/~dturaev/Mathematical_Methods2021.pdf");
+  const result = await fetchPdfContent(
+    "https://www.ma.imperial.ac.uk/~dturaev/Mathematical_Methods2021.pdf",
+  );
 
   const endTime = performance.now(); // 끝 시간 기록
   const duration = (endTime - startTime) / 1000; // 걸린 시간(초 단위)

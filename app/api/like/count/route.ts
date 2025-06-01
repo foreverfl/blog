@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   if (!pathHash) {
     return NextResponse.json(
       { error: "pathHash is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     console.error("Error getting like count:", error);
     return NextResponse.json(
       { error: "Failed to get like count" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

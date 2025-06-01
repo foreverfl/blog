@@ -14,7 +14,9 @@ export async function fetchEconomistContent(url: string) {
   await page.goto(url, { waitUntil: "networkidle" });
 
   const content = await page.evaluate(() => {
-    const paragraphs = document.querySelectorAll('p[data-component="paragraph"]');
+    const paragraphs = document.querySelectorAll(
+      'p[data-component="paragraph"]',
+    );
     return Array.from(paragraphs)
       .map((p) => p.textContent?.trim() || "")
       .join("\n\n");

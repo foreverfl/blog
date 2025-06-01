@@ -50,7 +50,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
 
   const currentPosts = items.slice(
     (currentPage - 1) * postsPerPage,
-    currentPage * postsPerPage
+    currentPage * postsPerPage,
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
             date,
             imageUrl: exists ? url : "/images/placeholder.png",
           };
-        })
+        }),
       );
 
       const resolvedItems = await Promise.all(promises);

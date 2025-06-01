@@ -13,7 +13,7 @@ import path from "path";
       "signaling left, changing lanes", // action (깜빡이 켜고 차선 변경)
       "outdoor", // indoorOutdoor
       "Japanese highway interchange with traffic jam, other cars making way like the Red Sea", // background
-      "day" // timeOfDay
+      "day", // timeOfDay
     );
     console.log("✅ Image URL:", imageUrl);
 

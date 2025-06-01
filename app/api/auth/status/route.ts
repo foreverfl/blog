@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     // JWT 토큰 검증
     const decoded = jwt.verify(
       authCookie.value,
-      process.env.JWT_SECRET!
+      process.env.JWT_SECRET!,
     ) as jwt.JwtPayload;
 
     // 검증이 성공하면 사용자 정보 반환
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
   } catch (error) {
     const errorMessage =

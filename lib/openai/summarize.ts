@@ -8,11 +8,11 @@ export async function summarize(text: string): Promise<string> {
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    
+
     // Get the prompt file from the server
     const siteUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const res = await fetch(`${siteUrl}/prompts/summary.md`);
-    
+
     if (!res.ok) throw new Error("Prompt file fetch failed");
     const prompt = await res.text();
 

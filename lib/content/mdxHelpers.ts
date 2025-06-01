@@ -22,7 +22,7 @@ interface MdxFileData {
 // 재귀적으로 폴더를 탐색하며 .mdx 파일 찾기
 async function getFilesRecursively(
   dir: string,
-  lan: string
+  lan: string,
 ): Promise<string[]> {
   if (dir.includes("/trends")) {
     return [];
@@ -60,14 +60,14 @@ async function getFilesRecursively(
 export async function getAllPostFrontMatters(
   lan?: string,
   classification?: string,
-  category?: string
+  category?: string,
 ): Promise<FrontMatter[]> {
   let contentDirectory = path.join(process.cwd(), `contents`);
 
   if (classification && category) {
     contentDirectory = path.join(
       process.cwd(),
-      `contents/${classification}/${category}`
+      `contents/${classification}/${category}`,
     );
   }
 
@@ -101,13 +101,13 @@ export async function getPostFrontMatter(
   lan: string,
   classification: string,
   category: string,
-  slug: string
+  slug: string,
 ): Promise<FrontMatter | null> {
   try {
     // 파일 경로 설정
     const filePath = path.join(
       process.cwd(),
-      `contents/${classification}/${category}/${slug}.mdx`
+      `contents/${classification}/${category}/${slug}.mdx`,
     );
 
     // 파일 존재 여부 확인
@@ -143,12 +143,12 @@ export function getMdxFileContent(
   lan: string,
   classification: string,
   category: string,
-  slug: string
+  slug: string,
 ) {
   const contentDir = path.resolve(process.cwd(), "contents");
   const filePath = path.resolve(
     contentDir,
-    `${classification}/${category}/${slug}.mdx`
+    `${classification}/${category}/${slug}.mdx`,
   );
   const fileContent = fs.readFileSync(filePath, "utf8");
   return fileContent;
@@ -178,7 +178,7 @@ export async function compileMdxContent(fileContent: string) {
 export async function getAllMdxFilesWithFrontMatter(
   lan?: string,
   classification?: string,
-  category?: string
+  category?: string,
 ): Promise<MdxFileData[]> {
   if (classification === "trends") {
     return []; // trends면 아무것도 반환하지 않음
@@ -190,7 +190,7 @@ export async function getAllMdxFilesWithFrontMatter(
   if (classification && category) {
     contentDirectory = path.join(
       process.cwd(),
-      `contents/${classification}/${category}-${lan}`
+      `contents/${classification}/${category}-${lan}`,
     );
   }
 
@@ -213,7 +213,7 @@ export async function getAllMdxFilesWithFrontMatter(
 
     const contentWithoutFrontmatter = fileContent.replace(
       /^---[\s\S]*?---\s*\n/,
-      ""
+      "",
     );
     const plainTextContent = removeMarkdown(contentWithoutFrontmatter);
 

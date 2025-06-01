@@ -30,13 +30,13 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
   const sortedPosts = [...posts].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
   // Get current posts
   const currentPosts = sortedPosts.slice(
     (currentPage - 1) * postsPerPage,
-    currentPage * postsPerPage
+    currentPage * postsPerPage,
   );
 
   // Handle page change
@@ -74,9 +74,7 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
                 ></div>
                 <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
                   <div className="text-center w-full">
-                    <p className="text-sm dark:text-neutral-300">
-                      {post.date}
-                    </p>
+                    <p className="text-sm dark:text-neutral-300">{post.date}</p>
                     <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
                       {post.title}
                     </h3>

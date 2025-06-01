@@ -16,7 +16,7 @@ type CategoryGroup = {
 };
 
 async function createCategoryEntries(
-  languages: string[]
+  languages: string[],
 ): Promise<MetadataRoute.Sitemap> {
   const filePath = path.join(process.cwd(), "public/category.json");
   const jsonData = await fs.readFile(filePath, "utf-8");
@@ -40,7 +40,7 @@ async function createCategoryEntries(
 }
 
 async function createPostEntries(
-  languages: string[]
+  languages: string[],
 ): Promise<MetadataRoute.Sitemap> {
   const contentDir = path.join(process.cwd(), "contents");
   const entries: MetadataRoute.Sitemap = [];
@@ -79,7 +79,7 @@ async function createPostEntries(
 }
 
 async function createHackernewsEntries(
-  languages: string[]
+  languages: string[],
 ): Promise<MetadataRoute.Sitemap> {
   const url = "https://blog_workers.forever-fl.workers.dev/hackernews";
   const lastMod = new Date().toISOString();

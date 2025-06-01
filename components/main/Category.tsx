@@ -48,7 +48,7 @@ const Category: React.FC<Props> = ({ posts }) => {
   // Get current posts
   const currentPosts = posts.slice(
     (currentPage - 1) * postsPerPage,
-    currentPage * postsPerPage
+    currentPage * postsPerPage,
   );
 
   // Handle page change
@@ -67,17 +67,17 @@ const Category: React.FC<Props> = ({ posts }) => {
 
         // classification과 category가 일치하는 항목을 찾음
         const foundClassification = data.find(
-          (classification) => classification.link === classificationLink
+          (classification) => classification.link === classificationLink,
         );
 
         if (foundClassification) {
           const foundCategory = foundClassification.categories.find(
-            (category) => category.link === categoryLink
+            (category) => category.link === categoryLink,
           );
 
           if (foundCategory) {
             setCategoryName(
-              lan === "ko" ? foundCategory.name_ko : foundCategory.name_ja
+              lan === "ko" ? foundCategory.name_ko : foundCategory.name_ja,
             );
           }
         }
@@ -117,9 +117,7 @@ const Category: React.FC<Props> = ({ posts }) => {
                 ></div>
                 <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
                   <div className="text-center w-full">
-                    <p className="text-sm dark:text-neutral-300">
-                      {post.date}
-                    </p>
+                    <p className="text-sm dark:text-neutral-300">{post.date}</p>
                     <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
                       {post.title}
                     </h3>

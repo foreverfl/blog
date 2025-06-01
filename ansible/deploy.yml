@@ -13,7 +13,7 @@
       shell: |
         cd /home/ubuntu/app/blog
         docker build --no-cache -t blog . | tee /tmp/docker-build.log
-    
+
     - name: Show docker build log
       shell: cat /tmp/docker-build.log
       register: docker_build_log

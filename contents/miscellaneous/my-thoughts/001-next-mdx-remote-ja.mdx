@@ -111,11 +111,11 @@ export function getMdxFileContent(
   lan: string,
   classification: string,
   category: string,
-  slug: string
+  slug: string,
 ) {
   const filePath = path.join(
     process.cwd(),
-    `contents/${lan}/${classification}/${category}/${slug}.mdx`
+    `contents/${lan}/${classification}/${category}/${slug}.mdx`,
   );
 
   const fileContent = fs.readFileSync(filePath, "utf8");
