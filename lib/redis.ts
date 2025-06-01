@@ -15,6 +15,7 @@ function createRedisConnection() {
       lazyConnect: true,
       maxRetriesPerRequest: 1,
       connectTimeout: 3000,
+      retryStrategy: () => null,
     });
 
     redis.on("error", (err) => {
