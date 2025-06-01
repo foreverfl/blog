@@ -27,7 +27,15 @@ jobs:
 
       - name: Rsync source code to EC2
         run: |
+          echo "==== [Step 1] 현재 위치 : $(pwd) ===="
+          ls -al
+          echo "==== [Step 2] blog 디렉토리로 이동 ===="
+          cd blog
+          echo "==== [Step 3] 복사 전 blog 내부 파일 목록 ===="
+          ls -al
+          echo "==== [Step 4] Rsync 실행 ===="
           rsync -avz --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='.env' -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/app/blog
+          echo "==== [Step 5] Rsync 완료 ===="
 
       - name: Deploy with Ansible
         uses: dawidd6/action-ansible-playbook@v2
