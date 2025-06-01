@@ -64,19 +64,19 @@ jobs:
  
       - name: Summarize HackerNews content
         run: |
-          curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
+          curl -v -X POST https://mogumogu.dev/api/hackernews/summarize/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
       - name: Translate HackerNews to Korean
         run: |
-          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
+          curl -v -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
       - name: Translate HackerNews to Japanese
         run: |
-          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
+          curl -v -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
