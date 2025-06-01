@@ -32,9 +32,10 @@ export function middleware(request) {
     }
 
     // when first path is not a locale
-    const newPath = `/${defaultLocale}${pathname === '/' ? '' : restPath}`;
+    const userLocale = getLocale(request);
+    const newPath = `/${userLocale}${pathname === '/' ? '' : restPath}`;
     const response = NextResponse.redirect(new URL(newPath, request.url));
-    response.cookies.set('lan', defaultLocale, {
+    response.cookies.set('lan', userLocale, {
         path: '/',
         maxAge: 60 * 60 * 24 * 30,
     });
