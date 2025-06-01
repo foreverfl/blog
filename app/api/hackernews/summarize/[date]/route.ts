@@ -4,7 +4,7 @@ import { getTodayKST } from "@/lib/date";
 import { logMessage } from "@/lib/logger";
 import { summarize } from "@/lib/openai/summarize";
 import { summarizeQueue } from "@/lib/queue";
-import { getRedis } from "@/lib/redis";
+import { clearRedis, getRedis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -31,6 +31,7 @@ export async function POST(
   try {
     await redis.ping();
   } catch (err) {
+    clearRedis();
     logMessage("❌ Redis ping failed: " + err);
     return NextResponse.json({ ok: false, error: "Redis connection failed" });
   }

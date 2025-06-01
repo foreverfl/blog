@@ -30,5 +30,20 @@ function createRedisConnection() {
 }
 
 export function getRedis() {
+  if (redis) {
+    if (redis.status !== "ready") {
+      return null;
+    }
+    return redis;
+  }
+
   return createRedisConnection();
+}
+
+export function clearRedis() {
+  if (redis) {
+    redis.disconnect();
+    redis = null;
+    redisConnectionAttempted = false;
+  }
 }
