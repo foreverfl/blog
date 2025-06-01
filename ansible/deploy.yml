@@ -6,18 +6,13 @@
         path: /home/ubuntu/app/blog
         state: directory
 
-    - name: Remove old build artifacts before Docker build
-      shell: |
-        cd /home/ubuntu/app/blog
-        rm -rf .next dist build out
-
     - name: Copy .env.prod to .env
       shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
 
     - name: Build Docker image
       shell: |
         cd /home/ubuntu/app/blog
-        docker build -t blog . | tee /tmp/docker-build.log
+        docker build --no-cache -t blog . | tee /tmp/docker-build.log
     
     - name: Show docker build log
       shell: cat /tmp/docker-build.log
