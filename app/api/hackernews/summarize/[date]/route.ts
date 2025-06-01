@@ -28,6 +28,13 @@ export async function POST(
   const redis = getRedis();
   if (!redis) return NextResponse.json({ ok: false, error: "No Redis" });
 
+  try {
+    await redis.ping();
+  } catch (err) {
+    logMessage("❌ Redis ping failed: " + err);
+    return NextResponse.json({ ok: false, error: "Redis connection failed" });
+  }
+
   const toSummarize = data.filter(
     (item: any) => item.content && (!item.summary || !item.summary.en),
   );
