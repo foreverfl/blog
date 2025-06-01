@@ -1,4 +1,4 @@
-name: HackerNews Daily Workflow
+name: Process HackerNews
 
 on:
   schedule:
