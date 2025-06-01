@@ -7,11 +7,22 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies and format code
+        run: |
+          npm ci
+          npx prettier --write .
+          npx eslint . --fix --ext .js,.ts,.tsx || true
 
       - name: Create SSH key file
         run: |

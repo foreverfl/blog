@@ -9,10 +9,21 @@
     - name: Copy .env.prod to .env
       shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
 
-    - name: Build Docker image
+    - name: Stop existing container
+      shell: docker rm -f blog || true
+
+    - name: Remove old blog images (keep latest 2)
+      shell: |
+        docker images blog --format "table {{.ID}}" | tail -n +2 | tail -n +3 | xargs -r docker rmi -f || true
+
+    - name: Clean up dangling images
+      shell: docker image prune -f
+
+    - name: Build Docker image with timestamp tag
       shell: |
         cd /home/ubuntu/app/blog
-        docker build --no-cache -t blog . | tee /tmp/docker-build.log
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        docker build -t blog:$TIMESTAMP -t blog:latest . | tee /tmp/docker-build.log
 
     - name: Show docker build log
       shell: cat /tmp/docker-build.log
@@ -21,9 +32,6 @@
     - debug:
         var: docker_build_log.stdout_lines
 
-    - name: Stop existing container
-      shell: docker rm -f blog || true
-
     - name: Run new container
       shell: |
         docker run -d \
@@ -31,4 +39,4 @@
           --restart always \
           -p 3000:3000 \
           -v /home/ubuntu/app/blog/.env:/app/.env \
-          blog
+          blog:latest
