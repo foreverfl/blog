@@ -14,7 +14,7 @@
 
     - name: Remove old blog images (keep latest 2)
       shell: |
-        docker images blog --format "table {{.ID}}" | tail -n +2 | tail -n +3 | xargs -r docker rmi -f || true
+        docker images blog -q | tail -n +3 | xargs -r docker rmi -f || true
 
     - name: Clean up dangling images
       shell: docker image prune -f
