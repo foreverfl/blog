@@ -1,7 +1,7 @@
 import Category from "@/components/main/Category";
 import CategoryTrends from "@/components/main/CategoryTrends";
-import { getContentsStructure } from "@/lib/jsonHelpers";
-import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
+import { getContentsStructure } from "@/lib/content/jsonHelpers";
+import { getAllPostFrontMatters } from "@/lib/content/mdxHelpers";
 import { cookies } from "next/headers";
 
 export default async function Index({

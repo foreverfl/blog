@@ -1,8 +1,8 @@
 import Comment from "@/components/main/Comment";
 import Good from "@/components/main/Good";
 import Article from "@/components/organism/Article";
-import { getContents } from "@/lib/jsonHelpers";
-import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
+import { getContents } from "@/lib/content/jsonHelpers";
+import { compileMdxContent, getMdxFileContent } from "@/lib/content/mdxHelpers";
 import "github-markdown-css";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";

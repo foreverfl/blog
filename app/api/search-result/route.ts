@@ -1,5 +1,5 @@
-import { getContents, getContentsStructure } from "@/lib/jsonHelpers";
-import { getAllMdxFilesWithFrontMatter } from "@/lib/mdxHelpers";
+import { getContents, getContentsStructure } from "@/lib/content/jsonHelpers";
+import { getAllMdxFilesWithFrontMatter } from "@/lib/content/mdxHelpers";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

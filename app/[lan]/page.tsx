@@ -1,6 +1,6 @@
 import React from "react";
 import AllCategory from "@/components/main/AllCategory";
-import { getAllPostFrontMatters } from "@/lib/mdxHelpers";
+import { getAllPostFrontMatters } from "@/lib/content/mdxHelpers";
 import { cookies } from "next/headers";
 
 export default async function Index() {

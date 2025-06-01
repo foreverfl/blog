@@ -1,4 +1,4 @@
-import { getPostFrontMatter } from "@/lib/mdxHelpers";
+import { getPostFrontMatter } from "@/lib/content/mdxHelpers";
 import { NextResponse } from "next/server";
 import { parse, format } from "date-fns";
 
@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   if (!lan || !classification || !category || !slug) {
     return NextResponse.json(
       { error: "Missing required query parameters" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -46,7 +46,7 @@ export async function GET(req: Request) {
     } catch (error) {
       return NextResponse.json(
         { error: "Trend data not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
   } else {
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       lan,
       classification,
       category,
-      slug
+      slug,
     );
 
     // 메타데이터 반환 또는 404 처리
