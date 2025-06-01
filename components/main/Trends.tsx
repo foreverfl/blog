@@ -4,6 +4,7 @@ import { Copy } from "@geist-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 
 type TrendItem = {
@@ -65,8 +66,13 @@ export default function Trends({ items }: { items: TrendItem[] }) {
     sortBy === "score" ? [...items].sort((a, b) => b.score - a.score) : items;
 
   const handleCopy = (text: string) => {
+    if (typeof navigator.clipboard === "undefined") {
+      alert("이 환경에서는 클립보드 복사가 지원되지 않습니다.");
+      return;
+    }
+
     navigator.clipboard.writeText(text).then(() => {
-      const id = uuidv4(); // ✅ string 타입
+      const id = uuidv4();
       setCopiedList((prev) => [...prev, id]);
       setTimeout(() => {
         setCopiedList((prev) => prev.filter((item) => item !== id));
@@ -124,13 +130,15 @@ export default function Trends({ items }: { items: TrendItem[] }) {
             </h2>
 
             <div className="mt-2 text-neutral-700 dark:text-neutral-400">
+              <ReactMarkdown>
               {item.summary[lan as "en" | "ja" | "ko"] || localeLabel.noSummary}
+              </ReactMarkdown>
             </div>
 
             <div className="mt-5 text-sm text-neutral-400 flex justify-between items-center">
               <button
                 onClick={() =>
-                  handleCopy(item.summary[lan] || localeLabel.noSummary)
+                  handleCopy(item.summary[lan] ?? localeLabel.noSummary)
                 }
                 className="text-neutral-400 hover:text-white transition-colors"
               >
