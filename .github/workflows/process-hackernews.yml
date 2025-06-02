@@ -77,11 +77,41 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
+      - name: Wait for Fetch to finish (with threshold)
+        run: |
+          THRESHOLD=30
+          for i in {1..60}; do
+            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+            echo "$COUNTS_JSON"
+            nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
+            if [ "$nullContentCount" -le "$THRESHOLD" ]; then
+              echo "Fetching done with $nullContentCount left (threshold=$THRESHOLD)"
+              break
+            fi
+            echo "Waiting fetch... ($i/60) (nullContentCount=$nullContentCount)"
+            sleep 10
+          done
+
       - name: Summarize HackerNews content
         run: |
           curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+
+      - name: Wait for Summarize to finish
+        run: |
+          for i in {1..60}; do
+            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+            echo "$COUNTS_JSON"
+            nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
+            nullSummaryEnCount=$(echo $COUNTS_JSON | jq '.counts.nullSummaryEnCount')
+            if [ "$nullSummaryEnCount" -eq "$nullContentCount" ]; then
+              echo "Summarization complete! (nullSummaryEnCount == nullContentCount == $nullContentCount)"
+              break
+            fi
+            echo "Waiting summarize... ($i/60) (nullSummaryEnCount=$nullSummaryEnCount, nullContentCount=$nullContentCount)"
+            sleep 10
+          done
 
       - name: Translate HackerNews to Korean
         run: |
@@ -89,11 +119,41 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
+      - name: Wait for KO Translate to finish
+        run: |
+          for i in {1..60}; do
+            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+            echo "$COUNTS_JSON"
+            nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
+            nullSummaryKoCount=$(echo $COUNTS_JSON | jq '.counts.nullSummaryKoCount')
+            if [ "$nullSummaryKoCount" -eq "$nullContentCount" ]; then
+              echo "Korean translation complete! (nullSummaryKoCount == nullContentCount == $nullContentCount)"
+              break
+            fi
+            echo "Waiting ko translation... ($i/60) (nullSummaryKoCount=$nullSummaryKoCount, nullContentCount=$nullContentCount)"
+            sleep 10
+          done
+
       - name: Translate HackerNews to Japanese
         run: |
           curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+
+      - name: Wait for JA Translate to finish
+        run: |
+          for i in {1..60}; do
+            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+            echo "$COUNTS_JSON"
+            nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
+            nullSummaryJaCount=$(echo $COUNTS_JSON | jq '.counts.nullSummaryJaCount')
+            if [ "$nullSummaryJaCount" -eq "$nullContentCount" ]; then
+              echo "Japanese translation complete! (nullSummaryJaCount == nullContentCount == $nullContentCount)"
+              break
+            fi
+            echo "Waiting ja translation... ($i/60) (nullSummaryJaCount=$nullSummaryJaCount, nullContentCount=$nullContentCount)"
+            sleep 10
+          done            
 
       - name: 🎨 Generate HackerNews image
         run: |
