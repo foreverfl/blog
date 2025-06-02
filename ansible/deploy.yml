@@ -24,13 +24,12 @@
         cd /home/ubuntu/app/blog
         TIMESTAMP=$(date +%Y%m%d_%H%M%S)
         docker build --no-cache -t blog:$TIMESTAMP . | tee /tmp/docker-build.log
+        echo $TIMESTAMP
+      register: build_output
 
-    - name: Show docker build log
-      shell: cat /tmp/docker-build.log
-      register: docker_build_log
-
-    - debug:
-        var: docker_build_log.stdout_lines
+    - name: Parse TIMESTAMP from build_output
+      set_fact:
+        blog_timestamp: "{{ build_output.stdout_lines[-1] }}"
 
     - name: Run new container
       shell: |
@@ -39,4 +38,4 @@
           --restart always \
           -p 3000:3000 \
           -v /home/ubuntu/app/blog/.env:/app/.env \
-          blog:$TIMESTAMP
+          blog:{{ blog_timestamp }}
