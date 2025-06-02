@@ -100,7 +100,8 @@ jobs:
         run: |
           THRESHOLD=40
           for i in {1..60}; do
-            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+           COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
             echo "$COUNTS_JSON"
             nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
             if [ "$nullContentCount" -le "$THRESHOLD" ]; then
@@ -120,7 +121,8 @@ jobs:
       - name: Wait for Summarize to finish
         run: |
           for i in {1..60}; do
-            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
             echo "$COUNTS_JSON"
             nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
             nullSummaryEnCount=$(echo $COUNTS_JSON | jq '.counts.nullSummaryEnCount')
@@ -141,7 +143,8 @@ jobs:
       - name: Wait for KO Translate to finish
         run: |
           for i in {1..60}; do
-            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+           COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
             echo "$COUNTS_JSON"
             nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
             nullSummaryKoCount=$(echo $COUNTS_JSON | jq '.counts.nullSummaryKoCount')
@@ -162,7 +165,8 @@ jobs:
       - name: Wait for JA Translate to finish
         run: |
           for i in {1..60}; do
-            COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
+           COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
             echo "$COUNTS_JSON"
             nullContentCount=$(echo $COUNTS_JSON | jq '.counts.nullContentCount')
             nullSummaryJaCount=$(echo $COUNTS_JSON | jq '.counts.nullSummaryJaCount')
