@@ -3,7 +3,7 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - main
+      - not-deployment
 
 jobs:
   deploy:
@@ -38,11 +38,7 @@ jobs:
 
       - name: Rsync source code to EC2
         run: |
-          echo "==== [Step 1] 현재 위치 : $(pwd) ===="
-          ls -al
-          echo "==== [Step 2] Rsync 실행 ===="
           rsync -avz --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='.env' -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/app/blog
-          echo "==== [Step 3] Rsync 완료 ===="
 
       - name: Deploy with Ansible
         uses: dawidd6/action-ansible-playbook@v2

@@ -48,6 +48,22 @@ jobs:
       - name: Print Redis env (for debugging)
         run: echo "REDIS_HOST=$REDIS_HOST, REDIS_PORT=$REDIS_PORT"
 
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/ci-key.pem
+          chmod 600 /tmp/ci-key.pem
+
+      - name: Deploy with Redis IP using Ansible
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: ansible/deploy-with-redis.yml
+          directory: .
+          inventory: |
+            [web]
+            ec2-instance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
+        env:
+          REDIS_IP: ${{ env.REDIS_IP }}
+
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
@@ -64,19 +80,19 @@ jobs:
 
       - name: Summarize HackerNews content
         run: |
-          curl -v -X POST https://mogumogu.dev/api/hackernews/summarize/ \
+          curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
       - name: Translate HackerNews to Korean
         run: |
-          curl -v -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
+          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
       - name: Translate HackerNews to Japanese
         run: |
-          curl -v -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
+          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
@@ -85,8 +101,7 @@ jobs:
           TODAY=$(date -d '9 hours' +'%y%m%d')
           curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY" \
-            -d '{"webhookUrl": "http://mogumogu.dev/api/hackernews/webhook/draw"}'
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
       - name: ✅ Final message
         run: echo "All HackerNews tasks completed successfully!"

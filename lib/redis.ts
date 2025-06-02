@@ -18,6 +18,8 @@ function createRedisConnection() {
       retryStrategy: () => null,
     });
 
+    console.log("REDIS_HOST:", process.env.REDIS_HOST);
+
     redis.on("error", (err) => {
       console.warn("Redis connection error (non-critical):", err.message);
     });

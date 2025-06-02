@@ -1,0 +1,52 @@
+- hosts: web
+  become: true
+  vars:
+    redis_ip: "{{ lookup('env', 'REDIS_IP') }}" 
+  tasks:
+    - name: Ensure app directory exists
+      file:
+        path: /home/ubuntu/app/blog
+        state: directory
+
+    - name: Copy .env.prod to .env
+      shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
+
+    - name: Update .env with Redis IP
+      shell: |
+        cd /home/ubuntu/app/blog
+        sed -i '/^REDIS_HOST=/d' .env
+        sed -i '/^REDIS_PORT=/d' .env
+        echo "REDIS_HOST={{ redis_ip }}" >> .env
+        echo "REDIS_PORT=6379" >> .env
+
+    - name: Stop existing container
+      shell: docker rm -f blog || true
+
+    - name: Remove old blog images (keep latest 2)
+      shell: |
+        docker images blog -q | tail -n +3 | xargs -r docker rmi -f || true
+
+    - name: Clean up dangling images
+      shell: docker image prune -f
+
+    - name: Build Docker image with timestamp tag
+      shell: |
+        cd /home/ubuntu/app/blog
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        docker build -t blog:$TIMESTAMP -t blog:latest . | tee /tmp/docker-build.log
+
+    - name: Show docker build log
+      shell: cat /tmp/docker-build.log
+      register: docker_build_log
+
+    - debug:
+        var: docker_build_log.stdout_lines
+
+    - name: Run new container
+      shell: |
+        docker run -d \
+          --name blog \
+          --restart always \
+          -p 3000:3000 \
+          -v /home/ubuntu/app/blog/.env:/app/.env \
+          blog:latest
