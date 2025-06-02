@@ -63,7 +63,7 @@
         var: container_result.stdout_lines
 
     - name: Get running container info
-      shell: docker ps --filter "name=blog" --format "{{.Image}}"
+      shell: docker ps --filter "name=blog" --format '{{ "{{.Image}}" }}'
       register: running_container_image
 
     - name: Verify container is using correct image
