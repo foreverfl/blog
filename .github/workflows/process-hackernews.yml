@@ -53,63 +53,73 @@ jobs:
           echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/ci-key.pem
           chmod 600 /tmp/ci-key.pem
 
-      - name: Deploy with Redis IP using Ansible
+      - name: Replace Redis value in .env.prod using Ansible
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: ansible/deploy-with-redis.yml
+          playbook: ansible/replace-env.yml
           directory: .
           inventory: |
             [web]
             ec2-instance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
         env:
-          REDIS_IP: ${{ env.REDIS_IP }}
+          REDIS_HOST: ${{ env.REDIS_HOST }}
+          REDIS_PORT: ${{ env.REDIS_PORT }}
 
-      - name: Use Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      # - name: Use Node.js 22
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "22"
 
-      - name: Install Node.js dependencies
-        run: npm install
+      # - name: Install Node.js dependencies
+      #   run: npm install
 
-      - name: Install Playwright
-        run: npx playwright install --with-deps
+      # - name: Install Playwright
+      #   run: npx playwright install --with-deps
 
-      - name: Fetch HackerNews data
-        run: ./scripts/fetch-hackernews-prod.sh
+      # - name: Fetch HackerNews contents list
+      #   run: |
+      #     curl -X POST https://mogumogu.dev/api/hackernews/ \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      - name: Summarize HackerNews content
-        run: |
-          curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      # - name: Fetch HackerNews contents
+      #   run: |
+      #     curl -X POST https://mogumogu.dev/api/hackernews/fetch/ \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      - name: Translate HackerNews to Korean
-        run: |
-          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      # - name: Summarize HackerNews content
+      #   run: |
+      #     curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      - name: Translate HackerNews to Japanese
-        run: |
-          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      # - name: Translate HackerNews to Korean
+      #   run: |
+      #     curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      - name: 🎨 Generate HackerNews image
-        run: |
-          TODAY=$(date -d '9 hours' +'%y%m%d')
-          curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      # - name: Translate HackerNews to Japanese
+      #   run: |
+      #     curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      - name: ✅ Final message
-        run: echo "All HackerNews tasks completed successfully!"
+      # - name: 🎨 Generate HackerNews image
+      #   run: |
+      #     TODAY=$(date -d '9 hours' +'%y%m%d')
+      #     curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      - name: Turn off Redis (Fargate)
-        if: always()
-        run: |
-          aws ecs update-service \
-            --cluster mogumogu \
-            --service mogumogu-service-dr9p94qm \
-            --desired-count 0
+      # - name: ✅ Final message
+      #   run: echo "All HackerNews tasks completed successfully!"
+
+      # - name: Turn off Redis (Fargate)
+      #   if: always()
+      #   run: |
+      #     aws ecs update-service \
+      #       --cluster mogumogu \
+      #       --service mogumogu-service-dr9p94qm \
+      #       --desired-count 0

@@ -1,0 +1,22 @@
+- hosts: web
+  become: true
+  vars:
+    redis_host: "{{ lookup('env', 'REDIS_HOST') }}"
+    redis_port: "{{ lookup('env', 'REDIS_PORT') }}"
+    env_path: "/home/ubuntu/app/blog/.env.prod"
+  tasks:
+    - name: Ensure REDIS_HOST is set to the new value
+      lineinfile:
+        path: "{{ env_path }}"
+        regexp: '^REDIS_HOST='
+        line: "REDIS_HOST={{ redis_host }}"
+        state: present
+        create: yes
+
+    - name: Ensure REDIS_PORT is set to the new value
+      lineinfile:
+        path: "{{ env_path }}"
+        regexp: '^REDIS_PORT='
+        line: "REDIS_PORT={{ redis_port }}"
+        state: present
+        create: yes
