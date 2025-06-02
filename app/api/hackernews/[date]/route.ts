@@ -1,6 +1,7 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
+import { logMessage } from "@/lib/logger";
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 
@@ -30,12 +31,12 @@ export async function GET(
     // Check if the data for the given date already exists in R2
     const existingData = await getFromR2({ bucket: "hackernews", key });
     if (existingData) {
-      console.log(`⏩ Skipping fetch: hackernews/${key} already exists in R2`);
+      logMessage(`⏩ Skipping fetch: hackernews/${key} already exists in R2`);
       return NextResponse.json(existingData);
     }
 
     // Fetch the list of top story IDs from Hacker News
-    console.log("🔄 Fetching new data from HackerNews API...");
+    logMessage("🔄 Fetching new data from HackerNews API...");
     const topStoriesRes = await fetch(`${HN_API_BASE}/topstories.json`);
     const topStoryIds: number[] = await topStoriesRes.json();
     const top100Stories = topStoryIds.slice(0, 100);
