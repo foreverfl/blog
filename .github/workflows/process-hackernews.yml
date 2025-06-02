@@ -65,61 +65,50 @@ jobs:
           REDIS_HOST: ${{ env.REDIS_HOST }}
           REDIS_PORT: ${{ env.REDIS_PORT }}
 
-      # - name: Use Node.js 22
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: "22"
+      - name: Fetch HackerNews contents list
+        run: |
+          curl -X POST https://mogumogu.dev/api/hackernews/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: Install Node.js dependencies
-      #   run: npm install
+      - name: Fetch HackerNews contents
+        run: |
+          curl -X POST https://mogumogu.dev/api/hackernews/fetch/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: Install Playwright
-      #   run: npx playwright install --with-deps
+      - name: Summarize HackerNews content
+        run: |
+          curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: Fetch HackerNews contents list
-      #   run: |
-      #     curl -X POST https://mogumogu.dev/api/hackernews/ \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      - name: Translate HackerNews to Korean
+        run: |
+          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: Fetch HackerNews contents
-      #   run: |
-      #     curl -X POST https://mogumogu.dev/api/hackernews/fetch/ \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      - name: Translate HackerNews to Japanese
+        run: |
+          curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: Summarize HackerNews content
-      #   run: |
-      #     curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      - name: 🎨 Generate HackerNews image
+        run: |
+          TODAY=$(date -d '9 hours' +'%y%m%d')
+          curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
 
-      # - name: Translate HackerNews to Korean
-      #   run: |
-      #     curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+      - name: ✅ Final message
+        run: echo "All HackerNews tasks completed successfully!"
 
-      # - name: Translate HackerNews to Japanese
-      #   run: |
-      #     curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
-
-      # - name: 🎨 Generate HackerNews image
-      #   run: |
-      #     TODAY=$(date -d '9 hours' +'%y%m%d')
-      #     curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
-      #       -H "Content-Type: application/json" \
-      #       -H "Authorization: Bearer $HACKERNEWS_API_KEY"
-
-      # - name: ✅ Final message
-      #   run: echo "All HackerNews tasks completed successfully!"
-
-      # - name: Turn off Redis (Fargate)
-      #   if: always()
-      #   run: |
-      #     aws ecs update-service \
-      #       --cluster mogumogu \
-      #       --service mogumogu-service-dr9p94qm \
-      #       --desired-count 0
+      - name: Turn off Redis (Fargate)
+        if: always()
+        run: |
+          aws ecs update-service \
+            --cluster mogumogu \
+            --service mogumogu-service-dr9p94qm \
+            --desired-count 0
