@@ -74,7 +74,7 @@
         success_msg: "✅ Container is running correct image: blog:{{ blog_timestamp }}"
 
     - name: Check container health
-      shell: docker ps --filter "name=blog" --format "{{.Status}}"
+      shell: docker ps --filter "name=blog" --format '{{ "{{.Status}}" }}'
       register: container_status
 
     - name: Verify container is running
@@ -96,10 +96,10 @@
     - name: Show final container and image info
       shell: |
         echo "=== RUNNING CONTAINERS ==="
-        docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+        docker ps --format 'table {{ "{{.Names}}" }}\t{{ "{{.Image}}" }}\t{{ "{{.Status}}" }}\t{{ "{{.Ports}}" }}'
         echo ""
         echo "=== BLOG IMAGES ==="
-        docker images blog --format "table {{.Repository}}\t{{.Tag}}\t{{.CreatedAt}}\t{{.Size}}"
+        docker images blog --format 'table {{ "{{.Repository}}" }}\t{{ "{{.Tag}}" }}\t{{ "{{.CreatedAt}}" }}\t{{ "{{.Size}}" }}'
       register: final_status
 
     - name: Display final status
