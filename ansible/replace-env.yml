@@ -20,3 +20,18 @@
         line: "REDIS_PORT={{ redis_port }}"
         state: present
         create: yes
+
+    - name: Copy .env.prod to .env (latest)
+      shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
+
+    - name: Stop existing container
+      shell: docker rm -f blog || true
+
+    - name: Run new container (reuse latest image)
+      shell: |
+        docker run -d \
+          --name blog \
+          --restart always \
+          -p 3000:3000 \
+          -v /home/ubuntu/app/blog/.env:/app/.env \
+          blog:latest
