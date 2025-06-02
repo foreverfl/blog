@@ -23,7 +23,7 @@
       shell: |
         cd /home/ubuntu/app/blog
         TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-        docker build -t blog:$TIMESTAMP -t blog:latest . | tee /tmp/docker-build.log
+        docker build --no-cache -t blog:$TIMESTAMP . | tee /tmp/docker-build.log
 
     - name: Show docker build log
       shell: cat /tmp/docker-build.log
@@ -39,4 +39,4 @@
           --restart always \
           -p 3000:3000 \
           -v /home/ubuntu/app/blog/.env:/app/.env \
-          blog:latest
+          blog:$TIMESTAMP
