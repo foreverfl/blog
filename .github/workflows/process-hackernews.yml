@@ -31,7 +31,7 @@ jobs:
           sleep 30
 
       - name: Get Redis private IP
-        id: get_redis_ip
+        id: get_private_redis_ip
         run: |
           REDIS_IP=$(aws ecs describe-tasks \
             --cluster mogumogu \
@@ -44,6 +44,25 @@ jobs:
           echo "Redis IP is $REDIS_IP"
           echo "REDIS_HOST=$REDIS_IP" >> $GITHUB_ENV
           echo "REDIS_PORT=6379" >> $GITHUB_ENV
+
+      - name: Get Redis public IP
+        id: get_public_redis_ip
+        run: |
+          TASK_ARN=$(aws ecs list-tasks \
+            --cluster mogumogu \
+            --service-name mogumogu-service-dr9p94qm \
+            --desired-status RUNNING \
+            --query 'taskArns[0]' --output text)
+          ENI_ID=$(aws ecs describe-tasks \
+            --cluster mogumogu \
+            --tasks $TASK_ARN \
+            --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' \
+            --output text)
+          PUBLIC_IP=$(aws ec2 describe-network-interfaces \
+            --network-interface-ids $ENI_ID \
+            --query 'NetworkInterfaces[0].Association.PublicIp' \
+            --output text)
+          echo "Public IP: $PUBLIC_IP"
 
       - name: Print Redis env (for debugging)
         run: echo "REDIS_HOST=$REDIS_HOST, REDIS_PORT=$REDIS_PORT"
@@ -69,17 +88,17 @@ jobs:
         run: |
           curl -X POST https://mogumogu.dev/api/hackernews/ \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}"
 
       - name: Fetch HackerNews contents
         run: |
           curl -X POST https://mogumogu.dev/api/hackernews/fetch/ \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}"
 
       - name: Wait for Fetch to finish (with threshold)
         run: |
-          THRESHOLD=30
+          THRESHOLD=40
           for i in {1..60}; do
             COUNTS_JSON=$(curl -s https://mogumogu.dev/api/hackernews/counts)
             echo "$COUNTS_JSON"
@@ -96,7 +115,7 @@ jobs:
         run: |
           curl -X POST https://mogumogu.dev/api/hackernews/summarize/ \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}"
 
       - name: Wait for Summarize to finish
         run: |
@@ -117,7 +136,7 @@ jobs:
         run: |
           curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}"
 
       - name: Wait for KO Translate to finish
         run: |
@@ -138,7 +157,7 @@ jobs:
         run: |
           curl -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}"
 
       - name: Wait for JA Translate to finish
         run: |
@@ -160,7 +179,7 @@ jobs:
           TODAY=$(date -d '9 hours' +'%y%m%d')
           curl -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $HACKERNEWS_API_KEY"
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}"
 
       - name: ✅ Final message
         run: echo "All HackerNews tasks completed successfully!"
