@@ -133,7 +133,7 @@ jobs:
             -d "{\"type\": \"fetch\", \"total\": $FETCH_TOTAL}")
           echo "$RESPONSE"
           FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
-          if [ "$FLUSHED" = "true" ]; then
+          if [ "$FLUSHED" -ge 1 ]; then
             echo "Flush succeeded!"
             exit 0
           else
@@ -160,7 +160,7 @@ jobs:
               -d "{\"type\": \"summarize\", \"total\": $SUMMARIZE_TOTAL}")
             echo "$RESPONSE"
             FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
-            if [ "$FLUSHED" = "true" ]; then
+            if [ "$FLUSHED" -ge 1 ]; then
               echo "Summarize flush succeeded!"
               exit 0
             fi
@@ -189,7 +189,7 @@ jobs:
               -d "{\"type\": \"translate\", \"lang\": \"ko\", \"total\": $TRANSLATE_KO_TOTAL}")
             echo "$RESPONSE"
             FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
-            if [ "$FLUSHED" = "true" ]; then
+            if [ "$FLUSHED" -ge 1 ]; then
               echo "Translate KO flush succeeded!"
               exit 0
             fi
@@ -218,7 +218,7 @@ jobs:
               -d "{\"type\": \"translate\", \"lang\": \"ja\", \"total\": $TRANSLATE_JA_TOTAL}")
             echo "$RESPONSE"
             FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
-            if [ "$FLUSHED" = "true" ]; then
+            if [ "$FLUSHED" -ge 1 ]; then
               echo "Translate JA flush succeeded!"
               exit 0
             fi
