@@ -116,6 +116,8 @@ export async function POST(
     });
   }
 
+  console.log("total: ", toTranslateKo.length + toTranslateJa.length);
+
   return NextResponse.json({
     ok: true,
     type: "translate",
