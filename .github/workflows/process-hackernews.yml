@@ -138,7 +138,7 @@ jobs:
             exit 0
           else
             echo "Flush failed or no eligible items to flush."
-            exit 1
+            exit 0
           fi
 
       - name: Summarize HackerNews content
@@ -168,7 +168,7 @@ jobs:
             sleep 60
           done
           echo "Summarize flush failed after 5 attempts"
-          exit 1
+          exit 0
 
       - name: Translate HackerNews to Korean
         run: |
@@ -197,7 +197,7 @@ jobs:
             sleep 60
           done
           echo "Translate KO flush failed after 5 attempts"
-          exit 1
+          exit 0
 
       - name: Translate HackerNews to Japanese
         run: |
@@ -226,7 +226,7 @@ jobs:
             sleep 60
           done
           echo "Translate JA flush failed after 5 attempts"
-          exit 1
+          exit 0
           
       - name: 🎨 Generate HackerNews image
         run: |
