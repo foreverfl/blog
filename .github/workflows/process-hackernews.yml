@@ -96,27 +96,35 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
-          FETCH_TOTAL=$(echo "$RESPONSE" | jq '.total')
-          echo "FETCH_TOTAL=$FETCH_TOTAL" >> $GITHUB_ENV
 
       - name: Fetch HackerNews contents - Flush
         id: fetch-flush
         run: |
-          for i in {1..5}; do
+          PREV_COUNT=""
+          for i in {1..10}; do
             RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
               -d "{\"type\": \"fetch\", \"total\": $FETCH_TOTAL}")
             echo "$RESPONSE"
             FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+            CUR_COUNT=$(echo "$RESPONSE" | jq '.counts.content // 0')
+
             if [ "$FLUSHED" = "true" ]; then
               echo "Flush succeeded!"
               exit 0
             fi
-            echo "Flush not ready, retrying in 60s..."
+
+            if [ "$CUR_COUNT" = "$PREV_COUNT" ] && [ -n "$CUR_COUNT" ]; then
+              echo "No progress detected. Breaking the loop."
+              exit 0
+            fi
+
+            PREV_COUNT=$CUR_COUNT
+            echo "Flush not ready, retrying in 60s... ($i/10)"
             sleep 60
           done
-          echo "Flush failed after 5 attempts"
+          echo "Flush failed after 10 attempts"
           exit 1
 
       - name: Summarize HackerNews content

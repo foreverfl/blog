@@ -72,14 +72,9 @@ export async function POST(
     });
   }
 
-  const keys = await redis.keys("content:*");
-  const successCount = keys.length;
-  console.log("total: ", successCount);
-
   return NextResponse.json({
     ok: true,
     type: "fetch",
-    total: successCount,
     message: `Enqueued ${toFetch.length} fetch tasks.`,
   });
 }

@@ -59,8 +59,6 @@ export async function POST(
     });
   }
 
-  console.log("total: ", toSummarize.length);
-
   return NextResponse.json({
     ok: true,
     type: "summarize",
