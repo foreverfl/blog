@@ -52,15 +52,6 @@ export async function connectDB() {
   return db;
 }
 
-// Post CRUD
-export async function deleteAllPostsFromMongoDB() {
-  const db = await connectDB();
-  const postsCollection = db.collection("posts");
-
-  const result = await postsCollection.deleteMany({});
-  return result;
-}
-
 // Like CRUD
 export async function addLikeToPost(pathHash: string, userEmail: string) {
   const db = await connectDB();
