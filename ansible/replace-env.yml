@@ -27,11 +27,15 @@
     - name: Stop existing container
       shell: docker rm -f blog || true
 
-    - name: Run new container (reuse latest image)
+    - name: Get latest blog image tag
+      shell: docker images blog --format "{{ '{{.Tag}}' }}" | head -n 1
+      register: latest_blog_tag
+
+    - name: Run new container (use latest tag)
       shell: |
         docker run -d \
           --name blog \
           --restart always \
           -p 3000:3000 \
           -v /home/ubuntu/app/blog/.env:/app/.env \
-          blog:latest
+          blog:{{ latest_blog_tag.stdout }}
