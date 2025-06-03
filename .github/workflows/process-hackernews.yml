@@ -116,10 +116,8 @@ jobs:
 
             if [ "$CUR_COUNT" = "$PREV_COUNT" ]; then
               echo "No change in Redis key count detected for 1 minute."
-              if [ "$i" -eq 10 ]; then
-                echo "No change detected for 10 minutes. Proceeding to the next step."
-                exit 0
-              fi
+              echo "FETCH_TOTAL=$CUR_COUNT" >> $GITHUB_ENV
+              exit 0
             fi
           done
 
