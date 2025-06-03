@@ -58,8 +58,8 @@ jobs:
             --tasks $TASK_ARN \
             --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' \
             --output text)
-          PUBLIC_IP=$(aws ec2 describe-network-interfaces \
-            --network-interface-ids $ENI_ID \
+          PUBLIC_IP=$(aws ec2 describe-network-snterfaces \
+            --network-snterface-sds $ENI_ID \
             --query 'NetworkInterfaces[0].Association.PublicIp' \
             --output text)
           echo "Public IP: $PUBLIC_IP"
@@ -79,49 +79,134 @@ jobs:
           directory: .
           inventory: |
             [web]
-            ec2-instance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
+            ec2-snstance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
         env:
           REDIS_HOST: ${{ env.REDIS_HOST }}
           REDIS_PORT: ${{ env.REDIS_PORT }}
 
       - name: Fetch HackerNews contents list
         run: |
-          RESPONSE=$(curl -i -X GET https://mogumogu.dev/api/hackernews \
+          RESPONSE=$(curl -s -X GET https://mogumogu.dev/api/hackernews \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
       - name: Fetch HackerNews contents
         run: |
-          RESPONSE=$(curl -i -X POST https://mogumogu.dev/api/hackernews/fetch \
+          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/fetch \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
-          echo "$RESPONSE"
+          FETCH_TOTAL=$(echo "$RESPONSE" | jq '.total')
+          echo "FETCH_TOTAL=$FETCH_TOTAL" >> $GITHUB_ENV
+
+      - name: Fetch HackerNews contents - Flush
+        id: fetch-flush
+        run: |
+          for i in {1..5}; do
+            RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+              -d "{\"type\": \"fetch\", \"total\": $FETCH_TOTAL}")
+            echo "$RESPONSE"
+            FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+            if [ "$FLUSHED" = "true" ]; then
+              echo "Flush succeeded!"
+              exit 0
+            fi
+            echo "Flush not ready, retrying in 60s..."
+            sleep 60
+          done
+          echo "Flush failed after 5 attempts"
+          exit 1
 
       - name: Summarize HackerNews content
         run: |
-          RESPONSE=$(curl -i -X POST https://mogumogu.dev/api/hackernews/summarize \
+          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/summarize \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
+          SUMMARIZE_TOTAL=$(echo "$RESPONSE" | jq '.total')
+          echo "SUMMARIZE_TOTAL=$SUMMARIZE_TOTAL" >> $GITHUB_ENV
+
+      - name: Summarize HackerNews content - Flush
+        id: summarize-flush
+        run: |
+          for i in {1..5}; do
+            RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+              -d "{\"type\": \"summarize\", \"total\": $SUMMARIZE_TOTAL}")
+            echo "$RESPONSE"
+            FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+            if [ "$FLUSHED" = "true" ]; then
+              echo "Summarize flush succeeded!"
+              exit 0
+            fi
+            echo "Summarize flush not ready, retrying in 60s..."
+            sleep 60
+          done
+          echo "Summarize flush failed after 5 attempts"
+          exit 1
 
       - name: Translate HackerNews to Korean
         run: |
-          RESPONSE=$(curl -i -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
+          RESPONSE=$(curl -s -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
-          echo "$RESPONSE"
+          TRANSLATE_KO_TOTAL=$(echo "$RESPONSE" | jq '.total')
+          echo "TRANSLATE_KO_TOTAL=$TRANSLATE_KO_TOTAL" >> $GITHUB_ENV
+
+      - name: Translate HackerNews to Korean - Flush
+        id: translate-ko-flush
+        run: |
+          for i in {1..5}; do
+            RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+              -d "{\"type\": \"translate\", \"lang\": \"ko\", \"total\": $TRANSLATE_KO_TOTAL}")
+            echo "$RESPONSE"
+            FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+            if [ "$FLUSHED" = "true" ]; then
+              echo "Translate KO flush succeeded!"
+              exit 0
+            fi
+            echo "Translate KO flush not ready, retrying in 60s..."
+            sleep 60
+          done
+          echo "Translate KO flush failed after 5 attempts"
+          exit 1
 
       - name: Translate HackerNews to Japanese
         run: |
-          RESPONSE=$(curl -i -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
+          RESPONSE=$(curl -s -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
-          echo "$RESPONSE"
+          TRANSLATE_JA_TOTAL=$(echo "$RESPONSE" | jq '.total')
+          echo "TRANSLATE_JA_TOTAL=$TRANSLATE_JA_TOTAL" >> $GITHUB_ENV
        
+      - name: Translate HackerNews to Japanese - Flush
+        id: translate-ja-flush
+        run: |
+          for i in {1..5}; do
+            RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+              -d "{\"type\": \"translate\", \"lang\": \"ja\", \"total\": $TRANSLATE_JA_TOTAL}")
+            echo "$RESPONSE"
+            FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+            if [ "$FLUSHED" = "true" ]; then
+              echo "Translate JA flush succeeded!"
+              exit 0
+            fi
+            echo "Translate JA flush not ready, retrying in 60s..."
+            sleep 60
+          done
+          echo "Translate JA flush failed after 5 attempts"
+          exit 1
+          
       - name: 🎨 Generate HackerNews image
         run: |
           TODAY=$(date -d '9 hours' +'%y%m%d')
-          RESPONSE=$(curl -i -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY \
+          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"

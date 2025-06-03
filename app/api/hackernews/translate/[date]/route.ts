@@ -1,5 +1,5 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { logMessage } from "@/lib/logger";
 import { translate } from "@/lib/openai/translate";
@@ -116,60 +116,12 @@ export async function POST(
     });
   }
 
-  logMessage("▶️ All translation tasks enqueued. Waiting for completion...");
-  await translateQueue.onIdle();
-  logMessage("✅ All translation tasks completed. Flushing to R2...");
-
-  let flushedKo = 0;
-  let flushedJa = 0;
-  let modifiedData = data.map((item: any) => ({ ...item }));
-
-  // ko
-  for (const item of toTranslateKo) {
-    const translated = await redis.get(`ko:${item.id}`);
-    if (translated) {
-      const idx = modifiedData.findIndex((d: any) => d.id === item.id);
-      if (idx !== -1) {
-        if (!modifiedData[idx].summary) modifiedData[idx].summary = {};
-        modifiedData[idx].summary.ko = translated;
-        await redis.del(`ko:${item.id}`);
-        flushedKo++;
-      }
-    }
-  }
-
-  // ja
-  for (const item of toTranslateJa) {
-    const translated = await redis.get(`ja:${item.id}`);
-    if (translated) {
-      const idx = modifiedData.findIndex((d: any) => d.id === item.id);
-      if (idx !== -1) {
-        if (!modifiedData[idx].summary) modifiedData[idx].summary = {};
-        modifiedData[idx].summary.ja = translated;
-        await redis.del(`ja:${item.id}`);
-        flushedJa++;
-      }
-    }
-  }
-
-  await putToR2({ bucket: "hackernews", key }, modifiedData);
-
-  const elapsed = Date.now() - start;
-  logMessage(`Elapsed time: ${elapsed / 1000} seconds (${elapsed}ms)`);
-
-  let message = "";
-  if (isKo && !isJa) {
-    message = `Flushed ${flushedKo} / ${toTranslateKo.length} ko translations to R2. (Elapsed: ${(elapsed / 1000).toFixed(2)} sec)`;
-  } else if (!isKo && isJa) {
-    message = `Flushed ${flushedJa} / ${toTranslateJa.length} ja translations to R2. (Elapsed: ${(elapsed / 1000).toFixed(2)} sec)`;
-  } else {
-    message = `Flushed ${flushedKo}/${toTranslateKo.length} ko, ${flushedJa}/${toTranslateJa.length} JA translations to R2. (Elapsed: ${(elapsed / 1000).toFixed(2)} sec)`;
-  }
-
   return NextResponse.json({
     ok: true,
-    ...(isKo && { totalKo: toTranslateKo.length, flushedKo }),
-    ...(isJa && { totalJa: toTranslateJa.length, flushedJa }),
-    message,
+    type: "translate",
+    lang: lang, // "ko" or "ja"
+    ...(isKo && { total: toTranslateKo.length }),
+    ...(isJa && { total: toTranslateJa.length }),
+    message: `Enqueued ${isKo ? toTranslateKo.length : 0} ko, ${isJa ? toTranslateJa.length : 0} ja translation tasks.`,
   });
 }

@@ -1,5 +1,5 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { fetchContent } from "@/lib/hackernews/fetchContent";
 import { fetchPdfContent } from "@/lib/hackernews/fetchPdfContent";
@@ -13,8 +13,6 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ date?: string }> },
 ) {
-  const start = Date.now();
-
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;
@@ -74,34 +72,13 @@ export async function POST(
     });
   }
 
-  logMessage("▶️ All fetch tasks enqueued. Waiting for completion...");
-  await fetchQueue.onIdle();
-  logMessage("✅ All fetch tasks completed. Flushing to R2...");
-
-  let flushed = 0;
-  let modifiedData = data.map((item: any) => ({ ...item }));
-
-  for (const item of toFetch) {
-    const content = await redis.get(`content:${item.id}`);
-    if (content) {
-      const idx = modifiedData.findIndex((d: any) => d.id === item.id);
-      if (idx !== -1) {
-        modifiedData[idx].content = content;
-        await redis.del(`content:${item.id}`);
-        flushed++;
-      }
-    }
-  }
-
-  await putToR2({ bucket: "hackernews", key }, modifiedData);
-
-  const elapsed = Date.now() - start;
-  logMessage(`Elapsed time: ${elapsed / 1000} seconds (${elapsed}ms)`);
+  const keys = await redis.keys("content:*");
+  const successCount = keys.length;
 
   return NextResponse.json({
     ok: true,
-    total: toFetch.length,
-    flushed,
-    message: `Flushed ${flushed} out of ${toFetch.length} contents to R2. (Elapsed: ${(elapsed / 1000).toFixed(2)} sec)`,
+    type: "fetch",
+    total: successCount,
+    message: `Enqueued ${toFetch.length} fetch tasks.`,
   });
 }

@@ -1,5 +1,5 @@
 import { checkBearerAuth } from "@/lib/auth";
-import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
+import { getFromR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
 import { logMessage } from "@/lib/logger";
 import { summarize } from "@/lib/openai/summarize";
@@ -59,34 +59,10 @@ export async function POST(
     });
   }
 
-  logMessage("▶️ All summarize tasks enqueued. Waiting for completion...");
-  await summarizeQueue.onIdle();
-  logMessage("✅ All summarize tasks completed. Flushing to R2...");
-
-  let flushed = 0;
-  let modifiedData = data.map((item: any) => ({ ...item }));
-  for (const item of toSummarize) {
-    const summary = await redis.get(`en:${item.id}`);
-    if (summary) {
-      const idx = modifiedData.findIndex((d: any) => d.id === item.id);
-      if (idx !== -1) {
-        if (!modifiedData[idx].summary) modifiedData[idx].summary = {};
-        modifiedData[idx].summary.en = summary;
-        await redis.del(`en:${item.id}`);
-        flushed++;
-      }
-    }
-  }
-
-  await putToR2({ bucket: "hackernews", key }, modifiedData);
-
-  const elapsed = Date.now() - start;
-  logMessage(`Elapsed time: ${elapsed / 1000} seconds (${elapsed}ms)`);
-
   return NextResponse.json({
     ok: true,
+    type: "summarize",
     total: toSummarize.length,
-    flushed,
-    message: `Flushed ${flushed} out of ${toSummarize.length} summaries to R2. (Elapsed: ${(elapsed / 1000).toFixed(2)} sec)`,
+    message: `Enqueued ${toSummarize.length} summerize tasks.`,
   });
 }
