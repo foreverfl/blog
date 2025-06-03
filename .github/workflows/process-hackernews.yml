@@ -97,35 +97,51 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
+      - name: Wait for Redis key change after fetch
+        run: |
+          INITIAL_COUNT=$(curl -s https://mogumogu.dev/api/hackernews/redis/count | jq '.keyCount')
+          echo "Initial Redis key count: $INITIAL_COUNT"
+          PREV_COUNT=$INITIAL_COUNT
+
+          for i in {1..10}; do
+            sleep 60
+            CUR_COUNT=$(curl -s https://mogumogu.dev/api/hackernews/redis/count | jq '.keyCount')
+            echo "[$i/10] Current Redis key count: $CUR_COUNT"
+
+            if [ "$CUR_COUNT" -gt "$PREV_COUNT" ]; then
+              echo "Redis key count increased. Waiting for stabilization..."
+              PREV_COUNT=$CUR_COUNT
+              continue
+            fi
+
+            if [ "$CUR_COUNT" = "$PREV_COUNT" ]; then
+              echo "No change in Redis key count detected for 1 minute."
+              if [ "$i" -eq 10 ]; then
+                echo "No change detected for 10 minutes. Proceeding to the next step."
+                exit 0
+              fi
+            fi
+          done
+
+          echo "Redis key count monitoring completed."
+          echo "FETCH_TOTAL=$CUR_COUNT" >> $GITHUB_ENV
+
       - name: Fetch HackerNews contents - Flush
         id: fetch-flush
         run: |
-          PREV_COUNT=""
-          for i in {1..10}; do
-            RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
-              -d "{\"type\": \"fetch\", \"total\": $FETCH_TOTAL}")
-            echo "$RESPONSE"
-            FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
-            CUR_COUNT=$(echo "$RESPONSE" | jq '.counts.content // 0')
-
-            if [ "$FLUSHED" = "true" ]; then
-              echo "Flush succeeded!"
-              exit 0
-            fi
-
-            if [ "$CUR_COUNT" = "$PREV_COUNT" ] && [ -n "$CUR_COUNT" ]; then
-              echo "No progress detected. Breaking the loop."
-              exit 0
-            fi
-
-            PREV_COUNT=$CUR_COUNT
-            echo "Flush not ready, retrying in 60s... ($i/10)"
-            sleep 60
-          done
-          echo "Flush failed after 10 attempts"
-          exit 1
+          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+            -d "{\"type\": \"fetch\", \"total\": $FETCH_TOTAL}")
+          echo "$RESPONSE"
+          FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+          if [ "$FLUSHED" = "true" ]; then
+            echo "Flush succeeded!"
+            exit 0
+          else
+            echo "Flush failed or no eligible items to flush."
+            exit 1
+          fi
 
       - name: Summarize HackerNews content
         run: |
