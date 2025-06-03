@@ -86,34 +86,34 @@ jobs:
 
       - name: Fetch HackerNews contents list
         run: |
-          RESPONSE=$(curl -s -X GET https://mogumogu.dev/api/hackernews/ \
+          RESPONSE=$(curl -v -X GET https://mogumogu.dev/api/hackernews/ \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
       - name: Fetch HackerNews contents
         run: |
-          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/fetch/ \
+          RESPONSE=$(curl -v -X POST https://mogumogu.dev/api/hackernews/fetch/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
       - name: Summarize HackerNews content
         run: |
-          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/summarize/ \
+          RESPONSE=$(curl -v -X POST https://mogumogu.dev/api/hackernews/summarize/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
       - name: Translate HackerNews to Korean
         run: |
-          RESPONSE=$(curl -s -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
+          RESPONSE=$(curl -v -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
       - name: Translate HackerNews to Japanese
         run: |
-          RESPONSE=$(curl -s -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
+          RESPONSE=$(curl -v -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
@@ -121,7 +121,7 @@ jobs:
       - name: 🎨 Generate HackerNews image
         run: |
           TODAY=$(date -d '9 hours' +'%y%m%d')
-          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
+          RESPONSE=$(curl -v -X POST https://mogumogu.dev/api/hackernews/draw/$TODAY/ \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
