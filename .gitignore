@@ -55,3 +55,7 @@ logs/
 
 # vscode
 .vscode
+
+# test
+.http
+*.http

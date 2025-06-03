@@ -52,49 +52,6 @@ export async function connectDB() {
   return db;
 }
 
-// User CRUD
-
-export async function upsertUser(userData: any) {
-  const db = await connectDB();
-  const usersCollection = db.collection("users");
-
-  const result = await usersCollection.updateOne(
-    { email: userData.email },
-    { $set: userData },
-    { upsert: true },
-  );
-
-  return result;
-}
-
-export async function getUsersInfoByIds(userIds: string[]) {
-  const objectIds = userIds.map((id) => new ObjectId(id));
-  const db = await connectDB();
-
-  // 사용자 정보 조회
-  const users = await db
-    .collection("users")
-    .find({
-      _id: { $in: objectIds },
-    })
-    .toArray();
-
-  const usersInfo = users.map((user) => ({
-    _id: user._id.toString(),
-    username: user.username,
-    photo: user.photo,
-  }));
-
-  return usersInfo;
-}
-
-export async function findUserByEmail(email: string) {
-  const db = await connectDB();
-  const usersCollection = db.collection("users");
-  const user = await usersCollection.findOne({ email });
-  return user;
-}
-
 // Post CRUD
 export async function deleteAllPostsFromMongoDB() {
   const db = await connectDB();

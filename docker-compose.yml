@@ -20,6 +20,20 @@ services:
       - redisinsight_data:/data
     restart: unless-stopped
 
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mogumogu
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wjsaudrb1!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  
+
 volumes:
   redis_data:
   redisinsight_data:
+  postgres_data:

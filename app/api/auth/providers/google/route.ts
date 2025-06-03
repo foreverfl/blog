@@ -1,5 +1,6 @@
+import { findUserByEmail, upsertUser } from "@/lib/postgres/users";
+import { UserCreateDTO } from "@/types/users";
 import jwt from "jsonwebtoken";
-import { connectDB, findUserByEmail, upsertUser } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -41,15 +42,11 @@ export async function GET(req: NextRequest) {
     );
     const googleUserData = await userResponse.json();
 
-    // userData를 사용하여 데이터베이스에 사용자 정보 저장
-    const db = await connectDB();
-
-    const userData = {
+    const userData: UserCreateDTO = {
       username: googleUserData.name,
       email: googleUserData.email,
       photo: googleUserData.picture,
-      authProvider: "google",
-      createdAt: new Date(), // 현재 시간을 설정
+      auth_provider: "google",
     };
 
     await upsertUser(userData);
@@ -59,7 +56,7 @@ export async function GET(req: NextRequest) {
     // JWT 토큰 생성
     const jwtToken = jwt.sign(
       {
-        userId: userDataFromDb?._id,
+        userId: userDataFromDb?.id,
         username: userDataFromDb?.username,
         email: userDataFromDb?.email,
         photo: userDataFromDb?.photo,

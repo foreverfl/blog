@@ -1,5 +1,6 @@
+import { findUserByEmail, upsertUser } from "@/lib/postgres/users";
+import { UserCreateDTO } from "@/types/users";
 import jwt from "jsonwebtoken";
-import { connectDB } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -37,31 +38,21 @@ export async function GET(req: NextRequest) {
     });
     const githubUserData = await userResponse.json();
 
-    // userData를 사용하여 데이터베이스에 사용자 정보 저장
-    const db = await connectDB();
-
-    const userData = {
+    const userData: UserCreateDTO = {
       username: githubUserData.login, // name은 null일 수 있음
       email: githubUserData.email,
       photo: githubUserData.avatar_url,
-      authProvider: "github",
-      createdAt: new Date(), // 현재 시간을 설정
+      auth_provider: "github",
     };
 
-    await db.collection("users").updateOne(
-      { email: userData.email }, // 이메일을 기준으로 사용자를 찾음
-      { $set: userData },
-      { upsert: true }, // 문서가 없으면 삽입, 있으면 업데이트
-    );
+    await upsertUser(userData);
 
-    let userDataFromDb = await db
-      .collection("users")
-      .findOne({ email: userData.email });
+    const userDataFromDb = await findUserByEmail(userData.email);
 
     // JWT 토큰 생성
     const jwtToken = jwt.sign(
       {
-        userId: userDataFromDb?._id,
+        userId: userDataFromDb?.id,
         username: userDataFromDb?.username,
         email: userDataFromDb?.email,
         photo: userDataFromDb?.photo,
@@ -72,16 +63,6 @@ export async function GET(req: NextRequest) {
 
     // JWT 내부 확인
     const decoded = jwt.decode(jwtToken);
-
-    // JSON 데이터를 응답으로 보내기
-    // const response = new NextResponse(JSON.stringify(userData), {
-    //   // HTTP 상태 코드 설정
-    //   status: 200,
-    //   // 응답 헤더 설정
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
 
     // 쿠키에 JWT 토큰 저장
     const response = NextResponse.redirect(new URL("/", req.url));
