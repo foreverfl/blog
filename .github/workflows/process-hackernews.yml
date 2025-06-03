@@ -95,6 +95,7 @@ jobs:
           RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/fetch \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+          echo "$RESPONSE"
           FETCH_TOTAL=$(echo "$RESPONSE" | jq '.total')
           echo "FETCH_TOTAL=$FETCH_TOTAL" >> $GITHUB_ENV
 
@@ -152,6 +153,7 @@ jobs:
           RESPONSE=$(curl -s -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ko" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+          echo "$RESPONSE"
           TRANSLATE_KO_TOTAL=$(echo "$RESPONSE" | jq '.total')
           echo "TRANSLATE_KO_TOTAL=$TRANSLATE_KO_TOTAL" >> $GITHUB_ENV
 
@@ -180,6 +182,7 @@ jobs:
           RESPONSE=$(curl -s -X POST "https://mogumogu.dev/api/hackernews/translate?lang=ja" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+          echo "$RESPONSE"
           TRANSLATE_JA_TOTAL=$(echo "$RESPONSE" | jq '.total')
           echo "TRANSLATE_JA_TOTAL=$TRANSLATE_JA_TOTAL" >> $GITHUB_ENV
        
