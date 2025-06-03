@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 
 export function checkBearerAuth(req: Request, envKey: string) {
   const authHeader = req.headers.get("authorization");
-  console.log("Checking Bearer Auth...");
-  console.log("Authorization Header:", authHeader);
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

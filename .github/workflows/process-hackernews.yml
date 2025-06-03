@@ -86,8 +86,7 @@ jobs:
 
       - name: Fetch HackerNews contents list
         run: |
-          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/ \
-            -H "Content-Type: application/json" \
+          RESPONSE=$(curl -s -X GET https://mogumogu.dev/api/hackernews/ \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
 
@@ -126,7 +125,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
-          
+
       - name: ✅ Final message
         run: echo "All HackerNews tasks completed successfully!"
 
