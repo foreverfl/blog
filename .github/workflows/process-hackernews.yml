@@ -64,9 +64,6 @@ jobs:
             --output text)
           echo "Public IP: $PUBLIC_IP"
 
-      - name: Print Redis env (for debugging)
-        run: echo "REDIS_HOST=$REDIS_HOST, REDIS_PORT=$REDIS_PORT"
-
       - name: Create SSH key file
         run: |
           echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/ci-key.pem

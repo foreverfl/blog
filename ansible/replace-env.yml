@@ -39,3 +39,21 @@
           -p 3000:3000 \
           -v /home/ubuntu/app/blog/.env:/app/.env \
           blog:{{ latest_blog_tag.stdout }}
+
+    - name: Wait for server to be up (health check)
+      shell: |
+        for i in {1..30}; do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mogumogu.dev/api/status)
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Server is UP!"
+            exit 0
+          fi
+          echo "⏳ Waiting for server... ($i/30, status: $STATUS)"
+          sleep 3
+        done
+        echo "❌ Server didn't respond after 90 seconds."
+        exit 1
+      register: health_check
+      retries: 1
+      delay: 0
+      ignore_errors: no
