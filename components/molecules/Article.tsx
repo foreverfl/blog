@@ -1,6 +1,6 @@
 "use client";
 
-import Trends from "@/components/main/Trends";
+import Trends from "@/components/molecules/Trends";
 
 type TrendItem = {
   id: string;

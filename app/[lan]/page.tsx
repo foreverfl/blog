@@ -1,5 +1,5 @@
 import React from "react";
-import AllCategory from "@/components/main/AllCategory";
+import AllCategory from "@/components/organism/AllCategory";
 import { getAllPostFrontMatters } from "@/lib/content/mdxHelpers";
 import { cookies } from "next/headers";
 

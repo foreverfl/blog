@@ -1,6 +1,6 @@
-import Comment from "@/components/main/Comment";
-import Good from "@/components/main/Good";
-import Article from "@/components/organism/Article";
+import Comment from "@/components/molecules/Comment";
+import Good from "@/components/atom/Good";
+import Article from "@/components/molecules/Article";
 import { getContents } from "@/lib/content/jsonHelpers";
 import { compileMdxContent, getMdxFileContent } from "@/lib/content/mdxHelpers";
 import "github-markdown-css";

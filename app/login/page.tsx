@@ -1,5 +1,5 @@
 import React from "react";
-import LoginButton from "@/components/login/Login";
+import LoginButton from "@/components/organism/Login";
 
 const Login: React.FC = () => {
   const socialLogins = {

@@ -1,11 +1,11 @@
 "use client";
 
-import PrivacyPolicyEn from "@/components/common/PrivacyPolicyEn";
+import PrivacyPolicyEn from "@/components/organism/privacyPolicy/PrivacyPolicyEn";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
-import PrivacyPolicyJa from "../common/PrivacyPolicyJa";
-import PrivacyPolicyKo from "../common/PrivacyPolicyKo";
+import PrivacyPolicyJa from "./privacyPolicy/PrivacyPolicyJa";
+import PrivacyPolicyKo from "./privacyPolicy/PrivacyPolicyKo";
 
 const Footer: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

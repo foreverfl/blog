@@ -1,4 +1,4 @@
-import LanguageRedirect from "@/components/main/LanguageRedirect";
+import LanguageRedirect from "@/components/molecules/LanguageRedirect";
 
 export default function Index() {
   return (

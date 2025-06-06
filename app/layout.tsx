@@ -1,5 +1,5 @@
-import Footer from "@/components/main/Footer";
-import Navbar from "@/components/navbar/Navbar";
+import Footer from "@/components/organism/Footer";
+import Navbar from "@/components/organism/navbar/Navbar";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";

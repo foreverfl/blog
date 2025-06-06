@@ -1,5 +1,5 @@
-import Category from "@/components/main/Category";
-import CategoryTrends from "@/components/main/CategoryTrends";
+import Category from "@/components/organism/Category";
+import CategoryTrends from "@/components/organism/CategoryTrends";
 import { getContentsStructure } from "@/lib/content/jsonHelpers";
 import { FrontMatter, getAllPostFrontMatters } from "@/lib/content/mdxHelpers";
 import { cookies } from "next/headers";
