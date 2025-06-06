@@ -38,8 +38,6 @@
         docker build --no-cache -t blog:{{ blog_timestamp }} . 2>&1 | tee /tmp/docker-build.log
         exit ${PIPESTATUS[0]}
       register: build_result
-      args:
-        timeout: 3600
 
     - name: Get previous blog image tag (lastest second image)
       shell: docker images blog --format '{{ "{{.Tag}}" }}' | sed -n '2p'
