@@ -31,7 +31,7 @@
       debug:
         msg: "Building image with tag: blog:{{ blog_timestamp }}"
 
-    - name: Build Docker image with timestamp tag (retry 3 times)
+    - name: Build Docker image with timestamp tag
       shell: |
         cd /home/ubuntu/app/blog
         echo "Starting Docker build..."
