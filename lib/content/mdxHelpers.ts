@@ -5,7 +5,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import removeMarkdown from "remove-markdown";
 
-interface FrontMatter {
+export interface FrontMatter {
   fileName?: string;
   title: string;
   date: string;
