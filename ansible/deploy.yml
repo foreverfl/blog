@@ -35,8 +35,7 @@
       shell: |
         cd /home/ubuntu/app/blog
         echo "Starting Docker build..."
-        docker build --no-cache -t blog:{{ blog_timestamp }} . > /tmp/docker-build.log 2>&1
-        exit $?
+        docker build -t blog:{{ blog_timestamp }} . 2>&1
       register: build_result
 
     - name: Get previous blog image tag (lastest second image)
