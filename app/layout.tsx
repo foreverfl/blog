@@ -1,19 +1,7 @@
-import Footer from "@/components/organism/Footer";
-import Navbar from "@/components/organism/navbar/Navbar";
 import "@/styles/globals.css";
-import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "mogumogu's sundries",
-  description: "This is a blog that explains programming and computer science!",
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
 
 export default function RootLayout({
   children,
@@ -25,13 +13,7 @@ export default function RootLayout({
       <head>
         <meta name="google-adsense-account" content="ca-pub-4751026650729929" />
       </head>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class">
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </ThemeProvider>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
