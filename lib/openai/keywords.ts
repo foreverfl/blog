@@ -1,5 +1,6 @@
 import { getFromR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
+import { logMessage } from "@/lib/logger";
 import dotenv from "dotenv";
 import { OpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
@@ -39,20 +40,27 @@ export async function keywords(date: string): Promise<string> {
       throw new Error("No valid items found in R2");
     }
 
-    const topItem = items.filter((item: any) => {
-      const en = item.summary?.en;
-      return typeof en === "string" && en.trim().length > 0;
-    })[0];
-    // .sort((a: any, b: any) => b.score - a.score)[0];
+    let topItem: any = null;
+    for (let i = 0; i < Math.min(100, items.length); i++) {
+      const item = items[i];
+      const en = item?.summary?.en;
+      if (typeof en === "string" && en.trim().length > 0) {
+        topItem = item;
+        break;
+      } else {
+        logMessage(
+          `[keywords] Skipping item[${i}] - summary.en is missing (id: ${item?.id ?? "no id"})`,
+        );
+      }
+    }
 
     const summary = topItem?.summary?.en || "No valid item found";
-    console.log("Extracted summary:", summary);
+    logMessage("Extracted summary:" + summary);
 
     const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
     const res = await fetch(`${siteUrl}/prompts/picture-keywords.md`);
     if (!res.ok) throw new Error("Prompt file fetch failed");
     const keywordsPrompt = await res.text();
-    console.log("Keywords prompt file content loaded successfully");
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -72,7 +80,6 @@ export async function keywords(date: string): Promise<string> {
       throw new Error("Content is null or undefined");
     }
     const parsedResponse = ImageInfoSchema.parse(JSON.parse(content));
-    console.log("keywords:", parsedResponse);
     return JSON.stringify(parsedResponse);
   } catch (error) {
     console.error("❌ Error extracting keywords:", error);

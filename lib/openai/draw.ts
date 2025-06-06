@@ -1,3 +1,4 @@
+import { logMessage } from "@/lib/logger";
 import { keywords } from "@/lib/openai/keywords";
 import dotenv from "dotenv";
 import { OpenAI } from "openai";
@@ -48,7 +49,7 @@ export async function draw(date: string): Promise<string> {
       throw new Error("No image URL returned from OpenAI");
     }
 
-    console.log("🎨 Image generated:", imageUrl);
+    logMessage("🎨 Image generated:", imageUrl);
     return imageUrl;
   } catch (error) {
     console.error("❌ Error generating image:", error);
