@@ -148,7 +148,7 @@ export function getMdxFileContent(
   const contentDir = path.resolve(process.cwd(), "contents");
   const filePath = path.resolve(
     contentDir,
-    `${classification}/${category}/${slug}-${lan}.mdx`,
+    `${classification}/${category}/${slug}.mdx`,
   );
   if (!fs.existsSync(filePath)) {
     return null;
