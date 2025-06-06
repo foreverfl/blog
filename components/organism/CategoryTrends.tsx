@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Pagination from "../molecules/Pagination";
 import Spinner from "../atom/Spinner";
 
@@ -32,7 +32,21 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const postsPerPage = 8;
-  const totalPages = Math.ceil(items.length / postsPerPage);
+
+  const allDates = useMemo(() => {
+    const arr = jsonContents.flatMap((content) =>
+      content.dates.map((date) => ({
+        folder: content.folder,
+        date,
+      })),
+    );
+    arr.sort((a, b) => (a.date < b.date ? 1 : -1));
+    return arr;
+  }, [jsonContents]);
+
+  allDates.sort((a, b) => (a.date < b.date ? 1 : -1)); // 최신 날짜가 먼저 오도록 정렬
+
+  const totalPages = Math.ceil(allDates.length / postsPerPage);
 
   let localizedTitle = "Hacker News Digest";
 
@@ -45,13 +59,9 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      setIsLoading(true);
     }
   };
-
-  const currentPosts = items.slice(
-    (currentPage - 1) * postsPerPage,
-    currentPage * postsPerPage,
-  );
 
   useEffect(() => {
     const checkImageExists = async (url: string) => {
@@ -66,29 +76,34 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
     const processItems = async () => {
       setIsLoading(true);
 
-      const promises = jsonContents.flatMap((content) =>
-        content.dates.map(async (date) => {
-          const formatted = date.replace(/-/g, "");
-          const url = `${R2_BASE}/hackernews-images/${formatted}.webp`;
-          const exists = await checkImageExists(url);
-          return {
-            key: `${content.folder}-${date}`,
-            href: `/${lan}/trends/${content.folder}/${date}`,
-            date,
-            imageUrl: exists ? url : "/images/placeholder.png",
-          };
-        }),
-      );
+      // 전체 날짜 중 이번 페이지에 보여줄 부분만 추출
+      const startIdx = (currentPage - 1) * postsPerPage;
+      const endIdx = currentPage * postsPerPage;
+      const pageDates = allDates.slice(startIdx, endIdx);
+
+      // 이미지 비동기 체크 및 PostItem 생성
+      const promises = pageDates.map(async ({ folder, date }) => {
+        const formatted = date.replace(/-/g, "");
+        const url = `${R2_BASE}/hackernews-images/${formatted}.webp`;
+        const exists = await checkImageExists(url);
+        return {
+          key: `${folder}-${date}`,
+          href: `/${lan}/trends/${folder}/${date}`,
+          date,
+          imageUrl: exists ? url : "/images/placeholder.png",
+        };
+      });
 
       const resolvedItems = await Promise.all(promises);
+
+      // 최신순 정렬
       resolvedItems.sort((a, b) => (a.date < b.date ? 1 : -1));
       setItems(resolvedItems);
-
       setIsLoading(false);
     };
 
     processItems();
-  }, [jsonContents, lan, R2_BASE]);
+  }, [currentPage, jsonContents, lan, R2_BASE, allDates]);
 
   if (isLoading) {
     return <Spinner />;
@@ -99,7 +114,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
       <div className="my-56"></div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10 pb-20 md:pb-0">
-        {currentPosts.map(({ key, href, date, imageUrl }) => (
+        {items.map(({ key, href, date, imageUrl }) => (
           <Link key={key} href={href}>
             <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
               <Image
