@@ -62,7 +62,7 @@ export async function GET(req: Request) {
     if (frontMatter) {
       return NextResponse.json(frontMatter);
     } else {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+      return NextResponse.json({ error: "Post not found" });
     }
   }
 }

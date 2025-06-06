@@ -23,18 +23,23 @@ export default async function Page({
   const trendsPage = classification === "trends";
 
   let content;
-
-  if (trendsPage) {
+  if (classification === "trends") {
     const jsonContents = await getContents(category, slug);
     content = jsonContents;
   } else {
-    const markdownFilePath = `${classification}/${category}/${slug}-${lan}`;
-    if (!markdownFilePath) {
-      notFound(); // 컴포넌트가 없을 경우 처리
+    const fileContent = getMdxFileContent(
+      lan ?? "ko",
+      classification,
+      category,
+      slug,
+    );
+    if (!fileContent) {
+      notFound();
     }
-
-    const fileContent = getMdxFileContent("ko", classification, category, slug);
     const { content: mdxContent } = await compileMdxContent(fileContent);
+    if (!mdxContent) {
+      notFound();
+    }
     content = mdxContent;
   }
 

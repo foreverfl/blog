@@ -148,10 +148,18 @@ export function getMdxFileContent(
   const contentDir = path.resolve(process.cwd(), "contents");
   const filePath = path.resolve(
     contentDir,
-    `${classification}/${category}/${slug}.mdx`,
+    `${classification}/${category}/${slug}-${lan}.mdx`,
   );
-  const fileContent = fs.readFileSync(filePath, "utf8");
-  return fileContent;
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  try {
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    return fileContent;
+  } catch (error) {
+    console.error("Failed to read file:", error);
+    return null;
+  }
 }
 
 // MDX 컴파일 함수
