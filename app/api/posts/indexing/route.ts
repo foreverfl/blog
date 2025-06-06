@@ -1,8 +1,8 @@
 import { google } from "googleapis";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(request: NextRequest) {
   // 서비스 계정 정보 로드
   const KEYFILEPATH = path.join(process.cwd(), "key.json");
   const auth = new google.auth.GoogleAuth({
@@ -23,8 +23,11 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    return Response.json({ ok: true, data: response.data }, { status: 200 });
+    return NextResponse.json(
+      { ok: true, data: response.data },
+      { status: 200 },
+    );
   } catch (e) {
-    return Response.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

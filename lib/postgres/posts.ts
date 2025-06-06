@@ -19,3 +19,20 @@ export async function getAllPosts(): Promise<Post[]> {
   const result = await pool.query(sql);
   return result.rows;
 }
+
+export async function getUnindexedPosts(): Promise<Post[]> {
+  const sql = `SELECT * FROM posts WHERE indexed = false;`;
+  const result = await pool.query(sql);
+  return result.rows;
+}
+
+export async function markPostsAsIndexed(ids: string[]): Promise<Post[]> {
+  const sql = `
+    UPDATE posts
+    SET indexed = true, updated_at = NOW()
+    WHERE id = ANY($1::uuid[])
+    RETURNING *;
+  `;
+  const result = await pool.query(sql, [ids]);
+  return result.rows;
+}
