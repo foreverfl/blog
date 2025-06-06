@@ -168,7 +168,7 @@ const Navbar: React.FC = () => {
     } else {
       setTitle("mogumogu");
       setHoveredTitle("mogumogu");
-      setSubnavTitle("mogumogu's sundries");
+      setSubnavTitle("mogumogu's lab");
     }
   }, [isPost, postInfo?.title]);
 

@@ -33,7 +33,7 @@ const NavbarSub = forwardRef<HTMLDivElement, NavbarSubProps>(
           )
         ) : (
           <h1 className="text-5xl md:text-7xl font-bold dark:text-slate-50 font-navbar">
-            mogumogu&#39;s sundries
+            mogumogu&#39;s lab
           </h1>
         )}
 

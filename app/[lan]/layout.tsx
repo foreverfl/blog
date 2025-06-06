@@ -8,7 +8,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "mogumogu's sundries",
+  title: "mogumogu's lab",
   description: "This is a blog that explains programming and computer science!",
   icons: {
     icon: "/favicon.ico",
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ThemeProvider 
+    <ThemeProvider
       attribute="class"
       enableSystem={true}
       defaultTheme="system"
