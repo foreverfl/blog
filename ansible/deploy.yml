@@ -35,11 +35,15 @@
       shell: |
         cd /home/ubuntu/app/blog
         echo "Starting Docker build..."
-        docker build -t blog:{{ blog_timestamp }} . 2>&1
+        docker build --no-cache -t blog:{{ blog_timestamp }} . 2>&1
       register: build_result
       until: build_result.rc == 0
       retries: 3
       delay: 5
+
+    - name: Show docker build log 
+      shell: cat /tmp/docker-build.log
+      register: docker_build_log
 
     - name: Get previous blog image tag (lastest second image)
       shell: docker images blog --format '{{ "{{.Tag}}" }}' | sed -n '2p'
