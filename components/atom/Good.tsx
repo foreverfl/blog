@@ -20,15 +20,17 @@ const Good = () => {
 
   const fetchLikeData = useCallback(async () => {
     try {
-      if (!userEmail) {
-        return;
-      }
-      const res = await fetch(
-        `/api/like/${classification}/${category}/${slug}?userEmail=${userEmail}`,
-      );
+      const url =
+        `/api/like/${classification}/${category}/${slug}` +
+        (userEmail ? `?userEmail=${userEmail}` : "");
+      const res = await fetch(url);
       const data = await res.json();
+      console.log("[fetchLikeData] data: ", data);
       if (data && data.likeCount !== undefined) {
         setLikeCount(data.likeCount);
+      }
+      if (data && data.liked !== undefined) {
+        setHeartState(data.liked ? "after" : "before");
       }
     } catch (error) {
       console.error("Error fetching like count:", error);
@@ -120,8 +122,11 @@ const Good = () => {
 
   useEffect(() => {
     fetchUserEmail();
+  }, [fetchUserEmail]);
+
+  useEffect(() => {
     fetchLikeData();
-  }, [fetchUserEmail, fetchLikeData]);
+  }, [fetchLikeData]);
 
   return (
     <div className="flex items-center justify-center">
