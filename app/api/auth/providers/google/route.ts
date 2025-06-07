@@ -66,9 +66,11 @@ export async function GET(req: NextRequest) {
     );
 
     const decoded = jwt.decode(jwtToken); // JWT 내부
+    console.log("Decoded JWT:", decoded);
 
     // 쿠키에서 리다이렉션 링크 찾기
     const preLoginUrl = req.cookies.get("preLoginUrl");
+    console.log("preLoginUrl:", preLoginUrl);
 
     if (!preLoginUrl) {
       return new NextResponse("Cookie has expired. Please try again.", {
@@ -79,12 +81,13 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // 쿠키에 JWT 토큰 저장
+    // save JWT to cookie and redirect
     const response = NextResponse.redirect(new URL(preLoginUrl.value, req.url));
     response.cookies.set("auth", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
-      maxAge: 7200, // 2시간
+      sameSite: "lax",
+      maxAge: 600,
       path: "/",
     });
     return response;
