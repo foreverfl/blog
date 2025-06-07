@@ -38,7 +38,15 @@ jobs:
 
       - name: Rsync source code to EC2
         run: |
-          rsync -avz --delete --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='.env' -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/app/blog
+          rsync -avz --delete \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='dist' --exclude='.env' \
+          --exclude='.env.prod' \
+          --exclude='.env.local' \
+          --exclude='key.json' \
+          -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" \
+          ./ ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/app/blog
 
       - name: Deploy with Ansible
         uses: dawidd6/action-ansible-playbook@v2
