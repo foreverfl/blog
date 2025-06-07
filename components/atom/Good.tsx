@@ -121,21 +121,19 @@ const Good = () => {
   useEffect(() => {
     fetchUserEmail();
     fetchLikeData();
-    addLike(userEmail);
-    removeLike(userEmail);
-  }, [addLike, fetchLikeData, fetchUserEmail, removeLike, userEmail]);
+  }, [fetchUserEmail, fetchLikeData]);
 
   return (
     <div className="flex items-center justify-center">
       <div className="w-full md:w-3/5">
         <div className="flex items-center justify-between my-4">
           {/* 하트 버튼 */}
-          <div className="flex items-center space-x-2 py-2 px-4 rounded-full shadow">
+          <div className="flex items-center space-x-2 py-2 px-4 rounded-full shadow border border-gray-200 dark:border-gray-700">
             <motion.button
               onClick={handleClick}
               className="flex items-center justify-center p-1 rounded-full"
-              whileTap={{ scale: 0.8 }} // 클릭 시 애니메이션
-              transition={{ duration: 0.2, ease: "easeInOut" }} // 애니메이션 트랜지션
+              whileTap={{ scale: 0.8 }} // animated when clicked
+              transition={{ duration: 0.2, ease: "easeInOut" }} // animation transition
             >
               <Image
                 src={
