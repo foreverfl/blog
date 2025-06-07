@@ -59,7 +59,7 @@ jobs:
       - name: Check Google Indexing API quota
         id: indexing-quota
         run: |
-          RESPONSE=$(curl -s https://mogumogu.dev/api/status/indexing)
+          RESPONSE=$(curl -s https://mogumogu.dev/api/status/indexing \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
           REMAINING=$(echo "$RESPONSE" | jq '.remaining')
