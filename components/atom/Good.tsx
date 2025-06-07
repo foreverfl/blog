@@ -1,97 +1,107 @@
 "use client";
 
-import crypto from "crypto";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const Good = () => {
+  // path
   const pathname = usePathname();
+  const parts = pathname.split("/");
+  const classification = parts[2] || "";
+  const category = parts[3] || "";
+  const slug = parts[4].replace(/-(ko|ja|en)$/, "") || "";
+
   const [heartState, setHeartState] = useState("before");
   const [likeCount, setLikeCount] = useState(0);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  const cleanPath = pathname.split("/").slice(2).join("/");
-  const pathHash = crypto.createHash("sha256").update(cleanPath).digest("hex");
-
-  useEffect(() => {
-    // 좋아요 상태 및 개수 가져오기
-    const fetchLikeData = async () => {
-      try {
-        const res = await fetch(`/api/like/count?pathHash=${pathHash}`);
-        const data = await res.json();
-        if (data && data.likeCount !== undefined) {
-          setLikeCount(data.likeCount);
-        }
-      } catch (error) {
-        console.error("Error fetching like count:", error);
-      }
-    };
-
-    fetchLikeData();
-  }, [pathHash]);
-
-  // 사용자 이메일 가져오기 및 좋아요 상태 가져오기
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const res = await fetch("/api/auth/status");
-        const data = await res.json();
-        if (data?.user?.email) {
-          setUserEmail(data.user.email);
-
-          // 사용자 좋아요 상태 가져오기
-          const resStatus = await fetch(
-            `/api/like/check?pathHash=${pathHash}&userEmail=${data.user.email}`,
-          );
-          const statusData = await resStatus.json();
-          setHeartState(statusData.isLiked ? "after" : "before");
-        }
-      } catch (error) {
-        console.error("Error fetching user data or like status:", error);
-      }
-    };
-
-    fetchUserData();
-  }, [pathHash]);
-
-  const addLike = async () => {
+  const fetchLikeData = useCallback(async () => {
     try {
-      const res = await fetch("/api/like/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ pathHash, userEmail }),
-      });
-
-      if (res.ok) {
-        setLikeCount((prevCount) => prevCount + 1);
-        setHeartState("after");
+      if (!userEmail) {
+        return;
+      }
+      const res = await fetch(
+        `/api/like/${classification}/${category}/${slug}?userEmail=${userEmail}`,
+      );
+      const data = await res.json();
+      if (data && data.likeCount !== undefined) {
+        setLikeCount(data.likeCount);
       }
     } catch (error) {
-      console.error("Error adding like:", error);
+      console.error("Error fetching like count:", error);
+    }
+  }, [category, classification, slug, userEmail]);
+
+  const fetchUserEmail = useCallback(async () => {
+    try {
+      const res = await fetch("/api/auth/status");
+      const data = await res.json();
+      if (data.isAuthenticated) {
+        setUserEmail(data.user.email);
+      }
+    } catch (error) {
+      console.error("Error fetching user email:", error);
+    }
+  }, []);
+
+  const addLike = useCallback(
+    async (userEmail: string | null): Promise<boolean> => {
+      if (!userEmail) return false;
+      try {
+        const res = await fetch(
+          `/api/like/${classification}/${category}/${slug}?userEmail=${userEmail}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userEmail }),
+          },
+        );
+        return res.ok;
+      } catch (error) {
+        console.error("Error adding like:", error);
+        return false;
+      }
+    },
+    [category, classification, slug],
+  );
+
+  const removeLike = useCallback(
+    async (userEmail: string | null): Promise<boolean> => {
+      if (!userEmail) return false;
+      try {
+        const res = await fetch(
+          `/api/like/${classification}/${category}/${slug}?userEmail=${userEmail}`,
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userEmail }),
+          },
+        );
+        return res.ok;
+      } catch (error) {
+        console.error("Error removing like:", error);
+        return false;
+      }
+    },
+    [category, classification, slug],
+  );
+
+  const handleAddLike = async () => {
+    const ok = await addLike(userEmail);
+    if (ok) {
+      setLikeCount((prev) => prev + 1);
+      setHeartState("after");
     }
   };
 
-  const removeLike = async () => {
-    try {
-      const res = await fetch("/api/like/remove", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ pathHash, userEmail }),
-      });
-
-      if (res.ok) {
-        setLikeCount((prevCount) => prevCount - 1);
-        setHeartState("before");
-      }
-    } catch (error) {
-      console.error("Error removing like:", error);
+  const handleRemoveLike = async () => {
+    const ok = await removeLike(userEmail);
+    if (ok) {
+      setLikeCount((prev) => prev - 1);
+      setHeartState("before");
     }
   };
 
@@ -102,11 +112,18 @@ const Good = () => {
     }
 
     if (heartState === "before") {
-      addLike();
+      handleAddLike();
     } else {
-      removeLike();
+      handleRemoveLike();
     }
   };
+
+  useEffect(() => {
+    fetchUserEmail();
+    fetchLikeData();
+    addLike(userEmail);
+    removeLike(userEmail);
+  }, [addLike, fetchLikeData, fetchUserEmail, removeLike, userEmail]);
 
   return (
     <div className="flex items-center justify-center">

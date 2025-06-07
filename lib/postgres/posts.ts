@@ -14,6 +14,23 @@ export async function upsertPost(post: PostInsert): Promise<Post> {
   return result.rows[0];
 }
 
+export async function getPost(
+  classification: string,
+  category: string,
+  slug: string,
+): Promise<Post | null> {
+  const sql = `
+    SELECT *
+    FROM posts
+    WHERE classification = $1
+      AND category = $2
+      AND slug = $3
+    LIMIT 1;
+  `;
+  const result = await pool.query(sql, [classification, category, slug]);
+  return result.rows[0] ?? null;
+}
+
 export async function getPosts(
   page: number,
   pageSize: number = 20,

@@ -52,57 +52,6 @@ export async function connectDB() {
   return db;
 }
 
-// Like CRUD
-export async function addLikeToPost(pathHash: string, userEmail: string) {
-  const db = await connectDB();
-  const postsCollection = db.collection("posts");
-
-  const result = await postsCollection.updateOne(
-    { pathHash },
-    {
-      $addToSet: { likes: userEmail }, // likes 배열에 사용자 이메일 추가, 중복 방지
-    },
-  );
-  return result;
-}
-
-export async function removeLikeFromPost(pathHash: string, userEmail: string) {
-  const db = await connectDB();
-  const postsCollection = db.collection<Post>("posts");
-
-  const result = await postsCollection.updateOne(
-    { pathHash },
-    {
-      $pull: { likes: { $eq: userEmail } }, // $eq 사용하여 조건 지정
-    },
-  );
-  return result;
-}
-
-export async function getLikeCountForPost(pathHash: string) {
-  const db = await connectDB();
-  const postsCollection = db.collection("posts");
-
-  const post = await postsCollection.findOne(
-    { pathHash },
-    { projection: { likes: 1 } }, // likes 필드만 가져오기
-  );
-
-  return post?.likes.length || 0; // likes 배열의 길이를 반환
-}
-
-export async function checkLikeStatus(pathHash: string, userEmail: string) {
-  const db = await connectDB();
-  const postsCollection = db.collection("posts");
-
-  const post = await postsCollection.findOne(
-    { pathHash, likes: userEmail }, // 해당 게시글의 likes 배열에 사용자가 있는지 확인
-    { projection: { likes: 1 } },
-  );
-
-  return post ? true : false; // 사용자가 이미 좋아요를 눌렀으면 true, 아니면 false 반환
-}
-
 // Comment CRUD - User
 export async function addUserCommentToPost(pathHash: string, commentData: any) {
   const db = await connectDB();

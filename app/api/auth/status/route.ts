@@ -1,6 +1,6 @@
+import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import jwt, { JwtPayload } from "jsonwebtoken";
 
 export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
