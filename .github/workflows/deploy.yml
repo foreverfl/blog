@@ -48,3 +48,27 @@ jobs:
           inventory: |
             [web]
             ec2-instance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
+
+      - name: Sync posts metadata
+        run: |
+          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/posts/sync \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+          echo "$RESPONSE"
+
+      - name: Check Google Indexing API quota
+        id: indexing-quota
+        run: |
+          RESPONSE=$(curl -s https://mogumogu.dev/api/status/indexing)
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+          echo "$RESPONSE"
+          REMAINING=$(echo "$RESPONSE" | jq '.remaining')
+          echo "remaining=$REMAINING" >> $GITHUB_OUTPUT
+
+      - name: Google Indexing (batch)
+        if: ${{ steps.indexing-quota.outputs.remaining < '198' }}
+        run: |
+          RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/posts/indexing \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+          echo "$RESPONSE"
