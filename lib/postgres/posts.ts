@@ -14,15 +14,27 @@ export async function upsertPost(post: PostInsert): Promise<Post> {
   return result.rows[0];
 }
 
-export async function getAllPosts(): Promise<Post[]> {
-  const sql = `SELECT * FROM posts;`;
-  const result = await pool.query(sql);
+export async function getPosts(
+  page: number,
+  pageSize: number = 20,
+): Promise<Post[]> {
+  const safePageSize = Math.max(1, Math.min(pageSize, 100));
+  const offset = (page - 1) * safePageSize;
+  const sql = `SELECT * FROM posts ORDER BY created_at DESC LIMIT $1 OFFSET $2;`;
+  const result = await pool.query(sql, [safePageSize, offset]);
   return result.rows;
 }
 
-export async function getUnindexedPosts(): Promise<Post[]> {
-  const sql = `SELECT * FROM posts WHERE indexed = false;`;
-  const result = await pool.query(sql);
+export async function getUnindexedPosts(
+  page: number = 1,
+  pageSize: number = 20,
+): Promise<Post[]> {
+  const safePageSize = Math.max(1, Math.min(pageSize, 100));
+  const safePage = Math.max(1, page);
+  const offset = (safePage - 1) * safePageSize;
+
+  const sql = `SELECT * FROM posts WHERE indexed = false ORDER BY created_at DESC LIMIT $1 OFFSET $2;`;
+  const result = await pool.query(sql, [safePageSize, offset]);
   return result.rows;
 }
 
