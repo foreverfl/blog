@@ -75,24 +75,6 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const handleMouseEnter = () => {
-    if (window.scrollY === 0) {
-      setTitleColor("text-white");
-      if (lan === "ko") {
-        setHoveredTitle("홈으로 이동합니다");
-      } else if (lan === "ja") {
-        setHoveredTitle("ホームに移動します");
-      }
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (window.scrollY === 0) {
-      setHoveredTitle(title);
-      setTitleColor("text-transparent");
-    }
-  };
-
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
@@ -250,8 +232,6 @@ const Navbar: React.FC = () => {
         <div className="flex-1 flex w-80 sm:w-96 md:w-full justify-center">
           <div
             onClick={handleNavbarClick}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             className={`min-w-32 max-w-80 sm:max-w-96 md:max-w-full text-2xl sm:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
           >
             {hoveredTitle}
