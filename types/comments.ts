@@ -10,6 +10,12 @@ export interface Comment {
   updated_at: string;
 }
 
+export interface FullComment extends Comment {
+  email: string;
+  username: string;
+  user_photo: string | null;
+}
+
 export interface CreateCommentInput {
   post_id: string;
   user_id: string;

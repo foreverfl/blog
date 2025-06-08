@@ -1,7 +1,7 @@
 import { deleteComment, updateComment } from "@/lib/postgres/comments";
 import { NextRequest, NextResponse } from "next/server";
 
-// 댓글 수정
+// update a comment
 export async function PATCH(
   req: NextRequest,
   {
@@ -16,13 +16,16 @@ export async function PATCH(
   },
 ) {
   const { comment_id } = await params;
-  const { user_id, content } = await req.json();
+  const { content } = await req.json();
   // user_id 체크(권한 확인) 추가 권장
   const comment = await updateComment({ id: comment_id, content });
+  if (!comment) {
+    return NextResponse.json({ error: "There is no comment" }, { status: 404 });
+  }
   return NextResponse.json(comment);
 }
 
-// 댓글 삭제
+// delete a comment
 export async function DELETE(
   req: NextRequest,
   {
@@ -39,5 +42,9 @@ export async function DELETE(
   const { comment_id } = await params;
   const { user_id } = await req.json();
   const deleted = await deleteComment(comment_id, user_id);
-  return NextResponse.json({ deleted });
+  if (deleted) {
+    return NextResponse.json({ deletedCommentId: comment_id });
+  } else {
+    return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+  }
 }
