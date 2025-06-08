@@ -1,0 +1,14 @@
+{
+  "comment_placeholder": "회원님의 댓글을 여기에 작성해 주세요.",
+  "comment_min_length": "댓글은 최소 10자 이상 입력해 주세요.",
+  "comment_add_fail": "댓글 등록에 실패했습니다. 다시 시도해 주세요.",
+  "comment_update_prompt": "댓글을 입력해 주세요.",
+  "comment_update_confirm": "이 댓글을 수정하시겠습니까?",
+  "comment_update_fail": "댓글 수정에 실패했습니다. 다시 시도해 주세요.",
+  "comment_delete_confirm": "이 댓글을 삭제하시겠습니까?",
+  "comment_delete_fail": "댓글 삭제에 실패했습니다. 다시 시도해 주세요.",
+  "comment_admin_reply_prompt": "관리자 답변을 입력해 주세요.",
+  "comment_admin_reply_success": "관리자 답변이 성공적으로 등록되었습니다.",
+  "comment_admin_reply_fail": "관리자 답변 등록에 실패했습니다. 다시 시도해 주세요.",
+  "comment_admin_reply_delete_fail": "관리자 답변 삭제에 실패했습니다. 다시 시도해 주세요."
+}

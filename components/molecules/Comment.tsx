@@ -1,9 +1,11 @@
 "use client";
 
 import { redirectToLoginWithReturnUrl } from "@/lib/auth";
+import "@/lib/i18n";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Comment {
   id: string;
@@ -17,6 +19,9 @@ interface Comment {
 }
 
 const Comment = ({}) => {
+  // i18n
+  const { t, i18n } = useTranslation();
+
   // path
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -39,7 +44,6 @@ const Comment = ({}) => {
     try {
       const res = await fetch("/api/auth/status");
       const data = await res.json();
-      console.log("[fetchUserData] data: ", data);
       if (data.isAuthenticated) {
         setUser(data.user);
       } else {
@@ -57,7 +61,6 @@ const Comment = ({}) => {
       `/api/comment/${classification}/${category}/${slug}`,
     );
     const data = await res.json();
-    console.log("[fetchComments] data:", data);
     setComments(data);
   }, [category, classification, slug]);
 
@@ -163,7 +166,7 @@ const Comment = ({}) => {
     if (!trimmed) return;
 
     if (trimmed.length < 10) {
-      alert("Please enter at least 10 characters in your comment.");
+      alert(t("comment_min_length"));
       return;
     }
 
@@ -172,24 +175,25 @@ const Comment = ({}) => {
       setComments((prev) => [...prev, newCommentObj]);
       setNewComment("");
     } catch (e) {
-      alert("Failed to add comment. Please try again later.");
+      alert(t("comment_add_fail"));
     }
   };
 
   const handleUpdateComment = async (commentId: string) => {
     const currentComment =
       comments.find((c) => c.id === commentId)?.content || "";
-    const updatedComment = window.prompt("Enter your comment:", currentComment);
+    const updatedComment = window.prompt(
+      t("comment_update_prompt"),
+      currentComment,
+    );
 
     if (!updatedComment || !updatedComment.trim()) return;
     if (updatedComment.trim().length < 10) {
-      alert("Please enter at least 10 characters in your comment.");
+      alert(t("comment_min_length"));
       return;
     }
 
-    const isConfirmed = window.confirm(
-      "Are you sure you want to update this comment?",
-    );
+    const isConfirmed = window.confirm(t("comment_update_confirm"));
     if (!isConfirmed) return;
 
     try {
@@ -202,15 +206,13 @@ const Comment = ({}) => {
         ),
       );
     } catch (e) {
-      alert("Failed to update comment. Please try again later.");
+      alert(t("comment_update_fail"));
     }
   };
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const isConfirmed = confirm(
-        "Are you sure you want to delete this comment?",
-      );
+      const isConfirmed = confirm(t("comment_delete_confirm"));
       if (!isConfirmed) return;
 
       const { deletedCommentId } = await deleteComment(commentId, user.userId);
@@ -218,13 +220,13 @@ const Comment = ({}) => {
         prevComments.filter((comment) => comment.id !== deletedCommentId),
       );
     } catch (e) {
-      alert("Failed to delete comment. Please try again later.");
+      alert(t("comment_delete_fail"));
     }
   };
 
   const handleAddReplyComment = async (commentId: string) => {
     const currentReply = comments.find((c) => c.id === commentId)?.reply || "";
-    const reply = window.prompt("Enter your admin reply:", currentReply);
+    const reply = window.prompt(t("comment_admin_reply_prompt"), currentReply);
 
     if (!reply || !reply.trim()) return;
 
@@ -241,9 +243,9 @@ const Comment = ({}) => {
             : comment,
         ),
       );
-      alert("Admin reply submitted successfully.");
+      alert(t("comment_admin_reply_success"));
     } catch (e) {
-      alert("Failed to submit admin reply. Please try again later.");
+      alert(t("comment_admin_reply_fail"));
     }
   };
 
@@ -262,7 +264,7 @@ const Comment = ({}) => {
         ),
       );
     } catch (error) {
-      alert("Admin comment deletion failed. Please try again later.");
+      alert(t("comment_admin_reply_delete_fail"));
     }
   };
 
@@ -276,6 +278,12 @@ const Comment = ({}) => {
     fetchUserData();
     fetchComments();
   }, [fetchUserData, fetchComments]);
+
+  useEffect(() => {
+    if (["ko", "ja", "en"].includes(lan)) {
+      i18n.changeLanguage(lan);
+    }
+  }, [lan, i18n]);
 
   return (
     <div className="flex items-center justify-center">
@@ -462,11 +470,7 @@ const Comment = ({}) => {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 onFocus={handleFocus}
-                placeholder={
-                  lan === "ja"
-                    ? "ここにコメントを書いてください。"
-                    : "회원님의 댓글을 여기에 작성해 주세요."
-                }
+                placeholder={t("comment_placeholder")}
                 disabled={userLoading}
               ></textarea>
               <div className="absolute right-3 bottom-5">

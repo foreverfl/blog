@@ -1,0 +1,14 @@
+{
+  "comment_placeholder": "ここにコメントを書いてください。",
+  "comment_min_length": "コメントは10文字以上入力してください。",
+  "comment_add_fail": "コメントの投稿に失敗しました。再度お試しください。",
+  "comment_update_prompt": "コメントを入力してください。",
+  "comment_update_confirm": "このコメントを更新してもよろしいですか？",
+  "comment_update_fail": "コメントの更新に失敗しました。再度お試しください。",
+  "comment_delete_confirm": "このコメントを削除してもよろしいですか？",
+  "comment_delete_fail": "コメントの削除に失敗しました。再度お試しください。",
+  "comment_admin_reply_prompt": "管理者の返信を入力してください。",
+  "comment_admin_reply_success": "管理者の返信が正常に送信されました。",
+  "comment_admin_reply_fail": "管理者の返信の送信に失敗しました。再度お試しください。",
+  "comment_admin_reply_delete_fail": "管理者の返信の削除に失敗しました。再度お試しください。"
+}
