@@ -201,9 +201,7 @@ const Menu: React.FC<MenuProps> = ({
                     className="flex-shrink-0"
                     style={{ width: "auto", height: "auto" }}
                   />
-                  <span className="ml-3 text-black">
-                    mogumogu&#39;s portfolio
-                  </span>
+                  <span className="ml-3 text-black">portfolio</span>
                 </li>
               </a>
 
@@ -222,7 +220,7 @@ const Menu: React.FC<MenuProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3 text-black">mogumogu&#39;s docs</span>
+                  <span className="ml-3 text-black">docs</span>
                 </li>
               </a>
 
@@ -241,7 +239,7 @@ const Menu: React.FC<MenuProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3 text-black">mogumogu&#39;s github</span>
+                  <span className="ml-3 text-black">github</span>
                 </li>
               </a>
 
@@ -261,7 +259,7 @@ const Menu: React.FC<MenuProps> = ({
                     height={15}
                     className="flex-shrink-0"
                   />
-                  <span className="ml-3 text-black">mogumogu&#39;s qiita</span>
+                  <span className="ml-3 text-black">qiita</span>
                 </li>
               </a>
             </div>
