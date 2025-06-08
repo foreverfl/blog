@@ -5,7 +5,6 @@ import path from "path";
 import { getApiCount, incrementApiCount } from "../postgres/api-usage";
 import { logMessage } from "../logger";
 
-// env로 경로도 주입 가능
 const KEYFILEPATH = path.join(process.cwd(), "key.json");
 const SCOPES = ["https://www.googleapis.com/auth/indexing"];
 const maxDailyQuota = 200;

@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   if (authResult !== true) return authResult;
 
   // Fetch unindexed posts
-  const unindexedPosts = await getUnindexedPosts(1, 2);
+  const unindexedPosts = await getUnindexedPosts(1, 50); // Limit for testing
   if (unindexedPosts.length === 0) {
     return NextResponse.json({
       ok: true,

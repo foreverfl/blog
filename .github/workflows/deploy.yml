@@ -72,7 +72,7 @@ jobs:
           echo "remaining=$REMAINING" >> $GITHUB_OUTPUT
 
       - name: Google Indexing (batch)
-        if: ${{ steps.indexing-quota.outputs.remaining > '198' }}
+        if: ${{ steps.indexing-quota.outputs.remaining > '20' }}
         run: |
           RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/posts/indexing \
             -H "Content-Type: application/json" \

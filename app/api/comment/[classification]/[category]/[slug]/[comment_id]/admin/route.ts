@@ -18,15 +18,8 @@ export async function PATCH(
 ) {
   const { comment_id } = await params;
   const { reply } = await req.json();
-  console.log(
-    "Updating admin reply for comment_id:",
-    comment_id,
-    "with reply:",
-    reply,
-  );
   const comment = await upsertAdminReply(comment_id, reply);
   const camelComment = camelcaseKeys(comment as any, { deep: true });
-  console.log("Updated comment:", camelComment);
   return NextResponse.json(camelComment);
 }
 
