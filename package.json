@@ -41,7 +41,6 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mdx-bundler": "^10.0.3",
-    "mongodb": "^6.3.0",
     "negotiator": "^0.6.3",
     "next": "^15.0.4",
     "next-mdx-remote": "^5.0.0",

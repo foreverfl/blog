@@ -1,91 +1,95 @@
 "use client";
 
-import crypto from "crypto";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { redirectToLoginWithReturnUrl } from "@/lib/auth";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import CommentReplyPopup from "./CommentReplyPopup";
 
 interface Comment {
-  _id: string;
-  userEmail: string;
+  id: string;
+  email: string;
   username: string;
   photo: string;
-  comment: string;
-  userCreatedAt: string;
-  adminComment: string;
-  adminCreatedAt: string | null;
+  content: string;
+  createdAt: string;
+  reply: string;
+  replyedAt: string | null;
 }
 
 const Comment = ({}) => {
-  const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || [];
+  // path
   const pathname = usePathname();
+  const parts = pathname.split("/");
+  const lan = pathname.split("/")[1];
+  const classification = parts[2] || "";
+  const category = parts[3] || "";
+  const slug = parts[4].replace(/-(ko|ja|en)$/, "") || "";
+
+  // admin email
+  const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || [];
+
+  // state
   const [user, setUser] = useState<any>(null);
   const [comments, setComments] = useState<Comment[]>([]);
+  useEffect(() => {
+    console.log("comments: ", comments);
+  }, [comments]);
   const [isEditing, setIsEditing] = useState<{ [key: string]: boolean }>({});
   const [editComment, setEditComment] = useState<{ [key: string]: string }>({});
   const [newComment, setNewComment] = useState<string>("");
   const [isReplying, setIsReplying] = useState<{ [key: string]: boolean }>({});
 
-  const lan = pathname.split("/")[1];
-  const cleanPath = pathname.split("/").slice(2).join("/");
-  const pathHash = crypto.createHash("sha256").update(cleanPath).digest("hex");
+  const fetchUserData = useCallback(async () => {
+    const res = await fetch("/api/auth/status");
+    const data = await res.json();
+    console.log("[fetchUserData] data: ", data);
+    if (data.isAuthenticated) setUser(data.user);
+  }, []);
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchComments = useCallback(async () => {
+    const res = await fetch(
+      `/api/comment/${classification}/${category}/${slug}`,
+    );
+    const data = await res.json();
+    console.log("[fetchComments] data:", data);
+    setComments(data);
+  }, [category, classification, slug]);
 
-    // 사용자 정보 가져오기
-    const fetchUserData = async () => {
-      const res = await fetch("/api/auth/status");
-      const data = await res.json();
-      if (isMounted && data.isAuthenticated) {
-        setUser(data.user);
-      }
-    };
+  const postComment = useCallback(
+    async (commentText: string) => {
+      const res = await fetch(
+        `/api/comment/${classification}/${category}/${slug}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: user.userId,
+            user_photo: user.photo,
+            content: commentText,
+          }),
+        },
+      );
+      if (!res.ok) throw new Error("Failed to post comment");
+      return res.json();
+    },
+    [category, classification, slug, user],
+  );
 
-    // 댓글 가져오기
-    const fetchComments = async () => {
-      const res = await fetch(`/api/comment/user/get?pathHash=${pathHash}`);
-      const data = await res.json();
-      if (isMounted) {
-        setComments(data);
-      }
-    };
-
-    fetchUserData();
-    fetchComments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [pathHash]);
-
-  // 사용자 댓글 핸들러
   const handleAddComment = async () => {
     if (!user) {
-      window.location.href = "/login";
+      redirectToLoginWithReturnUrl();
       return;
     }
 
     if (!newComment.trim()) return;
 
-    const commentData = {
-      userEmail: user.email,
-      username: user.username,
-      photo: user.photo,
-      comment: newComment,
-    };
-
-    const res = await fetch("/api/comment/user/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pathHash, commentData }),
-    });
-
-    if (res.ok) {
-      const newComment = await res.json();
-      setComments((prevComments) => [...prevComments, newComment]); // 상태 업데이트 시 기존 comments를 유지한 채로 새로운 댓글을 추가
-      setNewComment(""); // 새로운 댓글 입력 필드 초기화
+    try {
+      const newCommentObj = await postComment(newComment);
+      setComments((prev) => [...prev, newCommentObj]);
+      setNewComment("");
+    } catch (e) {
+      alert("Failed to add comment. Please try again later.");
     }
   };
 
@@ -97,7 +101,6 @@ const Comment = ({}) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        pathHash,
         commentId,
         newComment: updatedComment,
       }),
@@ -106,7 +109,7 @@ const Comment = ({}) => {
     if (res.ok) {
       setComments((prevComments) =>
         prevComments.map((comment) =>
-          comment._id === commentId
+          comment.id === commentId
             ? {
                 ...comment,
                 comment: updatedComment,
@@ -124,7 +127,7 @@ const Comment = ({}) => {
     if (!isEditing[commentId]) {
       setEditComment((prev) => ({
         ...prev,
-        [commentId]: comments.find((c) => c._id === commentId)?.comment || "",
+        [commentId]: comments.find((c) => c.id === commentId)?.content || "",
       }));
     }
   };
@@ -134,7 +137,6 @@ const Comment = ({}) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        pathHash,
         commentId,
         userEmail: user.email,
       }),
@@ -144,7 +146,7 @@ const Comment = ({}) => {
       const { deletedCommentId } = await res.json();
 
       setComments((prevComments) =>
-        prevComments.filter((comment) => comment._id !== deletedCommentId),
+        prevComments.filter((comment) => comment.id !== deletedCommentId),
       );
     }
   };
@@ -157,7 +159,6 @@ const Comment = ({}) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        pathHash,
         commentId,
         adminComment,
       }),
@@ -166,11 +167,11 @@ const Comment = ({}) => {
     if (res.ok) {
       setComments((prevComments) =>
         prevComments.map((comment) =>
-          comment._id === commentId
+          comment.id === commentId
             ? {
                 ...comment,
-                adminComment: adminComment, // 새 댓글 값
-                adminCreatedAt: new Date().toISOString(), // 현재 시간 추가
+                reply: adminComment, // 새 댓글 값
+                replyedAt: new Date().toISOString(), // 현재 시간 추가
               }
             : comment,
         ),
@@ -194,7 +195,6 @@ const Comment = ({}) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          pathHash,
           commentId,
         }),
       });
@@ -202,11 +202,11 @@ const Comment = ({}) => {
       if (res.ok) {
         setComments((prevComments) =>
           prevComments.map((comment) =>
-            comment._id === commentId
+            comment.id === commentId
               ? {
                   ...comment,
-                  adminComment: "",
-                  adminCreatedAt: null,
+                  reply: "",
+                  replyedAt: null,
                 }
               : comment,
           ),
@@ -221,22 +221,27 @@ const Comment = ({}) => {
 
   const handleFocus = () => {
     if (!user) {
-      window.location.href = "/login";
+      redirectToLoginWithReturnUrl();
     }
   };
+
+  useEffect(() => {
+    fetchUserData();
+    fetchComments();
+  }, [fetchUserData, fetchComments]);
 
   return (
     <div className="flex items-center justify-center">
       <div className="w-full md:w-3/5">
         <div className="my-24"></div>
-        {/* 댓글 목록 */}
+        {/* comment list */}
         {Array.isArray(comments) && comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment._id}>
-              {/* 사용자 댓글 */}
+            <div key={comment.id}>
+              {/* user */}
               <div
                 className={`items-start mb-5 ${
-                  isEditing[comment._id] && editComment[comment._id]
+                  isEditing[comment.id] && editComment[comment.id]
                     ? "flex-full"
                     : "flex"
                 }`}
@@ -250,23 +255,23 @@ const Comment = ({}) => {
                   className="w-8 h-8 rounded-full object-cover"
                 />
                 <div className="flex flex-col">
-                  {isEditing[comment._id] ? (
+                  {isEditing[comment.id] ? (
                     <div className="flex w-full">
                       <div className="relative bg-gray-200 dark:bg-neutral-700 rounded-lg p-3 mx-3 flex-grow">
                         <textarea
                           className="w-full h-full bg-gray-200 dark:bg-neutral-700 rounded-md text-lg dark:text-white leading-relaxed mb-14 p-2 resize-none"
                           rows={3}
-                          value={editComment[comment._id] || comment.comment}
+                          value={editComment[comment.id] || comment.content}
                           onChange={(e) =>
                             setEditComment((prev) => ({
                               ...prev,
-                              [comment._id]: e.target.value,
+                              [comment.id]: e.target.value,
                             }))
                           }
                         ></textarea>
                         <div className="absolute right-3 bottom-5">
                           <button
-                            onClick={() => handleUpdateComment(comment._id)}
+                            onClick={() => handleUpdateComment(comment.id)}
                             className="bg-transparent hover:bg-transparent py-2 px-4 rounded transition duration-300 ease-in-out"
                           >
                             <svg
@@ -293,7 +298,7 @@ const Comment = ({}) => {
                       <div className="relative bg-gray-200 dark:bg-neutral-700 rounded-lg p-3 mx-3">
                         <div className="absolute bg-gray-200 dark:bg-neutral-700 h-4 w-4 transform rotate-45 top-2 -left-1"></div>
                         <div className="text-lg text-black dark:text-white leading-relaxed my-1">
-                          {comment.comment}
+                          {comment.content}
                         </div>
                       </div>
                       <div className="flex flex-col px-4 py-2">
@@ -301,9 +306,7 @@ const Comment = ({}) => {
                           <span>{comment.username}</span>
                           <span className="hidden md:block">|</span>
                           <span className="hidden md:block">
-                            {new Date(
-                              comment.userCreatedAt,
-                            ).toLocaleDateString()}
+                            {new Date(comment.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
@@ -311,12 +314,12 @@ const Comment = ({}) => {
                   )}
 
                   {/* 사용자 버튼 */}
-                  {!isEditing[comment._id] && (
+                  {!isEditing[comment.id] && (
                     <div className="flex justify-end mt-2 px-4 space-x-2">
                       {/* 수정 버튼 */}
-                      {user?.email === comment.userEmail && (
+                      {user?.email === comment.email && (
                         <button
-                          onClick={() => handleEditCommentMode(comment._id)}
+                          onClick={() => handleEditCommentMode(comment.id)}
                         >
                           <svg
                             className="w-4 h-4 text-gray-800 dark:text-white"
@@ -339,10 +342,8 @@ const Comment = ({}) => {
                       )}
 
                       {/* 삭제 버튼 */}
-                      {user?.email === comment.userEmail && (
-                        <button
-                          onClick={() => handleDeleteComment(comment._id)}
-                        >
+                      {user?.email === comment.email && (
+                        <button onClick={() => handleDeleteComment(comment.id)}>
                           <svg
                             className="w-4 h-4 text-red-400 dark:text-red-400"
                             aria-hidden="true"
@@ -367,7 +368,7 @@ const Comment = ({}) => {
                       {adminEmails.includes(user?.email) && (
                         <>
                           <button
-                            onClick={() => openReplyPopup(comment._id)}
+                            onClick={() => openReplyPopup(comment.id)}
                             className="flex items-center justify-center text-gray-800 dark:text-white hover:text-blue-500 transition"
                           >
                             <svg
@@ -384,12 +385,12 @@ const Comment = ({}) => {
                           </button>
 
                           {/* 대댓글 작성 팝업 */}
-                          {isReplying[comment._id] && (
+                          {isReplying[comment.id] && (
                             <CommentReplyPopup
-                              commentId={comment._id}
-                              initialValue={comment.adminComment || ""}
+                              commentId={comment.id}
+                              initialValue={comment.reply || ""}
                               onReplySubmit={handleReplyComment}
-                              onClose={() => closeReplyPopup(comment._id)}
+                              onClose={() => closeReplyPopup(comment.id)}
                             />
                           )}
                         </>
@@ -399,21 +400,21 @@ const Comment = ({}) => {
                 </div>
               </div>
 
-              {/* 관리자 대댓글 */}
-              {comment.adminComment && (
+              {/* reply */}
+              {comment.reply && (
                 <div className="ml-12 flex justify-end items-start">
                   <div className="flex flex-col">
                     <div className="relative text-white bg-blue-500 rounded-lg p-3 mx-3">
                       <div className="absolute bg-blue-500 h-4 w-4 transform rotate-45 top-2 -right-1"></div>
                       <div className="text-lg text-white leading-relaxed my-1">
-                        {comment.adminComment}
+                        {comment.reply}
                       </div>
                     </div>
                     <div className="flex justify-start text-xs dark:text-white space-x-2 px-4 py-2 self-end">
                       <span>mogumogu</span>
                       <span className="hidden md:block">|</span>
                       <span className="hidden md:block">
-                        {new Date(comment.adminCreatedAt!).toLocaleDateString()}
+                        {new Date(comment.replyedAt!).toLocaleDateString()}
                       </span>
                     </div>
 
@@ -422,7 +423,7 @@ const Comment = ({}) => {
                       {/* 삭제 버튼 */}
                       {adminEmails.includes(user?.email) && (
                         <button
-                          onClick={() => handleDeleteAdminComment(comment._id)}
+                          onClick={() => handleDeleteAdminComment(comment.id)}
                         >
                           <svg
                             className="w-4 h-4 text-red-400 dark:text-red-400"

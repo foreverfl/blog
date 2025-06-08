@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { redirectToLoginWithReturnUrl } from "@/lib/auth";
 
 interface ProfileProps {
   isProfileOpen: boolean;
@@ -57,16 +58,6 @@ const Profile: React.FC<ProfileProps> = ({
 
     checkAuthStatus();
   }, []);
-
-  // Handler
-  const handleLoginRedirect = () => {
-    document.cookie =
-      "preLoginUrl=" +
-      encodeURIComponent(window.location.href) +
-      "; path=/; max-age=600"; // 현재 URL을 쿠키에 저장
-
-    router.push("/login"); // 로그인 페이지로 리디렉트
-  };
 
   const handleLogout = async () => {
     try {
@@ -209,7 +200,7 @@ const Profile: React.FC<ProfileProps> = ({
       ) : (
         <button
           className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black p-2 overflow-hidden"
-          onClick={handleLoginRedirect}
+          onClick={redirectToLoginWithReturnUrl}
         >
           <svg
             className="h-6 w-6 dark:fill-current dark:text-white"

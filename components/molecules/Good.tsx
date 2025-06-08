@@ -1,5 +1,6 @@
 "use client";
 
+import { redirectToLoginWithReturnUrl } from "@/lib/auth";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,7 +26,7 @@ const Good = () => {
         (userEmail ? `?userEmail=${userEmail}` : "");
       const res = await fetch(url);
       const data = await res.json();
-      console.log("[fetchLikeData] data: ", data);
+
       if (data && data.likeCount !== undefined) {
         setLikeCount(data.likeCount);
       }
@@ -109,7 +110,7 @@ const Good = () => {
 
   const handleClick = () => {
     if (!userEmail) {
-      window.location.href = "/login";
+      redirectToLoginWithReturnUrl();
       return;
     }
 

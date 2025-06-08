@@ -1,5 +1,5 @@
 import Comment from "@/components/molecules/Comment";
-import Good from "@/components/atom/Good";
+import Good from "@/components/molecules/Good";
 import Article from "@/components/molecules/Article";
 import { getContents } from "@/lib/content/jsonHelpers";
 import { compileMdxContent, getMdxFileContent } from "@/lib/content/mdxHelpers";
