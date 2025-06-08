@@ -9,6 +9,8 @@
     - name: Copy .env.prod to .env
       shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
 
+    - import_tasks: tasks/docker_log_backup.yml
+
     - name: Stop existing container
       shell: docker rm -f blog || true
 

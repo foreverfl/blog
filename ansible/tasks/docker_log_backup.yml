@@ -1,0 +1,15 @@
+- name: Save current container logs before removal
+  shell: |
+    log_dir="/var/log/docker/blog"
+    mkdir -p "$log_dir"
+    today=$(date +%Y-%m-%d)
+    idx=1
+    log_file="${log_dir}/${today}-$(printf '%03d' $idx).log"
+    while [ -f "$log_file" ]; do
+      idx=$((idx+1))
+      log_file="${log_dir}/${today}-$(printf '%03d' $idx).log"
+    done
+    if docker ps -a --format '{{ "{{.Names}}" }}' | grep -q '^blog$'; then
+      docker logs blog > "$log_file" 2>&1 || true
+    fi
+  ignore_errors: yes
