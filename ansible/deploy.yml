@@ -38,12 +38,14 @@
         docker build -t blog:{{ blog_timestamp }} . > /tmp/docker-build.log 2>&1
       register: build_result
       ignore_errors: yes
+      async: 900 
+      poll: 10
 
     - name: Get previous blog image tag (lastest second image)
       shell: docker images blog --format '{{ "{{.Tag}}" }}' | sed -n '2p'
       register: previous_image_tag
 
-    - name: Rollback to previous image if build failed 3 times
+    - name: Rollback to previous image if build failed
       shell: |
         docker run -d \
           --name blog \
