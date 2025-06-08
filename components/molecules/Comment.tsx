@@ -4,7 +4,6 @@ import { redirectToLoginWithReturnUrl } from "@/lib/auth";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import CommentReplyPopup from "./CommentReplyPopup";
 
 interface Comment {
   id: string;
@@ -115,11 +114,17 @@ const Comment = ({}) => {
       return;
     }
 
-    // prompt로 입력받음
-    if (!newComment || !newComment.trim()) return;
+    const trimmed = newComment.trim();
+    if (!trimmed) return;
+
+    if (trimmed.length < 10) {
+      alert("Please enter at least 10 characters in your comment.");
+      return;
+    }
 
     try {
       const newCommentObj = await createComment(newComment.trim());
+      console.log("[handleAddComment] newCommentObj: ", newCommentObj);
       setComments((prev) => [...prev, newCommentObj]);
       setNewComment("");
     } catch (e) {
@@ -131,7 +136,12 @@ const Comment = ({}) => {
     const currentComment =
       comments.find((c) => c.id === commentId)?.content || "";
     const updatedComment = window.prompt("Enter your comment:", currentComment);
+
     if (!updatedComment || !updatedComment.trim()) return;
+    if (updatedComment.trim().length < 10) {
+      alert("Please enter at least 10 characters in your comment.");
+      return;
+    }
 
     const isConfirmed = window.confirm(
       "Are you sure you want to update this comment?",

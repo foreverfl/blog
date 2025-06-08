@@ -1,6 +1,7 @@
 import { createComment, getCommentsForPost } from "@/lib/postgres/comments";
 import { getPost } from "@/lib/postgres/posts";
 import { NextRequest, NextResponse } from "next/server";
+import camelcaseKeys from "camelcase-keys";
 
 // fetch all comments for a specific post
 export async function GET(
@@ -16,7 +17,8 @@ export async function GET(
   if (!post)
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   const comments = await getCommentsForPost(post.id);
-  return NextResponse.json(comments);
+  const camelComments = camelcaseKeys(comments as any, { deep: true });
+  return NextResponse.json(camelComments);
 }
 
 // create a new comment for a specific post
@@ -39,5 +41,8 @@ export async function POST(
     user_photo,
     content,
   });
-  return NextResponse.json(comment);
+
+  const camelComment = camelcaseKeys(comment as any, { deep: true });
+
+  return NextResponse.json(camelComment);
 }

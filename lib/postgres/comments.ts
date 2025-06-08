@@ -52,9 +52,9 @@ export async function getCommentsForPost(post_id: string): Promise<Comment[]> {
       u.username,
       u.photo,
       c.content,
-      c.created_at AS "createdAt",
+      c.created_at,
       c.reply,
-      c.replied_at AS "repliedAt"
+      c.replied_at
     FROM comments c
     JOIN users u ON c.user_id = u.id
     WHERE c.post_id = $1
