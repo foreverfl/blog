@@ -13,7 +13,7 @@ interface Comment {
   content: string;
   createdAt: string;
   reply: string;
-  replyedAt: string | null;
+  repliedAt: string | null;
 }
 
 const Comment = ({}) => {
@@ -30,14 +30,26 @@ const Comment = ({}) => {
 
   // state
   const [user, setUser] = useState<any>(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
 
   const fetchUserData = useCallback(async () => {
-    const res = await fetch("/api/auth/status");
-    const data = await res.json();
-    console.log("[fetchUserData] data: ", data);
-    if (data.isAuthenticated) setUser(data.user);
+    setUserLoading(true);
+    try {
+      const res = await fetch("/api/auth/status");
+      const data = await res.json();
+      console.log("[fetchUserData] data: ", data);
+      if (data.isAuthenticated) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (e) {
+      setUser(null);
+    } finally {
+      setUserLoading(false);
+    }
   }, []);
 
   const fetchComments = useCallback(async () => {
@@ -89,8 +101,6 @@ const Comment = ({}) => {
 
   const deleteComment = useCallback(
     async (commentId: string, userId: string) => {
-      console.log("[deleteComment] commentId: ", commentId);
-      console.log("[deleteComment] userId: ", userId);
       const res = await fetch(
         `/api/comment/${classification}/${category}/${slug}/${commentId}`,
         {
@@ -103,6 +113,41 @@ const Comment = ({}) => {
         },
       );
       if (!res.ok) throw new Error("failed to delete comment");
+      return res.json();
+    },
+    [category, classification, slug],
+  );
+
+  const upsertAdminReply = useCallback(
+    async (commentId: string, reply: string) => {
+      const res = await fetch(
+        `/api/comment/${classification}/${category}/${slug}/${commentId}/admin`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            commentId,
+            reply,
+          }),
+        },
+      );
+      if (!res.ok) throw new Error("Admin comment submission failed");
+      return res.json();
+    },
+    [category, classification, slug],
+  );
+
+  const deleteAdminReply = useCallback(
+    async (commentId: string) => {
+      const res = await fetch(
+        `/api/comment/${classification}/${category}/${slug}/${commentId}/admin`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ commentId }),
+        },
+      );
+      if (!res.ok) throw new Error("Admin comment deletion failed");
       return res.json();
     },
     [category, classification, slug],
@@ -124,7 +169,6 @@ const Comment = ({}) => {
 
     try {
       const newCommentObj = await createComment(newComment.trim());
-      console.log("[handleAddComment] newCommentObj: ", newCommentObj);
       setComments((prev) => [...prev, newCommentObj]);
       setNewComment("");
     } catch (e) {
@@ -178,62 +222,47 @@ const Comment = ({}) => {
     }
   };
 
-  const handleReplyComment = async (commentId: string, reply: string) => {
-    const adminComment = reply.trim();
-    if (!adminComment) return;
+  const handleAddReplyComment = async (commentId: string) => {
+    const currentReply = comments.find((c) => c.id === commentId)?.reply || "";
+    const reply = window.prompt("Enter your admin reply:", currentReply);
 
-    const res = await fetch("/api/comment/admin/upsert", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        commentId,
-        adminComment,
-      }),
-    });
+    if (!reply || !reply.trim()) return;
 
-    if (res.ok) {
+    try {
+      await upsertAdminReply(commentId, reply.trim());
       setComments((prevComments) =>
         prevComments.map((comment) =>
           comment.id === commentId
             ? {
                 ...comment,
-                reply: adminComment, // 새 댓글 값
-                replyedAt: new Date().toISOString(), // 현재 시간 추가
+                reply: reply.trim(),
+                repliedAt: new Date().toISOString(),
               }
             : comment,
         ),
       );
+      alert("Admin reply submitted successfully.");
+    } catch (e) {
+      alert("Failed to submit admin reply. Please try again later.");
     }
   };
 
-  // 관리자 댓글 핸들러
   const handleDeleteAdminComment = async (commentId: string) => {
     try {
-      const res = await fetch("/api/comment/admin/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          commentId,
-        }),
-      });
-
-      if (res.ok) {
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.id === commentId
-              ? {
-                  ...comment,
-                  reply: "",
-                  replyedAt: null,
-                }
-              : comment,
-          ),
-        );
-      } else {
-        console.error("관리자 댓글 삭제 실패");
-      }
+      await deleteAdminReply(commentId);
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                reply: "",
+                repliedAt: null,
+              }
+            : comment,
+        ),
+      );
     } catch (error) {
-      console.error("서버 오류: ", error);
+      alert("Admin comment deletion failed. Please try again later.");
     }
   };
 
@@ -257,7 +286,9 @@ const Comment = ({}) => {
           comments.map((comment) => (
             <div key={comment.id}>
               {/* user comment */}
-              <div className={`items-start mb-5 flex`}>
+              <div
+                className={`items-start flex ${comment.reply ? "" : "mb-5"}`}
+              >
                 <Image
                   src={comment.photo || "/images/smile.png"}
                   alt={"profile"}
@@ -274,7 +305,7 @@ const Comment = ({}) => {
                       </div>
                     </div>
                     <div className="flex flex-col px-4 py-2">
-                      <div className="flex justify-start text-xs dark:text-white space-x-2">
+                      <div className="flex justify-end text-xs dark:text-white space-x-2">
                         <span>{comment.username}</span>
                         <span className="hidden md:block">|</span>
                         <span className="hidden md:block">
@@ -335,7 +366,10 @@ const Comment = ({}) => {
                     {/* reply button */}
                     {adminEmails.includes(user?.email) && (
                       <>
-                        <button className="flex items-center justify-center text-gray-800 dark:text-white hover:text-blue-500 transition">
+                        <button
+                          onClick={() => handleAddReplyComment(comment.id)}
+                          className="flex items-center justify-center text-gray-800 dark:text-white hover:text-blue-500 transition"
+                        >
                           <svg
                             className="w-4 h-4"
                             aria-hidden="true"
@@ -368,7 +402,7 @@ const Comment = ({}) => {
                       <span>mogumogu</span>
                       <span className="hidden md:block">|</span>
                       <span className="hidden md:block">
-                        {new Date(comment.replyedAt!).toLocaleDateString()}
+                        {new Date(comment.repliedAt!).toLocaleDateString()}
                       </span>
                     </div>
 
@@ -433,6 +467,7 @@ const Comment = ({}) => {
                     ? "ここにコメントを書いてください。"
                     : "회원님의 댓글을 여기에 작성해 주세요."
                 }
+                disabled={userLoading}
               ></textarea>
               <div className="absolute right-3 bottom-5">
                 <button

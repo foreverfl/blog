@@ -1,7 +1,8 @@
 import { deleteAdminReply, upsertAdminReply } from "@/lib/postgres/comments";
+import camelcaseKeys from "camelcase-keys";
 import { NextRequest, NextResponse } from "next/server";
 
-// 관리자 답글 추가/수정
+// update an admin reply to a comment
 export async function PATCH(
   req: NextRequest,
   {
@@ -17,11 +18,19 @@ export async function PATCH(
 ) {
   const { comment_id } = await params;
   const { reply } = await req.json();
+  console.log(
+    "Updating admin reply for comment_id:",
+    comment_id,
+    "with reply:",
+    reply,
+  );
   const comment = await upsertAdminReply(comment_id, reply);
-  return NextResponse.json(comment);
+  const camelComment = camelcaseKeys(comment as any, { deep: true });
+  console.log("Updated comment:", camelComment);
+  return NextResponse.json(camelComment);
 }
 
-// 관리자 답글 삭제
+// delete an admin reply to a comment
 export async function DELETE(
   req: NextRequest,
   {
@@ -37,5 +46,6 @@ export async function DELETE(
 ) {
   const { comment_id } = await params;
   const comment = await deleteAdminReply(comment_id);
-  return NextResponse.json(comment);
+  const camelComment = camelcaseKeys(comment as any, { deep: true });
+  return NextResponse.json(camelComment);
 }

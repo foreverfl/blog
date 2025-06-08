@@ -89,7 +89,7 @@ export async function upsertAdminReply(
   reply: string,
 ): Promise<Comment | null> {
   const result = await pool.query<Comment>(
-    `UPDATE comments SET reply = $1 WHERE id = $2 RETURNING *`,
+    `UPDATE comments SET reply = $1, replied_at = NOW() WHERE id = $2 RETURNING *`,
     [reply, comment_id],
   );
   return result.rows[0] ?? null;
@@ -100,7 +100,7 @@ export async function deleteAdminReply(
   comment_id: string,
 ): Promise<Comment | null> {
   const result = await pool.query<Comment>(
-    `UPDATE comments SET reply = NULL WHERE id = $1 RETURNING *`,
+    `UPDATE comments SET reply = NULL, replied_at = NULL WHERE id = $1 RETURNING *`,
     [comment_id],
   );
   return result.rows[0] ?? null;
