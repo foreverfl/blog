@@ -25,11 +25,9 @@ const Profile: React.FC<ProfileProps> = ({
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
   const [userData, setUserData] = useState<any>(null); // 사용자 데이터
-  const [visitorData, setVisitorData] = useState({
-    total: 0,
-    prev: 0,
-    today: 0,
-  });
+  useEffect(() => {
+    console.log("userData: ", userData);
+  }, [userData]);
 
   // authStatus 체크
   useEffect(() => {
@@ -44,6 +42,7 @@ const Profile: React.FC<ProfileProps> = ({
 
         if (response.ok) {
           const data = await response.json();
+          console.log("data: ", data);
           if (data.isAuthenticated) {
             setUserData(data.user); // 사용자 정보 설정
             setIsLoggedIn(true); // 로그인 상태 설정
@@ -168,20 +167,11 @@ const Profile: React.FC<ProfileProps> = ({
                   </div>
                 </div>
 
-                {/* 방문자 수 표시 */}
-                <div className="flex justify-between items-center mx-8 my-4 text-white gap-4">
-                  <div className="flex-1">
-                    <p className="text-sm">Total</p>
-                    <p className="text-xl font-bold">{visitorData.total}</p>
-                  </div>
-                  <div className="flex-initial text-right">
-                    <p className="text-xs">Prev</p>
-                    <p>{visitorData.prev}</p>
-                  </div>
-                  <div className="flex-initial text-right">
-                    <p className="text-xs">Today</p>
-                    <p>{visitorData.today}</p>
-                  </div>
+                {/* 환영 인사 */}
+                <div className="mx-8 my-2">
+                  <p className="px-8 py-4 text-center text-sm font-semibold text-gray-700 bg-white rounded-md">
+                    {`${userData?.username}`}
+                  </p>
                 </div>
 
                 {/* 로그아웃 버튼 */}
