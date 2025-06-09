@@ -286,7 +286,7 @@ const Comment = ({}) => {
   }, [lan, i18n]);
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center mb-8">
       <div className="w-full md:w-3/5">
         <div className="my-24"></div>
         {/* comment list */}
@@ -295,7 +295,7 @@ const Comment = ({}) => {
             <div key={comment.id}>
               {/* user comment */}
               <div
-                className={`items-start flex ${comment.reply ? "" : "mb-5"}`}
+                className={`items-start flex ${comment.reply ? "mb-2" : "mb-5"}`}
               >
                 <Image
                   src={comment.photo || "/images/smile.png"}
