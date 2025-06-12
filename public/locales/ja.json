@@ -10,5 +10,15 @@
   "comment_admin_reply_prompt": "管理者の返信を入力してください。",
   "comment_admin_reply_success": "管理者の返信が正常に送信されました。",
   "comment_admin_reply_fail": "管理者の返信の送信に失敗しました。再度お試しください。",
-  "comment_admin_reply_delete_fail": "管理者の返信の削除に失敗しました。再度お試しください。"
+  "comment_admin_reply_delete_fail": "管理者の返信の削除に失敗しました。再度お試しください。",
+
+  "bug_report_title": "不具合報告",
+  "bug_report_form_title_label": "タイトル",
+  "bug_report_form_title_placeholder": "ブログ記事にコメントを投稿できません",
+  "bug_report_form_description_label": "説明",
+  "bug_report_form_description_placeholder": "コメントを投稿しようとしても、画面に何も表示されず、エラーメッセージも出ません。",
+  "bug_report_form_submit": "送信",
+  "bug_report_form_submitting": "送信中...",
+  "bug_report_form_success": "ありがとうございます！バグ報告が送信されました。",
+  "bug_report_form_error": "送信に失敗しました。もう一度お試しください。"
 }

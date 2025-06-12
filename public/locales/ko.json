@@ -10,5 +10,15 @@
   "comment_admin_reply_prompt": "관리자 답변을 입력해 주세요.",
   "comment_admin_reply_success": "관리자 답변이 성공적으로 등록되었습니다.",
   "comment_admin_reply_fail": "관리자 답변 등록에 실패했습니다. 다시 시도해 주세요.",
-  "comment_admin_reply_delete_fail": "관리자 답변 삭제에 실패했습니다. 다시 시도해 주세요."
+  "comment_admin_reply_delete_fail": "관리자 답변 삭제에 실패했습니다. 다시 시도해 주세요.",
+
+  "bug_report_title": "버그 신고",
+  "bug_report_form_title_label": "제목",
+  "bug_report_form_title_placeholder": "블로그 글에 댓글이 등록되지 않아요",
+  "bug_report_form_description_label": "설명",
+  "bug_report_form_description_placeholder": "댓글을 작성해서 등록하면 아무런 반응이 없고, 에러 메시지도 보이지 않습니다.",
+  "bug_report_form_submit": "제출하기",
+  "bug_report_form_submitting": "제출 중...",
+  "bug_report_form_success": "감사합니다! 버그 신고가 전송되었습니다.",
+  "bug_report_form_error": "제출에 실패했습니다. 다시 시도해 주세요."
 }

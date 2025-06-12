@@ -10,5 +10,15 @@
   "comment_admin_reply_prompt": "Enter your admin reply:",
   "comment_admin_reply_success": "Admin reply submitted successfully.",
   "comment_admin_reply_fail": "Failed to submit admin reply. Please try again.",
-  "comment_admin_reply_delete_fail": "Admin comment deletion failed. Please try again."
+  "comment_admin_reply_delete_fail": "Admin comment deletion failed. Please try again.",
+
+  "bug_report_title": "Bug Report",
+  "bug_report_form_title_label": "Title",
+  "bug_report_form_title_placeholder": "Unable to post comments on blog articles",
+  "bug_report_form_description_label": "Description",
+  "bug_report_form_description_placeholder": "When I try to post a comment, nothing appears on the page and no error is shown.",
+  "bug_report_form_submit": "Submit",
+  "bug_report_form_submitting": "Submitting...",
+  "bug_report_form_success": "Thank you! Bug report sent.",
+  "bug_report_form_error": "Failed to submit. Please try again."
 }
