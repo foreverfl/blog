@@ -11,8 +11,6 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ date?: string }> },
 ) {
-  const start = Date.now();
-
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;

@@ -13,8 +13,6 @@ export async function POST(
     params,
   }: { params: Promise<{ date?: string }>; searchParams: URLSearchParams },
 ) {
-  const start = Date.now();
-
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {
     return authResult;
@@ -76,44 +74,124 @@ export async function POST(
 
   // ko
   for (const [idx, item] of toTranslateKo.entries()) {
-    translateQueue.add(async () => {
-      try {
-        logMessage(
-          `[ko][${idx + 1}/${toTranslateKo.length}] Translating: ${item.id}...`,
-        );
-        const translated = await translate(item.summary.en, "ko", "content");
-        await redis.set(`ko:${item.id}`, translated, "EX", 60 * 60 * 24);
-        logMessage(
-          `[ko][${idx + 1}/${toTranslateKo.length}] ✅ Done: ${item.id}`,
-        );
-      } catch (error) {
-        console.error("❌ Error translating (ko):", error);
-        logMessage(
-          `[ko][${idx + 1}/${toTranslateKo.length}] ❌ Error: ${item.id} (${error})`,
-        );
-      }
-    });
+    if (
+      item.title &&
+      item.title.en &&
+      (!item.title.ko || item.title.ko === "")
+    ) {
+      // title translation
+      translateQueue.add(async () => {
+        try {
+          logMessage(
+            `[ko][title][${idx + 1}/${toTranslateKo.length}] Translating title: ${item.id}...`,
+          );
+          const translated = await translate(item.title.en, "ko", "title");
+          await redis.set(
+            `ko:title:${item.id}`,
+            translated,
+            "EX",
+            60 * 60 * 24,
+          );
+          logMessage(
+            `[ko][title][${idx + 1}/${toTranslateKo.length}] ✅ Done: ${item.id}`,
+          );
+        } catch (error) {
+          logMessage(
+            `[ko][title][${idx + 1}/${toTranslateKo.length}] ❌ Error: ${item.id} (${error})`,
+          );
+        }
+      });
+    }
+
+    // summary translation
+    if (
+      item.summary &&
+      item.summary.en &&
+      (!item.summary.ko || item.summary.ko === "")
+    ) {
+      translateQueue.add(async () => {
+        try {
+          logMessage(
+            `[ko][summary][${idx + 1}/${toTranslateKo.length}] Translating summary: ${item.id}...`,
+          );
+          const translated = await translate(item.summary.en, "ko", "content");
+          await redis.set(
+            `ko:summary:${item.id}`,
+            translated,
+            "EX",
+            60 * 60 * 24,
+          );
+          logMessage(
+            `[ko][summary][${idx + 1}/${toTranslateKo.length}] ✅ Done: ${item.id}`,
+          );
+        } catch (error) {
+          logMessage(
+            `[ko][summary][${idx + 1}/${toTranslateKo.length}] ❌ Error: ${item.id} (${error})`,
+          );
+        }
+      });
+    }
   }
 
   // ja
   for (const [idx, item] of toTranslateJa.entries()) {
-    translateQueue.add(async () => {
-      try {
-        logMessage(
-          `[ja][${idx + 1}/${toTranslateJa.length}] Translating: ${item.id}...`,
-        );
-        const translated = await translate(item.summary.en, "ja", "content");
-        await redis.set(`ja:${item.id}`, translated, "EX", 60 * 60 * 24);
-        logMessage(
-          `[ja][${idx + 1}/${toTranslateJa.length}] ✅ Done: ${item.id}`,
-        );
-      } catch (error) {
-        console.error("❌ Error translating (ja):", error);
-        logMessage(
-          `[ja][${idx + 1}/${toTranslateJa.length}] ❌ Error: ${item.id} (${error})`,
-        );
-      }
-    });
+    // title translation
+    if (
+      item.title &&
+      item.title.en &&
+      (!item.title.ja || item.title.ja === "")
+    ) {
+      translateQueue.add(async () => {
+        try {
+          logMessage(
+            `[ja][title][${idx + 1}/${toTranslateJa.length}] Translating title: ${item.id}...`,
+          );
+          const translated = await translate(item.title.en, "ja", "title");
+          await redis.set(
+            `ja:title:${item.id}`,
+            translated,
+            "EX",
+            60 * 60 * 24,
+          );
+          logMessage(
+            `[ja][title][${idx + 1}/${toTranslateJa.length}] ✅ Done: ${item.id}`,
+          );
+        } catch (error) {
+          logMessage(
+            `[ja][title][${idx + 1}/${toTranslateJa.length}] ❌ Error: ${item.id} (${error})`,
+          );
+        }
+      });
+    }
+
+    // summary translation
+    if (
+      item.summary &&
+      item.summary.en &&
+      (!item.summary.ja || item.summary.ja === "")
+    ) {
+      translateQueue.add(async () => {
+        try {
+          logMessage(
+            `[ja][summary][${idx + 1}/${toTranslateJa.length}] Translating summary: ${item.id}...`,
+          );
+          const translated = await translate(item.summary.en, "ja", "content");
+          await redis.set(
+            `ja:summary:${item.id}`,
+            translated,
+            "EX",
+            60 * 60 * 24,
+          );
+          logMessage(
+            `[ja][summary][${idx + 1}/${toTranslateJa.length}] ✅ Done: ${item.id}`,
+          );
+        } catch (error) {
+          logMessage(
+            `[ja][summary][${idx + 1}/${toTranslateJa.length}] ❌ Error: ${item.id} (${error})`,
+          );
+        }
+      });
+    }
   }
 
   return NextResponse.json({

@@ -73,24 +73,48 @@ export async function POST(
         }
         if (type === "translate") {
           if (lang === "ko") {
-            const summaryKo = await redis.get(`ko:${item.id}`);
+            // summary.ko
+            const summaryKo = await redis.get(`ko:summary:${item.id}`);
             if (summaryKo && (!item.summary || !item.summary.ko)) {
               const idx = modifiedData.findIndex((d: any) => d.id === item.id);
               if (idx !== -1) {
                 if (!modifiedData[idx].summary) modifiedData[idx].summary = {};
                 modifiedData[idx].summary.ko = summaryKo;
-                await redis.del(`ko:${item.id}`);
+                await redis.del(`ko:summary:${item.id}`);
+                flushed++;
+              }
+            }
+            // title.ko
+            const titleKo = await redis.get(`ko:title:${item.id}`);
+            if (titleKo && (!item.title || !item.title.ko)) {
+              const idx = modifiedData.findIndex((d: any) => d.id === item.id);
+              if (idx !== -1) {
+                if (!modifiedData[idx].title) modifiedData[idx].title = {};
+                modifiedData[idx].title.ko = titleKo;
+                await redis.del(`ko:title:${item.id}`);
                 flushed++;
               }
             }
           } else if (lang === "ja") {
-            const summaryJa = await redis.get(`ja:${item.id}`);
+            // summary.ja
+            const summaryJa = await redis.get(`ja:summary:${item.id}`);
             if (summaryJa && (!item.summary || !item.summary.ja)) {
               const idx = modifiedData.findIndex((d: any) => d.id === item.id);
               if (idx !== -1) {
                 if (!modifiedData[idx].summary) modifiedData[idx].summary = {};
                 modifiedData[idx].summary.ja = summaryJa;
-                await redis.del(`ja:${item.id}`);
+                await redis.del(`ja:summary:${item.id}`);
+                flushed++;
+              }
+            }
+            // title.ja
+            const titleJa = await redis.get(`ja:title:${item.id}`);
+            if (titleJa && (!item.title || !item.title.ja)) {
+              const idx = modifiedData.findIndex((d: any) => d.id === item.id);
+              if (idx !== -1) {
+                if (!modifiedData[idx].title) modifiedData[idx].title = {};
+                modifiedData[idx].title.ja = titleJa;
+                await redis.del(`ja:title:${item.id}`);
                 flushed++;
               }
             }
