@@ -108,9 +108,19 @@ const Comment = ({}) => {
         },
       );
       if (!res.ok) throw new Error("failed to update comment");
+
+      await sendDiscord({
+        type: "comment_update",
+        payload: {
+          post_url: window.location.href,
+          username: user.username,
+          updatedContent: updatedComment,
+        },
+      });
+
       return res.json();
     },
-    [category, classification, slug],
+    [category, classification, slug, user.username],
   );
 
   const deleteComment = useCallback(
@@ -127,9 +137,17 @@ const Comment = ({}) => {
         },
       );
       if (!res.ok) throw new Error("failed to delete comment");
+
+      await sendDiscord({
+        type: "comment_delete",
+        payload: {
+          post_url: window.location.href,
+          username: user.username,
+        },
+      });
       return res.json();
     },
-    [category, classification, slug],
+    [category, classification, slug, user.username],
   );
 
   const upsertAdminReply = useCallback(

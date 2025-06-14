@@ -33,6 +33,18 @@ export async function POST(req: NextRequest) {
       if (post_url) discordContent += `\n\n## Post\n${post_url}`;
       if (username) discordContent += `\n\n## User\n${username}`;
       if (content) discordContent += `\n\n## Content\n${content}`;
+    } else if (type === "comment_update") {
+      const { updatedContent, username, post_url } = rest;
+      discordContent += `# Update Comment`;
+      if (post_url) discordContent += `\n\n## Post\n${post_url}`;
+      if (username) discordContent += `\n\n## User\n${username}`;
+      if (updatedContent)
+        discordContent += `\n\n## Updated Content\n${updatedContent}`;
+    } else if (type === "comment_delete") {
+      const { username, post_url } = rest;
+      discordContent += `# Delete Comment`;
+      if (post_url) discordContent += `\n\n## Post\n${post_url}`;
+      if (username) discordContent += `\n\n## User\n${username}`;
     } else {
       return NextResponse.json(
         { ok: false, error: `Unknown type: ${type}` },
