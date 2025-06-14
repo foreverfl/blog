@@ -120,7 +120,7 @@ const Comment = ({}) => {
 
       return res.json();
     },
-    [category, classification, slug, user.username],
+    [category, classification, slug, user],
   );
 
   const deleteComment = useCallback(
@@ -147,7 +147,7 @@ const Comment = ({}) => {
       });
       return res.json();
     },
-    [category, classification, slug, user.username],
+    [category, classification, slug, user],
   );
 
   const upsertAdminReply = useCallback(
