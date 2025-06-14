@@ -1,8 +1,9 @@
 "use client";
 
+import CloudflareTurnstile from "@/components/atom/CloudflareTurnstile";
 import "@/lib/i18n";
 import { usePathname } from "next/navigation";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface BugReportProps {
@@ -21,7 +22,6 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>("");
-  const turnstileRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +54,6 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
 
       setTitle("");
       setContent("");
-      setTurnstileToken("");
 
       alert(t("bug_report_form_success"));
       if (setIsOpen) setIsOpen(false);
@@ -65,20 +64,8 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
   };
 
   useEffect(() => {
-    // Register the Cloudflare Turnstile script only once
-    if (!document.querySelector("#cf-turnstile-script")) {
-      const script = document.createElement("script");
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-      script.async = true;
-      script.id = "cf-turnstile-script";
-      document.body.appendChild(script);
-    }
-
-    // Register the global callback for Turnstile token issuance
-    (window as any).onTurnstileSuccess = (token: string) => {
-      setTurnstileToken(token);
-    };
-  }, []);
+    if (isOpen) setTurnstileToken("");
+  }, [isOpen]);
 
   useEffect(() => {
     if (["ko", "ja", "en"].includes(lan)) {
@@ -92,17 +79,16 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
 
       {/* Turnstile Widget */}
       {!turnstileToken && (
-        <div ref={turnstileRef}>
-          <div
-            key={isOpen ? "turnstile-open" : "turnstile-closed"}
-            className="cf-turnstile"
-            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-            data-callback="onTurnstileSuccess"
-          ></div>
+        <>
+          <CloudflareTurnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            onSuccess={setTurnstileToken}
+            resetDeps={[isOpen]} // 모달 열릴 때마다 새로 mount
+          />
           <p className="mt-2 text-xs text-gray-500">
             {t("bug_report_form_turnstile_notice")}
           </p>
-        </div>
+        </>
       )}
 
       {/* Bug Report Form */}

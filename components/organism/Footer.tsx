@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      <footer className="p-4 dark:text-neutral-50 dark:bg-neutral-900">
+      <footer className="p-24 dark:text-neutral-50 dark:bg-neutral-900">
         {/* Copyright */}
         <div className="container mx-auto text-center">
           {/* md 크기 이상에서만 보이는 span */}
@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
           },
         }}
       >
-        <div className="p-6 bg-white dark:bg-[#090909] text-gray-900 dark:text-gray-100">
+        <div className="p-4 bg-white dark:bg-[#090909] text-gray-900 dark:text-gray-100">
           <div className="flex justify-end">
             <button
               onClick={() => setBugBountyOpen(false)}
