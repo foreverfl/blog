@@ -20,5 +20,6 @@
   "bug_report_form_submit": "제출하기",
   "bug_report_form_submitting": "제출 중...",
   "bug_report_form_success": "감사합니다! 버그 신고가 전송되었습니다.",
-  "bug_report_form_error": "제출에 실패했습니다. 다시 시도해 주세요."
+  "bug_report_form_error": "제출에 실패했습니다. 다시 시도해 주세요.",
+  "bug_report_form_turnstile_notice": "인증 통과 시 버그 리포트 폼이 열립니다."
 }

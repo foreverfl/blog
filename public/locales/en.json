@@ -20,5 +20,6 @@
   "bug_report_form_submit": "Submit",
   "bug_report_form_submitting": "Submitting...",
   "bug_report_form_success": "Thank you! Bug report sent.",
-  "bug_report_form_error": "Failed to submit. Please try again."
+  "bug_report_form_error": "Failed to submit. Please try again.",
+  "bug_report_form_turnstile_notice": "The bug report form will open after verification."
 }

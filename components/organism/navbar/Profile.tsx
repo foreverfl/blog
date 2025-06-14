@@ -25,9 +25,6 @@ const Profile: React.FC<ProfileProps> = ({
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
   const [userData, setUserData] = useState<any>(null); // 사용자 데이터
-  useEffect(() => {
-    console.log("userData: ", userData);
-  }, [userData]);
 
   // authStatus 체크
   useEffect(() => {
@@ -42,7 +39,6 @@ const Profile: React.FC<ProfileProps> = ({
 
         if (response.ok) {
           const data = await response.json();
-          console.log("data: ", data);
           if (data.isAuthenticated) {
             setUserData(data.user); // 사용자 정보 설정
             setIsLoggedIn(true); // 로그인 상태 설정

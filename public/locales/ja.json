@@ -20,5 +20,6 @@
   "bug_report_form_submit": "送信",
   "bug_report_form_submitting": "送信中...",
   "bug_report_form_success": "ありがとうございます！バグ報告が送信されました。",
-  "bug_report_form_error": "送信に失敗しました。もう一度お試しください。"
+  "bug_report_form_error": "送信に失敗しました。もう一度お試しください。",
+  "bug_report_form_turnstile_notice": "認証に成功するとバグ報告フォームが表示されます。"
 }
