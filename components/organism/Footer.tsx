@@ -41,15 +41,14 @@ const Footer: React.FC = () => {
           </span>
 
           {/* Privacy Policy */}
-          <div className="mt-2">
+          <div className="mt-5 flex flex-row items-center justify-center gap-4">
             <button
               onClick={() => setPrivacyOpen(true)}
               className="text-sm text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white cursor-pointer"
             >
               Privacy Policy
             </button>
-            <span className="mx-2 text-gray-400">|</span>
-            {/* Bug Bounty */}
+            <span className="text-gray-400">|</span>
             <button
               onClick={() => setBugBountyOpen(true)}
               className="text-sm text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white cursor-pointer"
