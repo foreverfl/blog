@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy } from "@geist-ui/icons";
+import { Copy, ExternalLink } from "@geist-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 
 type TrendItem = {
   id: string;
+  hnId: number;
   title: {
     en: string | null;
     ko: string | null;
@@ -80,6 +81,11 @@ export default function Trends({ items }: { items: TrendItem[] }) {
     });
   };
 
+  const handleExternalLink = (item: TrendItem) => {
+    const hnUrl = `https://news.ycombinator.com/item?id=${item.hnId}`;
+    window.open(hnUrl, "_blank", "noopener,noreferrer");
+  };
+
   if (!items || items.length === 0) {
     return <div>{localeLabel.noData}</div>;
   }
@@ -137,15 +143,26 @@ export default function Trends({ items }: { items: TrendItem[] }) {
             </div>
 
             <div className="mt-5 text-sm text-neutral-400 flex justify-between items-center">
-              <button
-                onClick={() =>
-                  handleCopy(item.summary[lan] ?? localeLabel.noSummary)
-                }
-                className="text-neutral-400 hover:text-white transition-colors"
-              >
-                <Copy size={16} />
-              </button>
+              {/* Copy and external link buttons */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() =>
+                    handleCopy(item.summary[lan] ?? localeLabel.noSummary)
+                  }
+                  className="text-neutral-400 hover:text-white transition-colors"
+                >
+                  <Copy size={16} />
+                </button>
 
+                <button
+                  onClick={() => handleExternalLink(item)}
+                  className="text-neutral-400 hover:text-white transition-colors"
+                >
+                  <ExternalLink size={16} />
+                </button>
+              </div>
+
+              {/* Author and score information */}
               <div className="text-right">
                 {localeLabel.author}: {item.by} | {localeLabel.score}:{" "}
                 {item.score}

@@ -53,6 +53,7 @@ export async function GET(
 
       return {
         id: generateUUID(newsData.title),
+        hnId: newsData.id,
         title: {
           en: cleanedTitle,
           ko: null,
