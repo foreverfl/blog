@@ -4,6 +4,7 @@ import Trends from "@/components/molecules/Trends";
 
 type TrendItem = {
   id: string;
+  hnId: number;
   title: { en: string | null; ko: string | null; ja: string | null };
   type: string;
   url: string;
