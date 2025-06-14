@@ -1,6 +1,7 @@
 import { checkBearerAuth } from "@/lib/auth";
 import { getFromR2, putToR2 } from "@/lib/cloudflare/r2";
 import { getTodayKST } from "@/lib/date";
+import { logMessage } from "@/lib/logger";
 import { getRedis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 
@@ -40,11 +41,14 @@ export async function POST(
     else if (key.startsWith("ko:")) ko++;
     else if (key.startsWith("content:")) content++;
   }
+  logMessage("total: " + total);
 
   let canFlush = false;
   if (type === "summarize" && total === en) canFlush = true;
-  if (type === "translate" && total === ko && lang === "ko") canFlush = true;
-  if (type === "translate" && total === ja && lang === "ja") canFlush = true;
+  if (type === "translate" && total * 2 === ko && lang === "ko")
+    canFlush = true;
+  if (type === "translate" && total * 2 === ja && lang === "ja")
+    canFlush = true;
   if (type === "fetch" && total === content) canFlush = true;
 
   let attempted = false;
@@ -122,7 +126,7 @@ export async function POST(
         }
         if (type === "fetch") {
           const contentVal = await redis.get(`content:${item.id}`);
-          if (contentVal && !item.content) {
+          if (contentVal) {
             const idx = modifiedData.findIndex((d: any) => d.id === item.id);
             if (idx !== -1) {
               modifiedData[idx].content = contentVal;

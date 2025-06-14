@@ -14,6 +14,10 @@ function generateUUID(title: string): string {
   return createHash("sha256").update(title).digest("hex").slice(0, 16);
 }
 
+function cleanHNTitle(title: string): string {
+  return title.replace(/^\s*(show|ask|launch)\s+hn\s*:\s*/i, "").trim();
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ date?: string }> },
@@ -45,20 +49,21 @@ export async function GET(
     const newsPromises = top100Stories.map(async (id) => {
       const newsRes = await fetch(`${HN_API_BASE}/item/${id}.json`);
       const newsData = await newsRes.json();
+      const cleanedTitle = newsData.title ? cleanHNTitle(newsData.title) : null;
 
       return {
         id: generateUUID(newsData.title),
         title: {
-          en: newsData.title,
+          en: cleanedTitle,
           ko: null,
           ja: null,
         },
         type: newsData.type,
-        url: newsData.url || null,
-        score: newsData.score,
-        by: newsData.by,
-        time: newsData.time,
-        content: null,
+        url: newsData.url ?? null,
+        score: newsData.score ?? null,
+        by: newsData.by ?? null,
+        time: newsData.time ?? null,
+        content: newsData.text ?? null,
         summary: {
           en: null,
           ko: null,
