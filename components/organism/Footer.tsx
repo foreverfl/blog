@@ -137,7 +137,7 @@ const Footer: React.FC = () => {
               ✕
             </button>
           </div>
-          <BugReport />
+          <BugReport onClose={() => setBugBountyOpen(false)} />
         </div>
       </Modal>
     </>

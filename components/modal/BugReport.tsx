@@ -1,10 +1,15 @@
 "use client";
 
+import "@/lib/i18n";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const BugReport = () => {
+interface BugReportProps {
+  onClose?: () => void;
+}
+
+const BugReport: FC<BugReportProps> = ({ onClose }) => {
   const { t, i18n } = useTranslation();
 
   const pathname = usePathname();
@@ -13,25 +18,28 @@ const BugReport = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [status, setStatus] = useState<null | "success" | "error">(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/discord/bug-bounty", {
+      const res = await fetch("/api/discord/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({
+          type: "bug_report",
+          title,
+          content,
+        }),
       });
       if (!res.ok) throw new Error("API error");
-      setStatus("success");
       setTitle("");
       setContent("");
+      alert(t("bug_report_form_success"));
+      if (onClose) onClose();
     } catch {
-      setStatus("error");
+      alert(t("bug_report_form_error"));
     }
     setLoading(false);
   };
@@ -84,12 +92,6 @@ const BugReport = () => {
               : t("bug_report_form_submit")}
           </button>
         </div>
-        {status === "success" && (
-          <p className="text-green-600 mt-2">{t("bug_report_form_success")}</p>
-        )}
-        {status === "error" && (
-          <p className="text-red-600 mt-2">{t("bug_report_form_error")}</p>
-        )}
       </form>
     </div>
   );
