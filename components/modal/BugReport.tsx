@@ -1,6 +1,7 @@
 "use client";
 
 import CloudflareTurnstile from "@/components/atom/CloudflareTurnstile";
+import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
 import { usePathname } from "next/navigation";
 import { FC, useEffect, useState } from "react";
@@ -40,16 +41,15 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
         return;
       }
 
-      const res = await fetch("/api/discord/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "bug_report",
+      const res = await sendDiscord({
+        type: "bug_report",
+        payload: {
           turnstileToken,
           title,
           content,
-        }),
+        },
       });
+      if (!res.ok) throw new Error("API error");
       if (!res.ok) throw new Error("API error");
 
       setTitle("");

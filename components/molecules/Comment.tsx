@@ -1,6 +1,7 @@
 "use client";
 
 import { redirectToLoginWithReturnUrl } from "@/lib/auth";
+import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -79,6 +80,16 @@ const Comment = ({}) => {
         },
       );
       if (!res.ok) throw new Error("failed to post comment");
+
+      await sendDiscord({
+        type: "comment_create",
+        payload: {
+          post_url: window.location.href,
+          username: user.username,
+          content: commentText,
+        },
+      });
+
       return res.json();
     },
     [category, classification, slug, user],
