@@ -192,3 +192,13 @@ code[data-line-numbers-max-digits="4"] > [data-line]::before {
     font-family: "Caveat", cursive;
   }
 }
+
+/* privacy-policy */
+.privacy-policy h1 { @apply text-3xl font-bold mb-4; }
+.privacy-policy h2 { @apply text-2xl font-semibold mt-8 mb-4; }
+.privacy-policy h3 { @apply text-xl font-medium mt-6 mb-2; }
+.privacy-policy h4 { @apply text-lg font-medium mt-4 mb-2; }
+.privacy-policy p  { @apply mb-4; }
+.privacy-policy ul { @apply list-disc pl-8 mb-4; }
+.privacy-policy li { @apply mb-2; }
+.privacy-policy a  { @apply text-blue-500 hover:underline; }

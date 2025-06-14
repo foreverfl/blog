@@ -1,12 +1,10 @@
 "use client";
 
 import BugReport from "@/components/modal/BugReport";
-import PrivacyPolicyEn from "@/components/modal/PrivacyPolicyEn";
-import PrivacyPolicyJa from "@/components/modal/PrivacyPolicyJa";
-import PrivacyPolicyKo from "@/components/modal/PrivacyPolicyKo";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
+import PrivacyPolicy from "@/components/modal/PrivacyPolicy";
 
 const Footer: React.FC = () => {
   const [isPrivacyOpen, setPrivacyOpen] = useState(false);
@@ -16,12 +14,6 @@ const Footer: React.FC = () => {
   useEffect(() => {
     Modal.setAppElement("body");
   }, []);
-
-  const renderPrivacyPolicy = () => {
-    if (pathname.startsWith("/ko")) return <PrivacyPolicyKo />;
-    if (pathname.startsWith("/ja")) return <PrivacyPolicyJa />;
-    return <PrivacyPolicyEn />;
-  };
 
   return (
     <>
@@ -96,8 +88,7 @@ const Footer: React.FC = () => {
             </button>
           </div>
         </div>
-
-        {renderPrivacyPolicy()}
+        <PrivacyPolicy />
       </Modal>
 
       {/* Bug Bounty Modal */}
