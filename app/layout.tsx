@@ -1,3 +1,4 @@
+import Providers from "@/components/Providers";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 
@@ -13,7 +14,9 @@ export default function RootLayout({
       <head>
         <meta name="google-adsense-account" content="ca-pub-4751026650729929" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
