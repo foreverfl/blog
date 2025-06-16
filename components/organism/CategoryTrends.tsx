@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import Pagination from "../molecules/Pagination";
 import Spinner from "../atom/Spinner";
+import LinkWithSpinning from "../molecules/LinkWithSpinning";
+import Pagination from "../molecules/Pagination";
 
 interface JsonContentsStructure {
   folder: string;
@@ -115,7 +115,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10 pb-20 md:pb-0">
         {items.map(({ key, href, date, imageUrl }) => (
-          <Link key={key} href={href}>
+          <LinkWithSpinning key={key} href={href}>
             <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
               <Image
                 src={imageUrl}
@@ -133,7 +133,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
                 </div>
               </div>
             </div>
-          </Link>
+          </LinkWithSpinning>
         ))}
       </div>
 

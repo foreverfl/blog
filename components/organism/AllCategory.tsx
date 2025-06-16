@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import Pagination from "@/components/molecules/Pagination";
 import { usePathname } from "next/navigation";
-import Pagination from "../molecules/Pagination";
+import React, { useState } from "react";
+import LinkWithSpinning from "../molecules/LinkWithSpinning";
 
 interface FrontMatter {
   fileName?: string;
@@ -59,7 +59,7 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
         )}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
           {currentPosts.map((post) => (
-            <Link
+            <LinkWithSpinning
               key={post.fileName}
               href={`/${lan}/${post.classification}/${
                 post.category
@@ -81,7 +81,7 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
                   </div>
                 </div>
               </div>
-            </Link>
+            </LinkWithSpinning>
           ))}
         </div>
 
