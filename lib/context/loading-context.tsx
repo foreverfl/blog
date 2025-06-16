@@ -2,10 +2,10 @@
 
 import {
   createContext,
+  Dispatch,
+  ReactNode,
   useContext,
   useReducer,
-  ReactNode,
-  Dispatch,
 } from "react";
 
 // State type
@@ -13,13 +13,13 @@ type State = {
   isLoading: boolean;
 };
 
+// Action types
+type Action = { type: "START_LOADING" } | { type: "STOP_LOADING" };
+
 // Initial state
 const initialState: State = {
   isLoading: false,
 };
-
-// Action types
-type Action = { type: "START_LOADING" } | { type: "STOP_LOADING" };
 
 // Reducer function
 function loadingReducer(state: State, action: Action): State {
