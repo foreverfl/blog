@@ -1,3 +1,4 @@
+import { logMessage } from "@/lib/logger";
 import { findUserByEmail, upsertUser } from "@/lib/postgres/users";
 import { UserCreateDTO } from "@/types/users";
 import jwt from "jsonwebtoken";
@@ -65,14 +66,20 @@ export async function GET(req: NextRequest) {
     // JWT 내부 확인
     const decoded = jwt.decode(jwtToken);
 
+    logMessage("Decoded JWT: " + JSON.stringify(decoded));
+
     // 쿠키에 JWT 토큰 저장
-    const response = NextResponse.redirect(new URL("/", req.url));
+    const response = NextResponse.redirect(
+      new URL("/", process.env.NEXT_PUBLIC_BASE_URL),
+    );
     response.cookies.set("auth", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       maxAge: 7200, // 2시간
       path: "/",
     });
+
+    logMessage("Set-Cookie: auth=" + jwtToken);
 
     return response;
   } catch (error) {
