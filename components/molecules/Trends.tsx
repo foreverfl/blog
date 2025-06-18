@@ -129,7 +129,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
                 >
                   {item.title[lan as "en" | "ja" | "ko"] || item.title.en}
                 </a>
-                <div className="text-sm text-neutral-400 mt-2">
+                <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
                   ({item.title.en})
                 </div>
               </div>
@@ -149,14 +149,14 @@ export default function Trends({ items }: { items: TrendItem[] }) {
                   onClick={() =>
                     handleCopy(item.summary[lan] ?? localeLabel.noSummary)
                   }
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <Copy size={16} />
                 </button>
 
                 <button
                   onClick={() => handleExternalLink(item)}
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <ExternalLink size={16} />
                 </button>
