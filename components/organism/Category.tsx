@@ -19,14 +19,16 @@ interface Props {
 }
 
 interface Category {
-  name_ko: string;
+  name_en: string;
   name_ja: string;
+  name_ko: string;
   link: string;
 }
 
 interface Classification {
-  name_ko: string;
+  name_en: string;
   name_ja: string;
+  name_ko: string;
   link: string;
   categories: Category[];
 }
@@ -77,7 +79,18 @@ const Category: React.FC<Props> = ({ posts }) => {
 
           if (foundCategory) {
             setCategoryName(
-              lan === "ko" ? foundCategory.name_ko : foundCategory.name_ja,
+              (() => {
+                switch (lan) {
+                  case "en":
+                    return foundCategory.name_en;
+                  case "ja":
+                    return foundCategory.name_ja;
+                  case "ko":
+                    return foundCategory.name_ko;
+                  default:
+                    return foundCategory.name_ko;
+                }
+              })(),
             );
           }
         }

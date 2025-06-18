@@ -6,7 +6,7 @@ const baseUrl = (
   process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev"
 ).replace(/\/$/, "");
 
-const languages = ["ko", "ja"];
+const languages = ["en", "ja", "ko"];
 
 type CategoryGroup = {
   link: string;
@@ -60,11 +60,11 @@ async function createPostEntries(
         if (!file.endsWith(".mdx")) continue;
 
         const slug = file.replace(/\.mdx$/, ""); // ex: "001-title-ko"
-        const langMatch = slug.match(/-(ko|ja)$/); // 언어 접미어 매치
+        const langMatch = slug.match(/-(en|ja|ko)$/); // 언어 접미어 매치
 
         if (!langMatch) continue; // -ko, -ja가 없으면 건너뜀
         const lang = langMatch[1]; // "ko" or "ja"
-        const cleanSlug = slug.replace(/-(ko|ja)$/, ""); // URL에서 -ko 제거
+        const cleanSlug = slug.replace(/-(en|ja|ko)$/, ""); // URL에서 -ko 제거
 
         if (!languages.includes(lang)) continue;
 

@@ -7,8 +7,16 @@ const LanguageRedirect = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const userLang = navigator.language.startsWith("ko") ? "ko" : "ja";
-    router.replace(`/${userLang}`);
+    const lang = navigator.language;
+
+    let targetLang = "en";
+    if (lang.startsWith("ja")) {
+      targetLang = "ja";
+    } else if (lang.startsWith("ko")) {
+      targetLang = "ko";
+    }
+
+    router.replace(`/${targetLang}`);
   }, [router]);
 
   return null;

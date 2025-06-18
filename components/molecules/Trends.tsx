@@ -30,7 +30,7 @@ type TrendItem = {
 
 export default function Trends({ items }: { items: TrendItem[] }) {
   const pathname = usePathname();
-  const lan = pathname.split("/")[1] as "en" | "ko" | "ja";
+  const lan = pathname.split("/")[1] as "en" | "ja" | "ko";
   const [sortBy, setSortBy] = useState<"default" | "score">("default");
   const [copiedList, setCopiedList] = useState<string[]>([]);
 

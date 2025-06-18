@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type LangType = "en" | "ko" | "ja";
+type LangType = "en" | "ja" | "ko";
 
 const langPathMap = {
   en: "/policy/privacy-policy.en.html",
@@ -12,8 +12,9 @@ const langPathMap = {
 };
 
 function detectLang(pathname: string): LangType {
-  if (pathname.startsWith("/ko")) return "ko";
+  if (pathname.startsWith("/en")) return "en";
   if (pathname.startsWith("/ja")) return "ja";
+  if (pathname.startsWith("/ko")) return "ko";
   return "en";
 }
 

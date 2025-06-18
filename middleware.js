@@ -3,7 +3,7 @@ import Negotiator from "negotiator";
 import { NextResponse } from "next/server";
 import { logRequest } from "@/lib/logger";
 
-let locales = ["ja", "ko"];
+let locales = ["en", "ja", "ko"];
 const defaultLocale = "ko";
 
 function getLocale(request) {

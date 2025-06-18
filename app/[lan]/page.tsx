@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 export default async function Index() {
   const cookieStore = await cookies();
-  const lan = cookieStore.get("lan")?.value || "ja";
+  const lan = cookieStore.get("lan")?.value || "en";
   const frontMatters = await getAllPostFrontMatters(lan);
 
   return (

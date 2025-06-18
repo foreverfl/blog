@@ -6,7 +6,7 @@ export async function POST(
 ) {
   const { lan } = await context.params;
 
-  if (!["ko", "ja"].includes(lan)) {
+  if (!["en", "ja", "ko"].includes(lan)) {
     return NextResponse.json(
       { success: false, message: "Invalid language parameter" },
       { status: 400 },

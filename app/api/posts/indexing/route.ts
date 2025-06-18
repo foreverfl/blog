@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const locales = ["ko", "ja"];
+  const locales = ["en", "ja", "ko"];
   const base = "https://mogumogu.dev";
   const indexingResults = [];
 

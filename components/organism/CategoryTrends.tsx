@@ -50,7 +50,9 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
 
   let localizedTitle = "Hacker News Digest";
 
-  if (lan === "ja") {
+  if (lan === "en") {
+    localizedTitle = "Hacker News Digest";
+  } else if (lan === "ja") {
     localizedTitle = "ハッカーニュースダイジェスト";
   } else if (lan === "ko") {
     localizedTitle = "해커뉴스 요약";

@@ -24,7 +24,9 @@ export async function GET(req: Request) {
 
   let hackerNewsTitle = "Hacker News Digest"; // 기본값
 
-  if (lan === "ja") {
+  if (lan === "en") {
+    hackerNewsTitle = "Hacker News Digest";
+  } else if (lan === "ja") {
     hackerNewsTitle = "ハッカーニュースダイジェスト";
   } else if (lan === "ko") {
     hackerNewsTitle = "해커뉴스 다이제스트";

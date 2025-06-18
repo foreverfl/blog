@@ -18,14 +18,16 @@ interface MenuProps {
 }
 
 interface Category {
-  name_ko: string;
+  name_en: string;
   name_ja: string;
+  name_ko: string;
   link: string;
 }
 
 interface Classification {
-  name_ko: string;
+  name_en: string;
   name_ja: string;
+  name_ko: string;
   link: string;
   categories: Category[];
 }
@@ -275,9 +277,11 @@ const Menu: React.FC<MenuProps> = ({
                     className="px-8 py-4 rounded-t-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center"
                     onClick={() => handleToggle(classification.link)}
                   >
-                    {lan === "ja"
-                      ? classification.name_ja
-                      : classification.name_ko}
+                    {(() => {
+                      if (lan === "en") return classification.name_en;
+                      if (lan === "ja") return classification.name_ja;
+                      return classification.name_ko;
+                    })()}
                     {/* 조건부 아이콘 렌더링 */}
                     {toggleStates[classification.link] ? (
                       <svg
@@ -331,7 +335,11 @@ const Menu: React.FC<MenuProps> = ({
                           onClick={(e) => e.stopPropagation()} // 이벤트 버블링 방지
                         >
                           {/* 카테고리 이름 표시 */}
-                          {lan === "ja" ? category.name_ja : category.name_ko}
+                          {(() => {
+                            if (lan === "ja") return category.name_ja;
+                            if (lan === "en") return category.name_en;
+                            return category.name_ko;
+                          })()}
                         </div>
                       </Link>
                     ))}

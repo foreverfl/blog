@@ -2,11 +2,13 @@
   {
     "name_ko": "트렌드",
     "name_ja": "トレンド",
+    "name_en": "Trends",
     "link": "trends",
     "categories": [
       {
         "name_ko": "해커뉴스",
         "name_ja": "ハッカーニュース",
+        "name_en": "Hacker News",
         "link": "hackernews"
       }
     ]
@@ -14,21 +16,25 @@
   {
     "name_ko": "개발",
     "name_ja": "開発",
+    "name_en": "Development",
     "link": "development",
     "categories": [
       {
         "name_ko": "프로젝트 회고",
         "name_ja": "プロジェクト振り返り",
+        "name_en": "Project Retrospective",
         "link": "project"
       },
       {
         "name_ko": "개발 노트",
-        "name_ja": "デバッグノート",
+        "name_ja": "開発ノート",
+        "name_en": "Dev Notes",
         "link": "devnotes"
       },
       {
         "name_ko": "트렌드",
         "name_ja": "トレンド",
+        "name_en": "Trends",
         "link": "trends"
       }
     ]
@@ -36,11 +42,13 @@
   {
     "name_ko": "주저리주저리",
     "name_ja": "雑談",
+    "name_en": "Chit-chat",
     "link": "miscellaneous",
     "categories": [
       {
         "name_ko": "내 생각",
         "name_ja": "私の考え",
+        "name_en": "My Thoughts",
         "link": "my-thoughts"
       }
     ]

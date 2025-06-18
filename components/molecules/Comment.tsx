@@ -309,7 +309,7 @@ const Comment = ({}) => {
   }, [fetchUserData, fetchComments]);
 
   useEffect(() => {
-    if (["ko", "ja", "en"].includes(lan)) {
+    if (["en", "ja", "ko"].includes(lan)) {
       i18n.changeLanguage(lan);
     }
   }, [lan, i18n]);
