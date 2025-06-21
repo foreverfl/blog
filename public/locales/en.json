@@ -21,5 +21,11 @@
   "bug_report_form_submitting": "Submitting...",
   "bug_report_form_success": "Thank you! Bug report sent.",
   "bug_report_form_error": "Failed to submit. Please try again.",
-  "bug_report_form_turnstile_notice": "The bug report form will open after verification."
+  "bug_report_form_turnstile_notice": "The bug report form will open after verification.",
+
+  "tour_menu": "This is the menu button. Click to open the menu.",
+  "tour_language": "Here you can select your language.",
+  "tour_theme": "Here you can change the theme.",
+  "tour_profile": "This is the login button. You need to log in to leave a comment or like a post.",
+  "tour_scroll": "Scroll down to read blog posts."
 }

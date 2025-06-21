@@ -109,6 +109,7 @@ const Menu: React.FC<MenuProps> = ({
     <>
       {/* 메뉴 열기 버튼 */}
       <button
+        id="menu-button"
         onClick={() => toggleMenu()}
         className={`z-30 transition-opacity duration-300 ${menuColor} ${
           isMenuOpen || isProfileOpen ? "opacity-0" : "opacity-100"
@@ -171,12 +172,12 @@ const Menu: React.FC<MenuProps> = ({
               <div className="flex justify-end gap-4">
                 {/* 다국어 스위치 */}
                 <div className="flex">
-                  <SetLanguage />
+                  <SetLanguage id="language-select-mobile" />
                 </div>
 
                 {/* 다크모드 스위치 */}
                 <div className="flex">
-                  <SetMode />
+                  <SetMode id="theme-toggle-mobile" />
                 </div>
               </div>
             </div>

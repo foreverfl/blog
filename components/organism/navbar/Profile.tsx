@@ -185,6 +185,7 @@ const Profile: React.FC<ProfileProps> = ({
         </>
       ) : (
         <button
+          id="profile-button"
           className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black p-2 overflow-hidden"
           onClick={redirectToLoginWithReturnUrl}
         >

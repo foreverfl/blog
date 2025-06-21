@@ -244,12 +244,12 @@ const Navbar: React.FC = () => {
         <div className="flex-1 flex justify-end items-center gap-8 select-none">
           {/* 다국어 스위치 */}
           <div className="hidden md:flex">
-            <SetLanguage />
+            <SetLanguage id="language-select-desktop" />
           </div>
 
           {/* 다크모드 스위치 */}
           <div className="hidden md:flex">
-            <SetMode />
+            <SetMode id="theme-toggle-desktop" />
           </div>
 
           {/* 프로필 버튼 */}

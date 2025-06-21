@@ -4,7 +4,11 @@ import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
-const SetMode: React.FC = () => {
+interface SetModeProps {
+  id?: string;
+}
+
+const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
   // 모드 설정
   const { theme, setTheme, systemTheme, resolvedTheme } = useTheme();
   const [isReady, setIsReady] = useState(false); // 로딩 상태
@@ -33,6 +37,7 @@ const SetMode: React.FC = () => {
     <>
       {/* 스위치 컨테이너 */}
       <div
+        id={id}
         className="relative inline-block w-14 h-8 cursor-pointer"
         onClick={toggleTheme}
       >

@@ -21,5 +21,11 @@
   "bug_report_form_submitting": "제출 중...",
   "bug_report_form_success": "감사합니다! 버그 신고가 전송되었습니다.",
   "bug_report_form_error": "제출에 실패했습니다. 다시 시도해 주세요.",
-  "bug_report_form_turnstile_notice": "인증 통과 시 버그 리포트 폼이 열립니다."
+  "bug_report_form_turnstile_notice": "인증 통과 시 버그 리포트 폼이 열립니다.",
+
+  "tour_menu": "이건 메뉴 버튼이에요. 클릭해서 메뉴를 열어보세요.",
+  "tour_language": "여기서 언어를 선택할 수 있어요.",
+  "tour_theme": "여기서 테마를 변경할 수 있어요.",
+  "tour_profile": "이건 로그인 버튼이에요. 댓글을 달거나 좋아요를 누르려면 로그인이 필요해요.",
+  "tour_scroll": "스크롤해서 블로그 글을 읽어보세요."
 }

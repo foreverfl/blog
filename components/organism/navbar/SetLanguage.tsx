@@ -4,7 +4,13 @@ import { useLoadingDispatch } from "@/lib/context/loading-context";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-const SetLanguage: React.FC = () => {
+interface SetLanguageProps {
+  id?: string;
+}
+
+const SetLanguage: React.FC<SetLanguageProps> = ({
+  id = "language-select",
+}) => {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useLoadingDispatch();
@@ -54,17 +60,10 @@ const SetLanguage: React.FC = () => {
     router.push(newPathname, { scroll: false });
   };
 
-  if (!isReady) {
-    return (
-      <div className="animate-pulse">
-        <div className="rounded-full bg-gray-400 h-8 w-14"></div>
-      </div>
-    );
-  }
-
   return (
     <>
       <select
+        id={id}
         value={currentLanguage}
         onChange={handleLanguageChange}
         className="p-2 text-black dark:text-white bg-gray-200 dark:bg-neutral-900 rounded"

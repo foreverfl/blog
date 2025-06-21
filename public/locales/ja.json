@@ -21,5 +21,11 @@
   "bug_report_form_submitting": "送信中...",
   "bug_report_form_success": "ありがとうございます！バグ報告が送信されました。",
   "bug_report_form_error": "送信に失敗しました。もう一度お試しください。",
-  "bug_report_form_turnstile_notice": "認証に成功するとバグ報告フォームが表示されます。"
+  "bug_report_form_turnstile_notice": "認証に成功するとバグ報告フォームが表示されます。",
+
+  "tour_menu": "これはメニューボタンです。クリックしてメニューを開いてください。",
+  "tour_language": "ここで言語を選択できます。",
+  "tour_theme": "ここでテーマを変更できます。",
+  "tour_profile": "これはログインボタンです。コメントを書いたり「いいね」するにはログインが必要です。",
+  "tour_scroll": "スクロールしてブログ記事を読んでください。"
 }
