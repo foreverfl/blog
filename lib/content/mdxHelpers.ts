@@ -24,7 +24,7 @@ async function getFilesRecursively(
   dir: string,
   lan: string,
 ): Promise<string[]> {
-  if (dir.includes("/trends")) {
+  if (dir.includes("/trends/hackernews")) {
     return [];
   }
 

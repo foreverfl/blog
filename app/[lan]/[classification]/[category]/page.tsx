@@ -1,9 +1,9 @@
 import Category from "@/components/organism/Category";
+import CategoryEmpty from "@/components/organism/CategoryEmpty";
 import CategoryTrends from "@/components/organism/CategoryTrends";
 import { getContentsStructure } from "@/lib/content/jsonHelpers";
 import { FrontMatter, getAllPostFrontMatters } from "@/lib/content/mdxHelpers";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 
 export default async function Index({
   params,
@@ -19,25 +19,29 @@ export default async function Index({
 
   if (classification === "trends") {
     jsonContents = await getContentsStructure(category);
-    if (!jsonContents || jsonContents.length === 0) {
-      notFound();
-    }
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-full md:w-3/5">
+          {!jsonContents || jsonContents.length === 0 ? (
+            <CategoryEmpty categoryName="Trends" />
+          ) : (
+            <CategoryTrends jsonContents={jsonContents} />
+          )}
+        </div>
+      </div>
+    );
   } else {
     frontMatters = await getAllPostFrontMatters(lan, classification, category);
-    if (frontMatters.length === 0) {
-      notFound();
-    }
-  }
-
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full md:w-3/5">
-        {classification === "trends" ? (
-          <CategoryTrends jsonContents={jsonContents} />
-        ) : (
-          <Category posts={frontMatters} />
-        )}
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-full md:w-3/5">
+          {frontMatters.length === 0 ? (
+            <CategoryEmpty categoryName={category} />
+          ) : (
+            <Category posts={frontMatters} />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
