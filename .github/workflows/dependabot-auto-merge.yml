@@ -1,5 +1,9 @@
 name: "Dependabot Auto Merge"
 
+permissions:
+  contents: write 
+  pull-requests: write 
+
 on:
   pull_request:
     types:
@@ -33,5 +37,5 @@ jobs:
         uses: "peter-evans/enable-pull-request-automerge@v3"
         with:
           pull-request-number: ${{ github.event.pull_request.number }}
-          merge-method: squash
+          merge-method: rebase
         if: success()
