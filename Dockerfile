@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.16.0
 FROM node:22
 
 WORKDIR /app
@@ -5,9 +6,12 @@ WORKDIR /app
 ENV NODE_OPTIONS="--max-old-space-size=4096" 
 
 COPY package.json package-lock.json ./
+
 RUN npm ci
 
-RUN npx playwright install --with-deps
+RUN --mount=type=cache,target=/root/.cache/ms-playwright \
+    npx playwright install-deps && \
+    npx playwright install chromium
 
 COPY . .
 
