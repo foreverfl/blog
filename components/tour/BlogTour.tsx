@@ -2,13 +2,15 @@
 
 import BlogTourTooltip from "@/components/tour/BlogTourTooltip";
 import { blogTourSteps } from "@/components/tour/steps";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { useTheme } from "next-themes";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Joyride from "react-joyride";
 
 export default function BlogTour() {
   const [run, setRun] = useState(false);
+  const [checked, setChecked] = useState(false);
   const { theme } = useTheme();
   const { t } = useTranslation();
 
@@ -21,51 +23,28 @@ export default function BlogTour() {
   }, [t]);
 
   useEffect(() => {
-    const requiredSelectors = [
-      "#menu-button",
-      "#language-select-desktop",
-      "#theme-toggle-desktop",
-      "#profile-button",
-      "main",
-    ];
+    FingerprintJS.load().then((fp) => {
+      fp.get().then(async (result) => {
+        const fingerprint = result.visitorId;
 
-    function isVisible(element: Element | null) {
-      if (!element) return false;
-      let parent: Element | null = element;
-      while (parent) {
-        const style = window.getComputedStyle(parent);
-        if (
-          style.display === "none" ||
-          style.visibility === "hidden" ||
-          style.opacity === "0"
+        const res = await fetch(`/api/visitor/${fingerprint}`);
+        const data = await res.json();
+
+        if (!data.ok || !data.found) {
+          setRun(true);
+        } else if (
+          data.data &&
+          !data.data.is_bot &&
+          data.data.visit_count === 1
         ) {
-          console.log("paraent or selt is not visible", parent);
-          return false;
+          setRun(true);
+        } else {
+          setRun(false);
         }
-        parent = parent.parentElement;
-      }
-      return true;
-    }
-
-    const timeout = setTimeout(() => {
-      const results = requiredSelectors.map((selector) => {
-        const el = document.querySelector(selector);
-        const visible = isVisible(el);
-        if (!visible) {
-          console.log(`selector ${selector} is not visible`);
-        }
-        return visible;
+        setChecked(true);
       });
-
-      const allVisible = results.every(Boolean);
-
-      if (allVisible) {
-        setRun(true);
-      }
-    }, 200);
-
-    return () => clearTimeout(timeout);
-  }, []);
+    });
+  }, [setRun]);
 
   return (
     <Joyride
@@ -85,7 +64,6 @@ export default function BlogTour() {
             theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.4)",
         },
       }}
-      debug={true}
     />
   );
 }

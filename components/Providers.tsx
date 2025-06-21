@@ -1,6 +1,7 @@
 "use client";
 
 import Spinner from "@/components/atom/Spinner";
+import VisitorTracker from "@/components/VisitorTracker";
 import {
   LoadingProvider,
   useLoadingState,
@@ -18,6 +19,7 @@ function InnerProviders({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <VisitorTracker />
       {isLoading && <Spinner />}
       {children}
     </>

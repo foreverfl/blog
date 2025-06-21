@@ -11,6 +11,7 @@
     "convert-webp": "tsx ./test/convert-to-webp.ts"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.6.2",
     "@formatjs/intl-localematcher": "^0.5.4",
     "@geist-ui/icons": "^1.0.2",
     "@google-analytics/data": "^4.11.0",
