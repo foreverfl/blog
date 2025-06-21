@@ -14,7 +14,7 @@ const nextConfig = {
   // eslint: {
   //     ignoreDuringBuilds: true,
   // },
-  transpilePackages: ["next-mdx-remote"],
+  transpilePackages: ["next-mdx-remote", "react-joyride", "react-floater"],
   images: {
     remotePatterns: [
       {
