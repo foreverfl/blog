@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.16.0
 FROM node:22
 
 WORKDIR /app
@@ -9,9 +8,7 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
-RUN --mount=type=cache,target=/root/.cache/ms-playwright \
-    npx playwright install-deps && \
-    npx playwright install chromium
+RUN npx playwright install --with-deps
 
 COPY . .
 

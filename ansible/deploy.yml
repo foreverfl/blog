@@ -37,7 +37,7 @@
       shell: |
         cd /home/ubuntu/app/blog
         echo "Starting Docker build..."
-        DOCKER_BUILDKIT=1 docker build -t blog:{{ blog_timestamp }} . > /tmp/docker-build.log 2>&1
+        docker build -t blog:{{ blog_timestamp }} . > /tmp/docker-build.log 2>&1
       register: build_result
       ignore_errors: yes
       async: 900 
