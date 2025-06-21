@@ -13,15 +13,15 @@ const ImageInfoSchema = z.object({
     person: z.object({
       gender: z.literal("female"),
       age: z.literal("teenager"),
-      emotion: z.string().optional(),
+      emotion: z.string().nullable(),
     }),
-    object: z.string().optional(),
-    action: z.string().optional(),
+    object: z.string().nullable(),
+    action: z.string().nullable(),
   }),
   background: z.object({
-    indoorOutdoor: z.string().optional(),
-    background: z.string().optional(),
-    timeOfDay: z.string().optional(),
+    indoorOutdoor: z.string().nullable(),
+    background: z.string().nullable(),
+    timeOfDay: z.string().nullable(),
   }),
 });
 
