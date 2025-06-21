@@ -1,4 +1,7 @@
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import {
+  getDocument,
+  GlobalWorkerOptions,
+} from "pdfjs-dist/legacy/build/pdf.mjs";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
@@ -8,14 +11,9 @@ GlobalWorkerOptions.workerSrc = path.join(
   "node_modules/pdfjs-dist/build/pdf.worker.mjs",
 );
 
-const workerPath = path.join(
-  process.cwd(),
-  "node_modules/pdfjs-dist/build/pdf.worker.mjs",
-);
-
 async function checkWorkerPath() {
   try {
-    await fs.access(workerPath);
+    await fs.access(GlobalWorkerOptions.workerSrc);
     console.log("📄 pdf.worker.mjs 파일이 존재합니다!");
   } catch (err) {
     console.error("❌ pdf.worker.mjs 파일을 찾을 수 없습니다:", err);

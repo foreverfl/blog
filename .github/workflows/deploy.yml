@@ -3,7 +3,7 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - do-not-deploy
+      - main
 
 concurrency:
   group: deploy-prod
@@ -27,6 +27,12 @@ jobs:
           npm ci
           npx prettier --write .
           npx eslint . --fix --ext .js,.ts,.tsx || true
+
+      - name: Copy CI env
+        run: cp .env.ci .env
+
+      - name: Run build (test)
+        run: npm run build
 
       - name: Create SSH key file
         run: |
