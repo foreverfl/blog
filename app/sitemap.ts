@@ -46,13 +46,21 @@ async function createPostEntries(
   const entries: MetadataRoute.Sitemap = [];
   const lastMod = new Date().toISOString();
 
-  const classifications = await fs.readdir(contentDir);
+  const classifications = await fs.readdir(contentDir, { withFileTypes: true });
 
-  for (const classification of classifications) {
+  for (const classificationEntry of classifications) {
+    if (!classificationEntry.isDirectory()) continue;
+    if (classificationEntry.name === "templates") continue;
+
+    const classification = classificationEntry.name;
     const classificationPath = path.join(contentDir, classification);
-    const categories = await fs.readdir(classificationPath);
+    const categories = await fs.readdir(classificationPath, {
+      withFileTypes: true,
+    });
 
-    for (const category of categories) {
+    for (const categoryEntry of categories) {
+      if (!categoryEntry.isDirectory()) continue;
+      const category = categoryEntry.name;
       const categoryPath = path.join(classificationPath, category);
       const files = await fs.readdir(categoryPath);
 
