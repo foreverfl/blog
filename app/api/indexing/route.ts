@@ -1,4 +1,3 @@
-import { checkBearerAuth } from "@/lib/auth";
 import { getAllMdxFilesWithFrontMatter } from "@/lib/content/mdxHelpers";
 import {
   getFuseCache,
@@ -14,9 +13,9 @@ const indexingJobs = new Map<
 >();
 
 export async function POST(req: Request) {
-  const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
-  if (authResult !== true) {
-    return authResult;
+  const origin = req.headers.get("origin") || "";
+  if (!origin.startsWith(`${process.env.NEXT_PUBLIC_BASE_URL}`)) {
+    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
   const job_id = uuidv4();
@@ -36,7 +35,7 @@ export async function GET(req: Request) {
   if (job_id && indexingJobs.has(job_id)) {
     return NextResponse.json(indexingJobs.get(job_id));
   }
-  
+
   // if no job_id, return all jobs
   const data = getFuseCache(lang);
   return NextResponse.json(data);
@@ -67,32 +66,6 @@ async function doIndexing(job_id: string) {
         })),
       );
     }
-
-    // 2. trend type (hackernews)
-    // const listResult = await listFromR2("hackernews");
-    // let trendItems: any[] = [];
-    // if (listResult?.dates) {
-    //   const concurrency = 8;
-    //   const chunks: any[] = [];
-    //   for (let i = 0; i < listResult.dates.length; i += concurrency) {
-    //     const slice = listResult.dates.slice(i, i + concurrency);
-    //     const promises = slice.map((date: string) =>
-    //       getFromR2({ bucket: "hackernews", key: `${date}.json` }).catch(
-    //         () => null,
-    //       ),
-    //     );
-    //     chunks.push(...(await Promise.all(promises)));
-    //   }
-    //   trendItems = chunks
-    //     .filter(Boolean)
-    //     .flat()
-    //     .map((item: any) => ({
-    //       title: `[hackernews] ${item.date ?? ""}`,
-    //       content: item.summary?.ko || item.summary?.en || "",
-    //       link: `/ko/trends/hackernews/${item.date}`,
-    //       type: "trend",
-    //     }));
-    // }
 
     // 3. Combine and set cache
     const allItems: SearchItem[] = [...postItems];

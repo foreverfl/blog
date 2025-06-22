@@ -19,7 +19,7 @@ function getLocale(request) {
 
 export function middleware(request) {
   // logging
-  logRequest(request);
+  // logRequest(request);
 
   const { pathname } = request.nextUrl;
 

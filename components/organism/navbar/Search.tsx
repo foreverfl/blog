@@ -1,7 +1,4 @@
 import LinkWithSpinning from "@/components/molecules/LinkWithSpinning";
-import { useLoadingDispatch } from "@/lib/context/loading-context";
-import Fuse from "fuse.js";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
@@ -24,6 +21,8 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
 
   const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
   const [allItems, setAllItems] = useState<SearchItem[]>([]);
+  const [lunrIndex, setLunrIndex] = useState<lunr.Index | null>(null);
+  const [itemMap, setItemMap] = useState<{ [link: string]: SearchItem }>({});
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
@@ -31,6 +30,7 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
     setIsSearching(true);
     const res = await fetch(`/api/indexing?lang=${lan}`);
     const data: SearchItem[] = await res.json();
+    console.log("Fetched items:", data);
     setAllItems(data);
     setIsSearching(false);
   }, [lan]);
@@ -41,16 +41,60 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
       return;
     }
     setIsSearching(true);
-    const fuse = new Fuse(allItems, {
-      keys: ["content", "title"],
-      threshold: 0.3,
-    });
-    const result = fuse.search(query).map((r) => r.item);
+    if (!lunrIndex) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+    const result = lunrIndex.search(query).map((r) => itemMap[r.ref]);
     setSearchResults(result);
     setIsSearching(false);
-  }, [query, allItems]);
+  }, [query, lunrIndex, itemMap]);
 
-  useDebounce(doSearch, 300, [query, allItems]);
+  useDebounce(doSearch, 300, [query, lunrIndex, itemMap]);
+
+  const buildLunrIndex = useCallback(async (items: SearchItem[]) => {
+    const lunr = (await import("lunr")).default;
+
+    // Load extensions with proper registration
+    // @ts-ignore
+    const stemmerSupport = await import("lunr-languages/lunr.stemmer.support");
+    // @ts-ignore
+    const multiLanguage = await import("lunr-languages/lunr.multi");
+    // @ts-ignore
+    const korean = await import("lunr-languages/lunr.ko");
+    // @ts-ignore
+    const japanese = await import("lunr-languages/lunr.ja");
+
+    // Japanese segmenter
+    const TinySegmenter =
+      (await import("tiny-segmenter")).default ||
+      (await import("tiny-segmenter"));
+
+    // @ts-ignore
+    lunr.TinySegmenter = TinySegmenter;
+
+    // Register extensions with lunr
+    (stemmerSupport.default || stemmerSupport)(lunr);
+    (multiLanguage.default || multiLanguage)(lunr);
+    (korean.default || korean)(lunr);
+    (japanese.default || japanese)(lunr);
+
+    const idx = lunr(function () {
+      // @ts-ignore
+      this.use(lunr.multiLanguage("en", "ko", "ja"));
+      this.ref("link");
+      this.field("title");
+      this.field("content");
+      items.forEach((item) => this.add(item));
+    });
+    const itemObj: { [link: string]: SearchItem } = {};
+    items.forEach((item) => {
+      itemObj[item.link] = item;
+    });
+    setLunrIndex(idx);
+    setItemMap(itemObj);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -130,6 +174,10 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
   useEffect(() => {
     fetchAllItems();
   }, [fetchAllItems]);
+
+  useEffect(() => {
+    if (allItems.length) buildLunrIndex(allItems);
+  }, [allItems, buildLunrIndex]);
 
   useEffect(() => {
     if (!isMenuOpen) {
