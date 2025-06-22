@@ -1,0 +1,197 @@
+---
+title: "I translated the README.md of next-mdx-remote"
+date: "2024-10-01"
+classification: "miscellaneous"
+category: "my-thoughts"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/241001-01.webp"
+---
+
+# I translated the README.md of next-mdx-remote
+
+## Introduction
+
+- Translated README.md: [next-mdx-remote](https://github.com/foreverfl/next-mdx-remote/blob/main/README-ko.md)
+
+![home-screen](https://blog_workers.forever-fl.workers.dev/posts-images/241001-01.webp)
+
+This time, I translated the official README.md of next-mdx-remote. I used this library while refactoring my blog recently.
+
+Initially, I created my own CMS (Content Management System) for personal use. However, while translating various official documentation and publishing them on my subdomain lately, I realized something. I thought it would be great if my blog could also be made as a static site like official documentation. Static sites are generally built with server-side rendering (SSR). So I decided to abandon the existing approach of rendering Markdown on the client side and instead render Markdown on the server side.
+
+Additionally, documentation tools like Docusaurus and Nextra support MDX. I also wanted to use MDX in my blog.
+
+I thought next-mdx-remote was optimal to satisfy these conditions.
+
+First, for those who are not familiar with MDX, let me explain what MDX is.
+
+## What is MDX?
+
+The [official MDX documentation](https://mdxjs.com/docs/what-is-mdx/#markdown-for-the-component-era) explains it as follows:
+
+> MDX allows you to use JSX in your markdown content. You can import components, such as interactive charts or alerts, and embed them within your content. This makes writing long-form content with components a blast. 🚀
+>
+> ― MDX
+
+Simply put, MDX enables the use of JSX within markdown. This allows you to insert React components inside markdown.
+
+```md title="example.md" showLineNumbers
+# Title
+
+This is a content block.
+
+- Item 1
+- Item 2
+- Item 3
+```
+
+While traditional markdown allows you to write as above, MDX enables you to write like this:
+
+```mdx title="example.mdx" showLineNumbers
+# Title
+
+This is a content block.
+
+- Item 1
+- Item 2
+- Item 3
+
+<Counter />
+
+<MyCustomComponent message="Hello from MDX!" />
+```
+
+You can use React components you've defined yourself, creating more flexible content. For those proficient in programming, this provides higher degrees of freedom. So what's the relationship between MDX and next-mdx-remote?
+
+## What is next-mdx-remote?
+
+As you can guess from the name, next-mdx-remote is a library for using MDX in Next.js. Since my blog is built with Next.js, I decided to use this library.
+
+Writing code by referencing the code in next-mdx-remote's README.md wasn't too difficult. However, there are precautions to take when using next-mdx-remote. Before using this library, you should understand server-side rendering (SSR). As mentioned in the README.md, the basic usage is to use `MDXRemote` on the client side and `serialize` on the server side. The structure involves fetching data on the server side, passing it to the client side, and displaying it with `MDXRemote`.
+
+```jsx title="Example.jsx" showLineNumbers
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+
+import Test from "../components/test";
+
+const components = { Test };
+
+export default function TestPage({ source }) {
+  return (
+    <div className="wrapper">
+      <MDXRemote {...source} components={components} />
+    </div>
+  );
+}
+
+export async function getStaticProps() {
+  // MDX text - can be from a local file, database, anywhere
+  const source = "Some **mdx** text, with a component <Test />";
+  const mdxSource = await serialize(source);
+  return { props: { source: mdxSource } };
+}
+```
+
+This way, in `getStaticProps()`, MDX text is fetched on the server side, converted with `serialize`, and passed to the client side. Then on the client side, it's displayed with `MDXRemote`. But if this was all there was to it, I wouldn't have looked closely at this README.md.
+
+While this seems simple when explained this way, problems occurred when I tried to write code using ChatGPT. The cause was that I was using Next.js App Router. Even when I asked ChatGPT questions about App Router, it kept showing me code that used `MDXRemote` on the server side, which kept causing errors.
+
+Since ChatGPT's understanding of Next.js App Router was insufficient, I decided to read next-mdx-remote's README.md myself. Since App Router's app directory is basically treated as server-side, using `MDXRemote` is problematic. And this README.md states that when using this library in the app directory, you should use `next-mdx-remote/rsc`. In the end, as always, the solution was written in the official documentation.
+
+My code that solved the problem is as follows:
+
+```tsx title="lib/mdxHelper.ts" showLineNumbers
+import fs from "fs";
+import path from "path";
+import { compileMDX } from "next-mdx-remote/rsc";
+import rehypePrettyCode from "rehype-pretty-code";
+import remarkGfm from "remark-gfm";
+
+export function getMdxFileContent(
+  lan: string,
+  classification: string,
+  category: string,
+  slug: string,
+) {
+  const filePath = path.join(
+    process.cwd(),
+    `contents/${lan}/${classification}/${category}/${slug}.mdx`,
+  );
+
+  const fileContent = fs.readFileSync(filePath, "utf8");
+  return fileContent;
+}
+
+export async function compileMdxContent(fileContent: string) {
+  return await compileMDX({
+    source: fileContent,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [
+          [
+            rehypePrettyCode,
+            {
+              theme: "github-light",
+            },
+          ],
+        ],
+      },
+    },
+  });
+}
+```
+
+This way, I read the Markdown and compile it using `compileMDX`. Then display it using `MDXRemote`. The server-side code that creates pages using this function is as follows:
+
+```tsx title="app/ja/[classification]/[category]/[slug]/page.tsx" showLineNumbers
+import mdxFiles from "@/contents/mdxFiles";
+import { notFound } from "next/navigation";
+import "github-markdown-css";
+import { compileMdxContent, getMdxFileContent } from "@/lib/mdxHelpers";
+
+export default async function Page({
+  params,
+}: {
+  params: {
+    classification: string;
+    category: string;
+    slug: string;
+  };
+}) {
+  const { classification, category, slug } = params;
+
+  const markdownFilePath = `ja/${classification}/${category}/${slug}`;
+  const MarkdownComponent = mdxFiles[markdownFilePath];
+
+  if (!MarkdownComponent) {
+    notFound();
+  }
+
+  const fileContent = getMdxFileContent("ja", classification, category, slug);
+  const { content } = await compileMdxContent(fileContent);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="markdown-body w-full md:w-3/5">
+        <div className="my-56"></div>
+        {content}
+        <div className="my-56"></div>
+      </div>
+    </div>
+  );
+}
+```
+
+## Conclusion
+
+The README.md of next-mdx-remote also recommends avoiding heavy frameworks like Next.js for creating personal small sites.
+
+> Data has shown that 99% of use cases for all developer tooling are building unnecessarily complex personal blogs. Just kidding. But seriously, if you are trying to build a blog for personal or small business use, consider just using normal HTML and CSS. You definitely do not need to be using a heavy full-stack JavaScript framework to make a simple blog. You'll thank yourself later when you return to make an update in a couple years and there haven't been 10 breaking releases to all of your dependencies.
+>
+> <cite>— next-mdx-remote </cite>
+
+But as an engineer, I'm a pathetic human being who falls for the latest technologies, so I can't help it. 🥲
+
+To summarize, when using next-mdx-remote, it's important to understand the difference between server-side and client-side. If you don't understand this, you'll continue to face difficulties. I hope this article helps those who want to use MDX in Next.js. Thank you for reading. I'll come back with better articles next time.
