@@ -19,8 +19,6 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
-
-  const dispatch = useLoadingDispatch();
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
@@ -117,11 +115,11 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
           ))
         ) : searchResults.length === 0 ? (
           <div className="p-4 text-center text-gray-600 dark:text-gray-400">
-            {lan === "ko"
-              ? "검색 결과가 없습니다."
-              : lan === "ja"
-                ? "結果が見つかりません。"
-                : "No results found."}
+            {(() => {
+              if (lan === "ko") return "검색 결과가 없습니다.";
+              if (lan === "ja") return "結果が見つかりません。";
+              return "No results found.";
+            })()}
           </div>
         ) : null}
       </div>,

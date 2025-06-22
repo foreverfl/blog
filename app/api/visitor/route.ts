@@ -9,7 +9,21 @@ function isBotUserAgent(ua: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const { fingerprint } = await req.json();
+  let fingerprint;
+  try {
+    ({ fingerprint } = await req.json());
+    if (!fingerprint) {
+      return NextResponse.json(
+        { ok: false, message: "Missing fingerprint" },
+        { status: 400 },
+      );
+    }
+  } catch (err) {
+    return NextResponse.json(
+      { ok: false, message: "Invalid or empty body" },
+      { status: 400 },
+    );
+  }
   const userAgent = req.headers.get("user-agent") || "";
   const ipAddress =
     req.headers.get("cf-connecting-ip") ||
