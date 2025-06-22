@@ -9,6 +9,11 @@ type R2Params = {
   key: string;
 };
 
+type ListR2Result = {
+  folder: string;
+  dates: string[];
+};
+
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -119,5 +124,18 @@ export async function deleteFromR2({ bucket, key }: R2Params) {
     });
     if (!res.ok)
       throw new Error(`❌ Failed to DELETE from R2: ${res.statusText}`);
+  });
+}
+
+export async function listFromR2(bucket: string): Promise<ListR2Result | null> {
+  const now = Date.now();
+  const url = `${R2_BASE}/${bucket}?t=${now}`;
+
+  return retry(async () => {
+    const res = await fetch(url);
+    if (res.status === 404) return null;
+    if (!res.ok)
+      throw new Error(`❌ Failed to LIST from R2: ${res.statusText}`);
+    return res.json() as Promise<ListR2Result>;
   });
 }

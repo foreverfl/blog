@@ -1,97 +1,57 @@
 import Fuse from "fuse.js";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { useDebounce } from "react-use";
 
-interface Post {
-  frontmatter: {
-    fileName: string;
-    title: string;
-    date: string;
-    classification: string;
-    category: string;
-    image: string;
-  };
+interface SearchItem {
+  title: string;
   content: string;
+  link: string;
+  type: string;
 }
-
 interface SearchProps {
   isMenuOpen: boolean;
   closeMenu: () => void;
-}
-
-function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
-  let timeout: NodeJS.Timeout;
-
-  return function (...args: Parameters<T>) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
 }
 
 const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [searchResults, setSearchResults] = useState<Post[]>(posts);
+  const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
+  const [allItems, setAllItems] = useState<SearchItem[]>([]);
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const res = await fetch(`/api/search-result?lan=${lan}`);
-      const data: Post[] = await res.json();
-      setPosts(data);
-    };
-
-    fetchPosts();
+  const fetchAllItems = useCallback(async () => {
+    setIsSearching(true);
+    const res = await fetch(`/api/indexing?lang=${lan}`);
+    const data: SearchItem[] = await res.json();
+    setAllItems(data);
+    setIsSearching(false);
   }, [lan]);
 
-  useEffect(() => {
-    if (!isMenuOpen) {
-      setQuery("");
+  const doSearch = useCallback(() => {
+    if (!query) {
+      setSearchResults([]);
+      return;
     }
-  }, [isMenuOpen]);
+    setIsSearching(true);
+    const fuse = new Fuse(allItems, {
+      keys: ["content", "title"],
+      threshold: 0.3,
+    });
+    const result = fuse.search(query).map((r) => r.item);
+    setSearchResults(result);
+    setIsSearching(false);
+  }, [query, allItems]);
 
-  // Fuse.js 설정
-  const fuse = useMemo(
-    () =>
-      posts.length > 0
-        ? new Fuse(posts, {
-            keys: ["content"],
-            threshold: 0.1, // 퍼지 검색을 허용할 범위
-          })
-        : null, // posts가 없을 때는 null로 설정
-    [posts],
-  );
-
-  // 디바운스된 검색 함수
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((input: string) => {
-        setIsSearching(true);
-
-        if (!input) {
-          setSearchResults([]); // 검색어가 없으면 빈 배열 반환
-          setIsSearching(false);
-        } else if (fuse) {
-          const result = fuse.search(input).map((result) => result.item);
-          setSearchResults(result);
-          setIsSearching(false);
-        } else {
-          setSearchResults([]); // fuse가 없을 때 빈 배열 반환
-          setIsSearching(false);
-        }
-      }, 300), // 300ms 지연 후 검색 실행
-    [fuse],
-  );
+  useDebounce(doSearch, 300, [query, allItems]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setQuery(inputValue);
-    debouncedSearch(inputValue); // 입력값이 바뀔 때마다 디바운스된 검색 실행
+    setQuery(e.target.value);
   };
 
   const getHighlightedText = (
@@ -126,8 +86,6 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
         </>
       );
     }
-
-    // 검색어가 없으면 전체 텍스트를 반환
     return content;
   };
 
@@ -137,27 +95,28 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
     return ReactDOM.createPortal(
       <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/3 bg-white dark:bg-gray-800 shadow-lg z-50 max-h-96 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
         {searchResults && searchResults.length > 0 ? (
-          searchResults.map((post) => (
+          searchResults.map((item) => (
             <Link
-              href={`/${lan}/${post.frontmatter.classification}/${post.frontmatter.category}/${post.frontmatter.fileName}`} // frontmatter의 파일명으로 링크 생성
-              key={post.frontmatter.fileName}
+              href={item.link}
+              key={item.link}
               onClick={closeMenu}
+              target={item.link.startsWith("http") ? "_blank" : undefined}
+              rel={
+                item.link.startsWith("http") ? "noopener noreferrer" : undefined
+              }
             >
               <div className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {post.frontmatter.title}
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                  {item.title}
+                  {/* 타입별 뱃지나 아이콘도 여기에 */}
+                  {item.type === "hackernews" && (
+                    <span className="ml-2 text-xs bg-orange-400 text-white px-2 py-0.5 rounded">
+                      HN
+                    </span>
+                  )}
                 </h3>
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {getHighlightedText(post.content, query)}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {post.frontmatter.classification} &gt;{" "}
-                  {post.frontmatter.category} |{" "}
-                  {new Date(post.frontmatter.date).toLocaleDateString("ko-KR", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {getHighlightedText(item.content, query)}
                 </p>
               </div>
             </Link>
@@ -172,9 +131,19 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
           </div>
         ) : null}
       </div>,
-      document.body, // Portal을 사용하여 body 아래에 렌더링
+      document.body,
     );
   };
+
+  useEffect(() => {
+    fetchAllItems();
+  }, [fetchAllItems]);
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      setQuery("");
+    }
+  }, [isMenuOpen]);
 
   return (
     <>
