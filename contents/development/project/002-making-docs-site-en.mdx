@@ -1,0 +1,107 @@
+---
+title: "I developed a site that collects official documentation"
+date: "2024-09-26"
+classification: "development"
+category: "project"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/240926-01.webp"
+---
+
+# I developed a site that collects official documentation
+
+- [Site](https://docs.mogumogu.dev/)
+- [GitHub](https://github.com/foreverfl/docs)
+
+## Introduction
+
+![](https://blog_workers.forever-fl.workers.dev/posts-images/240926-01.webp)
+
+Recently, I've been reading official documentation first before starting development more often. So I created a site that collects official documentation for my own use. In this article, I'll introduce the development of this site.
+
+## Why official documentation is important
+
+Recently, some people have said that creating [this documentation collection site](https://docs.mogumogu.dev/) is meaningless. Some people say that everything can be left to generative AI. However, I believe that official documentation is important. I'll explain the reasons below.
+
+### 1. The importance of official documentation has grown with the spread of generative AI
+
+When developing recently, it's common to use generative AI (ChatGPT, Claude, etc.) for development rather than coding directly. So it's more important to know what instructions to give to AI rather than writing code directly. To give specific instructions on how to use a library, you need knowledge beyond simple coding skills. Also, generative AI is still not perfect.
+
+For example, when I was building a blog with Next.js half a year ago, I was developing using 'App Router' instead of 'Page Router'. However, most of the code that ChatGPT provided was using 'Page Router'. Currently, 'App Router' is included in the training data, so this problem has been resolved, but these problems (hallucinations) occur frequently. If I had insufficient understanding of these two 'Routers', I might not have been able to develop properly by learning incorrect information from ChatGPT.
+
+### 2. When problems occur, we often end up looking at official documentation
+
+When developing, problems inevitably occur. At that time, there are two places we ultimately reach. One is looking at official documentation. The other is communities like Stack Overflow. If you can look at official documentation, you can often solve problems easily.
+
+For example, I recently refactored my blog. In this process, I introduced [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote). I asked ChatGPT to use this, but errors occurred. I wrote code to process Markdown within Next.js's `page.tsx`. Therefore, to process Markdown, I needed to use RSC (React Server Component). Looking at the `README.md` of the official GitHub Repository, it explains that you can easily handle this using `next-mdx-remote/rsc`.
+
+```tsx
+import { MDXRemote } from "next-mdx-remote/rsc";
+
+// app/page.js
+export default function Home() {
+  return (
+    <MDXRemote
+      source={`# Hello World
+
+      This is from Server Components!
+      `}
+    />
+  );
+}
+```
+
+However, even when I asked ChatGPT or Claude, they didn't provide code using `next-mdx-remote/rsc`. Probably the latest information wasn't included in the training data. I applied the above code to write code that allows using Markdown on the server side like this:
+
+```tsx
+// Add code highlighting when compiling MDX
+const { content, frontmatter } = await compileMDX<{
+  title: string;
+  date: string;
+  image: string;
+}>({
+  source: fileContent,
+  options: {
+    parseFrontmatter: true,
+    mdxOptions: {
+      remarkPlugins: [remarkGfm], // Use GitHub Flavored Markdown
+      rehypePlugins: [
+        [
+          rehypePrettyCode,
+          {
+            theme: "github-light", // Set desired theme
+          },
+        ],
+      ],
+    },
+  },
+});
+
+return (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="markdown-body w-full md:w-3/5">
+      <div className="my-56"></div>
+      {content}
+      <div className="my-56"></div>
+    </div>
+  </div>
+);
+```
+
+This way, looking at official documentation can often solve problems surprisingly easily.
+
+### 3. Official documentation of libraries or frameworks contains design philosophy
+
+The official documentation of libraries or frameworks contains the design philosophy of those libraries or frameworks. For example, if you can't immediately answer the question "Why use React? What's better than other libraries?", you could say that your understanding of React is insufficient. For example, the official documentation explains [why component purity is important](https://ja.react.dev/reference/rules/components-and-hooks-must-be-pure) like this:
+
+> Be idempotent - always get the same result when executed with the same input. Component inputs are props, state, and context. Hook inputs are their arguments.
+> Have no side effects during rendering - code with side effects should be executed separately from rendering. For example, when users manipulate the UI and the UI updates as a result, it should be executed as an event handler, or if it operates immediately after rendering, it should be executed as an effect.
+> Do not modify anything other than local values: Components and hooks should never modify values that were not created locally during rendering.
+
+Even though this is written in the official documentation, looking at code in the field, there are many cases that go against this design philosophy. I've seen countless React code where component management wasn't done at all. By reading official documentation, you can understand these design philosophies and avoid problems.
+
+## Translation progress direction
+
+Since I mostly use only JavaScript and related technologies for personal projects, I want to translate these first. However, the technologies currently used in my company are Spring Framework, Thymeleaf, PostgreSQL, Docker, Kafka, Kubernetes, etc., so translation of these will proceed first. Then I plan to translate JavaScript-related documentation.
+
+## Conclusion
+
+Most official documentation translations are not yet complete, but I plan to gradually translate them. I believe that this site will be helpful to someone someday.

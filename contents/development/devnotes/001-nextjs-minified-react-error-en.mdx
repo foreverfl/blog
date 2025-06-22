@@ -1,0 +1,69 @@
+---
+title: "Minified React error"
+date: "2024-09-28"
+classification: "development"
+category: "devnotes"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/240928-01.webp"
+---
+
+# I resolved the 'Minified React error'
+
+## Introduction
+
+I opened the browser console to check if there were any unnecessary logs remaining on my blog, and discovered the following error:
+
+![001-nextjs-minified-react-error-01-error](https://blog_workers.forever-fl.workers.dev/posts-images/240928-01.webp)
+
+Usually, I can tell where an error occurred, but this error didn't indicate where it originated. First, I decided to check the React official documentation that explains this error.
+
+- [Minified React error #418](https://react.dev/errors/418): The server-rendered HTML didn't match the client. As a result, this tree will be regenerated on the client.
+- [Minified React error #423](https://react.dev/errors/423): There was an error during hydration, but React was able to recover by instead client rendering the entire root.
+- [Minified React error #425](https://react.dev/errors/425): Text content does not match server-rendered HTML.
+
+Reading these errors, I could determine that this is an error related to 'Hydration'. So, what is 'Hydration'?
+
+## What is 'Hydration'?
+
+'Hydration' generally means 'moisture replenishment', but the React official documentation explains it as follows:
+
+> In React, “hydration” is how React “attaches” to existing HTML that was already rendered by React in a server environment. During hydration, React will attempt to attach event listeners to the existing markup and take over rendering the app on the client.
+>
+> <cite>— React</cite>
+
+Simply put, just like supplying water from the server side to the client side, connecting React to HTML rendered on the server is called 'Hydration'. When an error occurs during this 'Hydration', React renders the entire root on the client side.
+
+## Where did the error occur?
+
+After searching the internet, it seems that this error mainly occurs when server-side time and client-side time are different. One of the causes identified was that server-side time is UTC time while client-side time is local time.
+
+I created this blog 6 months ago, and while recently starting a refactoring, I had forgotten that I added post dates to my blog's main page. So I couldn't tell which component was causing the error. I identified the problematic component by removing components one by one.
+
+The component that caused the problem was the following code:
+
+![](https://blog_workers.forever-fl.workers.dev/posts-images/240928-02.webp)
+
+```tsx title="AllCategory.tsx" showLineNumbers
+<div className="text-center w-full">
+  <p className="text-sm dark:text-neutral-300">
+    {new Date(post.date).toLocaleDateString()}
+  </p>
+  <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
+    {post.title}
+  </h3>
+</div>
+```
+
+## Error resolution method
+
+I was able to resolve the error by modifying this part as follows:
+
+```diff title="AllCategory.tsx"
+- {new Date(post.date).toLocaleDateString()}
++ {new Date(post.date).toISOString().split("T")[0]}
+```
+
+This way, I was able to resolve the error by synchronizing the time between server-side and client-side.
+
+## Conclusion
+
+While other errors show where they occur, this error didn't indicate its source. I've explained this error for those who might encounter the same issue in the future. I'll come back with better articles next time.

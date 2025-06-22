@@ -1,0 +1,428 @@
+---
+title: "Building my own blog with Next.js"
+date: "2024-09-22"
+classification: "development"
+category: "project"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/240922-07.webp"
+---
+
+# Building my own blog with Next.js
+
+- [Blog](https://mogumogu.dev/)
+- [GitHub](https://github.com/foreverfl/blog)
+
+When I started development 2 years ago, the first thing I did was create a blog with WordPress. As a developer, I thought it was important to study and collect the materials I had studied. I actually earned some revenue through ad income with my previous WordPress blog. However, CMS like WordPress has several problems.
+
+## Problems with WordPress
+
+1. **Basically too heavy**: Even when deployed using AWS Lightsail, it sometimes crashes. I think this is a problem that has to be considered because CMS (Content Management System) itself includes various features for handling content. Eventually, you have to pay a certain cost for hosting to solve this.
+2. **Plugins don't exactly match my taste**: WordPress has numerous plugins and many good ones. I actually used SEO plugins like Yoast very usefully. However, I often felt that ready-made products created by someone couldn't exactly match what I wanted. Maybe it's because as a developer, I felt "I could make this too..."
+3. **Design customization is harder than expected**: Design is a quite important element on websites. Although it doesn't cost as much money as development, it's a part that can give impact to others. It takes more time than expected to find the design I want in WordPress. And it takes considerable time to customize that design. For this reason, if you're going to change the design quite a lot, you have to find a different design from the beginning.
+
+After experiencing these problems, I finally decided to develop a blog by myself. The core features I wanted to put in my blog were 'Korean/Japanese multilingual post management' and 'dark mode with the design I want' - these 2 features. I had always developed using Vanilla JavaScript, but this time I decided to make a blog using new technologies like TypeScript, Next.js, and React. I basically created it using Next.js App Router.
+
+## Technology stack used in the blog
+
+- **Infrastructure**: Vercel, Cloudflare Workers, Cloudflare R2
+- **Database**: MongoDB(Atlas)
+- **Backend**: Next.js
+- **Frontend**: React, Redux, Tailwind
+
+The reason I used Vercel here is because Next.js was created by Vercel, so building a CI/CD pipeline is simple. You just create a project, add a repository, and the site is automatically deployed every time you `git push`.
+
+![vercel_connect](https://blog_workers.forever-fl.workers.dev/posts-images/240922-01.webp)
+
+And I used Cloudflare R2 as storage for storing image files. Usually, when actually developing, AWS S3 Bucket is mainly used, but the cost difference was too much, so after hearing from a friend that Cloudflare R2 was cheap, I immediately decided to use Cloudflare R2. Let's compare the prices of the two once?
+
+## Cloudflare R2 vs AWS S3 price comparison
+
+![R2_Pricing](https://blog_workers.forever-fl.workers.dev/posts-images/240922-02.webp)
+
+R2's cost is basically free up to 10GB per month for storage, then $0.015 per GB after that, data input (Class A) is free for 1 million requests and $4.5 per million requests after that, data reading (Class B) is free for 1 million requests and $0.36 per million requests after that.
+
+![S3_storage_pricing](https://blog_workers.forever-fl.workers.dev/posts-images/240922-03.webp)
+![S3_request_pricing](https://blog_workers.forever-fl.workers.dev/posts-images/240922-04.webp)
+
+On the other hand, looking at S3's cost, it's $0.023 per GB per month, data input is $5 per million requests, and data reading is $0.4 per million requests.
+
+For the database, I used NoSQL, not for any particular reason, but because I had never used NoSQL before, so I used it for experience purposes. If you need a DB for your blog, just use RDBMS. It was more troublesome than expected to directly establish relationships and link them every time you delete.
+
+I won't explain the project environment creation part separately. It's well explained in the [Next.js official documentation](https://nextjs.org/docs/getting-started/installation) anyway. The features I directly developed while making the blog are as follows.
+
+## Essential features for a blog
+
+### 1. Login
+
+![login_page](https://blog_workers.forever-fl.workers.dev/posts-images/240922-05.webp)
+
+- I implemented it with OAuth2.0 + JWT. When I was running WordPress before, I noticed that spam comments were posted periodically, so I implemented a login feature thinking it was a minimum safety measure. Originally, there's a library called NextAuth.js that makes it easy to implement OAuth2.0 in Next.js, but since they have code for Page Router but don't separately provide migrated code for App Router, I just implemented it directly in App Router.
+- OAuth2.0 access token request code
+
+```typescript
+  const socialLogins: SocialLogins = {
+    github: {
+      clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+      redirectUri: encodeURIComponent(
+        process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI!
+      ),
+      loginUrl: (clientId, redirectUri) =>
+        `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`,
+      imageUrl: "/logo/github.webp",
+      imageAlt: "Github",
+    },
+    google: {
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      redirectUri: encodeURIComponent(
+        process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!
+      ),
+      loginUrl: (clientId, redirectUri) =>
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile`,
+      imageUrl: "/logo/google.webp",
+      imageAlt: "Google",
+    },
+  };
+
+  const LoginButton: React.FC<LoginButtonProps> = ({ provider, children }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const { clientId, redirectUri, loginUrl } = socialLogins[provider];
+
+    const handleLogin = () => {
+      const url = loginUrl(clientId, redirectUri);
+      window.location.href = url;
+    };
+
+    const getImageSrc = () => {
+      if (provider === "github") {
+        return isHovered ? "/logo/github_black.webp" : "/logo/github.webp";
+      } else {
+        return socialLogins[provider].imageUrl;
+      }
+    };
+```
+
+### 2. File upload
+
+![file_upload](https://blog_workers.forever-fl.workers.dev/posts-images/240922-06.webp)
+
+- If you're going to write your blog only with text, it doesn't matter, but usually blogs contain many photo materials. For this, I implemented file upload needed during post creation. When you drag a file, the file is created as 'tmp_date_filename' and when written, the image changes to 'objectId_date_filename'. Post editing was implemented similarly.
+- Code for uploading images to Cloudflare R2 when registering posts
+
+```typescript
+const handleSubmit = async (event: React.FormEvent) => {
+  event.preventDefault();
+  if (!selectedCategoryId) {
+    alert("Please select a category.");
+    return;
+  }
+
+  const title_ko = title.ko;
+  const title_ja = title.ja;
+  const content_ko = content.ko;
+  const content_ja = content.ja;
+
+  try {
+    const insertedId = await addPost(
+      selectedCategoryId,
+      title_ko,
+      title_ja,
+      content_ko,
+      content_ja,
+      images,
+      representativeImage,
+    );
+
+    // Rename image files within R2
+    const newImageUrls = await renameAndOverwriteFiles(
+      images,
+      "tmp",
+      insertedId,
+    );
+
+    // Rename representative image file
+    const newRepresentativeImageUrl = representativeImage.replace(
+      /(https:\/\/blog_workers\.forever-fl\.workers\.dev\/)tmp_/,
+      `$1${insertedId}_`,
+    );
+
+    // Replace all 'tmp' URLs in content with 'insertedId'
+    const updatedContentKo = content_ko.replace(
+      /https:\/\/blog_workers\.forever-fl\.workers\.dev\/tmp/g,
+      `https://blog_workers.forever-fl.workers.dev/${insertedId}`,
+    );
+    const updatedContentJa = content_ja.replace(
+      /https:\/\/blog_workers\.forever-fl\.workers\.dev\/tmp/g,
+      `https://blog_workers.forever-fl.workers.dev/${insertedId}`,
+    );
+
+    // Update DB
+    const updateResult = await updatePost(
+      insertedId,
+      title_ko,
+      title_ja,
+      updatedContentKo,
+      updatedContentJa,
+      newImageUrls.imageUrls,
+      newRepresentativeImageUrl,
+    );
+
+    // Remove unnecessary images
+    for (const image of images) {
+      await deleteImage(image);
+    }
+
+    // Initialize State
+    setSelectedCategoryId("");
+    setTitle({ ko: "", ja: "" });
+    setContent({ ko: "", ja: "" });
+    setImages([]);
+    setRepresentativeImage("");
+
+    alert("The post has been published!");
+
+    dispatch(setCurrentView({ view: "main" })); // Change state to main view
+    sessionStorage.setItem("currentView", "main");
+    router.push("/", { scroll: false });
+  } catch (error) {
+    console.error("Failed to add post:", error);
+    alert("Failed to add the post.");
+  }
+};
+```
+
+### 3. Pagination
+
+![pagination](https://blog_workers.forever-fl.workers.dev/posts-images/240922-07.webp)
+
+- It's essential to implement this because bringing all posts at once can slow down loading speed and be bad for UI. In Next.js, you can implement this as an API and it wasn't that difficult.
+- Pagination Rest API code
+
+```typescript
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { categoryId: string; page: string } },
+) {
+  const categoryId = params.categoryId;
+  const pageNumber = parseInt(params.page, 10);
+  const itemsPerPage = 12; // Number of items per page
+
+  try {
+    // Get posts by category
+    const { posts, total } = await getPostsByCategory(
+      categoryId,
+      pageNumber,
+      itemsPerPage,
+    );
+
+    // Create response data
+    const responseBody = JSON.stringify({
+      posts,
+      pagination: {
+        page: pageNumber,
+        itemsPerPage,
+        totalItems: total,
+        totalPages: Math.ceil(total / itemsPerPage),
+      },
+    });
+
+    return new NextResponse(responseBody, {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error(error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+```
+
+### 4. Post and comment CRUD functionality
+
+- This is the core functionality of a blog. I think this is what web developers always do. There's nothing special about it. I connected with MongoDB, implemented functions that perform CRUD functionality, and implemented these functions asynchronously. Since it's not a special part, I'll omit the code.
+
+## Features I wanted to add
+
+### 1. Simultaneous Korean/Japanese post management
+
+![posting_bilingual](https://blog_workers.forever-fl.workers.dev/posts-images/240922-08.webp)
+
+- The purpose of my blog was to write and publish the same article in Korean and Japanese simultaneously and optimize each for SEO. So when designing the ERD, I put content_ko and content_ja together in the Post Collection, and implemented it to show different partial pages according to the language state managed by Redux.
+- **HTML code for posting in multiple languages**: `setContent({ ...content, [selectedLanguage]: e.target.value })` As you can see here, the language selected above is state-managed with React in the `selectedLanguage` variable, and different parts are shown according to this variable.
+
+```typescript
+<div>
+  <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+    Content
+  </label>
+  <textarea
+    id="content"
+    ref={textAreaRef}
+    value={content[selectedLanguage]}
+    onChange={(e) =>
+      setContent({ ...content, [selectedLanguage]: e.target.value })
+    }
+    className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    rows={50}
+    required
+  ></textarea>
+</div>
+```
+
+### 2. Language mode selection button
+
+![navbar](https://blog_workers.forever-fl.workers.dev/posts-images/240922-09.webp)
+
+- For simultaneous Korean/Japanese post management, I needed buttons to select each language.
+- **`SetLanguage.tsx` module for state management for language selection**: I just put the entire code. You'll understand it roughly when you see it.
+
+```typescript
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+
+import { setLanguage } from "@/features/language/languageSlice";
+
+const SetLanguage: React.FC = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  //Redux
+  const dispatch = useAppDispatch();
+
+  const [isReady, setIsReady] = useState(false); // Loading state management
+
+  const currentLanguage = useAppSelector((state) => state.language.value);
+
+  useEffect(() => {
+    const initialLang =
+      localStorage.getItem("siteLanguage") ||
+      (navigator.language.startsWith("ko") ? "ko" : "ja");
+    dispatch(setLanguage(initialLang));
+    setIsReady(true);
+  }, [dispatch]);
+
+  const toggleLanguage = () => {
+    const newLanguage = currentLanguage === "ko" ? "ja" : "ko";
+    dispatch(setLanguage(newLanguage));
+
+    const pathParts = pathname.split("/");
+    const languageCode = pathParts[2];
+    const postIdx = pathParts[3];
+
+    if (languageCode) {
+      if (newLanguage === "ja") {
+        router.push(`/post/ja/${postIdx}`, { scroll: false });
+      } else if (newLanguage === "ko") {
+        router.push(`/post/ko/${postIdx}`, { scroll: false });
+      }
+    }
+  };
+  if (!isReady) {
+    return (
+      <div className="animate-pulse">
+        <div className="rounded-full bg-gray-400 h-8 w-14"></div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Switch container */}
+      <div
+        className="relative inline-block w-14 h-8 cursor-pointer"
+        onClick={toggleLanguage}
+      >
+        <input type="checkbox" className="hidden" />
+        {/* Switch background */}
+        <div
+          className={`rounded-full h-8 bg-gray-400 p-1 transition-colors duration-200 ease-in-out`}
+        >
+          {/* Switch toggle handle */}
+          <div
+            className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+              currentLanguage === "ko" ? "translate-x-6" : ""
+            }`}
+          >
+            <Image
+              src={
+                currentLanguage === "ko"
+                  ? "/images/korea.webp"
+                  : "/images/japan.webp"
+              }
+              alt={currentLanguage === "ko" ? "Korean Flag" : "Japanese Flag"}
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default SetLanguage;
+```
+
+### 3. Dark mode selection button
+
+- I just wanted to add it... I use dark mode a lot, and it's a blog I'll also use for review purposes. I don't think there's a need to show the page or code separately. I implemented it similarly to the multilingual processing I implemented above.
+
+### 4. Parsing and displaying Markdown language within posts
+
+![post_parsed](https://blog_workers.forever-fl.workers.dev/posts-images/240922-10.webp)
+
+- I usually organize study materials in Markdown language, so I made the blog to parse and show HTML when displaying posts written in Markdown language. The problem was that I declared Tailwind at the top level and applied the '[github-markdown-css](https://www.npmjs.com/package/github-markdown-css?activeTab=readme)' library in the part that shows posts, but the two codes overlapped and kept causing problems. In Next.js App Router, you can change CSS globally in `global.css`, so I solved it by using `!important` for overlapping parts.
+- **Code for parsing posts**: I integrated it using the [react-markdown](!https://www.npmjs.com/package/react-markdown) library.
+
+```typescript
+{
+  currentPost ? (
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code(props) {
+          const { children, className, node, ...rest } = props;
+          const match = /language-(\w+)/.exec(className || "");
+          return match ? (
+            <SyntaxHighlighter
+              PreTag="div"
+              language={match[1]}
+              style={darcula}
+              customStyle={{ margin: "0" }} // Style to be applied to pre tag
+              showLineNumbers={true}
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          ) : (
+            <code {...rest} className={className}></code>
+          );
+        },
+      }}
+    >
+      {content}
+    </Markdown>
+  ) : (
+    <div></div>
+  );
+}
+```
+
+### 5. Design
+
+- Actually, this part is the biggest reason I made my blog directly. There's a blog I often visit, and I wanted to imitate that person's blog design. So I took that person's blog design the way I wanted and customized it. I paid a lot of attention to the part where the design changes according to scrolling. Since you can see the overall design when you enter the blog, I won't explain it separately.
+
+I still have a few minor features (search function, comment notification function) left to implement, but the main features are all done, and I wrote the first post because I wanted to write about why I made my blog. Honestly, I had only touched Python, Java, and JavaScript until now, but I studied React for a month, and the pure time it took to make this blog was one month. Honestly, if I had tried to make just the functionality itself, I think I could have made it faster... but trying to make the design the way I wanted was harder than expected. Especially when making it with React, the Text Blinking problem occurred, which was also difficult.
+
+My personal opinion is to just use ready-made ones like Tistory, Ameblo for blogs. If you want to customize, make it with something simple to modify like docusaurus. When I usually used blogs implemented by companies, I didn't know, but I learned that there are more features in blogs than expected... If you need to proceed with a personal project but don't have ideas, I think making a blog is also a good choice. I've built sites one by one through Spring Framework (Java), Django (Python), and Express (Node.js) so far... but just making one blog allows you to create core features that go into various sites.
+
+## Summary
+
+- Blogs contain more features than expected.
+- Building a blog directly is good because you can make every detail the way you want.
+- But it takes an incredibly long time.
+
+Thank you for reading the long article, and I'll come back with better articles next time~
