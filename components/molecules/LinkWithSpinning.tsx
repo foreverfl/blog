@@ -8,15 +8,22 @@ interface Props {
   href: string;
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
-export default function LinkWithSpinning({ href, children, className }: Props) {
+export default function LinkWithSpinning({
+  href,
+  children,
+  className,
+  onClick,
+}: Props) {
   const router = useRouter();
   const dispatch = useLoadingDispatch();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     dispatch({ type: "START_LOADING" });
+    if (onClick) onClick();
     setTimeout(() => {
       router.push(href);
     }, 0);

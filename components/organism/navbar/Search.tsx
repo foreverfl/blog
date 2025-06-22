@@ -1,3 +1,5 @@
+import LinkWithSpinning from "@/components/molecules/LinkWithSpinning";
+import { useLoadingDispatch } from "@/lib/context/loading-context";
 import Fuse from "fuse.js";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,6 +19,8 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
+
+  const dispatch = useLoadingDispatch();
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
@@ -96,30 +100,20 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
       <div className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/3 bg-white dark:bg-gray-800 shadow-lg z-50 max-h-96 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
         {searchResults && searchResults.length > 0 ? (
           searchResults.map((item) => (
-            <Link
+            <LinkWithSpinning
               href={item.link}
               key={item.link}
               onClick={closeMenu}
-              target={item.link.startsWith("http") ? "_blank" : undefined}
-              rel={
-                item.link.startsWith("http") ? "noopener noreferrer" : undefined
-              }
             >
               <div className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                   {item.title}
-                  {/* 타입별 뱃지나 아이콘도 여기에 */}
-                  {item.type === "hackernews" && (
-                    <span className="ml-2 text-xs bg-orange-400 text-white px-2 py-0.5 rounded">
-                      HN
-                    </span>
-                  )}
                 </h3>
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {getHighlightedText(item.content, query)}
                 </p>
               </div>
-            </Link>
+            </LinkWithSpinning>
           ))
         ) : searchResults.length === 0 ? (
           <div className="p-4 text-center text-gray-600 dark:text-gray-400">
