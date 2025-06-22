@@ -76,6 +76,10 @@ export async function getAllPostFrontMatters(
   const frontMatters: FrontMatter[] = [];
 
   for (const filePath of filePaths) {
+    if(filePath.includes("/templates")) {
+      continue;
+    }
+
     const fileContents = fs.readFileSync(filePath, "utf8");
 
     const { frontmatter } = await compileMDX<FrontMatter>({

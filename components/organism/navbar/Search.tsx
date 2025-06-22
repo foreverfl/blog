@@ -30,7 +30,6 @@ const Search: React.FC<SearchProps> = ({ isMenuOpen, closeMenu }) => {
     setIsSearching(true);
     const res = await fetch(`/api/indexing?lang=${lan}`);
     const data: SearchItem[] = await res.json();
-    console.log("Fetched items:", data);
     setAllItems(data);
     setIsSearching(false);
   }, [lan]);
