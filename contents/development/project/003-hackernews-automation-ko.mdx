@@ -1,0 +1,363 @@
+---
+title: "HackerNews 자동화 파이프라인 만들기"
+date: "2505-06-23"
+classification: "development"
+category: "project"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/250623-01.webp"
+---
+
+# HackerNews 자동화 파이프라인 만들기
+
+<center>
+
+![screenshot](https://blog_workers.forever-fl.workers.dev/posts-images/250623-01.webp)
+
+</center>
+
+HackerNews의 일일 상위 100개 기사를 크롤링, 요약, 번역하는 과정을 자동화하는 파이프라인을 만들었습니다.
+
+이 파이프라인은 다음과 같은 과정으로 작동합니다:
+
+1. **데이터 수집**: Hacker News에서 상위 100개 기사를 가져와 Cloudflare R2에 결과를 저장
+2. **크롤링**: Playwright를 사용하여 각 기사의 콘텐츠를 크롤링
+3. **요약**: OpenAI API를 사용하여 콘텐츠를 요약
+4. **번역**: OpenAI API를 사용하여 요약을 일본어와 한국어로 번역
+5. **이미지 생성**: DALL·E API를 사용하여 메인 일러스트레이션을 생성
+6. **게시**: GitHub Actions와 Ansible을 사용하여 매일 01:00 KST에 최종 결과물을 블로그에 게시
+
+Mermaid 다이어그램으로 나타내면 다음과 같습니다:
+
+<img
+  src="https://blog_workers.forever-fl.workers.dev/posts-images/250623-02-ko.webp"
+  alt="mermaid diagram"
+  style={{
+    maxWidth: "300px",
+    display: "block",
+    margin: "0 auto",
+    padding: "20px 0",
+  }}
+/>
+
+## 왜 만들었을까?
+
+출근길에 최신 기술 트렌드를 파악하기 위해 Hacker News를 자주 읽습니다. 컴퓨터과학을 전공하지 않았기 때문에 모든 기술 용어와 개념을 이해하는 데 어려움을 겪을 때가 있습니다. 그래도 정보를 파악하는 것이 중요하다고 생각해서 매일 읽으려고 노력합니다. 최근에 일본어나 한국어로 제공되는 기술 콘텐츠는 Hacker News에서 공유되는 내용보다 뒤처지는 경향이 있다는 것을 깨달았습니다. 대부분의 경우 정보가 오래되었고, 최신 업데이트를 한국어로 접하기 어렵습니다.
+
+그래서 출근길에는 영어로 Hacker News를 읽고 있습니다. 기사를 이해할 수는 있지만, 모국어인 한국어만큼 빠르게 영어를 읽지는 못합니다. 그래서 상위 기사들의 한국어 일일 요약이 있으면 도움이 될 것 같다고 생각했습니다. 독서 속도는 연습의 문제라고 말하는 사람들도 있겠지만, 누구나 모국어로는 훨씬 빠르게 읽을 수 있다고 생각합니다. 매일 일본 라이트노벨을 읽고 있음에도 불구하고, 여전히 한국어만큼 빠르게 일본어를 읽을 수는 없습니다. 포르투갈과 캐나다에 있는 탈조선을 한 친구들도 동의하는 건, 모국어로 읽는 것이 항상 외국어보다 빠르고 편안하다는 것입니다.
+
+<img
+  src="https://blog_workers.forever-fl.workers.dev/posts-images/250623-03.webp"
+  alt="copy button"
+  style={{
+    maxWidth: "300px",
+    display: "block",
+    margin: "0 auto",
+    padding: "20px 0",
+  }}
+/>
+
+이 파이프라인을 구축한 후, 매일 Hacker News의 상위 기사들을 한국어로 더 빠르게 읽을 수 있게 되었습니다. 또한 요약에서 이해하지 못하는 부분이 있을 때 ChatGPT나 Claude에게 쉽게 질문할 수 있도록 편리한 복사 버튼도 추가했습니다.
+
+## 어떻게 구현했을까?
+
+다음 섹션에서는 제가 직접 작성한 코드를 사용하여 이 파이프라인을 어떻게 구축했는지 설명하겠습니다. 전체 시스템은 Node.js와 TypeScript로 작성되었으며, 파이프라인의 모든 부분이 Next.js API 라우트로 구현되었습니다.
+
+### 1. 데이터 수집
+
+[Hacker News API](https://github.com/HackerNews/API)를 사용하여 Hacker News에서 상위 100개 기사를 가져옵니다. 먼저 모든 상위 기사 ID를 가져온 다음, 각 기사의 세부 정보를 병렬로 가져옵니다. 결과는 이 파이프라인의 객체 스토리지 역할을 하는 Cloudflare R2에 저장됩니다. 이 단계는 주로 외부 API 호출과 결과 포맷팅을 포함하므로 비교적 간단합니다.
+
+```typescript
+// Hacker News에서 상위 기사 ID 목록을 가져옴
+logMessage("🔄 Fetching new data from HackerNews API...");
+const topStoriesRes = await fetch(`${HN_API_BASE}/topstories.json`);
+const topStoryIds: number[] = await topStoriesRes.json();
+const top100Stories = topStoryIds.slice(0, 100);
+
+// 각 기사의 세부 정보를 가져옴 (병렬 요청)
+const newsPromises = top100Stories.map(async (id) => {
+  const newsRes = await fetch(`${HN_API_BASE}/item/${id}.json`);
+  const newsData = await newsRes.json();
+  const cleanedTitle = newsData.title ? cleanHNTitle(newsData.title) : null;
+
+  return {
+    id: generateUUID(newsData.title),
+    hnId: newsData.id,
+    title: {
+      en: cleanedTitle,
+      ko: null,
+      ja: null,
+    },
+    type: newsData.type,
+    url: newsData.url ?? null,
+    score: newsData.score ?? null,
+    by: newsData.by ?? null,
+    time: newsData.time ?? null,
+    content: newsData.text ?? null,
+    summary: {
+      en: null,
+      ko: null,
+      ja: null,
+    },
+  };
+});
+```
+
+### 2. 크롤링
+
+브라우저 자동화 라이브러리인 [Playwright](https://playwright.dev/)를 사용하여 각 기사의 주요 콘텐츠를 가져옵니다. `<article>`, `<div>`, `<main>` 등과 같은 일반적인 CSS 선택자 세트를 정의하여 페이지에서 주요 콘텐츠를 추출합니다. 이러한 선택자가 의미 있는 콘텐츠를 반환하지 않으면 대신 `<section>` 요소를 파싱하는 방식으로 대체합니다.
+
+```typescript
+// 일반적인 경우
+const selectors = [
+  "article",
+  "div#content",
+  "div.content",
+  "div#post-content",
+  "div.content-area",
+  "div#main",
+  "div.main",
+  "div.prose",
+  "div.entry",
+  "div.bodycopy",
+  "div.node__content",
+  "div.essay__content",
+  "main",
+];
+
+for (const selector of selectors) {
+  const el = document.querySelector(selector);
+  if (el) return el.textContent || "";
+}
+
+// <section> 대체 방법
+const sections = document.querySelectorAll("section");
+if (sections.length > 0) {
+  return Array.from(sections)
+    .map((sec) => sec.textContent?.trim() || "")
+    .join("\n\n");
+}
+```
+
+PDF 파일의 경우 `pdfjs-dist`를 사용하여 텍스트를 추출합니다. OpenAI API에는 토큰 제한이 있기 때문에 콘텐츠를 최대 15,000토큰의 청크로 나눕니다. 이를 효율적으로 수행하기 위해 토큰 제약 조건 내에 맞는 최대 콘텐츠 길이를 찾기 위해 이진 탐색 알고리즘을 적용합니다.
+
+```typescript
+// 이진 탐색
+while (start <= end) {
+  const mid = Math.floor((start + end) / 2);
+  const currentText = text.slice(0, mid);
+  const currentTokenCount = await countTokens(currentText);
+
+  console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
+
+  if (currentTokenCount === maxTokens) {
+    return currentText;
+  } else if (currentTokenCount <= maxTokens) {
+    start = mid + 1;
+  } else {
+    end = mid;
+  }
+}
+```
+
+콘텐츠가 추출되면 Redis에 임시로 저장합니다. 로컬호스트에서는 `redis:latest` Docker 이미지를 사용하여 Redis를 실행합니다. 프로덕션에서는 Redis가 ECS(Elastic Container Service) 내에서 실행됩니다. 처리하는 동안 콘텐츠를 버퍼링하기 위해 Redis를 사용하고, 모든 기사가 완료된 후 Cloudflare R2로 플러시합니다. 이는 여러 파이프라인 인스턴스가 동시에 실행될 때 경합 상태를 방지하는 데 도움이 됩니다.
+
+```typescript
+for (const [idx, item] of toFetch.entries()) {
+  fetchQueue.add(async () => {
+    try {
+      logMessage(`[${idx + 1}/${toFetch.length}] Fetching: ${item.id}...`);
+      let content = null;
+
+      if (item.url.includes(".pdf")) {
+        content = await fetchPdfContent(item.url);
+        logMessage(`📄 PDF content extracted for ${item.url}`);
+      } else {
+        content = await fetchContent(item.url);
+        logMessage(`🌐 Smart content fetched for ${item.url}`);
+      }
+
+      if (content) {
+        content = await sliceTextByTokens(content, 15000);
+        logMessage(`📄 Sliced content (up to 15000 tokens)`);
+      }
+
+      // Redis를 사용하여 콘텐츠를 임시 저장
+      if (content) {
+        await redis.set(`content:${item.id}`, content, "EX", 60 * 60 * 24);
+      }
+      logMessage(`[${idx + 1}/${toFetch.length}] ✅ Done: ${item.id}`);
+    } catch (error) {
+      logMessage(
+        `[${idx + 1}/${toFetch.length}] ❌ Error: ${item.id} (${error})`,
+      );
+    }
+  });
+}
+```
+
+### 3. 요약 / 번역
+
+OpenAI API를 사용하여 콘텐츠를 요약하고 번역합니다. 가난한 개발자라서 풀버전인 `gpt-4o` 대신 `gpt-4o-mini` 모델을 사용합니다. 😢
+
+요약과 번역 단계는 콘텐츠 가져오기 프로세스와 동일한 구조를 따릅니다. 임시 결과는 Redis에 저장되고 모든 기사가 처리된 후 Cloudflare R2로 플러시됩니다.
+
+```typescript
+// 요약 번역
+if (
+  item.summary &&
+  item.summary.en &&
+  (!item.summary.ja || item.summary.ja === "")
+) {
+  translateQueue.add(async () => {
+    try {
+      logMessage(
+        `[ja][summary][${idx + 1}/${toTranslateJa.length}] Translating summary: ${item.id}...`,
+      );
+      const translated = await translate(item.summary.en, "ja", "content");
+      await redis.set(`ja:summary:${item.id}`, translated, "EX", 60 * 60 * 24);
+      logMessage(
+        `[ja][summary][${idx + 1}/${toTranslateJa.length}] ✅ Done: ${item.id}`,
+      );
+    } catch (error) {
+      logMessage(
+        `[ja][summary][${idx + 1}/${toTranslateJa.length}] ❌ Error: ${item.id} (${error})`,
+      );
+    }
+  });
+}
+```
+
+### 4. 이미지 생성
+
+각 블로그 게시물을 시각적으로 더 매력적으로 만들기 위해 DALL·E API를 사용하여 모든 기사에 대한 메인 일러스트레이션을 생성합니다. 처음에는 LoRA와 함께 Stable Diffusion을 사용하고 싶었지만, 비용 효율적인 통합 방법을 찾을 수 없어서 DALL·E를 사용하기로 결정했습니다. 현재 `dall-e-3` 모델을 사용하고 있으며, 프롬프트는 각 기사의 요약을 기반으로 생성됩니다. 일본 애니메이션을 좋아하기 때문에 일러스트레이션을 생성하기 위해 프롬프트에 "일본 애니메이션 스타일"을 포함합니다.
+
+<center>
+
+![screenshot for posts](https://blog_workers.forever-fl.workers.dev/posts-images/250623-04.webp)
+
+</center>
+
+일러스트레이션 스타일과 주제는 일본 애니메이션 스타일의 소녀로 고정되어 있습니다. 또한 Hacker News의 상위 기사 설명을 사용하여 프롬프트를 풍부하게 만듭니다.
+
+```typescript
+const extractedKeywordsString = await keywords(date);
+const extractedKeywords = JSON.parse(extractedKeywordsString);
+
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
+const res = await fetch(`${siteUrl}/prompts/picture-style.md`);
+if (!res.ok) throw new Error("Style prompt fetch failed");
+const stylePrompt = await res.text();
+const styleKeywords = parseStylePrompt(stylePrompt);
+
+const flattenedKeywords = {
+  whatisInTheImage: flattenToArray(extractedKeywords.whatIsInTheImage),
+  background: flattenToArray(extractedKeywords.background),
+};
+
+const fullPrompt = {
+  style: styleKeywords.style,
+  mood: styleKeywords.mood,
+  perspective: styleKeywords.perspective,
+  colors: styleKeywords.colors,
+  additionalEffects: styleKeywords.additionalEffects,
+  whatisInTheImage: flattenedKeywords.whatisInTheImage,
+  background: flattenedKeywords.background,
+};
+```
+
+위 코드에서 보듯이, `keywords()` 함수로 키워드를 추출하고 이를 파싱하여 `fullPrompt` 객체를 구축합니다. 이 결합된 프롬프트가 DALL·E API로 전송되어 최종 일러스트레이션을 생성합니다.
+
+### 5. 게시
+
+1단계부터 4단계까지(상위 100개 기사 가져오기, 콘텐츠 크롤링, 요약, 번역, 일러스트레이션 생성)를 거친 후, 마지막 단계는 모든 것을 블로그에 게시하는 것입니다.
+
+이를 수동으로 하는 것은 시간이 많이 걸리고 비효율적입니다. 개발자로서 항상 자동화 관점에서 생각해야 한다고 생각합니다. 그래서 **GitHub Actions**와 **Ansible**을 사용하여 게시 프로세스를 완전히 자동화합니다.
+
+매일 **01:00 KST(한국 표준시)**에 GitHub Actions가 Ansible 플레이북을 트리거하여 최신 결과로 블로그를 업데이트합니다.
+
+여기서 Ansible의 역할은 간단합니다: ECS 인스턴스의 환경 변수(Redis 호스트와 포트 등)를 업데이트하는 것입니다.
+
+```yaml
+- name: Replace Redis value in .env.prod using Ansible
+  uses: dawidd6/action-ansible-playbook@v2
+  with:
+      playbook: ansible/replace-env.yml
+      directory: .
+      inventory: |
+      [web]
+      ec2-snstance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
+  env:
+      REDIS_HOST: ${{ env.REDIS_HOST }}
+      REDIS_PORT: ${{ env.REDIS_PORT }}
+```
+
+요약과 데이터 플러시를 포함한 모든 백엔드 로직은 **Next.js API 라우트**에서 구현됩니다.
+
+예를 들어, 각 기사의 콘텐츠를 요약하기 위해 `curl`을 통해 해당 API 라우트를 호출하고 결과를 Redis에 임시 저장합니다:
+
+```yaml
+- name: Summarize HackerNews content
+  run: |
+    RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/summarize \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+    echo "$RESPONSE"
+    SUMMARIZE_TOTAL=$(echo "$RESPONSE" | jq '.total')
+    echo "SUMMARIZE_TOTAL=$SUMMARIZE_TOTAL" >> $GITHUB_ENV
+```
+
+모든 요약이 생성되면 데이터를 Redis에서 **Cloudflare R2**로 플러시하여 장기 저장합니다:
+
+```yaml
+- name: Summarize HackerNews content - Flush
+  id: summarize-flush
+  run: |
+    for i in {1..5}; do
+    RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+        -d "{\"type\": \"summarize\", \"total\": $SUMMARIZE_TOTAL}")
+    echo "$RESPONSE"
+    FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+    if [ "$FLUSHED" -ge 1 ]; then
+        echo "Summarize flush succeeded!"
+        exit 0
+    fi
+    echo "Summarize flush not ready, retrying in 60s..."
+    sleep 60
+    done
+    echo "Summarize flush failed after 5 attempts"
+    exit 0
+```
+
+## 개선할 수 있는 점들
+
+지금까지 이 파이프라인을 어떻게 구현했는지 설명했습니다. 하지만 물론 개선할 수 있는 여러 영역이 있습니다. 이것들은 앞으로 개선할 계획인 사항들입니다.
+
+### 1. 100%의 콘텐츠를 크롤링할 수 없음
+
+이에는 몇 가지 이유가 있습니다:
+
+- 다양한 웹사이트에서 사용되는 모든 구조와 패턴을 고려하는 것은 불가능합니다.
+- 일부 사이트에서는 **Cloudflare 안티봇 보호**를 사용하여 Playwright와 같은 헤드리스 브라우저를 차단합니다.
+
+크롤링 로직을 개선하고 안티봇 챌린지를 더 잘 처리하는 방법을 배우는 것이 제 최우선 과제 중 하나입니다.
+
+### 2. Cloudflare R2가 적절한 스토리지 솔루션인가?
+
+원래 이 블로그는 JAMstack을 사용한 정적 사이트로 구축되어 Vercel에서 호스팅되었습니다. 하지만 서버리스 플랫폼은 이런 종류의 파이프라인에 적합하지 않습니다. 그래서 **AWS EC2**로 마이그레이션했고, 현재 API 서버와 데이터베이스를 모두 실행하고 있습니다.
+
+처음에는 댓글과 좋아요 같은 동적 데이터를 **MongoDB Atlas**에 저장했지만, 관계형 데이터베이스에 대한 이해를 깊게 하고 싶어서 나중에 **PostgreSQL**로 전환했습니다.
+
+현재 파이프라인 결과(요약, 번역 등)는 **Cloudflare R2**에 JSON 파일로 저장됩니다. 하지만 PostgreSQL은 `JSON`과 `JSONB` 타입을 지원하고, 이미 PostgreSQL 인스턴스를 실행하고 있으므로 실제로는 더 이상 R2가 필요하지 않습니다.
+
+앞으로 아키텍처를 단순화하기 위해 모든 결과 데이터를 R2에서 PostgreSQL로 마이그레이션할 계획입니다.
+
+## 결론
+
+매일 상위 100개의 Hacker News 기사를 가져오고, 크롤링하고, 요약하고, 번역하고, 일러스트레이션을 생성하는 완전 자동화된 파이프라인을 구축했습니다. 덕분에 이제 중요한 기사들을 한국어로 빠르게 읽을 수 있게 되었습니다.
+
+이 프로젝트가 다른 사람들에게도 도움이 되기를 바랍니다. 언어 학습, 기술 트렌드 추적, 또는 저처럼 자동화를 좋아하는 사람들에게 말이에요.
+
+이 파이프라인을 계속 개선하고 앞으로 업데이트를 공유할 예정입니다. 질문이나 제안이 있으시면 블로그 하단에 버그 리포트를 남겨주세요.
+
+모든 소스 코드는 오픈되어 있으며 👉 [제 GitHub 저장소](https://github.com/foreverfl/blog)에서 확인할 수 있습니다.

@@ -1,0 +1,364 @@
+---
+title: "HackerNewsの自動化パイプラインを作る"
+date: "2505-06-23"
+classification: "development"
+category: "project"
+image: "https://blog_workers.forever-fl.workers.dev/posts-images/250623-01.webp"
+---
+
+# HackerNewsの自動化パイプラインを作る
+
+<center>
+
+![screenshot](https://blog_workers.forever-fl.workers.dev/posts-images/250623-01.webp)
+
+</center>
+
+HackerNewsの毎日トップ100記事をクローリング、要約、翻訳する自動化パイプラインを作成しました。
+
+このパイプラインは以下のプロセスで動作します：
+
+1. **取得**: Hacker Newsからトップ100記事を取得し、結果をCloudflare R2に保存
+2. **クローリング**: Playwrightを使用して各記事のコンテンツをクローリング
+3. **要約**: OpenAI APIを使用してコンテンツを要約
+4. **翻訳**: OpenAI APIを使用して要約を日本語と韓国語に翻訳
+5. **画像生成**: DALL·E APIを使用してメイン画像を生成
+6. **公開**: GitHub ActionsとAnsibleを使用して毎日01:00 KSTに最終結果をブログに公開
+
+Mermaid図では以下のようなプロセスになります：
+
+<img
+  src="https://blog_workers.forever-fl.workers.dev/posts-images/250623-02-en.webp"
+  alt="mermaid diagram"
+  style={{
+    maxWidth: "300px",
+    display: "block",
+    margin: "0 auto",
+    padding: "20px 0",
+  }}
+/>
+
+## なぜ作ったのか？
+
+通勤中、最新の技術トレンドを把握するためにHacker Newsをよく読みます。コンピューターサイエンスを専攻していなかったため、すべての技術用語や概念を理解するのに苦労することがあります。それでも情報を把握することは重要だと思っているので、毎日読むよう努めています。最近、日本語や韓国語で配信される技術コンテンツは、Hacker Newsで共有される内容よりも遅れがちだということに気づきました。多くの場合、情報が古く、最新の更新を母国語でアクセスすることが困難です。
+
+そのため、通勤中は英語でHacker Newsを読んでいます。記事は理解できるものの、母国語の韓国語ほど早く英語を読むことはできません。そこで、トップ記事の韓国語での日次要約があれば役立つのではないかと考えました。読書速度は練習の問題だと言う人もいるかもしれませんが、母国語ではるかに早く読めることを私は知っています。毎日日本のライトノベルを読んでいても、韓国語ほど早く日本語を読むことはできません。ポルトガルやカナダにいる友人たちも同意見です—母国語での読書は常に外国語より早く、快適だということに。
+
+<img
+  src="https://blog_workers.forever-fl.workers.dev/posts-images/250623-03.webp"
+  alt="copy button"
+  style={{
+    maxWidth: "300px",
+    display: "block",
+    margin: "0 auto",
+    padding: "20px 0",
+  }}
+/>
+
+このパイプラインを構築した後、毎日母国語でHacker Newsのトップ記事をより早く読めるようになりました。また、要約で理解できないことがあった時にChatGPTやClaudeに簡単に質問できるよう、便利なコピーボタンも追加しました。
+
+## どのように実装したか
+
+以下のセクションでは、自分のコードを使ってこのパイプラインをどのように構築したかを説明します。システム全体はNode.jsとTypeScriptで書かれており、パイプラインのすべての部分がNext.js APIルートとして実装されています。
+
+### 1. 取得
+
+[Hacker News API](https://github.com/HackerNews/API)を使用してHacker Newsからトップ100記事を取得します。まず、すべてのトップ記事IDを取得し、次に各記事の詳細を並行して取得します。結果はCloudflare R2に保存され、このパイプラインのオブジェクトストレージとして機能します。このステップは比較的シンプルで、主に外部APIの呼び出しと結果のフォーマットを含みます。
+
+```typescript
+// Hacker Newsからトップ記事IDのリストを取得
+logMessage("🔄 Fetching new data from HackerNews API...");
+const topStoriesRes = await fetch(`${HN_API_BASE}/topstories.json`);
+const topStoryIds: number[] = await topStoriesRes.json();
+const top100Stories = topStoryIds.slice(0, 100);
+
+// 各記事の詳細情報を取得（並行リクエスト）
+const newsPromises = top100Stories.map(async (id) => {
+  const newsRes = await fetch(`${HN_API_BASE}/item/${id}.json`);
+  const newsData = await newsRes.json();
+  const cleanedTitle = newsData.title ? cleanHNTitle(newsData.title) : null;
+
+  return {
+    id: generateUUID(newsData.title),
+    hnId: newsData.id,
+    title: {
+      en: cleanedTitle,
+      ko: null,
+      ja: null,
+    },
+    type: newsData.type,
+    url: newsData.url ?? null,
+    score: newsData.score ?? null,
+    by: newsData.by ?? null,
+    time: newsData.time ?? null,
+    content: newsData.text ?? null,
+    summary: {
+      en: null,
+      ko: null,
+      ja: null,
+    },
+  };
+});
+```
+
+### 2. クローリング
+
+[Playwright](https://playwright.dev/)というブラウザー自動化ライブラリを使用して、各記事のメインコンテンツを取得します。`<article>`、`<div>`、`<main>`などの一般的なCSSセレクターのセットを定義して、ページから主要コンテンツを抽出します。これらのセレクターが有意義なコンテンツを返さない場合は、代わりに`<section>`要素を解析します。
+
+```typescript
+// 一般的なケース
+const selectors = [
+  "article",
+  "div#content",
+  "div.content",
+  "div#post-content",
+  "div.content-area",
+  "div#main",
+  "div.main",
+  "div.prose",
+  "div.entry",
+  "div.bodycopy",
+  "div.node__content",
+  "div.essay__content",
+  "main",
+];
+
+for (const selector of selectors) {
+  const el = document.querySelector(selector);
+  if (el) return el.textContent || "";
+}
+
+// <section>のフォールバック
+const sections = document.querySelectorAll("section");
+if (sections.length > 0) {
+  return Array.from(sections)
+    .map((sec) => sec.textContent?.trim() || "")
+    .join("\n\n");
+}
+```
+
+PDFファイルの場合、`pdfjs-dist`を使用してテキストを抽出します。OpenAI APIにはトークン制限があるため、コンテンツを最大15,000トークンのチャンクにスライスします。これを効率的に行うため、トークン制約内に収まる最大コンテンツの長さを見つけるためにバイナリサーチアルゴリズムを適用します。
+
+```typescript
+// バイナリサーチ
+while (start <= end) {
+  const mid = Math.floor((start + end) / 2);
+  const currentText = text.slice(0, mid);
+  const currentTokenCount = await countTokens(currentText);
+
+  console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
+
+  if (currentTokenCount === maxTokens) {
+    return currentText;
+  } else if (currentTokenCount <= maxTokens) {
+    start = mid + 1;
+  } else {
+    end = mid;
+  }
+}
+```
+
+コンテンツが抽出されると、一時的にRedisに保存します。ローカルホストでは、`redis:latest` Dockerイメージを使用してRedisを実行します。本番環境では、RedisはECS（Elastic Container Service）内で実行されます。処理中にコンテンツを一時的に保存するためにRedisを使用し、すべての記事が完了した後にCloudflare R2にフラッシュします。これにより、複数のパイプラインインスタンスが同時に実行されている際の競合状態を防ぐことができます。
+
+```typescript
+for (const [idx, item] of toFetch.entries()) {
+  fetchQueue.add(async () => {
+    try {
+      logMessage(`[${idx + 1}/${toFetch.length}] Fetching: ${item.id}...`);
+      let content = null;
+
+      if (item.url.includes(".pdf")) {
+        content = await fetchPdfContent(item.url);
+        logMessage(`📄 PDF content extracted for ${item.url}`);
+      } else {
+        content = await fetchContent(item.url);
+        logMessage(`🌐 Smart content fetched for ${item.url}`);
+      }
+
+      if (content) {
+        content = await sliceTextByTokens(content, 15000);
+        logMessage(`📄 Sliced content (up to 15000 tokens)`);
+      }
+
+      // Redisを使用してコンテンツを一時保存
+      if (content) {
+        await redis.set(`content:${item.id}`, content, "EX", 60 * 60 * 24);
+      }
+      logMessage(`[${idx + 1}/${toFetch.length}] ✅ Done: ${item.id}`);
+    } catch (error) {
+      logMessage(
+        `[${idx + 1}/${toFetch.length}] ❌ Error: ${item.id} (${error})`,
+      );
+    }
+  });
+}
+```
+
+### 3. 要約 / 翻訳
+
+OpenAI APIを使用してコンテンツを要約・翻訳します。貧乏な開発者なので、フル版の`gpt-4o`ではなく`gpt-4o-mini`モデルを使用しています。😢
+
+要約と翻訳のステップは、コンテンツ取得プロセスと同じ構造に従います。一時的な結果はRedisに保存され、すべての記事が処理された後でCloudflare R2にフラッシュされます。
+
+```typescript
+// 要約の翻訳
+if (
+  item.summary &&
+  item.summary.en &&
+  (!item.summary.ja || item.summary.ja === "")
+) {
+  translateQueue.add(async () => {
+    try {
+      logMessage(
+        `[ja][summary][${idx + 1}/${toTranslateJa.length}] Translating summary: ${item.id}...`,
+      );
+      const translated = await translate(item.summary.en, "ja", "content");
+      await redis.set(`ja:summary:${item.id}`, translated, "EX", 60 * 60 * 24);
+      logMessage(
+        `[ja][summary][${idx + 1}/${toTranslateJa.length}] ✅ Done: ${item.id}`,
+      );
+    } catch (error) {
+      logMessage(
+        `[ja][summary][${idx + 1}/${toTranslateJa.length}] ❌ Error: ${item.id} (${error})`,
+      );
+    }
+  });
+}
+```
+
+### 4. 画像生成
+
+各ブログ投稿をより視覚的に魅力的にするため、DALL·E APIを使用して各記事のメイン画像を生成します。当初はLoRAを使ったStable Diffusionを使いたかったのですが、コスト効率的な統合方法が見つからなかったため、DALL·Eを使うことにしました。現在は`dall-e-3`モデルを使用しており、プロンプトは各記事の要約に基づいて生成されます。日本のアニメが大好きなので、そのスタイルで画像を生成するためにプロンプトに「アニメスタイル」を含めています。
+
+<center>
+
+![screenshot for posts](https://blog_workers.forever-fl.workers.dev/posts-images/250623-04.webp)
+
+</center>
+
+画像のスタイルと被写体は、日本のアニメスタイルの女の子のような見た目に固定されています。また、Hacker Newsのトップ記事の説明を使用してプロンプトを豊かにしています。
+
+```typescript
+const extractedKeywordsString = await keywords(date);
+const extractedKeywords = JSON.parse(extractedKeywordsString);
+
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
+const res = await fetch(`${siteUrl}/prompts/picture-style.md`);
+if (!res.ok) throw new Error("Style prompt fetch failed");
+const stylePrompt = await res.text();
+const styleKeywords = parseStylePrompt(stylePrompt);
+
+const flattenedKeywords = {
+  whatisInTheImage: flattenToArray(extractedKeywords.whatIsInTheImage),
+  background: flattenToArray(extractedKeywords.background),
+};
+
+const fullPrompt = {
+  style: styleKeywords.style,
+  mood: styleKeywords.mood,
+  perspective: styleKeywords.perspective,
+  colors: styleKeywords.colors,
+  additionalEffects: styleKeywords.additionalEffects,
+  whatisInTheImage: flattenedKeywords.whatisInTheImage,
+  background: flattenedKeywords.background,
+};
+```
+
+上記のコードに示されているように、`keywords()`関数でキーワードを抽出し、それらを解析して`fullPrompt`オブジェクトを構築します。この組み合わせプロンプトがDALL·E APIに送信され、最終的な画像が生成されます。
+
+### 5. 公開
+
+ステップ1から4まで（トップ100記事の取得、コンテンツのクローリング、要約、翻訳、画像生成）を経た後、最終ステップはすべてをブログに公開することです。
+
+これを手動で行うのは時間がかかり非効率的です。開発者として、常に自動化の観点から考えるべきだと思います。そのため、**GitHub Actions**と**Ansible**を使用して公開プロセスを完全に自動化しています。
+
+毎日 **01:00 KST（韓国標準時）** に、GitHub ActionsがAnsibleプレイブックをトリガーして、最新の結果でブログを更新します。
+
+ここでのAnsibleの役割はシンプルです。ECSインスタンスの環境変数（Redisホストやポートなど）を更新することです。
+
+```yaml
+- name: Replace Redis value in .env.prod using Ansible
+  uses: dawidd6/action-ansible-playbook@v2
+  with:
+      playbook: ansible/replace-env.yml
+      directory: .
+      inventory: |
+      [web]
+      ec2-snstance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
+  env:
+      REDIS_HOST: ${{ env.REDIS_HOST }}
+      REDIS_PORT: ${{ env.REDIS_PORT }}
+```
+
+要約やデータのフラッシュを含むすべてのバックエンドロジックは、**Next.js APIルート**で実装されています。
+
+たとえば、各記事のコンテンツを要約するには、`curl`を介して対応するAPIルートを呼び出し、結果を一時的にRedisに保存します：
+
+```yaml
+- name: Summarize HackerNews content
+  run: |
+    RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/summarize \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+    echo "$RESPONSE"
+    SUMMARIZE_TOTAL=$(echo "$RESPONSE" | jq '.total')
+    echo "SUMMARIZE_TOTAL=$SUMMARIZE_TOTAL" >> $GITHUB_ENV
+```
+
+すべての要約が生成されると、データをRedisから**Cloudflare R2**にフラッシュして長期保存します：
+
+```yaml
+- name: Summarize HackerNews content - Flush
+  id: summarize-flush
+  run: |
+    for i in {1..5}; do
+    RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+        -d "{\"type\": \"summarize\", \"total\": $SUMMARIZE_TOTAL}")
+    echo "$RESPONSE"
+    FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+    if [ "$FLUSHED" -ge 1 ]; then
+        echo "Summarize flush succeeded!"
+        exit 0
+    fi
+    echo "Summarize flush not ready, retrying in 60s..."
+    sleep 60
+    done
+    echo "Summarize flush failed after 5 attempts"
+    exit 0
+```
+
+## 改善できる点
+
+ここまで、このパイプラインをどのように実装したかを説明しました。しかし、もちろん改善できる領域がいくつかあります。これらは将来改善する予定の事項です。
+
+### 1. 100%のコンテンツをクローリングできない
+
+これにはいくつかの理由があります：
+
+- 異なるウェブサイトで使用されているすべての構造とパターンを考慮することは不可能です。
+- 一部のサイトでは**Cloudflareのアンチボット保護**を使用しており、Playwrightのようなヘッドレスブラウザーをブロックします。
+
+クローリングロジックを改善し、アンチボットチャレンジをより適切に処理する方法を学ぶことが私の最優先事項の一つです。
+
+### 2. Cloudflare R2は適切なストレージソリューションか？
+
+元々、このブログはJAMstackを使用した静的サイトとして構築され、Vercelでホストされていました。しかし、サーバーレスプラットフォームはこの種のパイプラインには適していません。そこで**AWS EC2**に移行し、現在はAPIサーバーとデータベースの両方を実行しています。
+
+最初は、コメントやいいねなどの動的データを**MongoDB Atlas**に保存していましたが、後にリレーショナルデータベースの理解を深めたかったため**PostgreSQL**に切り替えました。
+
+現在、パイプラインの結果（要約、翻訳など）は**Cloudflare R2**にJSONファイルとして保存されています。しかし、PostgreSQLは`JSON`と`JSONB`タイプをサポートしており、すでにPostgreSQLインスタンスを実行しているため、実際にはもうR2は必要ありません。
+
+将来的には、アーキテクチャを簡素化するため、すべての結果データをR2からPostgreSQLに移行する予定です。
+
+## まとめ
+
+毎日トップ100のHacker News記事を取得、クローリング、要約、翻訳、画像生成する完全自動化パイプラインを構築しました。おかげで、重要な記事を母国語で素早く読めるようになりました。
+
+このプロジェクトが他の人にも役立つことを願っています—言語学習、技術トレンドの追跡、または私のように自動化が好きな人にとって。
+
+このパイプラインを改善し続け、将来更新を共有する予定です。
+質問や提案がありましたら、ブログの下部にバグレポートを残してください。
+
+すべてのソースコードはオープンで、👉 [私のGitHubリポジトリ](https://github.com/foreverfl/blog)で利用可能です。

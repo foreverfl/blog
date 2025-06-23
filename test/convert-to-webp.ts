@@ -7,7 +7,7 @@ const DELETE_ORIGINAL = true;
 (async () => {
   const targetDir = path.join(
     process.cwd(),
-    "public/images/00images/documentation/translation-notes/",
+    "/public/tmp/",
   );
   const files = fs.readdirSync(targetDir);
 

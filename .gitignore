@@ -47,6 +47,7 @@ contents/images/
 
 # tmp files
 /tmp
+/public/tmp
 /test-data
 
 # logs
