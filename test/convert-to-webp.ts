@@ -5,10 +5,7 @@ import sharp from "sharp";
 const DELETE_ORIGINAL = true;
 
 (async () => {
-  const targetDir = path.join(
-    process.cwd(),
-    "/public/tmp/",
-  );
+  const targetDir = path.join(process.cwd(), "/public/tmp/");
   const files = fs.readdirSync(targetDir);
 
   const imageFiles = files.filter((file) => {
