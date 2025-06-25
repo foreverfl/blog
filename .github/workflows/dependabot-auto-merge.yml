@@ -1,8 +1,8 @@
 name: "Dependabot Auto Merge"
 
 permissions:
-  contents: write 
-  pull-requests: write 
+  contents: write
+  pull-requests: write
 
 on:
   pull_request:
@@ -23,12 +23,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "22"
-          
+
       - name: Setup .env for CI
         run: cp .env.ci .env
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run Prettier (fix formatting)
+        run: npx prettier --write .
 
       - name: Run build
         run: npm run build

@@ -211,7 +211,7 @@ jobs:
           echo "$RESPONSE"
           TRANSLATE_JA_TOTAL=$(echo "$RESPONSE" | jq '.total')
           echo "TRANSLATE_JA_TOTAL=$TRANSLATE_JA_TOTAL" >> $GITHUB_ENV
-       
+
       - name: Translate HackerNews to Japanese - Flush
         id: translate-ja-flush
         run: |
@@ -231,7 +231,7 @@ jobs:
           done
           echo "Translate JA flush failed after 5 attempts"
           exit 0
-          
+
       - name: 🎨 Generate HackerNews image
         run: |
           TODAY=$(date -d '9 hours' +'%y%m%d')

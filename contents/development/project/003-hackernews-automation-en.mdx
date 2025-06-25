@@ -109,30 +109,30 @@ I fetch the main content of each story using [Playwright](https://playwright.dev
 ```typescript
 // General case
 const selectors = [
-    "article",
-    "div#content",
-    "div.content",
-    "div#post-content",
-    "div.content-area",
-    "div#main",
-    "div.main",
-    "div.prose",
-    "div.entry",
-    "div.bodycopy",
-    "div.node__content",
-    "div.essay__content",
-    "main",
+  "article",
+  "div#content",
+  "div.content",
+  "div#post-content",
+  "div.content-area",
+  "div#main",
+  "div.main",
+  "div.prose",
+  "div.entry",
+  "div.bodycopy",
+  "div.node__content",
+  "div.essay__content",
+  "main",
 ];
 
 for (const selector of selectors) {
-    const el = document.querySelector(selector);
-    if (el) return el.textContent || "";
+  const el = document.querySelector(selector);
+  if (el) return el.textContent || "";
 }
 
 // <section> fallback
 const sections = document.querySelectorAll("section");
 if (sections.length > 0) {
-return Array.from(sections)
+  return Array.from(sections)
     .map((sec) => sec.textContent?.trim() || "")
     .join("\n\n");
 }
@@ -143,56 +143,56 @@ For PDF files, I use `pdfjs-dist` to extract the text. Since the OpenAI API has 
 ```typescript
 // Binary search
 while (start <= end) {
-    const mid = Math.floor((start + end) / 2);
-    const currentText = text.slice(0, mid);
-    const currentTokenCount = await countTokens(currentText);
+  const mid = Math.floor((start + end) / 2);
+  const currentText = text.slice(0, mid);
+  const currentTokenCount = await countTokens(currentText);
 
-    console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
+  console.log(`Words (mid): ${mid}, Tokens: ${currentTokenCount}`);
 
-    if (currentTokenCount === maxTokens) {
-        return currentText;
-    } else if (currentTokenCount <= maxTokens) {
-        start = mid + 1;
-    } else {
-        end = mid;
-    }
+  if (currentTokenCount === maxTokens) {
+    return currentText;
+  } else if (currentTokenCount <= maxTokens) {
+    start = mid + 1;
+  } else {
+    end = mid;
+  }
 }
 ```
 
 Once the content is extracted, I store it temporarily in Redis. On localhost, I run Redis using the `redis:latest` Docker image. In production, Redis runs inside ECS (Elastic Container Service). I use Redis to buffer content while processing, and then flush it to Cloudflare R2 after all stories are completed. This helps prevent race conditions when multiple pipeline instances are running concurrently.
 
 ```typescript
-  for (const [idx, item] of toFetch.entries()) {
-    fetchQueue.add(async () => {
-      try {
-        logMessage(`[${idx + 1}/${toFetch.length}] Fetching: ${item.id}...`);
-        let content = null;
+for (const [idx, item] of toFetch.entries()) {
+  fetchQueue.add(async () => {
+    try {
+      logMessage(`[${idx + 1}/${toFetch.length}] Fetching: ${item.id}...`);
+      let content = null;
 
-        if (item.url.includes(".pdf")) {
-          content = await fetchPdfContent(item.url);
-          logMessage(`📄 PDF content extracted for ${item.url}`);
-        } else {
-          content = await fetchContent(item.url);
-          logMessage(`🌐 Smart content fetched for ${item.url}`);
-        }
-
-        if (content) {
-          content = await sliceTextByTokens(content, 15000);
-          logMessage(`📄 Sliced content (up to 15000 tokens)`);
-        }
-
-        // Use Redis to store the content temporarily
-        if (content) {
-          await redis.set(`content:${item.id}`, content, "EX", 60 * 60 * 24);
-        }
-        logMessage(`[${idx + 1}/${toFetch.length}] ✅ Done: ${item.id}`);
-      } catch (error) {
-        logMessage(
-          `[${idx + 1}/${toFetch.length}] ❌ Error: ${item.id} (${error})`,
-        );
+      if (item.url.includes(".pdf")) {
+        content = await fetchPdfContent(item.url);
+        logMessage(`📄 PDF content extracted for ${item.url}`);
+      } else {
+        content = await fetchContent(item.url);
+        logMessage(`🌐 Smart content fetched for ${item.url}`);
       }
-    });
-  }
+
+      if (content) {
+        content = await sliceTextByTokens(content, 15000);
+        logMessage(`📄 Sliced content (up to 15000 tokens)`);
+      }
+
+      // Use Redis to store the content temporarily
+      if (content) {
+        await redis.set(`content:${item.id}`, content, "EX", 60 * 60 * 24);
+      }
+      logMessage(`[${idx + 1}/${toFetch.length}] ✅ Done: ${item.id}`);
+    } catch (error) {
+      logMessage(
+        `[${idx + 1}/${toFetch.length}] ❌ Error: ${item.id} (${error})`,
+      );
+    }
+  });
+}
 ```
 
 ### 3. Summarizing / Translating
@@ -204,31 +204,26 @@ The summarizing and translating steps follow the same structure as the content f
 ```typescript
 // summary translation
 if (
-    item.summary &&
-    item.summary.en &&
-    (!item.summary.ja || item.summary.ja === "")
+  item.summary &&
+  item.summary.en &&
+  (!item.summary.ja || item.summary.ja === "")
 ) {
-    translateQueue.add(async () => {
+  translateQueue.add(async () => {
     try {
-        logMessage(
+      logMessage(
         `[ja][summary][${idx + 1}/${toTranslateJa.length}] Translating summary: ${item.id}...`,
-        );
-        const translated = await translate(item.summary.en, "ja", "content");
-        await redis.set(
-        `ja:summary:${item.id}`,
-        translated,
-        "EX",
-        60 * 60 * 24,
-        );
-        logMessage(
+      );
+      const translated = await translate(item.summary.en, "ja", "content");
+      await redis.set(`ja:summary:${item.id}`, translated, "EX", 60 * 60 * 24);
+      logMessage(
         `[ja][summary][${idx + 1}/${toTranslateJa.length}] ✅ Done: ${item.id}`,
-        );
+      );
     } catch (error) {
-        logMessage(
+      logMessage(
         `[ja][summary][${idx + 1}/${toTranslateJa.length}] ❌ Error: ${item.id} (${error})`,
-        );
+      );
     }
-    });
+  });
 }
 ```
 
@@ -255,19 +250,19 @@ const stylePrompt = await res.text();
 const styleKeywords = parseStylePrompt(stylePrompt);
 
 const flattenedKeywords = {
-    whatisInTheImage: flattenToArray(extractedKeywords.whatIsInTheImage),
-    background: flattenToArray(extractedKeywords.background),
+  whatisInTheImage: flattenToArray(extractedKeywords.whatIsInTheImage),
+  background: flattenToArray(extractedKeywords.background),
 };
 
 const fullPrompt = {
-    style: styleKeywords.style,
-    mood: styleKeywords.mood,
-    perspective: styleKeywords.perspective,
-    colors: styleKeywords.colors,
-    additionalEffects: styleKeywords.additionalEffects,
-    whatisInTheImage: flattenedKeywords.whatisInTheImage,
-    background: flattenedKeywords.background,
-};  
+  style: styleKeywords.style,
+  mood: styleKeywords.mood,
+  perspective: styleKeywords.perspective,
+  colors: styleKeywords.colors,
+  additionalEffects: styleKeywords.additionalEffects,
+  whatisInTheImage: flattenedKeywords.whatisInTheImage,
+  background: flattenedKeywords.background,
+};
 ```
 
 As shown in the code above, I extract keywords with the `keywords()` function and parse them to build the `fullPrompt` object. This combined prompt is then sent to the DALL·E API to generate the final illustration.
@@ -303,12 +298,12 @@ For example, to summarize each story’s content, I call the corresponding API r
 ```yaml
 - name: Summarize HackerNews content
   run: |
-      RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/summarize \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
-      echo "$RESPONSE"
-      SUMMARIZE_TOTAL=$(echo "$RESPONSE" | jq '.total')
-      echo "SUMMARIZE_TOTAL=$SUMMARIZE_TOTAL" >> $GITHUB_ENV
+    RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/summarize \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
+    echo "$RESPONSE"
+    SUMMARIZE_TOTAL=$(echo "$RESPONSE" | jq '.total')
+    echo "SUMMARIZE_TOTAL=$SUMMARIZE_TOTAL" >> $GITHUB_ENV
 ```
 
 Once all summaries are generated, I flush the data from Redis to **Cloudflare R2** for long-term storage:
@@ -317,22 +312,22 @@ Once all summaries are generated, I flush the data from Redis to **Cloudflare R2
 - name: Summarize HackerNews content - Flush
   id: summarize-flush
   run: |
-      for i in {1..5}; do
-      RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
-          -d "{\"type\": \"summarize\", \"total\": $SUMMARIZE_TOTAL}")
-      echo "$RESPONSE"
-      FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
-      if [ "$FLUSHED" -ge 1 ]; then
-          echo "Summarize flush succeeded!"
-          exit 0
-      fi
-      echo "Summarize flush not ready, retrying in 60s..."
-      sleep 60
-      done
-      echo "Summarize flush failed after 5 attempts"
-      exit 0
+    for i in {1..5}; do
+    RESPONSE=$(curl -s -X POST https://mogumogu.dev/api/hackernews/flush \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}" \
+        -d "{\"type\": \"summarize\", \"total\": $SUMMARIZE_TOTAL}")
+    echo "$RESPONSE"
+    FLUSHED=$(echo "$RESPONSE" | jq '.flushed')
+    if [ "$FLUSHED" -ge 1 ]; then
+        echo "Summarize flush succeeded!"
+        exit 0
+    fi
+    echo "Summarize flush not ready, retrying in 60s..."
+    sleep 60
+    done
+    echo "Summarize flush failed after 5 attempts"
+    exit 0
 ```
 
 ## Which Points Can Be Improved?

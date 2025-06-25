@@ -76,7 +76,7 @@ export async function getAllPostFrontMatters(
   const frontMatters: FrontMatter[] = [];
 
   for (const filePath of filePaths) {
-    if(filePath.includes("/templates")) {
+    if (filePath.includes("/templates")) {
       continue;
     }
 
