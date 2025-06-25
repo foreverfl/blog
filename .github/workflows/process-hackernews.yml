@@ -86,6 +86,13 @@ jobs:
           RESPONSE=$(curl -s -X GET https://mogumogu.dev/api/hackernews \
             -H "Authorization: Bearer ${{ secrets.HACKERNEWS_API_KEY }}")
           echo "$RESPONSE"
+          if [[ "$RESPONSE" == *"HTTP_CODE:200"* ]]; then
+            echo "[SUCCESS] fetch completed"
+          else
+            echo "[ERROR] fetch failed with HTTP $HTTP_CODE"
+            echo "[RESPONSE]" 
+            echo "$RESPONSE"
+          fi
 
       - name: Fetch HackerNews contents
         run: |
