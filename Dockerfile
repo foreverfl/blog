@@ -2,6 +2,9 @@ FROM node:22
 
 WORKDIR /app
 
+RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime \
+    && echo "Asia/Seoul" > /etc/timezone
+    
 ENV NODE_OPTIONS="--max-old-space-size=4096" 
 
 COPY package.json package-lock.json ./
