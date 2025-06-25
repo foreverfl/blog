@@ -28,10 +28,10 @@ export default async function Page({
     content = jsonContents;
   } else {
     const fileContent = getMdxFileContent(
-      lan ?? "ko",
+      lan ?? "en",
       classification,
       category,
-      slug,
+      slug + "-" + (lan ?? "en"),
     );
     if (!fileContent) {
       notFound();

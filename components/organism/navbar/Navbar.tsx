@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
 
       try {
         const response = await fetch(
-          `/api/post-metadata?lan=${lan}&classification=${classification}&category=${category}&slug=${slug}`,
+          `/api/post/meta?lan=${lan}&classification=${classification}&category=${category}&slug=${slug}-${lan}`,
         );
 
         if (response.ok) {
