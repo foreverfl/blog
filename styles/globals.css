@@ -129,7 +129,7 @@ figure figcaption {
 .markdown-body blockquote {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   padding: 10px;
   margin: 20px 0;
 }
