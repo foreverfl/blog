@@ -31,11 +31,15 @@ export async function GET(req: Request) {
   } else if (lan === "ko") {
     hackerNewsTitle = "해커뉴스 다이제스트";
   }
+  console.log("trendsPage: ", trendsPage);
 
   if (trendsPage) {
     try {
+      // exclude 'en', 'ja', 'ko' from slug
+      const cleanedSlug = slug.replace(/-(ko|ja|en)$/, "");
+
       // 날짜 포맷 변경 (250327 -> 2025-03-27)
-      const parsedDate = parse(slug, "yyMMdd", new Date());
+      const parsedDate = parse(cleanedSlug, "yyMMdd", new Date());
       const formattedDate = format(parsedDate, "yyyy-MM-dd");
 
       // trends response
