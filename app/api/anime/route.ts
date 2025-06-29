@@ -45,6 +45,7 @@ const ANIME_QUERY = gql`
         season
         seasonYear
         episodes
+        isAdult
         relations {
           edges {
             relationType
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
         perPage: 50,
       });
 
-      const animeResults = data.Page.media;
+      const animeResults = data.Page.media.filter((anime) => !anime.isAdult);
 
       allAnimeResults = allAnimeResults.concat(animeResults);
 
