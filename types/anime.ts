@@ -1,7 +1,36 @@
-export interface AnimeTitle {
+// type for graphql-request
+export interface AniListTitle {
   romaji: string;
   english: string | null;
   native: string;
+}
+
+export interface AniListAnime {
+  id: number;
+  title: AniListTitle;
+  startDate: AnimeDate;
+  endDate: AnimeDate;
+  episodes: number | null;
+  season: string | null;
+  seasonYear: number | null;
+  coverImage: AnimeCoverImage;
+  relations: {
+    edges: RelationEdge[];
+  };
+}
+
+export interface AniListAnimePage {
+  Page: {
+    media: AniListAnime[];
+  };
+}
+
+// types for database operations
+export interface AnimeTitle {
+  [x: string]: any;
+  romaji: string;
+  english: string | null;
+  japanese: string;
 }
 
 export interface AnimeDate {
@@ -34,6 +63,8 @@ export interface Anime {
   startDate: AnimeDate;
   endDate: AnimeDate;
   episodes: number | null;
+  season: string | null;
+  seasonYear: number | null;
   coverImage: AnimeCoverImage;
   relations: {
     edges: RelationEdge[];
