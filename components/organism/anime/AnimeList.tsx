@@ -54,30 +54,56 @@ const AnimeList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState("FALL");
+  const [selectedYear, setSelectedYear] = useState(currentYear);
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const fetchAnimes = useCallback(async () => {
     try {
       const res = await fetch(
-        `/api/anime?season=FALL&seasonYear=2024&page=${page}&perPage=20`,
+        `/api/anime?season=${selectedSeason}&seasonYear=${selectedYear}&page=${page}&perPage=20`,
       );
       const data = await res.json();
 
-      if (data.animes.length === 0) {
+      if (!data.animes || data.animes.length === 0) {
         setHasMore(false);
-      } else {
-        setAnimes((prev) => {
-          const newAnimes = data.animes.filter(
-            (anime: AnimeItem) => !prev.some((a) => a.id === anime.id),
-          );
-          return [...prev, ...newAnimes];
-        });
+        return;
       }
+
+      setAnimes((prev) => {
+        const newAnimes = data.animes.filter(
+          (anime: AnimeItem) => !prev.some((a) => a.id === anime.id),
+        );
+        return [...prev, ...newAnimes];
+      });
     } catch (error) {
       console.error("Failed to fetch animes:", error);
     }
-  }, [page]);
+  }, [selectedSeason, selectedYear, page]);
+
+  const handleUpsert = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/anime`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          season: selectedSeason,
+          seasonYear: selectedYear,
+        }),
+      });
+
+      if (res.ok) {
+        setPage(1);
+        setAnimes([]);
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.error("Failed to upsert animes:", error);
+    }
+  }, [selectedSeason, selectedYear]);
 
   const handleToggleVisibility = (id: string) => {
     setAnimes((prev) =>
@@ -94,6 +120,12 @@ const AnimeList = () => {
   useEffect(() => {
     fetchAnimes();
   }, [fetchAnimes]);
+
+  useEffect(() => {
+    if (!animes.length && !hasMore) {
+      handleUpsert();
+    }
+  }, [animes, hasMore, handleUpsert]);
 
   useEffect(() => {
     if (!loaderRef.current) return;
@@ -122,7 +154,16 @@ const AnimeList = () => {
       <div className="flex justify-between items-center my-10">
         {/* Year and Season Selects */}
         <div className="flex space-x-4">
-          <select className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <select
+            value={selectedYear}
+            onChange={(e) => {
+              setSelectedYear(Number(e.target.value));
+              setPage(1);
+              setAnimes([]);
+              setHasMore(true);
+            }}
+            className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
             {years
               .slice()
               .reverse()
@@ -132,7 +173,16 @@ const AnimeList = () => {
                 </option>
               ))}
           </select>
-          <select className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <select
+            value={selectedSeason}
+            onChange={(e) => {
+              setSelectedSeason(e.target.value);
+              setPage(1);
+              setAnimes([]);
+              setHasMore(true);
+            }}
+            className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
             {seasons.map((season) => (
               <option key={season} value={season}>
                 {season.charAt(0) + season.slice(1).toLowerCase()}

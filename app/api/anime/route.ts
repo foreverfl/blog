@@ -107,9 +107,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
-  if (authResult !== true) return authResult;
-
   try {
     const body = await req.json();
     const season = body.season?.toUpperCase() as string;
