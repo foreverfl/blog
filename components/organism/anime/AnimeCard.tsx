@@ -44,7 +44,7 @@ interface AnimeCardProps {
 
 const AnimeCard: React.FC<AnimeCardProps> = (props) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden relative flex flex-col">
       {props.isEditMode && (
         <input
           type="checkbox"
@@ -58,11 +58,14 @@ const AnimeCard: React.FC<AnimeCardProps> = (props) => {
           src={props.cover_image_url}
           alt={props.romaji_title}
           fill
+          sizes="(max-width: 768px) 100vw, 
+         (max-width: 1200px) 50vw, 
+         25vw"
           className="object-cover object-center"
         />
       </div>
-      <div className="p-4">
-        <h2 className="text-lg font-bold text-gray-500">
+      <div className="p-4 flex-grow">
+        <h2 className="text-lg font-bold text-gray-500 line-clamp-2">
           {props.japanese_title}
         </h2>
       </div>
