@@ -21,7 +21,14 @@ export interface AniListAnime {
 
 export interface AniListAnimePage {
   Page: {
-    media: AniListAnime[];
+    media: any[];
+    pageInfo: {
+      total: number;
+      perPage: number;
+      currentPage: number;
+      lastPage: number;
+      hasNextPage: boolean;
+    };
   };
 }
 

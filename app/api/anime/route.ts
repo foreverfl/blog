@@ -5,14 +5,22 @@ import {
   upsertAnimeBulk,
 } from "@/lib/postgres/anime";
 import type { AniListAnimePage } from "@/types/anime";
+
 import { gql, request } from "graphql-request";
 import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = "https://graphql.anilist.co";
 
 const ANIME_QUERY = gql`
-  query ($season: MediaSeason, $seasonYear: Int) {
-    Page(page: 1, perPage: 50) {
+  query ($season: MediaSeason, $seasonYear: Int, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
       media(season: $season, type: ANIME, seasonYear: $seasonYear) {
         id
         title {
@@ -104,22 +112,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const data: AniListAnimePage  = await request(API_URL, ANIME_QUERY, {
-      season,
-      seasonYear,
-    });
+    let currentPage = 1;
+    let hasNextPage = true;
+    let allAnimeResults: any[] = [];
 
-    const animeResults = data.Page.media;
+    while (hasNextPage) {
+      const data: AniListAnimePage = await request(API_URL, ANIME_QUERY, {
+        season,
+        seasonYear,
+        page: currentPage,
+        perPage: 50,
+      });
 
-    const animes = animeResults.map((anime) => {
+      const animeResults = data.Page.media;
 
+      allAnimeResults = allAnimeResults.concat(animeResults);
+
+      const pageInfo = data.Page.pageInfo;
+      hasNextPage = pageInfo.hasNextPage;
+      currentPage++;
+    }
+
+    const animes = allAnimeResults.map((anime) => {
       return {
         ...anime,
         title: {
           romaji: anime.title.romaji,
           english: anime.title.english,
           japanese: anime.title.native,
-        }
+        },
       };
     });
 

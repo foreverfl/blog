@@ -29,6 +29,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "blog_workers.forever-fl.workers.dev",
       },
+      {
+        protocol: "https",
+        hostname: "s4.anilist.co",
+      },
     ],
   },
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
