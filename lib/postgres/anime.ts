@@ -175,15 +175,23 @@ export async function upsertAnimeBulk(
   await pool.query(query, values);
 }
 
-export async function getAnimesBySeason(season: string, seasonYear: number) {
+export async function getAnimesBySeason(
+  season: string,
+  seasonYear: number,
+  offset = 0,
+  limit = 20,
+) {
   const query = `
     SELECT *
     FROM public.anime
     WHERE season = $1
       AND season_year = $2
-      AND is_visible = true;
+      AND is_visible = true
+    ORDER BY start_date DESC
+    OFFSET $3
+    LIMIT $4;
   `;
-  const res = await pool.query(query, [season, seasonYear]);
+  const res = await pool.query(query, [season, seasonYear, offset, limit]);
   return res.rows;
 }
 
