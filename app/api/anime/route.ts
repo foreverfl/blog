@@ -4,7 +4,7 @@ import {
   getAnimesBySeason,
   upsertAnimeBulk,
 } from "@/lib/postgres/anime";
-import type { Anime, AnimeDate, AnimePage, AniListAnime, AniListAnimePage } from "@/types/anime";
+import type { AniListAnimePage } from "@/types/anime";
 import { gql, request } from "graphql-request";
 import { NextRequest, NextResponse } from "next/server";
 

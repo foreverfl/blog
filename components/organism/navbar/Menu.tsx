@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-import SetLanguage from "./SetLanguage";
-import SetMode from "./SetMode";
+import { Display } from "@geist-ui/icons";
 import Link from "next/link";
 import Search from "./Search";
+import SetLanguage from "./SetLanguage";
+import SetMode from "./SetMode";
 
 interface MenuProps {
   isMenuOpen: boolean;
@@ -267,7 +268,23 @@ const Menu: React.FC<MenuProps> = ({
               </a>
             </div>
 
-            {/* 메뉴 */}
+            {/* Custom Menu */}
+            <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
+              {/* Anime */}
+              <Link
+                href={`/${lan}/anime`}
+                scroll={false}
+                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md hover:rounded-t-md rounded-b-md hover:rounded-b-md space-x-2"
+                onClick={toggleMenu}
+              >
+                <li className="flex items-center">
+                  <Display size={16} color="black" />
+                  <span className="ml-3 text-black">Anime</span>
+                </li>
+              </Link>
+            </div>
+
+            {/* Menu */}
             <div className="space-y-4">
               {classifications.map((classification) => (
                 <div
@@ -275,7 +292,7 @@ const Menu: React.FC<MenuProps> = ({
                   className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer"
                 >
                   <div
-                    className="px-8 py-4 rounded-t-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center"
+                    className="px-8 py-4 rounded-t-md rounded-b-md hover:rounded-b-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center"
                     onClick={() => handleToggle(classification.link)}
                   >
                     {(() => {
@@ -332,7 +349,7 @@ const Menu: React.FC<MenuProps> = ({
                         scroll={false}
                       >
                         <div
-                          className={`px-8 py-4 hover:bg-gray-200 text-black`}
+                          className={`px-8 py-4 hover:bg-gray-200 text-black hover:rounded-b-md`}
                           onClick={(e) => e.stopPropagation()} // 이벤트 버블링 방지
                         >
                           {/* 카테고리 이름 표시 */}
