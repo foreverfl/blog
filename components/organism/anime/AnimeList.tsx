@@ -130,6 +130,7 @@ const AnimeList = () => {
   useEffect(() => {
     if (!loaderRef.current) return;
 
+    const target = loaderRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore) {
@@ -139,10 +140,10 @@ const AnimeList = () => {
       { threshold: 1 },
     );
 
-    observer.observe(loaderRef.current);
+    observer.observe(target);
 
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      observer.unobserve(target);
     };
   }, [hasMore]);
 

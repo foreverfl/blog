@@ -1,10 +1,7 @@
 import { Anime } from "@/types/anime";
 import { pool } from "@/lib/postgres/connect";
 
-export async function upsertAnime(
-  anime: Anime,
-  review: string = "",
-) {
+export async function upsertAnime(anime: Anime, review: string = "") {
   const startDate = anime.startDate?.year
     ? `${anime.startDate.year}-${anime.startDate.month ?? 1}-${anime.startDate.day ?? 1}`
     : null;
@@ -79,9 +76,7 @@ export async function upsertAnime(
   await pool.query(query, values);
 }
 
-export async function upsertAnimeBulk(
-  animes: Anime[],
-) {
+export async function upsertAnimeBulk(animes: Anime[]) {
   if (animes.length === 0) return;
 
   const values: any[] = [];
