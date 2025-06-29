@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    await upsertAnimeBulk(animes, "", "");
+    await upsertAnimeBulk(animes);
 
     return NextResponse.json({
       message: "Animes inserted/updated successfully",

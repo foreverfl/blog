@@ -44,7 +44,10 @@ interface AnimeCardProps {
 
 const AnimeCard: React.FC<AnimeCardProps> = (props) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden relative flex flex-col">
+    <div
+      className="bg-white rounded-lg shadow-md overflow-hidden relative flex flex-col border-1"
+      style={{ borderColor: props.cover_color || "#ccc" }}
+    >
       {props.isEditMode && (
         <input
           type="checkbox"

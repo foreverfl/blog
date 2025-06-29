@@ -3,8 +3,7 @@ import { pool } from "@/lib/postgres/connect";
 
 export async function upsertAnime(
   anime: Anime,
-  koreanTitle: string,
-  review: string,
+  review: string = "",
 ) {
   const startDate = anime.startDate?.year
     ? `${anime.startDate.year}-${anime.startDate.month ?? 1}-${anime.startDate.day ?? 1}`
@@ -35,20 +34,18 @@ export async function upsertAnime(
 
   const query = `
     INSERT INTO public.anime (
-      id, romaji_title, english_title, japanese_title, korean_title,
-      start_date, end_date, episodes, cover_color, cover_image_url,
+      id, romaji_title, english_title, japanese_title, start_date, end_date, episodes, cover_color, cover_image_url,
       review, seasons_info, season, season_year, is_visible, updated_at
     )
     VALUES (
       $1, $2, $3, $4, $5,
       $6, $7, $8, $9, $10,
-      $11, $12, $13, $14, $15, CURRENT_TIMESTAMP
+      $11, $12, $13, $14, CURRENT_TIMESTAMP
     )
     ON CONFLICT (id) DO UPDATE SET
       romaji_title = EXCLUDED.romaji_title,
       english_title = EXCLUDED.english_title,
       japanese_title = EXCLUDED.japanese_title,
-      korean_title = EXCLUDED.korean_title,
       start_date = EXCLUDED.start_date,
       end_date = EXCLUDED.end_date,
       episodes = EXCLUDED.episodes,
@@ -67,7 +64,6 @@ export async function upsertAnime(
     anime.title.romaji,
     anime.title.english,
     anime.title.japanese,
-    koreanTitle,
     startDate,
     endDate,
     anime.episodes,
@@ -85,8 +81,6 @@ export async function upsertAnime(
 
 export async function upsertAnimeBulk(
   animes: Anime[],
-  koreanTitle: string,
-  review: string,
 ) {
   if (animes.length === 0) return;
 
@@ -119,12 +113,12 @@ export async function upsertAnimeBulk(
           }))
       : [];
 
-    const baseIdx = idx * 15;
+    const baseIdx = idx * 14;
 
     placeholders.push(`(
       $${baseIdx + 1}, $${baseIdx + 2}, $${baseIdx + 3}, $${baseIdx + 4}, $${baseIdx + 5},
       $${baseIdx + 6}, $${baseIdx + 7}, $${baseIdx + 8}, $${baseIdx + 9}, $${baseIdx + 10},
-      $${baseIdx + 11}, $${baseIdx + 12}, $${baseIdx + 13}, $${baseIdx + 14}, $${baseIdx + 15}, CURRENT_TIMESTAMP
+      $${baseIdx + 11}, $${baseIdx + 12}, $${baseIdx + 13}, $${baseIdx + 14}, CURRENT_TIMESTAMP
     )`);
 
     values.push(
@@ -132,13 +126,12 @@ export async function upsertAnimeBulk(
       anime.title.romaji,
       anime.title.english,
       anime.title.japanese,
-      koreanTitle,
       startDate,
       endDate,
       anime.episodes,
       anime.coverImage.color,
       anime.coverImage.extraLarge,
-      review,
+      "",
       JSON.stringify(animeRelations),
       anime.season,
       anime.seasonYear,
@@ -148,7 +141,7 @@ export async function upsertAnimeBulk(
 
   const query = `
     INSERT INTO public.anime (
-      id, romaji_title, english_title, japanese_title, korean_title,
+      id, romaji_title, english_title, japanese_title,
       start_date, end_date, episodes, cover_color, cover_image_url,
       review, seasons_info, season, season_year, is_visible, updated_at
     )
@@ -158,7 +151,6 @@ export async function upsertAnimeBulk(
       romaji_title = EXCLUDED.romaji_title,
       english_title = EXCLUDED.english_title,
       japanese_title = EXCLUDED.japanese_title,
-      korean_title = EXCLUDED.korean_title,
       start_date = EXCLUDED.start_date,
       end_date = EXCLUDED.end_date,
       episodes = EXCLUDED.episodes,
