@@ -1,7 +1,10 @@
 "use client";
 
 import AnimeCard from "@/components/organism/anime/AnimeCard";
-import { useLoadingDispatch } from "@/lib/context/loading-context";
+import {
+  useLoadingDispatch,
+  useLoadingState,
+} from "@/lib/context/loading-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SeasonInfo {
@@ -75,6 +78,8 @@ function seasonToNum(season: string) {
 
 const AnimeList = () => {
   const dispatch = useLoadingDispatch();
+  const { isLoading } = useLoadingState();
+
   const [libraryList, setLibraryList] = useState<
     { year: string; season: string }[]
   >([]);
@@ -185,6 +190,13 @@ const AnimeList = () => {
     }
   }, [selectedSeason, selectedYear, fetchAnimes]);
 
+  const resetAndFetch = () => {
+    setAnimes([]);
+    setPage(1);
+    setHasMore(true);
+    fetchAnimes();
+  };
+
   useEffect(() => {
     fetchLibraries();
   }, []);
@@ -222,6 +234,10 @@ const AnimeList = () => {
       observer.unobserve(target);
     };
   }, [hasMore]);
+
+  if (isLoading) {
+    return <div></div>;
+  }
 
   return (
     <>
@@ -282,7 +298,11 @@ const AnimeList = () => {
           </div>
         ) : (
           animes.map((anime) => (
-            <AnimeCard key={anime.id} {...{ ...anime, id: Number(anime.id) }} />
+            <AnimeCard
+              key={anime.id}
+              {...{ ...anime, id: Number(anime.id) }}
+              refreshList={resetAndFetch}
+            />
           ))
         )}
       </div>

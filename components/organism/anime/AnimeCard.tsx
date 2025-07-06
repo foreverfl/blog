@@ -38,15 +38,12 @@ interface AnimeCardProps {
   season: string;
   season_year: number;
   is_visible: boolean;
+  refreshList?: () => void;
 }
 
 const AnimeCard: React.FC<AnimeCardProps> = (props) => {
-  console.log("AnimeCard props:", props);
   const handleCardClick = async () => {
-    const input = window.prompt(
-      "Write your review. (Leave blank to remove)\n\nreview: " +
-        (props.review ?? ""),
-    );
+    const input = window.prompt("Update your review.", props.review ?? "");
     if (input === null) return;
 
     try {
@@ -62,6 +59,7 @@ const AnimeCard: React.FC<AnimeCardProps> = (props) => {
         return;
       }
       alert("Review updated!");
+      props.refreshList?.();
     } catch (err) {
       alert("Network error.");
     }
