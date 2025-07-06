@@ -40,23 +40,79 @@ interface AnimeItem {
   is_visible: boolean;
 }
 
-// Generate years from 1970 to current year
-const currentYear = new Date().getFullYear();
-const years = Array.from(
-  { length: currentYear - 1970 + 1 },
-  (_, i) => 1970 + i,
-);
-
 const seasons = ["WINTER", "SPRING", "SUMMER", "FALL"];
 
+function numToSeason(num: string | number) {
+  switch (String(num)) {
+    case "1":
+      return "WINTER";
+    case "2":
+      return "SPRING";
+    case "3":
+      return "SUMMER";
+    case "4":
+      return "FALL";
+    default:
+      return "";
+  }
+}
+
+function seasonToNum(season: string) {
+  switch (season.toUpperCase()) {
+    case "WINTER":
+      return "1";
+    case "SPRING":
+      return "2";
+    case "SUMMER":
+      return "3";
+    case "FALL":
+      return "4";
+    default:
+      return "";
+  }
+}
+
 const AnimeList = () => {
+  const [libraryList, setLibraryList] = useState<
+    { year: string; season: string }[]
+  >([]);
   const [animes, setAnimes] = useState<AnimeItem[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [selectedSeason, setSelectedSeason] = useState("FALL");
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedYear, setSelectedYear] = useState<number>();
+  const [selectedSeason, setSelectedSeason] = useState<string>();
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const yearOptions = Array.from(
+    new Set(libraryList.map((item) => item.year)),
+  ).sort((a, b) => Number(b) - Number(a));
+
+  const availableSeasons = libraryList
+    .filter((item) => item.year === String(selectedYear))
+    .map((item) => numToSeason(item.season))
+    .filter(Boolean);
+
+  const fetchLibraries = useCallback(async () => {
+    try {
+      const res = await fetch("/api/anime/list");
+      const data = await res.json();
+
+      if (data.libraries && data.libraries.length > 0) {
+        const list = data.libraries.map((name: string) => {
+          const [year, seasonNum] = name.split("-");
+          return { year, season: seasonNum };
+        });
+        setLibraryList(list);
+
+        const [latest] = list;
+        setSelectedYear((prev) => prev ?? Number(latest.year));
+        setSelectedSeason((prev) => prev ?? numToSeason(latest.season));
+      }
+    } catch (e) {
+      console.error("Failed to fetch libraries", e);
+    }
+  }, []);
 
   const fetchAnimes = useCallback(async () => {
     try {
@@ -119,8 +175,9 @@ const AnimeList = () => {
   }, [selectedSeason, selectedYear, fetchAnimes]);
 
   useEffect(() => {
+    fetchLibraries();
     fetchAnimes();
-  }, [fetchAnimes]);
+  }, [fetchAnimes, fetchLibraries]);
 
   useEffect(() => {
     if (!loaderRef.current) return;
@@ -160,14 +217,11 @@ const AnimeList = () => {
             }}
             className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
-            {years
-              .slice()
-              .reverse()
-              .map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
+            {yearOptions.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
           </select>
           <select
             value={selectedSeason}
@@ -179,7 +233,7 @@ const AnimeList = () => {
             }}
             className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
-            {seasons.map((season) => (
+            {availableSeasons.map((season) => (
               <option key={season} value={season}>
                 {season.charAt(0) + season.slice(1).toLowerCase()}
               </option>
@@ -198,9 +252,15 @@ const AnimeList = () => {
 
       {/* Anime Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {animes.map((anime) => (
-          <AnimeCard key={anime.id} {...{ ...anime, id: Number(anime.id) }} />
-        ))}
+        {animes.length === 0 ? (
+          <div className="col-span-full text-center text-gray-400 py-20 text-lg">
+            No anime found for this season.
+          </div>
+        ) : (
+          animes.map((anime) => (
+            <AnimeCard key={anime.id} {...{ ...anime, id: Number(anime.id) }} />
+          ))
+        )}
       </div>
       {hasMore && (
         <div ref={loaderRef} className="text-center py-10 text-gray-500"></div>

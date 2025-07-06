@@ -106,8 +106,6 @@ export async function POST(req: NextRequest) {
     );
 
     const aniListData = await fetchAniListByIds(aniListIds);
-    console.log("aniListData: ", aniListData);
-
     await upsertAnimeBulk(aniListData);
 
     return NextResponse.json({ message: "Sync complete" });
