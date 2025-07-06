@@ -1,6 +1,7 @@
 "use client";
 
 import AnimeCard from "@/components/organism/anime/AnimeCard";
+import { useLoadingDispatch } from "@/lib/context/loading-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SeasonInfo {
@@ -73,6 +74,7 @@ function seasonToNum(season: string) {
 }
 
 const AnimeList = () => {
+  const dispatch = useLoadingDispatch();
   const [libraryList, setLibraryList] = useState<
     { year: string; season: string }[]
   >([]);
@@ -95,6 +97,7 @@ const AnimeList = () => {
 
   const fetchLibraries = useCallback(async () => {
     try {
+      dispatch({ type: "START_LOADING" });
       const res = await fetch("/api/anime/libraries");
       const data = await res.json();
 
@@ -111,11 +114,14 @@ const AnimeList = () => {
       }
     } catch (e) {
       console.error("Failed to fetch libraries", e);
+    } finally {
+      dispatch({ type: "STOP_LOADING" });
     }
   }, []);
 
   const fetchAnimes = useCallback(async () => {
     try {
+      dispatch({ type: "START_LOADING" });
       const res = await fetch(
         `/api/anime?season=${selectedSeason}&seasonYear=${selectedYear}&page=${page}&perPage=20`,
       );
@@ -134,11 +140,14 @@ const AnimeList = () => {
       });
     } catch (error) {
       console.error("Failed to fetch animes:", error);
+    } finally {
+      dispatch({ type: "STOP_LOADING" });
     }
   }, [selectedSeason, selectedYear, page]);
 
   const handleSync = useCallback(async () => {
     try {
+      dispatch({ type: "START_LOADING" });
       const res = await fetch(`/api/anime/sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -171,6 +180,8 @@ const AnimeList = () => {
     } catch (error) {
       console.error("Failed to sync:", error);
       alert("Sync failed due to network or server error.");
+    } finally {
+      dispatch({ type: "STOP_LOADING" });
     }
   }, [selectedSeason, selectedYear, fetchAnimes]);
 

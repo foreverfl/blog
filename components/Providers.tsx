@@ -17,18 +17,6 @@ function InnerProviders({ children }: { children: ReactNode }) {
   const { isLoading } = useLoadingState();
   useStopLoadingOnPathChange();
 
-  // useEffect(() => {
-  //   if (localStorage.getItem("indexed") === "1") return;
-  //   localStorage.setItem("indexed", "1");
-  //   fetch("/api/indexing", {
-  //     method: "POST",
-  //     headers: {
-  //       Authorization: `Bearer ${process.env.NEXT_PUBLIC_HACKERNEWS_API_KEY}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   }).catch(() => {});
-  // }, []);
-
   useEffect(() => {
     fetch("/api/indexing", {
       method: "POST",

@@ -44,7 +44,7 @@ const AnimeCard: React.FC<AnimeCardProps> = (props) => {
   console.log("AnimeCard props:", props);
   const handleCardClick = async () => {
     const input = window.prompt(
-      "Write your review. (Leave blank to remove)\n\n기존 내용: " +
+      "Write your review. (Leave blank to remove)\n\nreview: " +
         (props.review ?? ""),
     );
     if (input === null) return;
