@@ -1,6 +1,5 @@
 import {
-  getAnimesBySeason,
-  upsertAnimeBulk
+  getAnimesBySeason
 } from "@/lib/postgres/anime";
 
 import { NextRequest, NextResponse } from "next/server";

@@ -9,23 +9,28 @@ export async function upsertAnime(anime: Anime, review: string = "") {
     ? `${anime.endDate.year}-${anime.endDate.month ?? 1}-${anime.endDate.day ?? 1}`
     : null;
 
-  const animeRelations = anime.relations?.edges
-    ? anime.relations.edges
-        .filter((edge) => edge.node.type === "ANIME")
-        .map((edge) => ({
-          id: edge.node.id,
-          relationType: edge.relationType,
-          title: {
-            romaji: edge.node.title.romaji,
-            english: edge.node.title.english,
-            japanese: edge.node.title.native,
-          },
-          startDate: edge.node.startDate,
-          coverImage: edge.node.coverImage.extraLarge,
-          season: anime.season,
-          seasonYear: anime.seasonYear,
-        }))
-    : [];
+  const animeRelations =
+    anime.relations?.edges && anime.relations?.nodes
+      ? anime.relations.edges
+          .map((edge, idx) => ({
+            edge,
+            nodeInfo: anime.relations.nodes?.[idx],
+          }))
+          .filter(({ edge }) => edge.node.type === "ANIME")
+          .map(({ edge, nodeInfo }) => ({
+            id: edge.node.id,
+            relationType: edge.relationType,
+            title: {
+              romaji: edge.node.title.romaji,
+              english: edge.node.title.english,
+              japanese: edge.node.title.native,
+            },
+            startDate: edge.node.startDate,
+            coverImage: edge.node.coverImage.extraLarge,
+            season: nodeInfo?.season ?? null,
+            seasonYear: nodeInfo?.seasonYear ?? null,
+          }))
+      : [];
 
   const seasonsInfo = JSON.stringify(animeRelations);
 
@@ -90,23 +95,28 @@ export async function insertAnimeBulkIfNotExist(animes: Anime[]) {
       ? `${anime.endDate.year}-${anime.endDate.month ?? 1}-${anime.endDate.day ?? 1}`
       : null;
 
-    const animeRelations = anime.relations?.edges
-      ? anime.relations.edges
-          .filter((edge) => edge.node.type === "ANIME")
-          .map((edge) => ({
-            id: edge.node.id,
-            relationType: edge.relationType,
-            title: {
-              romaji: edge.node.title.romaji,
-              english: edge.node.title.english,
-              japanese: edge.node.title.native,
-            },
-            startDate: edge.node.startDate,
-            coverImage: edge.node.coverImage.extraLarge,
-            season: anime.season,
-            seasonYear: anime.seasonYear,
-          }))
-      : [];
+    const animeRelations =
+      anime.relations?.edges && anime.relations?.nodes
+        ? anime.relations.edges
+            .map((edge, idx) => ({
+              edge,
+              nodeInfo: anime.relations.nodes?.[idx],
+            }))
+            .filter(({ edge }) => edge.node.type === "ANIME")
+            .map(({ edge, nodeInfo }) => ({
+              id: edge.node.id,
+              relationType: edge.relationType,
+              title: {
+                romaji: edge.node.title.romaji,
+                english: edge.node.title.english,
+                japanese: edge.node.title.native,
+              },
+              startDate: edge.node.startDate,
+              coverImage: edge.node.coverImage.extraLarge,
+              season: nodeInfo?.season ?? null,
+              seasonYear: nodeInfo?.seasonYear ?? null,
+            }))
+        : [];
 
     const baseIdx = idx * 14;
 
@@ -162,23 +172,28 @@ export async function upsertAnimeBulk(animes: Anime[]) {
       ? `${anime.endDate.year}-${anime.endDate.month ?? 1}-${anime.endDate.day ?? 1}`
       : null;
 
-    const animeRelations = anime.relations?.edges
-      ? anime.relations.edges
-          .filter((edge) => edge.node.type === "ANIME")
-          .map((edge) => ({
-            id: edge.node.id,
-            relationType: edge.relationType,
-            title: {
-              romaji: edge.node.title.romaji,
-              english: edge.node.title.english,
-              japanese: edge.node.title.native,
-            },
-            startDate: edge.node.startDate,
-            coverImage: edge.node.coverImage.extraLarge,
-            season: anime.season,
-            seasonYear: anime.seasonYear,
-          }))
-      : [];
+    const animeRelations =
+      anime.relations?.edges && anime.relations?.nodes
+        ? anime.relations.edges
+            .map((edge, idx) => ({
+              edge,
+              nodeInfo: anime.relations.nodes?.[idx],
+            }))
+            .filter(({ edge }) => edge.node.type === "ANIME")
+            .map(({ edge, nodeInfo }) => ({
+              id: edge.node.id,
+              relationType: edge.relationType,
+              title: {
+                romaji: edge.node.title.romaji,
+                english: edge.node.title.english,
+                japanese: edge.node.title.native,
+              },
+              startDate: edge.node.startDate,
+              coverImage: edge.node.coverImage.extraLarge,
+              season: nodeInfo?.season ?? null,
+              seasonYear: nodeInfo?.seasonYear ?? null,
+            }))
+        : [];
 
     const baseIdx = idx * 14;
 

@@ -1,5 +1,6 @@
 "use client";
 
+import AnimeCardRelations from "@/components/organism/anime/AnimeCardRelations";
 import Image from "next/image";
 import React from "react";
 
@@ -38,7 +39,7 @@ interface AnimeCardProps {
   season: string;
   season_year: number;
   is_visible: boolean;
-  refreshList?: () => void;
+  refreshList?: (year?: number, season?: string) => void;
 }
 
 const AnimeCard: React.FC<AnimeCardProps> = (props) => {
@@ -67,10 +68,10 @@ const AnimeCard: React.FC<AnimeCardProps> = (props) => {
 
   return (
     <div
-      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col border-1"
+      className="bg-white rounded-lg shadow-md flex flex-col border-1 relative"
       style={{ borderColor: props.cover_color || "#ccc" }}
     >
-      <div className="relative w-full h-[400px]">
+      <div className="relative w-full h-[400px] group">
         <Image
           src={props.cover_image_url}
           alt={props.romaji_title}
@@ -82,13 +83,25 @@ const AnimeCard: React.FC<AnimeCardProps> = (props) => {
           onClick={handleCardClick}
           title="Click to edit review"
         />
+
+        {/* Show related anime */}
+        <AnimeCardRelations
+          relations={props.seasons_info}
+          refreshList={props.refreshList}
+        />
       </div>
       <div className="p-4 flex-grow">
-        <h2 className="text-lg font-bold text-gray-500 line-clamp-2">
+        <h2
+          className="text-lg font-bold text-gray-500 line-clamp-2"
+          title={props.review}
+        >
           {props.japanese_title}
         </h2>
         {props.review && (
-          <p className="text-gray-700 text-sm mt-2 line-clamp-2">
+          <p
+            className="text-gray-700 text-sm mt-2 line-clamp-2"
+            title={props.review}
+          >
             {props.review}
           </p>
         )}

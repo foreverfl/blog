@@ -190,7 +190,22 @@ const AnimeList = () => {
     }
   }, [selectedSeason, selectedYear, fetchAnimes]);
 
-  const resetAndFetch = () => {
+
+  /**
+   * Resets the anime list state and optionally updates the selected year and season.
+   *
+   * @param year - (Optional) The year to set as the selected year.
+   * @param season - (Optional) The season to set as the selected season.
+   *
+   * If both `year` and `season` are provided, updates the selected year and season.
+   * Clears the current anime list, resets the page to 1, and sets the `hasMore` flag to true.
+   */
+  const resetAndFetch = (year?: number, season?: string) => {
+    console.log("resetAndFetch called with:", year, season);
+    if (year && season) {
+      setSelectedYear(year);
+      setSelectedSeason(season);
+    }
     setAnimes([]);
     setPage(1);
     setHasMore(true);

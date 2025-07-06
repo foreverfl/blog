@@ -14,7 +14,6 @@ interface JellyfinView {
   [key: string]: any;
 }
 
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -133,6 +132,10 @@ async function fetchAniListByIds(ids: number[]) {
                 startDate { year month day }
                 coverImage { extraLarge }
               }
+            }
+            nodes {
+              season
+              seasonYear
             }
           }
         }

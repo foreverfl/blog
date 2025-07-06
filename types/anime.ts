@@ -16,6 +16,10 @@ export interface AniListAnime {
   coverImage: AnimeCoverImage;
   relations: {
     edges: RelationEdge[];
+    nodes?: {
+      season?: string | null;
+      seasonYear?: number | null;
+    }[];
   };
 }
 
@@ -75,6 +79,10 @@ export interface Anime {
   coverImage: AnimeCoverImage;
   relations: {
     edges: RelationEdge[];
+    nodes?: {
+      season?: string | null;
+      seasonYear?: number | null;
+    }[];
   };
   isVisible?: boolean;
   review?: string;
