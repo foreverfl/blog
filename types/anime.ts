@@ -37,7 +37,7 @@ export interface AnimeTitle {
   [x: string]: any;
   romaji: string;
   english: string | null;
-  japanese: string;
+  native: string;
 }
 
 export interface AnimeDate {
@@ -76,6 +76,7 @@ export interface Anime {
   relations: {
     edges: RelationEdge[];
   };
+  isVisible?: boolean;
 }
 
 export interface AnimePage {

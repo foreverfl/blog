@@ -53,7 +53,6 @@ const AnimeList = () => {
   const [animes, setAnimes] = useState<AnimeItem[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [selectedSeason, setSelectedSeason] = useState("FALL");
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
@@ -82,50 +81,46 @@ const AnimeList = () => {
     }
   }, [selectedSeason, selectedYear, page]);
 
-  const handleUpsert = useCallback(async () => {
+  const handleSync = useCallback(async () => {
     try {
       const res = await fetch(`/api/anime`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           season: selectedSeason,
           seasonYear: selectedYear,
         }),
       });
 
-      if (res.ok) {
-        setPage(1);
-        setAnimes([]);
-        setHasMore(true);
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data?.data?.length > 0) {
+          const names = data.data
+            .map((item: any) => `• ${item.name}`)
+            .join("\n");
+          alert(`Some animes have no Anilist ID:\n\n${names}`);
+        } else {
+          alert("Sync failed: " + (data.error || "Unknown error"));
+        }
+        return;
       }
+
+      alert("Sync complete!");
+
+      setPage(1);
+      setAnimes([]);
+      setHasMore(true);
+      await fetchAnimes();
     } catch (error) {
-      console.error("Failed to upsert animes:", error);
+      console.error("Failed to sync:", error);
+      alert("Sync failed due to network or server error.");
     }
-  }, [selectedSeason, selectedYear]);
-
-  const handleToggleVisibility = (id: string) => {
-    setAnimes((prev) =>
-      prev.map((anime) =>
-        anime.id === id ? { ...anime, is_visible: !anime.is_visible } : anime,
-      ),
-    );
-  };
-
-  const displayedAnimes = isEditMode
-    ? animes
-    : animes.filter((a) => a.is_visible);
+  }, [selectedSeason, selectedYear, fetchAnimes]);
 
   useEffect(() => {
     fetchAnimes();
   }, [fetchAnimes]);
-
-  useEffect(() => {
-    if (!animes.length && !hasMore) {
-      handleUpsert();
-    }
-  }, [animes, hasMore, handleUpsert]);
 
   useEffect(() => {
     if (!loaderRef.current) return;
@@ -194,22 +189,17 @@ const AnimeList = () => {
 
         {/* Edit button */}
         <button
-          onClick={() => setIsEditMode((prev) => !prev)}
+          onClick={handleSync}
           className="border border-blue-500 dark:border-blue-400 rounded px-4 py-1 bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
         >
-          {isEditMode ? "Done" : "Edit"}
+          Sync
         </button>
       </div>
 
       {/* Anime Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {displayedAnimes.map((anime) => (
-          <AnimeCard
-            key={anime.id}
-            {...{ ...anime, id: Number(anime.id) }}
-            isEditMode={isEditMode}
-            onToggleVisibility={() => handleToggleVisibility(anime.id)}
-          />
+        {animes.map((anime) => (
+          <AnimeCard key={anime.id} {...{ ...anime, id: Number(anime.id) }} />
         ))}
       </div>
       {hasMore && (

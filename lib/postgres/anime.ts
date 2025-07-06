@@ -60,7 +60,7 @@ export async function upsertAnime(anime: Anime, review: string = "") {
     anime.id,
     anime.title.romaji,
     anime.title.english,
-    anime.title.japanese,
+    anime.title.native,
     startDate,
     endDate,
     anime.episodes,
@@ -72,6 +72,78 @@ export async function upsertAnime(anime: Anime, review: string = "") {
     anime.seasonYear,
     true,
   ];
+
+  await pool.query(query, values);
+}
+
+export async function insertAnimeBulkIfNotExist(animes: Anime[]) {
+  if (animes.length === 0) return;
+
+  const values: any[] = [];
+  const placeholders: string[] = [];
+
+  animes.forEach((anime, idx) => {
+    const startDate = anime.startDate?.year
+      ? `${anime.startDate.year}-${anime.startDate.month ?? 1}-${anime.startDate.day ?? 1}`
+      : null;
+    const endDate = anime.endDate?.year
+      ? `${anime.endDate.year}-${anime.endDate.month ?? 1}-${anime.endDate.day ?? 1}`
+      : null;
+
+    const animeRelations = anime.relations?.edges
+      ? anime.relations.edges
+          .filter((edge) => edge.node.type === "ANIME")
+          .map((edge) => ({
+            id: edge.node.id,
+            relationType: edge.relationType,
+            title: {
+              romaji: edge.node.title.romaji,
+              english: edge.node.title.english,
+              japanese: edge.node.title.native,
+            },
+            startDate: edge.node.startDate,
+            coverImage: edge.node.coverImage.extraLarge,
+            season: anime.season,
+            seasonYear: anime.seasonYear,
+          }))
+      : [];
+
+    const baseIdx = idx * 14;
+
+    placeholders.push(`(
+      $${baseIdx + 1}, $${baseIdx + 2}, $${baseIdx + 3}, $${baseIdx + 4}, $${baseIdx + 5},
+      $${baseIdx + 6}, $${baseIdx + 7}, $${baseIdx + 8}, $${baseIdx + 9}, $${baseIdx + 10},
+      $${baseIdx + 11}, $${baseIdx + 12}, $${baseIdx + 13}, $${baseIdx + 14}, CURRENT_TIMESTAMP
+    )`);
+
+    values.push(
+      anime.id,
+      anime.title.romaji,
+      anime.title.english,
+      anime.title.native,
+      startDate,
+      endDate,
+      anime.episodes,
+      anime.coverImage.color,
+      anime.coverImage.extraLarge,
+      "",
+      JSON.stringify(animeRelations),
+      anime.season,
+      anime.seasonYear,
+      true,
+    );
+  });
+
+  const query = `
+    INSERT INTO public.anime (
+      id, romaji_title, english_title, japanese_title,
+      start_date, end_date, episodes, cover_color, cover_image_url,
+      review, seasons_info, season, season_year, is_visible, updated_at
+    )
+    VALUES
+    ${placeholders.join(", ")}
+    ON CONFLICT (id) DO NOTHING;
+  `;
 
   await pool.query(query, values);
 }
@@ -120,7 +192,7 @@ export async function upsertAnimeBulk(animes: Anime[]) {
       anime.id,
       anime.title.romaji,
       anime.title.english,
-      anime.title.japanese,
+      anime.title.native,
       startDate,
       endDate,
       anime.episodes,
@@ -130,7 +202,7 @@ export async function upsertAnimeBulk(animes: Anime[]) {
       JSON.stringify(animeRelations),
       anime.season,
       anime.seasonYear,
-      true,
+      anime.isVisible ?? true,
     );
   });
 
@@ -160,6 +232,19 @@ export async function upsertAnimeBulk(animes: Anime[]) {
   `;
 
   await pool.query(query, values);
+}
+
+export async function updateAnimesInvisibleBySeason(
+  season: string,
+  seasonYear: number,
+) {
+  const query = `
+    UPDATE public.anime
+    SET is_visible = false
+    WHERE season = $1
+      AND season_year = $2;
+  `;
+  await pool.query(query, [season, seasonYear]);
 }
 
 export async function getAnimesBySeason(
