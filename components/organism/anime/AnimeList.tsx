@@ -95,7 +95,7 @@ const AnimeList = () => {
 
   const fetchLibraries = useCallback(async () => {
     try {
-      const res = await fetch("/api/anime/list");
+      const res = await fetch("/api/anime/libraries");
       const data = await res.json();
 
       if (data.libraries && data.libraries.length > 0) {
@@ -139,7 +139,7 @@ const AnimeList = () => {
 
   const handleSync = useCallback(async () => {
     try {
-      const res = await fetch(`/api/anime`, {
+      const res = await fetch(`/api/anime/sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -176,8 +176,21 @@ const AnimeList = () => {
 
   useEffect(() => {
     fetchLibraries();
+  }, []);
+
+  // initialize selectedYear and selectedSeason
+  useEffect(() => {
+    if (selectedYear && selectedSeason) {
+      setPage(1);
+      setAnimes([]);
+      setHasMore(true);
+    }
+  }, [selectedYear, selectedSeason]);
+
+  useEffect(() => {
+    if (!selectedYear || !selectedSeason || !page) return;
     fetchAnimes();
-  }, [fetchAnimes, fetchLibraries]);
+  }, [selectedYear, selectedSeason, page]);
 
   useEffect(() => {
     if (!loaderRef.current) return;

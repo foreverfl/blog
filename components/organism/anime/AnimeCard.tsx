@@ -41,6 +41,32 @@ interface AnimeCardProps {
 }
 
 const AnimeCard: React.FC<AnimeCardProps> = (props) => {
+  console.log("AnimeCard props:", props);
+  const handleCardClick = async () => {
+    const input = window.prompt(
+      "Write your review. (Leave blank to remove)\n\n기존 내용: " +
+        (props.review ?? ""),
+    );
+    if (input === null) return;
+
+    try {
+      // PATCH request to update review
+      const res = await fetch(`/api/anime/${props.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ review: input }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert("Failed to update review: " + (data?.error || "Unknown error"));
+        return;
+      }
+      alert("Review updated!");
+    } catch (err) {
+      alert("Network error.");
+    }
+  };
+
   return (
     <div
       className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col border-1"
@@ -54,13 +80,20 @@ const AnimeCard: React.FC<AnimeCardProps> = (props) => {
           sizes="(max-width: 768px) 100vw, 
          (max-width: 1200px) 50vw, 
          25vw"
-          className="object-cover object-center"
+          className="object-cover object-center cursor-pointer"
+          onClick={handleCardClick}
+          title="Click to edit review"
         />
       </div>
       <div className="p-4 flex-grow">
         <h2 className="text-lg font-bold text-gray-500 line-clamp-2">
           {props.japanese_title}
         </h2>
+        {props.review && (
+          <p className="text-gray-700 text-sm mt-2 line-clamp-2">
+            {props.review}
+          </p>
+        )}
       </div>
     </div>
   );
