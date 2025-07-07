@@ -58,7 +58,7 @@
     "openai": "^5.8.2",
     "p-queue": "^8.1.0",
     "pdf-parse": "^1.1.1",
-    "pdfjs-dist": "^5.3.31",
+    "pdfjs-dist": "^5.3.93",
     "pg": "^8.16.3",
     "playwright": "^1.53.2",
     "react": "^19.1.0",
@@ -79,7 +79,7 @@
     "tiny-segmenter": "^0.2.0",
     "uuid": "^11.1.0",
     "winston-daily-rotate-file": "^5.0.0",
-    "zod": "^3.25.74"
+    "zod": "^3.25.75"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
