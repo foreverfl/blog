@@ -21,7 +21,6 @@ services:
   postgres:
     image: postgres:17
     container_name: postgres
-    restart: unless-stopped
     environment:
       POSTGRES_DB: mogumogu
       POSTGRES_USER: postgres
