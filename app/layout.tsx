@@ -14,7 +14,7 @@ export default function RootLayout({
       <head>
         <meta name="google-adsense-account" content="ca-pub-4751026650729929" />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

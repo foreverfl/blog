@@ -32,10 +32,10 @@
         "link": "devnotes"
       },
       {
-        "name_ko": "트렌드",
-        "name_ja": "トレンド",
-        "name_en": "Trends",
-        "link": "trends"
+        "name_ko": "실험실",
+        "name_ja": "実験室",
+        "name_en": "Lab",
+        "link": "lab"
       }
     ]
   },
