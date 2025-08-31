@@ -60,7 +60,7 @@ async function doIndexing(job_id: string) {
         ...posts.map((post: any) => ({
           title: post.frontmatter.title,
           content: post.content,
-          link: `/${lang}/${post.frontmatter.classification}/${post.frontmatter.category}/${(post.frontmatter.fileName ?? "").replace(/\.mdx$/, "")}`,
+          link: `/${lang}/${post.frontmatter.classification}/${post.frontmatter.category}/${(post.frontmatter.fileName ?? "").replace(/\.(mdx?|md)$/, "")}`,
           type: "post",
           lang,
         })),

@@ -63,7 +63,7 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
               key={post.fileName}
               href={`/${lan}/${post.classification}/${
                 post.category
-              }/${post.fileName?.replace(".mdx", "").replace(/-(?:en|ko|ja)$/, "")}`}
+              }/${post.fileName?.replace(/\.(mdx?|md)$/, "").replace(/-(?:en|ko|ja)$/, "")}`}
             >
               <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
                 <div

@@ -65,9 +65,9 @@ async function createPostEntries(
       const files = await fs.readdir(categoryPath);
 
       for (const file of files) {
-        if (!file.endsWith(".mdx")) continue;
+        if (!file.endsWith(".mdx") && !file.endsWith(".md")) continue;
 
-        const slug = file.replace(/\.mdx$/, ""); // ex: "001-title-ko"
+        const slug = file.replace(/\.(mdx?|md)$/, ""); // ex: "001-title-ko"
         const langMatch = slug.match(/-(en|ja|ko)$/); // 언어 접미어 매치
 
         if (!langMatch) continue; // -ko, -ja가 없으면 건너뜀

@@ -35,7 +35,11 @@ async function getFilesRecursively(
 
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const files = entries
-    .filter((file) => !file.isDirectory() && file.name.endsWith(`-${lan}.mdx`))
+    .filter(
+      (file) =>
+        !file.isDirectory() &&
+        (file.name.endsWith(`-${lan}.mdx`) || file.name.endsWith(`-${lan}.md`)),
+    )
     .map((file) => path.join(dir, file.name));
   const folders = entries.filter((folder) => folder.isDirectory());
 
@@ -108,11 +112,19 @@ export async function getPostFrontMatter(
   slug: string,
 ): Promise<FrontMatter | null> {
   try {
-    // 파일 경로 설정
-    const filePath = path.join(
+    // 파일 경로 설정 (MDX 또는 MD 파일 확인)
+    let filePath = path.join(
       process.cwd(),
       `contents/${classification}/${category}/${slug}.mdx`,
     );
+
+    // .mdx 파일이 없으면 .md 파일 확인
+    if (!fs.existsSync(filePath)) {
+      filePath = path.join(
+        process.cwd(),
+        `contents/${classification}/${category}/${slug}.md`,
+      );
+    }
 
     // 파일 존재 여부 확인
     if (!fs.existsSync(filePath)) {
@@ -142,7 +154,7 @@ export async function getPostFrontMatter(
   }
 }
 
-// 특정 .mdx 파일의 내용을 가져오기
+// 특정 MDX/MD 파일의 내용을 가져오기
 export function getMdxFileContent(
   lan: string,
   classification: string,
@@ -150,10 +162,19 @@ export function getMdxFileContent(
   slug: string,
 ) {
   const contentDir = path.resolve(process.cwd(), "contents");
-  const filePath = path.resolve(
+  let filePath = path.resolve(
     contentDir,
     `${classification}/${category}/${slug}.mdx`,
   );
+
+  // .mdx 파일이 없으면 .md 파일 확인
+  if (!fs.existsSync(filePath)) {
+    filePath = path.resolve(
+      contentDir,
+      `${classification}/${category}/${slug}.md`,
+    );
+  }
+
   if (!fs.existsSync(filePath)) {
     return null;
   }
@@ -221,7 +242,7 @@ export async function getAllMdxFilesWithFrontMatter(
       options: { parseFrontmatter: true },
     });
 
-    const fileName = path.basename(filePath, ".mdx");
+    const fileName = path.basename(filePath).replace(/\.(mdx?|md)$/, "");
 
     const contentWithoutFrontmatter = fileContent.replace(
       /^---[\s\S]*?---\s*\n/,
