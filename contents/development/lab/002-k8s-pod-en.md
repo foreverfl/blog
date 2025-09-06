@@ -8,9 +8,7 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250831-pod-merm
 
 # Kubernetes Pod
 
-## Contents 
-
-### Summary (TL;DR)
+## Summary (TL;DR)
 
 This guide is a **Kubernetes Pod deployment tutorial for beginners**!
 
@@ -46,7 +44,7 @@ $ kubectl delete ns app-dev
 namespace "app-dev" deleted
 ```
 
-### 1. What You'll Build
+## 1. What You'll Build
 
 - **Target Architecture**:
 
@@ -65,7 +63,7 @@ namespace "app-dev" deleted
   - External access test: `curl localhost:8080` returns `{"ok":true}` response
   - All resources cleanly deleted
 
-### 2. Prerequisites
+## 2. Prerequisites
 
 - OS: Linux / macOS / Windows 11 + WSL2(Ubuntu 22.04+)
 - kubectl: v1.27+ (supports -k, built-in Kustomize)
@@ -88,7 +86,7 @@ NAME       STATUS   ROLES           AGE   VERSION
 minikube   Ready    control-plane   19h   v1.33.1
 ```
 
-### 3. Core Concepts Summary
+## 3. Core Concepts Summary
 
 - **Key points to understand**:
   - **Kustomize**: Environment-specific configuration management with `base/` + `overlays/` pattern
@@ -103,9 +101,9 @@ minikube   Ready    control-plane   19h   v1.33.1
 | `kubectl exec -it` | Access container internal shell | Container must have shell (sh/bash) available |
 | `kubectl port-forward` | Local→Pod tunneling | May remain as background process |
 
-### 4. Implementation (Step-by-step)
+## 4. Implementation (Step-by-step)
 
-#### 4.1 Manifest Structure Review
+### 4.1 Manifest Structure Review
 
 ```yaml
 # k8s/base/deployment.yaml
@@ -159,7 +157,7 @@ data:
   PORT: "3000"
 ```
 
-#### 4.2 Deployment and Initial Status Check
+### 4.2 Deployment and Initial Status Check
 
 ```bash
 # Apply all resources using Kustomize
@@ -190,7 +188,7 @@ NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
 service/user-service   ClusterIP   10.108.3.31   <none>        80/TCP    37s
 ```
 
-#### 4.3 Detailed Verification
+### 4.3 Detailed Verification
 
 ```bash
 # 1. Detailed Pod status inquiry
@@ -231,7 +229,7 @@ $ kubectl -n app-dev run alpine-test --rm -it --image=alpine:3.19 -- \
 {"ok":true}
 ```
 
-#### 4.4 External Access Test
+### 4.4 External Access Test
 
 ```bash
 # Port forwarding for local testing
@@ -243,7 +241,7 @@ $ curl -v http://localhost:8080
 {"ok":true}
 ```
 
-### 5. Rollback & Cleanup
+## 5. Rollback & Cleanup
 
 ```bash
 # Complete cleanup (recommended)
@@ -264,7 +262,7 @@ kubectl 2779071 mogumogu    8u  IPv6 6153383      0t0  TCP ip6-localhost:http-al
 $ kill -9 <PID>
 ```
 
-### 6. Conclusion
+## 6. Conclusion
 
 Through this guide, you've fully experienced **kubectl's core workflow**:
 

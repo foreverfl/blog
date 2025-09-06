@@ -6,7 +6,7 @@ category: "lab"
 image: "https://blog_workers.forever-fl.workers.dev/posts-images/250805-query-result.webp"
 ---
 
-## [SRE] 쿼리 성능 테스트
+## 쿼리 성능 테스트
 
 이 글에서는 PostgreSQL 데이터베이스 환경에서 쿼리 성능 테스트를 진행한 내용을 다룹니다.  
 동일한 하드웨어 환경에서 다양한 SQL 쿼리가 실제로 어떻게 동작하는지, 그리고 쿼리 구조별로 성능 차이가 어떻게 발생하는지 살펴봅니다.  

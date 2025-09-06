@@ -8,9 +8,7 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250831-pod-merm
 
 # Kubernetes Pod
 
-## Contents 
-
-### 요약 (TL;DR)
+## 요약 (TL;DR)
 
 이 가이드는 **Kubernetes 초보자**를 위한 Pod 배포 실습서입니다!
 
@@ -46,7 +44,7 @@ $ kubectl delete ns app-dev
 namespace "app-dev" deleted
 ```
 
-### 1. 우리가 만들 것 (What you’ll build)
+## 1. 우리가 만들 것 (What you’ll build)
 
 - **목표 아키텍처**:
 
@@ -65,7 +63,7 @@ namespace "app-dev" deleted
   - 외부 접근 테스트: `curl localhost:8080`에서 `{"ok":true}` 응답
   - 모든 리소스 정상 삭제 완료
 
-### 2. 준비물 (Prereqs)
+## 2. 준비물 (Prereqs)
 
 - OS: Linux / macOS / Windows 11 + WSL2(Ubuntu 22.04+)
 - kubectl: v1.27+ (-k 지원, Kustomize 내장)
@@ -88,7 +86,7 @@ NAME       STATUS   ROLES           AGE   VERSION
 minikube   Ready    control-plane   19h   v1.33.1
 ```
 
-### 3. 핵심 개념 요약 (Concepts)
+## 3. 핵심 개념 요약 (Concepts)
 
 - **꼭 알아야 할 포인트**:
   - **Kustomize**: `base/` + `overlays/` 패턴으로 환경별 구성 관리
@@ -103,9 +101,9 @@ minikube   Ready    control-plane   19h   v1.33.1
 | `kubectl exec -it` | 컨테이너 내부 셸 접근 | 컨테이너에 셸(sh/bash)이 있어야 함 |
 | `kubectl port-forward` | 로컬→Pod 터널링 | 백그라운드 프로세스로 남을 수 있음 |
 
-### 4. 구현 (Step-by-step)
+## 4. 구현 (Step-by-step)
 
-#### 4.1 매니페스트 구조 확인
+### 4.1 매니페스트 구조 확인
 
 ```yaml
 # k8s/base/deployment.yaml
@@ -190,7 +188,7 @@ NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
 service/user-service   ClusterIP   10.108.3.31   <none>        80/TCP    37s
 ```
 
-#### 4.3 상세 검증 (Verification)
+### 4.3 상세 검증 (Verification)
 
 ```bash
 # 1. Pod 상태 상세 조회
@@ -231,7 +229,7 @@ $ kubectl -n app-dev run alpine-test --rm -it --image=alpine:3.19 -- \
 {"ok":true}
 ```
 
-#### 4.4 외부 접근 테스트 (External Access)
+### 4.4 외부 접근 테스트 (External Access)
 
 ```bash
 # 로컬 테스트를 위한 포트 포워딩
@@ -243,7 +241,7 @@ $ curl -v http://localhost:8080
 {"ok":true}
 ```
 
-### 5. 롤백/청소 (Rollback & Cleanup)
+## 5. 롤백/청소 (Rollback & Cleanup)
 
 ```bash
 # 완전한 정리 (권장)
@@ -264,7 +262,7 @@ kubectl 2779071 mogumogu    8u  IPv6 6153383      0t0  TCP ip6-localhost:http-al
 $ kill -9 <PID>
 ```
 
-### 6. 마무리 (Conclusion)
+## 6. 마무리 (Conclusion)
 
 이 가이드를 통해 **kubectl의 핵심 워크플로우**를 완전히 경험했습니다:
 

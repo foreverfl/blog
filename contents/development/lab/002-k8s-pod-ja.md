@@ -8,9 +8,7 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250831-pod-merm
 
 # Kubernetes Pod
 
-## Contents 
-
-### 概要 (TL;DR)
+## 概要 (TL;DR)
 
 このガイドは**Kubernetes初心者**向けのPodデプロイメント実習書です！
 
@@ -46,7 +44,7 @@ $ kubectl delete ns app-dev
 namespace "app-dev" deleted
 ```
 
-### 1. 作成するもの (What you'll build)
+## 1. 作成するもの (What you'll build)
 
 - **目標アーキテクチャ**:
 
@@ -65,7 +63,7 @@ namespace "app-dev" deleted
   - 外部アクセステスト: `curl localhost:8080`で`{"ok":true}`レスポンス
   - すべてのリソースの正常削除完了
 
-### 2. 前提条件 (Prerequisites)
+## 2. 前提条件 (Prerequisites)
 
 - OS: Linux / macOS / Windows 11 + WSL2(Ubuntu 22.04+)
 - kubectl: v1.27+ (-k対応、Kustomize内蔵)
@@ -88,7 +86,7 @@ NAME       STATUS   ROLES           AGE   VERSION
 minikube   Ready    control-plane   19h   v1.33.1
 ```
 
-### 3. 核心概念まとめ (Core Concepts)
+## 3. 核心概念まとめ (Core Concepts)
 
 - **理解すべきポイント**:
   - **Kustomize**: `base/` + `overlays/`パターンによる環境別設定管理
@@ -103,9 +101,9 @@ minikube   Ready    control-plane   19h   v1.33.1
 | `kubectl exec -it` | コンテナ内部シェルアクセス | コンテナにシェル（sh/bash）が必要 |
 | `kubectl port-forward` | ローカル→Podトンネリング | バックグラウンドプロセスとして残る可能性 |
 
-### 4. 実装 (Step-by-step)
+## 4. 実装 (Step-by-step)
 
-#### 4.1 マニフェスト構造確認
+### 4.1 マニフェスト構造確認
 
 ```yaml
 # k8s/base/deployment.yaml
@@ -159,7 +157,7 @@ data:
   PORT: "3000"
 ```
 
-#### 4.2 デプロイメントと初期状態確認
+### 4.2 デプロイメントと初期状態確認
 
 ```bash
 # Kustomizeを使用してすべてのリソースを適用
@@ -190,7 +188,7 @@ NAME                   TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
 service/user-service   ClusterIP   10.108.3.31   <none>        80/TCP    37s
 ```
 
-#### 4.3 詳細検証 (Verification)
+### 4.3 詳細検証 (Verification)
 
 ```bash
 # 1. Pod状態詳細照会
@@ -231,7 +229,7 @@ $ kubectl -n app-dev run alpine-test --rm -it --image=alpine:3.19 -- \
 {"ok":true}
 ```
 
-#### 4.4 外部アクセステスト (External Access)
+### 4.4 外部アクセステスト (External Access)
 
 ```bash
 # ローカルテストのためのポートフォワーディング
@@ -243,7 +241,7 @@ $ curl -v http://localhost:8080
 {"ok":true}
 ```
 
-### 5. ロールバック/クリーンアップ (Rollback & Cleanup)
+## 5. ロールバック/クリーンアップ (Rollback & Cleanup)
 
 ```bash
 # 完全なクリーンアップ（推奨）
@@ -264,7 +262,7 @@ kubectl 2779071 mogumogu    8u  IPv6 6153383      0t0  TCP ip6-localhost:http-al
 $ kill -9 <PID>
 ```
 
-### 6. まとめ (Conclusion)
+## 6. まとめ (Conclusion)
 
 このガイドを通じて**kubectlのコアワークフロー**を完全に体験しました：
 

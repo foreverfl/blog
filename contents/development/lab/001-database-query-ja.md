@@ -6,7 +6,7 @@ category: "lab"
 image: "https://blog_workers.forever-fl.workers.dev/posts-images/250805-query-result.webp"
 ---
 
-## [SRE] クエリパフォーマンステスト
+## クエリパフォーマンステスト
 
 本記事では、PostgreSQLデータベース環境におけるクエリのパフォーマンステストを扱います。本テストを通じて、同一のハードウェア環境下でさまざまなSQLクエリがどのように動作するかを検証します。記事を読むことで、SQLクエリのパフォーマンステストの実施方法や、クエリ構造ごとのパフォーマンスの違いを理解できるでしょう。
 

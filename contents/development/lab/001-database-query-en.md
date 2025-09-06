@@ -6,7 +6,7 @@ category: "lab"
 image: "https://blog_workers.forever-fl.workers.dev/posts-images/250805-query-result.webp"
 ---
 
-## [SRE] Query Performance Test
+## Query Performance Test
 
 This post handle a query performance test in a PostgreSQL database environment. Through this test, we will explore how different SQL queries perform under the same hardware specifications. After reading this post, you will understand how to conduct performance tests on SQL queries and the differences in performance between various query structures.
 
