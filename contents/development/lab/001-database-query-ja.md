@@ -284,6 +284,6 @@ ORDER BY
 
 テストに使用した全データ・コード・実行結果（`README.md`内に英語で記載）は、下記リポジトリで公開しています：
 
-* [sre-01-query](https://github.com/mogumogu-lab/sre-01-query)
+- [database-query](https://github.com/mogumogu-lab/database-query)
 
 次回の記事では、さらに多様なインデックス戦略・最適化手法について解説予定です。今後もデータベースパフォーマンス最適化の最新トピックをお楽しみに！

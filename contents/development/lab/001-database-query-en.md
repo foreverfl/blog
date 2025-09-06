@@ -332,6 +332,6 @@ In this post, we explored how to conduct a query performance test in a PostgreSQ
 
 If you need to materials for this test, you can find them in the following repository. You can also find full result of the test in the `README.md` file, although the results are in English :
 
-- [sre-01-query](https://github.com/mogumogu-lab/sre-01-query)
+- [database-query](https://github.com/mogumogu-lab/database-query)
 
 For the next post, we will explore how to optimize queries with a variety of indexing strategies and techniques. Stay tuned for more insights into database performance optimization!

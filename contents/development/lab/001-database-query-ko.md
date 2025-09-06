@@ -304,6 +304,6 @@ ORDER BY
 
 실험에 사용한 전체 코드/데이터/쿼리 결과(README.md에 영어로 정리)는 아래 깃허브에서 확인할 수 있습니다.
 
-* [sre-01-query](https://github.com/mogumogu-lab/sre-01-query)
+- [database-query](https://github.com/mogumogu-lab/database-query)
 
 다음 포스팅에서는 다양한 인덱스 전략과 실전 최적화 노하우를 더 깊이 다룰 예정입니다. 많은 관심 부탁드립니다!
