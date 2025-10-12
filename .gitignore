@@ -68,3 +68,7 @@ key.json
 .sentryclirc
 app/sentry-test/
 app/api/sentry-test/
+
+# Grafana AWS credentials
+grafana-aws-credentials.txt
+grafana-cloudwatch-policy.json

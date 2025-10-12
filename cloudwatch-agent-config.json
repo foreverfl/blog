@@ -1,0 +1,147 @@
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "cwagent"
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/docker/blog/*.log",
+            "log_group_name": "/aws/ec2/blog/docker",
+            "log_stream_name": "{instance_id}",
+            "timezone": "UTC",
+            "multi_line_start_pattern": "^\\d{4}-\\d{2}-\\d{2}"
+          },
+          {
+            "file_path": "/home/ubuntu/app/blog/logs/*.log",
+            "log_group_name": "/aws/ec2/blog/application",
+            "log_stream_name": "{instance_id}-{ip_address}",
+            "timezone": "UTC"
+          }
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "namespace": "CWAgent",
+    "metrics_collected": {
+      "cpu": {
+        "measurement": [
+          {
+            "name": "cpu_usage_idle",
+            "rename": "CPU_USAGE_IDLE",
+            "unit": "Percent"
+          },
+          {
+            "name": "cpu_usage_iowait",
+            "rename": "CPU_USAGE_IOWAIT",
+            "unit": "Percent"
+          },
+          "cpu_time_guest"
+        ],
+        "metrics_collection_interval": 60,
+        "totalcpu": false
+      },
+      "disk": {
+        "measurement": [
+          {
+            "name": "used_percent",
+            "rename": "DISK_USED_PERCENT",
+            "unit": "Percent"
+          },
+          {
+            "name": "free",
+            "rename": "DISK_FREE",
+            "unit": "Gigabytes"
+          }
+        ],
+        "metrics_collection_interval": 60,
+        "resources": [
+          "*"
+        ]
+      },
+      "mem": {
+        "measurement": [
+          {
+            "name": "mem_used_percent",
+            "rename": "MEM_USED_PERCENT",
+            "unit": "Percent"
+          },
+          {
+            "name": "mem_available",
+            "rename": "MEM_AVAILABLE",
+            "unit": "Megabytes"
+          }
+        ],
+        "metrics_collection_interval": 60
+      },
+      "net": {
+        "measurement": [
+          {
+            "name": "bytes_sent",
+            "rename": "NET_BYTES_SENT",
+            "unit": "Bytes"
+          },
+          {
+            "name": "bytes_recv",
+            "rename": "NET_BYTES_RECV",
+            "unit": "Bytes"
+          },
+          {
+            "name": "drop_in",
+            "rename": "NET_DROP_IN",
+            "unit": "Count"
+          },
+          {
+            "name": "drop_out",
+            "rename": "NET_DROP_OUT",
+            "unit": "Count"
+          }
+        ],
+        "metrics_collection_interval": 60
+      },
+      "netstat": {
+        "measurement": [
+          {
+            "name": "tcp_established",
+            "rename": "TCP_ESTABLISHED",
+            "unit": "Count"
+          },
+          {
+            "name": "tcp_time_wait",
+            "rename": "TCP_TIME_WAIT",
+            "unit": "Count"
+          }
+        ],
+        "metrics_collection_interval": 60
+      },
+      "processes": {
+        "measurement": [
+          {
+            "name": "running",
+            "rename": "PROCESSES_RUNNING",
+            "unit": "Count"
+          },
+          {
+            "name": "sleeping",
+            "rename": "PROCESSES_SLEEPING",
+            "unit": "Count"
+          }
+        ]
+      }
+    },
+    "append_dimensions": {
+      "InstanceId": "${aws:InstanceId}",
+      "InstanceType": "${aws:InstanceType}",
+      "AutoScalingGroupName": "${aws:AutoScalingGroupName}",
+      "ImageId": "${aws:ImageId}"
+    },
+    "aggregation_dimensions": [
+      ["InstanceId"],
+      ["InstanceType"],
+      ["InstanceId", "InstanceType"]
+    ]
+  }
+}
