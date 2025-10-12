@@ -72,7 +72,7 @@ jobs:
       - name: Replace Redis value in .env.prod using Ansible
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: ansible/replace-env.yml
+          playbook: ansible/replace-env-ghcr.yml
           directory: .
           inventory: |
             [web]
@@ -80,6 +80,9 @@ jobs:
         env:
           REDIS_HOST: ${{ env.REDIS_HOST }}
           REDIS_PORT: ${{ env.REDIS_PORT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          IMAGE_TAG: latest
 
       - name: Fetch HackerNews contents list
         run: |

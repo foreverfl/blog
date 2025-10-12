@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:  # 수동 실행 활성화
 
 concurrency:
   group: deploy-prod
@@ -126,9 +127,6 @@ jobs:
             if docker ps -a --format '{{.Names}}' | grep -q '^blog$'; then
               docker logs blog > "$LOG_FILE" 2>&1 || true
               echo "Logs from 'blog' backed up to $LOG_FILE"
-            elif docker ps -a --format '{{.Names}}' | grep -q '^blog-prod$'; then
-              docker logs blog-prod > "$LOG_FILE" 2>&1 || true
-              echo "Logs from 'blog-prod' backed up to $LOG_FILE"
             fi
 
             # docker-compose.prod.yml 파일 업데이트 (최신 버전 가져오기)
@@ -170,7 +168,7 @@ jobs:
               else
                 if [ $i -eq 3 ]; then
                   echo "Health check failed after 3 attempts"
-                  docker logs blog-prod --tail 50
+                  docker logs blog --tail 50
                   exit 1
                 fi
                 echo "Health check attempt $i failed, retrying in 10s..."

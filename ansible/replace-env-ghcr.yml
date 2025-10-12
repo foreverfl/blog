@@ -1,0 +1,84 @@
+- hosts: web
+  become: true
+  vars:
+    redis_host: "{{ lookup('env', 'REDIS_HOST') | default('localhost') }}"
+    redis_port: "{{ lookup('env', 'REDIS_PORT') | default('6379') }}"
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    github_repository_owner: "{{ lookup('env', 'GITHUB_REPOSITORY_OWNER') | default('mogumogu') }}"
+    image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
+    env_path: "/home/ubuntu/app/blog/.env.prod"
+  tasks:
+    - name: Ensure REDIS_HOST is set to the new value
+      lineinfile:
+        path: "{{ env_path }}"
+        regexp: "^REDIS_HOST="
+        line: "REDIS_HOST={{ redis_host }}"
+        state: present
+        create: yes
+
+    - name: Ensure REDIS_PORT is set to the new value
+      lineinfile:
+        path: "{{ env_path }}"
+        regexp: "^REDIS_PORT="
+        line: "REDIS_PORT={{ redis_port }}"
+        state: present
+        create: yes
+
+    - name: Copy .env.prod to .env (latest)
+      shell: cp /home/ubuntu/app/blog/.env.prod /home/ubuntu/app/blog/.env
+
+    - import_tasks: tasks/docker_log_backup.yml
+
+    - name: Login to GitHub Container Registry
+      shell: echo "{{ github_token }}" | docker login ghcr.io -u {{ github_repository_owner }} --password-stdin
+      no_log: true  # Don't log the token
+
+    - name: Stop existing containers (both old and new names)
+      shell: |
+        docker stop blog 2>/dev/null || true
+        docker rm blog 2>/dev/null || true
+        docker stop blog-prod 2>/dev/null || true
+        docker rm blog-prod 2>/dev/null || true
+
+    - name: Pull latest image from GHCR
+      shell: docker pull ghcr.io/{{ github_repository_owner }}/blog:{{ image_tag }}
+      register: pull_result
+
+    - name: Run new container using GHCR image
+      shell: |
+        docker run -d \
+          --name blog \
+          --restart unless-stopped \
+          -p 3000:3000 \
+          -v /home/ubuntu/app/blog/.env.prod:/app/.env.prod \
+          -e NODE_ENV=production \
+          --env-file /home/ubuntu/app/blog/.env.prod \
+          ghcr.io/{{ github_repository_owner }}/blog:{{ image_tag }}
+      register: container_result
+
+    - name: Show container run result
+      debug:
+        var: container_result
+
+    - name: Wait for server to be up (health check)
+      shell: |
+        for i in {1..30}; do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/status)
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Server is UP!"
+            exit 0
+          fi
+          echo "⏳ Waiting for server... ($i/30, status: $STATUS)"
+          sleep 3
+        done
+        echo "❌ Server didn't respond after 90 seconds."
+        docker logs blog --tail 50
+        exit 1
+      register: health_check
+      retries: 1
+      delay: 0
+      ignore_errors: no
+
+    - name: Clean up old images
+      shell: docker image prune -af --filter "until=24h"
+      ignore_errors: yes

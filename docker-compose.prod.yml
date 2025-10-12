@@ -4,7 +4,7 @@ services:
   app:
     # GHCR에서 이미지 pull
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/blog:${IMAGE_TAG:-latest}
-    container_name: blog-prod
+    container_name: blog
     ports:
       - "3000:3000"
     environment:
