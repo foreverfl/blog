@@ -164,7 +164,7 @@ jobs:
 
             # 헬스체크 재시도 로직
             for i in 1 2 3; do
-              if curl -f http://localhost:3000/api/health; then
+              if curl -f http://localhost:3000/api/status; then
                 echo "Health check passed"
                 break
               else
