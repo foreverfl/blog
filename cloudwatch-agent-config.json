@@ -58,9 +58,7 @@
           }
         ],
         "metrics_collection_interval": 60,
-        "resources": [
-          "*"
-        ]
+        "resources": ["*"]
       },
       "mem": {
         "measurement": [

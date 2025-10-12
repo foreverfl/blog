@@ -31,7 +31,7 @@
 
     - name: Login to GitHub Container Registry
       shell: echo "{{ github_token }}" | docker login ghcr.io -u {{ github_repository_owner }} --password-stdin
-      no_log: true  # Don't log the token
+      no_log: true # Don't log the token
 
     - name: Stop existing containers (both old and new names)
       shell: |

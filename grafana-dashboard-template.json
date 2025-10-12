@@ -99,10 +99,7 @@
           "period": "300",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Average",
-            "Maximum"
-          ]
+          "statistics": ["Average", "Maximum"]
         }
       ],
       "title": "EC2 CPU Utilization",
@@ -148,9 +145,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": ""
         },
         "showThresholdLabels": false,
@@ -168,9 +163,7 @@
           "period": "60",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Average"
-          ]
+          "statistics": ["Average"]
         }
       ],
       "title": "Current CPU Usage",
@@ -230,9 +223,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": ""
         },
         "textMode": "auto"
@@ -249,9 +240,7 @@
           "period": "60",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Maximum"
-          ]
+          "statistics": ["Maximum"]
         }
       ],
       "title": "Instance Health Status",
@@ -366,9 +355,7 @@
           "period": "300",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Average"
-          ]
+          "statistics": ["Average"]
         },
         {
           "alias": "Network Out",
@@ -381,9 +368,7 @@
           "period": "300",
           "refId": "B",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Average"
-          ]
+          "statistics": ["Average"]
         }
       ],
       "title": "Network Traffic",
@@ -467,9 +452,7 @@
           "period": "300",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Average"
-          ]
+          "statistics": ["Average"]
         },
         {
           "alias": "Disk Write",
@@ -482,9 +465,7 @@
           "period": "300",
           "refId": "B",
           "region": "ap-northeast-2",
-          "statistics": [
-            "Average"
-          ]
+          "statistics": ["Average"]
         }
       ],
       "title": "Disk I/O",

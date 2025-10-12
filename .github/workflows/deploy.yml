@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # 수동 실행 활성화
+  workflow_dispatch: # 수동 실행 활성화
 
 concurrency:
   group: deploy-prod

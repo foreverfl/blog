@@ -3,29 +3,35 @@
 ## 📊 Grafana Cloud 데이터소스 설정
 
 ### 1. Grafana Cloud 접속
+
 - [Grafana Cloud](https://grafana.com) 로그인
 - 좌측 메뉴에서 **Connections** → **Data sources** 클릭
 
 ### 2. CloudWatch 데이터소스 추가
+
 1. **Add data source** 버튼 클릭
 2. **CloudWatch** 검색 및 선택
 3. 다음 정보 입력:
 
 #### Authentication Provider
+
 - **Access & secret key** 선택
 
 #### Connection Details
+
 ```
 Default Region: ap-northeast-2
 ```
 
 #### Authentication
+
 ```
 Access Key ID: [setup-grafana-iam.sh 실행 후 생성된 값]
 Secret Access Key: [setup-grafana-iam.sh 실행 후 생성된 값]
 ```
 
 #### Optional Settings
+
 - **Assume Role ARN**: 비워두기 (직접 액세스 키 사용)
 - **External ID**: 비워두기
 - **Default Query Type**: CloudWatch Metrics
@@ -38,6 +44,7 @@ Secret Access Key: [setup-grafana-iam.sh 실행 후 생성된 값]
 ## 🎯 모니터링할 주요 메트릭
 
 ### EC2 인스턴스 메트릭
+
 ```yaml
 Namespace: AWS/EC2
 Dimensions:
@@ -50,6 +57,7 @@ Metrics:
 ```
 
 ### Docker 컨테이너 메트릭 (CloudWatch Agent 설치 필요)
+
 ```yaml
 Namespace: CWAgent
 Metrics:
@@ -59,6 +67,7 @@ Metrics:
 ```
 
 ### Application 메트릭 (Custom)
+
 ```yaml
 Namespace: CustomApp/Blog
 Metrics:
@@ -137,6 +146,7 @@ Metrics:
 ### 2. Application Performance 대시보드
 
 주요 패널:
+
 - **Request Rate**: 분당 요청 수
 - **Response Time**: P50, P95, P99 레이턴시
 - **Error Rate**: 5xx 에러 비율
@@ -145,6 +155,7 @@ Metrics:
 ## 🚨 알람 설정 예시
 
 ### Critical Alerts
+
 ```yaml
 - CPU > 90% for 5 minutes
 - Memory > 85% for 5 minutes
@@ -154,6 +165,7 @@ Metrics:
 ```
 
 ### Warning Alerts
+
 ```yaml
 - CPU > 70% for 10 minutes
 - Memory > 70% for 10 minutes
@@ -164,6 +176,7 @@ Metrics:
 ## 📝 CloudWatch Logs Insights 쿼리 예시
 
 ### 최근 에러 로그 확인
+
 ```sql
 fields @timestamp, @message
 | filter @message like /ERROR/
@@ -172,6 +185,7 @@ fields @timestamp, @message
 ```
 
 ### API 응답 시간 분석
+
 ```sql
 fields @timestamp, duration
 | filter @message like /api/
@@ -182,6 +196,7 @@ by bin(5m)
 ```
 
 ### 컨테이너 재시작 이벤트
+
 ```sql
 fields @timestamp, @message
 | filter @message like /container.*restart/
@@ -193,6 +208,7 @@ fields @timestamp, @message
 ### CloudWatch Agent 설치 (상세 메트릭 수집)
 
 EC2 인스턴스에서:
+
 ```bash
 # CloudWatch Agent 설치
 wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
@@ -209,6 +225,7 @@ sudo systemctl enable amazon-cloudwatch-agent
 ### Docker 메트릭 수집 설정
 
 `docker-compose.prod.yml`에 추가:
+
 ```yaml
 services:
   app:
