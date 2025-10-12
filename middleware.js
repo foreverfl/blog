@@ -33,6 +33,8 @@ export function middleware(request) {
     pathname.startsWith("/logo") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/policy") ||
+    pathname.startsWith("/monitoring") || // Sentry tunnel route for ad-blocker circumvention
+    pathname.startsWith("/sentry-test") || // Sentry test page
     pathname === "/category.json" ||
     pathname === "/favicon.ico" ||
     pathname === "/sitemap.xml" ||

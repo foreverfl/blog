@@ -63,3 +63,8 @@ logs/
 
 # google cloud
 key.json
+
+# Sentry
+.sentryclirc
+app/sentry-test/
+app/api/sentry-test/
