@@ -17,6 +17,16 @@ COPY . .
 
 RUN npx prettier --write . || true
 
+# Build arguments from GitHub Actions
+ARG SENTRY_AUTH_TOKEN
+ARG NEXT_PUBLIC_SENTRY_DSN
+ARG NEXT_PUBLIC_R2_URI
+
+# Set build-time environment variables
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
+ENV NEXT_PUBLIC_R2_URI=$NEXT_PUBLIC_R2_URI
+
 RUN npm run build
 
 EXPOSE 3000

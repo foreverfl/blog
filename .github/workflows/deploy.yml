@@ -76,6 +76,7 @@ jobs:
           build-args: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+            NEXT_PUBLIC_R2_URI=${{ secrets.NEXT_PUBLIC_R2_URI }}
 
   # EC2에 배포
   deploy:
