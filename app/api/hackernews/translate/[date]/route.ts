@@ -9,9 +9,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  {
-    params,
-  }: { params: Promise<{ date?: string }>; searchParams: URLSearchParams },
+  { params }: { params: Promise<{ date?: string }> },
 ) {
   const authResult = checkBearerAuth(req, "HACKERNEWS_API_KEY");
   if (authResult !== true) {

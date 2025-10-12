@@ -72,7 +72,7 @@ export async function keywords(date: string): Promise<string> {
         { role: "user", content: summary },
       ],
       temperature: 1.0,
-      response_format: zodResponseFormat(ImageInfoSchema, "event"),
+      response_format: zodResponseFormat(ImageInfoSchema as any, "event"),
     });
 
     const content = completion.choices[0].message.content;

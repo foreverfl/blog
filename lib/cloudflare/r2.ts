@@ -74,15 +74,21 @@ export async function putToR2({ bucket, key }: R2Params, data: any) {
 
   let body: BodyInit;
 
-  if (
-    typeof data === "string" ||
-    data instanceof Blob ||
-    data instanceof ArrayBuffer ||
-    data instanceof Uint8Array
-  ) {
+  if (typeof data === "string") {
     body = data;
+  } else if (data instanceof Blob) {
+    body = data;
+  } else if (data instanceof ArrayBuffer) {
+    body = data;
+  } else if (data instanceof Uint8Array) {
+    // Convert Uint8Array to Blob with proper ArrayBuffer
+    const arrayBuffer = data.buffer as ArrayBuffer;
+    body = new Blob([arrayBuffer.slice(data.byteOffset, data.byteOffset + data.byteLength)]);
   } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(data)) {
-    body = data;
+    // Convert Buffer to Uint8Array then to Blob
+    const uint8Array = new Uint8Array(data);
+    const arrayBuffer = uint8Array.buffer as ArrayBuffer;
+    body = new Blob([arrayBuffer.slice(uint8Array.byteOffset, uint8Array.byteOffset + uint8Array.byteLength)]);
   } else {
     body = JSON.stringify(data);
   }
