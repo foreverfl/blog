@@ -111,19 +111,24 @@ jobs:
             # Docker 로그인 (GHCR)
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # 로그 백업 (기존 컨테이너가 있는 경우)
-            if docker ps -a --format '{{.Names}}' | grep -q '^blog-prod$'; then
-              LOG_DIR="/var/log/docker/blog"
-              mkdir -p "$LOG_DIR"
-              TODAY=$(date +%Y-%m-%d)
-              IDX=1
+            # 로그 백업 (기존 컨테이너가 있는 경우 - 'blog' 또는 'blog-prod')
+            LOG_DIR="/var/log/docker/blog"
+            mkdir -p "$LOG_DIR"
+            TODAY=$(date +%Y-%m-%d)
+            IDX=1
+            LOG_FILE="${LOG_DIR}/${TODAY}-$(printf '%03d' $IDX).log"
+            while [ -f "$LOG_FILE" ]; do
+              IDX=$((IDX+1))
               LOG_FILE="${LOG_DIR}/${TODAY}-$(printf '%03d' $IDX).log"
-              while [ -f "$LOG_FILE" ]; do
-                IDX=$((IDX+1))
-                LOG_FILE="${LOG_DIR}/${TODAY}-$(printf '%03d' $IDX).log"
-              done
+            done
+
+            # 'blog' 컨테이너 로그 백업
+            if docker ps -a --format '{{.Names}}' | grep -q '^blog$'; then
+              docker logs blog > "$LOG_FILE" 2>&1 || true
+              echo "Logs from 'blog' backed up to $LOG_FILE"
+            elif docker ps -a --format '{{.Names}}' | grep -q '^blog-prod$'; then
               docker logs blog-prod > "$LOG_FILE" 2>&1 || true
-              echo "Logs backed up to $LOG_FILE"
+              echo "Logs from 'blog-prod' backed up to $LOG_FILE"
             fi
 
             # docker-compose.prod.yml 파일 업데이트 (최신 버전 가져오기)
@@ -134,7 +139,14 @@ jobs:
             export GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
             export IMAGE_TAG=latest
 
-            # 기존 컨테이너 중지 및 제거
+            # 기존 컨테이너 정리 (이전 이름 'blog'와 새 이름 'blog-prod' 모두 처리)
+            echo "Stopping and removing old containers..."
+            docker stop blog 2>/dev/null || true
+            docker rm blog 2>/dev/null || true
+            docker stop blog-prod 2>/dev/null || true
+            docker rm blog-prod 2>/dev/null || true
+
+            # docker-compose로도 정리
             docker-compose -f docker-compose.prod.yml down || true
 
             # 최신 이미지 pull
