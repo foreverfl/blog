@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    # GHCR에서 이미지 pull
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/blog:${IMAGE_TAG:-latest}
+    container_name: blog-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # AWS 관련 환경변수는 .env.prod 파일 또는 시스템 환경변수로 관리
+    env_file:
+      - .env.prod
+    restart: unless-stopped
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  blog-network:
+    driver: bridge

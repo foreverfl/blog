@@ -1,4 +1,26 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # 소스코드를 마운트하여 hot-reload 지원
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - blog-network
+    command: npm run dev
+
+  # Redis
   redis:
     image: redis:latest
     container_name: redis
@@ -7,7 +29,10 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --save 60 1 --loglevel warning
+    networks:
+      - blog-network
 
+  # Redis Insight
   redis-insight:
     image: redis/redisinsight:latest
     container_name: redis-insight
@@ -17,9 +42,12 @@ services:
       - redis
     volumes:
       - redisinsight_data:/data
+    networks:
+      - blog-network
 
+  # PostgreSQL
   postgres:
-    image: postgres:17
+    image: postgres:latest
     container_name: postgres
     environment:
       POSTGRES_DB: mogumogu
@@ -29,8 +57,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - blog-network
 
 volumes:
   redis_data:
   redisinsight_data:
   postgres_data:
+
+networks:
+  blog-network:
+    driver: bridge

@@ -9,61 +9,146 @@ concurrency:
   group: deploy-prod
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
+  # Docker 이미지 빌드 및 GHCR에 푸시
+  build-and-push:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+
+  # EC2에 배포
   deploy:
+    needs: build-and-push
     runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "22"
-
-      - name: Install dependencies and format code
-        run: |
-          npm ci
-          npx prettier --write .
-          npx eslint . --fix --ext .js,.ts,.tsx || true
-
-      - name: Copy CI env
-        run: cp .env.ci .env
-
-      - name: Run build (test)
-        run: npm run build
+        uses: actions/checkout@v4
 
       - name: Create SSH key file
         run: |
           echo "${{ secrets.AWS_SSH_KEY }}" > /tmp/ci-key.pem
           chmod 600 /tmp/ci-key.pem
 
-      - name: Clean up contents folder on EC2
+      - name: Deploy to EC2
         run: |
-          ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} "
+          ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} << 'EOF'
+            set -e  # 에러 발생시 즉시 중단
+
+            # 작업 디렉토리 생성 및 이동
+            mkdir -p /home/ubuntu/app/blog
             cd /home/ubuntu/app/blog
-            rm -rf contents/
-          "
 
-      - name: Rsync source code to EC2
-        run: |
-          rsync -avz --delete \
-          --exclude='.git' \
-          --exclude='node_modules' \
-          --exclude='.env.prod' \
-          --exclude='key.json' \
-          -e "ssh -i /tmp/ci-key.pem -o StrictHostKeyChecking=no" \
-          ./ ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/app/blog
+            # .env.prod 파일 확인
+            if [ ! -f ".env.prod" ]; then
+              echo "ERROR: .env.prod file not found at /home/ubuntu/app/blog/.env.prod"
+              echo "Please create this file on the server with required environment variables"
+              exit 1
+            fi
 
-      - name: Deploy with Ansible
-        uses: dawidd6/action-ansible-playbook@v2
-        with:
-          playbook: ansible/deploy.yml
-          directory: .
-          inventory: |
-            [web]
-            ec2-instance ansible_host=${{ secrets.AWS_EC2_HOST }} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/ci-key.pem
+            # Docker 로그인 (GHCR)
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # 로그 백업 (기존 컨테이너가 있는 경우)
+            if docker ps -a --format '{{.Names}}' | grep -q '^blog-prod$'; then
+              LOG_DIR="/var/log/docker/blog"
+              mkdir -p "$LOG_DIR"
+              TODAY=$(date +%Y-%m-%d)
+              IDX=1
+              LOG_FILE="${LOG_DIR}/${TODAY}-$(printf '%03d' $IDX).log"
+              while [ -f "$LOG_FILE" ]; do
+                IDX=$((IDX+1))
+                LOG_FILE="${LOG_DIR}/${TODAY}-$(printf '%03d' $IDX).log"
+              done
+              docker logs blog-prod > "$LOG_FILE" 2>&1 || true
+              echo "Logs backed up to $LOG_FILE"
+            fi
+
+            # docker-compose.prod.yml 파일 업데이트 (최신 버전 가져오기)
+            curl -o docker-compose.prod.yml \
+              https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
+
+            # 환경 변수 설정
+            export GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
+            export IMAGE_TAG=latest
+
+            # 기존 컨테이너 중지 및 제거
+            docker-compose -f docker-compose.prod.yml down || true
+
+            # 최신 이미지 pull
+            docker-compose -f docker-compose.prod.yml pull
+
+            # 새 컨테이너 시작
+            docker-compose -f docker-compose.prod.yml up -d
+
+            # 오래된 이미지 정리
+            docker image prune -af --filter "until=24h"
+
+            # 헬스체크 (더 긴 대기시간)
+            echo "Waiting for application to start..."
+            sleep 15
+
+            # 헬스체크 재시도 로직
+            for i in 1 2 3; do
+              if curl -f http://localhost:3000/api/health; then
+                echo "Health check passed"
+                break
+              else
+                if [ $i -eq 3 ]; then
+                  echo "Health check failed after 3 attempts"
+                  docker logs blog-prod --tail 50
+                  exit 1
+                fi
+                echo "Health check attempt $i failed, retrying in 10s..."
+                sleep 10
+              fi
+            done
+          EOF
 
       - name: Sync posts metadata
         run: |
