@@ -95,11 +95,11 @@ minikube   Ready    control-plane   19h   v1.33.1
   - **Port-forward**: ローカルからPodへの直接トンネリングデバッグツール
   - **Resource Lifecycle**: apply → running → delete全体フロー
 
-| 区分 | 説明 | 注意事項 |
-|------|------|----------|
-| `kubectl apply -k` | Kustomizationディレクトリ全体適用 | `-f`と異なり複数リソースを一度に処理 |
-| `kubectl exec -it` | コンテナ内部シェルアクセス | コンテナにシェル（sh/bash）が必要 |
-| `kubectl port-forward` | ローカル→Podトンネリング | バックグラウンドプロセスとして残る可能性 |
+| 区分                   | 説明                              | 注意事項                                 |
+| ---------------------- | --------------------------------- | ---------------------------------------- |
+| `kubectl apply -k`     | Kustomizationディレクトリ全体適用 | `-f`と異なり複数リソースを一度に処理     |
+| `kubectl exec -it`     | コンテナ内部シェルアクセス        | コンテナにシェル（sh/bash）が必要        |
+| `kubectl port-forward` | ローカル→Podトンネリング          | バックグラウンドプロセスとして残る可能性 |
 
 ## 4. 実装 (Step-by-step)
 
@@ -130,7 +130,7 @@ spec:
 ```
 
 ```yaml
-# k8s/base/service.yaml  
+# k8s/base/service.yaml
 # 目的: 標準HTTPポートを通じたクラスタ内部通信
 apiVersion: v1
 kind: Service
@@ -266,12 +266,13 @@ $ kill -9 <PID>
 
 このガイドを通じて**kubectlのコアワークフロー**を完全に体験しました：
 
-* **デプロイメント**: `kubectl apply -k`によるKustomizeベースのリソース管理
-* **検証**: `describe`、`logs`、`exec`による多角的状態チェック  
-* **テスト**: Service Discoveryとport-forwardによる接続性確認
-* **クリーンアップ**: namespace削除による環境の清浄な復元
+- **デプロイメント**: `kubectl apply -k`によるKustomizeベースのリソース管理
+- **検証**: `describe`、`logs`、`exec`による多角的状態チェック
+- **テスト**: Service Discoveryとport-forwardによる接続性確認
+- **クリーンアップ**: namespace削除による環境の清浄な復元
 
 **コア学習ポイント**:
+
 - ConfigMapによる環境変数注入パターン
 - Pod ↔ Service ↔ 外部アクセスのネットワーキングフロー
 - 実際の本番環境でよく使われるkubectlデバッグコマンド群

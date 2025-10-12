@@ -169,6 +169,7 @@ $ kubectl delete -f k8s/base/
 ```
 
 ### 핵심 관찰 포인트
+
 - **ReplicaSet 템플릿**: v2 이미지로 변경됨
 - **기존 Pod들**: 그대로 user-service:1.0.0 유지
 - **새 Pod 생성 시**: v2 이미지 사용됨 (기존 Pod 삭제 후)
@@ -182,13 +183,13 @@ $ kubectl delete -f k8s/base/
   - **Deployment vs ReplicaSet**: Deployment는 롤링 업데이트 지원, ReplicaSet은 미지원
   - **NodePort**: 클러스터 외부에서 접근 가능한 서비스 타입
 
-| 구분 | ReplicaSet | Deployment |
-|------|------------|------------|
-| **이미지 변경 시** | 기존 Pod 유지 | 롤링 업데이트로 점진적 교체 |
-| **업데이트 전략** | 없음 | RollingUpdate, Recreate 지원 |
-| **롤백 기능** | 없음 | `kubectl rollout undo` 지원 |
-| **사용 목적** | 기본 Pod 복제본 관리 | 프로덕션 배포 및 업데이트 |
-| **권장 사용법** | 직접 사용 비권장 | 프로덕션 환경 권장 |
+| 구분               | ReplicaSet           | Deployment                   |
+| ------------------ | -------------------- | ---------------------------- |
+| **이미지 변경 시** | 기존 Pod 유지        | 롤링 업데이트로 점진적 교체  |
+| **업데이트 전략**  | 없음                 | RollingUpdate, Recreate 지원 |
+| **롤백 기능**      | 없음                 | `kubectl rollout undo` 지원  |
+| **사용 목적**      | 기본 Pod 복제본 관리 | 프로덕션 배포 및 업데이트    |
+| **권장 사용법**    | 직접 사용 비권장     | 프로덕션 환경 권장           |
 
 ## 5. 매니페스트 구조
 
@@ -233,13 +234,13 @@ spec:
 ```
 
 ```yaml
-# k8s/base/deployment-v2.yaml  
+# k8s/base/deployment-v2.yaml
 # 목적: payment-service:1.0.0로 이미지 변경 시도 (적용 안됨)
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
   namespace: app-dev
-  name: user-service-rs  # 동일한 이름으로 변경 시도
+  name: user-service-rs # 동일한 이름으로 변경 시도
   labels:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/version: "2.0.0"
@@ -256,7 +257,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: mogumogusityau/payment-service:1.0.0  # 다른 서비스로 변경 시도
+          image: mogumogusityau/payment-service:1.0.0 # 다른 서비스로 변경 시도
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -330,12 +331,13 @@ No resources found in default namespace.
 
 이 가이드를 통해 **ReplicaSet의 이미지 변경 특성**을 직접 확인했습니다:
 
-* **템플릿 변경**: ReplicaSet 템플릿은 새 이미지로 업데이트됨
-* **기존 Pod 유지**: 이미지 변경해도 기존 Pod들은 그대로 유지됨  
-* **새 Pod 생성 시**: Pod 삭제 후 재생성될 때만 새 이미지 사용
-* **Deployment와의 차이**: Deployment는 롤링 업데이트로 자동 교체, ReplicaSet은 수동 교체 필요
+- **템플릿 변경**: ReplicaSet 템플릿은 새 이미지로 업데이트됨
+- **기존 Pod 유지**: 이미지 변경해도 기존 Pod들은 그대로 유지됨
+- **새 Pod 생성 시**: Pod 삭제 후 재생성될 때만 새 이미지 사용
+- **Deployment와의 차이**: Deployment는 롤링 업데이트로 자동 교체, ReplicaSet은 수동 교체 필요
 
 **핵심 학습 포인트**:
+
 - ReplicaSet은 Pod 템플릿 변경 시 기존 Pod를 자동으로 업데이트하지 않음
 - 이미지 변경이 적용되려면 기존 Pod를 수동으로 삭제해야 함
 - 프로덕션 환경에서는 Deployment 사용이 권장되는 이유를 실감

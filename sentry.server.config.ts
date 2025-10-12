@@ -8,7 +8,8 @@ Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   // Environment configuration
-  environment: process.env.SENTRY_ENVIRONMENT || process.env.ENV_STAGE || "development",
+  environment:
+    process.env.SENTRY_ENVIRONMENT || process.env.ENV_STAGE || "development",
 
   // Performance Monitoring
   // Lower sample rate for production to reduce costs

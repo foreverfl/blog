@@ -95,11 +95,11 @@ minikube   Ready    control-plane   19h   v1.33.1
   - **Port-forward**: 로컬에서 Pod로 직접 터널링하는 디버깅 도구
   - **Resource Lifecycle**: apply → running → delete 전체 흐름
 
-| 구분 | 설명 | 주의사항 |
-|------|------|----------|
-| `kubectl apply -k` | Kustomization 디렉토리 전체 적용 | `-f`와 달리 여러 리소스 한번에 처리 |
-| `kubectl exec -it` | 컨테이너 내부 셸 접근 | 컨테이너에 셸(sh/bash)이 있어야 함 |
-| `kubectl port-forward` | 로컬→Pod 터널링 | 백그라운드 프로세스로 남을 수 있음 |
+| 구분                   | 설명                             | 주의사항                            |
+| ---------------------- | -------------------------------- | ----------------------------------- |
+| `kubectl apply -k`     | Kustomization 디렉토리 전체 적용 | `-f`와 달리 여러 리소스 한번에 처리 |
+| `kubectl exec -it`     | 컨테이너 내부 셸 접근            | 컨테이너에 셸(sh/bash)이 있어야 함  |
+| `kubectl port-forward` | 로컬→Pod 터널링                  | 백그라운드 프로세스로 남을 수 있음  |
 
 ## 4. 구현 (Step-by-step)
 
@@ -130,7 +130,7 @@ spec:
 ```
 
 ```yaml
-# k8s/base/service.yaml  
+# k8s/base/service.yaml
 # 목적: 표준 HTTP 포트를 통한 클러스터 내부 통신
 apiVersion: v1
 kind: Service
@@ -266,12 +266,13 @@ $ kill -9 <PID>
 
 이 가이드를 통해 **kubectl의 핵심 워크플로우**를 완전히 경험했습니다:
 
-* **배포**: `kubectl apply -k`로 Kustomize 기반 리소스 관리
-* **검증**: `describe`, `logs`, `exec`로 다각도 상태 점검  
-* **테스트**: Service Discovery와 port-forward를 통한 연결성 확인
-* **정리**: namespace 삭제로 깔끔한 환경 복원
+- **배포**: `kubectl apply -k`로 Kustomize 기반 리소스 관리
+- **검증**: `describe`, `logs`, `exec`로 다각도 상태 점검
+- **테스트**: Service Discovery와 port-forward를 통한 연결성 확인
+- **정리**: namespace 삭제로 깔끔한 환경 복원
 
 **핵심 학습 포인트**:
+
 - ConfigMap을 통한 환경변수 주입 패턴
 - Pod ↔ Service ↔ 외부 접근의 네트워킹 흐름
 - 실제 운영 환경에서 자주 사용하는 kubectl 디버깅 명령어들

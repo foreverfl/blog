@@ -95,11 +95,11 @@ minikube   Ready    control-plane   19h   v1.33.1
   - **Port-forward**: Debugging tool for direct tunneling from local to Pod
   - **Resource Lifecycle**: Complete flow of apply → running → delete
 
-| Command | Description | Notes |
-|---------|-------------|--------|
-| `kubectl apply -k` | Apply entire Kustomization directory | Processes multiple resources at once, unlike `-f` |
-| `kubectl exec -it` | Access container internal shell | Container must have shell (sh/bash) available |
-| `kubectl port-forward` | Local→Pod tunneling | May remain as background process |
+| Command                | Description                          | Notes                                             |
+| ---------------------- | ------------------------------------ | ------------------------------------------------- |
+| `kubectl apply -k`     | Apply entire Kustomization directory | Processes multiple resources at once, unlike `-f` |
+| `kubectl exec -it`     | Access container internal shell      | Container must have shell (sh/bash) available     |
+| `kubectl port-forward` | Local→Pod tunneling                  | May remain as background process                  |
 
 ## 4. Implementation (Step-by-step)
 
@@ -130,7 +130,7 @@ spec:
 ```
 
 ```yaml
-# k8s/base/service.yaml  
+# k8s/base/service.yaml
 # Purpose: Cluster-internal communication through standard HTTP port
 apiVersion: v1
 kind: Service
@@ -266,12 +266,13 @@ $ kill -9 <PID>
 
 Through this guide, you've fully experienced **kubectl's core workflow**:
 
-* **Deployment**: Kustomize-based resource management with `kubectl apply -k`
-* **Verification**: Multi-angle status checking with `describe`, `logs`, `exec`  
-* **Testing**: Connectivity verification through Service Discovery and port-forward
-* **Cleanup**: Clean environment restoration with namespace deletion
+- **Deployment**: Kustomize-based resource management with `kubectl apply -k`
+- **Verification**: Multi-angle status checking with `describe`, `logs`, `exec`
+- **Testing**: Connectivity verification through Service Discovery and port-forward
+- **Cleanup**: Clean environment restoration with namespace deletion
 
 **Key learning points**:
+
 - Environment variable injection pattern through ConfigMap
 - Networking flow of Pod ↔ Service ↔ external access
 - kubectl debugging commands frequently used in real production environments

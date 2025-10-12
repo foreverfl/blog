@@ -157,12 +157,12 @@ $ kubectl delete namespace app-dev
   - **NodePort**: Service type accessible from outside the cluster
   - **Rollout Strategy**: Safe rolling update configuration with maxUnavailable=1, maxSurge=1
 
-| Command | Description | Notes |
-|---------|-------------|-------|
-| `kubectl rollout status` | Real-time rollout progress monitoring | Blocking command that waits for completion |
-| `kubectl rollout history` | View previous deployment history | Can select rollback point by revision number |
-| `kubectl rollout undo` | Rollback to previous version | Use --to-revision to specify particular version |
-| `--no-keepalive` | Create new HTTP connection each time | Enables accurate observation of load balancing patterns |
+| Command                   | Description                           | Notes                                                   |
+| ------------------------- | ------------------------------------- | ------------------------------------------------------- |
+| `kubectl rollout status`  | Real-time rollout progress monitoring | Blocking command that waits for completion              |
+| `kubectl rollout history` | View previous deployment history      | Can select rollback point by revision number            |
+| `kubectl rollout undo`    | Rollback to previous version          | Use --to-revision to specify particular version         |
+| `--no-keepalive`          | Create new HTTP connection each time  | Enables accurate observation of load balancing patterns |
 
 ## 5. Manifest Structure
 
@@ -211,12 +211,12 @@ spec:
 ```
 
 ```yaml
-# k8s/base/deployment-v2.yaml  
+# k8s/base/deployment-v2.yaml
 # Purpose: Rolling update to payment-service:1.0.0
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service  # Same name for update
+  name: user-service # Same name for update
   labels:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/version: "2.0.0"
@@ -238,7 +238,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: mogumogusityau/payment-service:1.0.0  # Changed to different service
+          image: mogumogusityau/payment-service:1.0.0 # Changed to different service
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -284,7 +284,7 @@ spec:
 # 1. Initial state (v1 fully deployed)
 --- Pod Status ---
 user-service-7dbcddc6fc-5z5wp 1/1 Running
-user-service-7dbcddc6fc-fmwgq 1/1 Running  
+user-service-7dbcddc6fc-fmwgq 1/1 Running
 user-service-7dbcddc6fc-kbk57 1/1 Running
 
 --- Service Responses ---
@@ -352,7 +352,7 @@ user-service-5ffc8dbcf6   2         1         1       12s
 
 # Check rollout history
 $ kubectl -n app-dev rollout history deployment/user-service
-deployment.apps/user-service 
+deployment.apps/user-service
 REVISION  CHANGE-CAUSE
 1         <none>
 2         <none>
@@ -385,12 +385,13 @@ No resources found in app-dev namespace.
 
 Through this guide, you have completely experienced the **entire Kubernetes Deployment rolling update process**:
 
-* **Zero-downtime Deployment**: Gradual update from v1 → v2 without service interruption
-* **Traffic Distribution**: Observed the period where both old and new versions handle requests simultaneously during the update
-* **Automation**: Built a reproducible test environment by automating the entire process with scripts
-* **Real-time Monitoring**: Real-time tracking of Pod state changes and ReplicaSet transitions
+- **Zero-downtime Deployment**: Gradual update from v1 → v2 without service interruption
+- **Traffic Distribution**: Observed the period where both old and new versions handle requests simultaneously during the update
+- **Automation**: Built a reproducible test environment by automating the entire process with scripts
+- **Real-time Monitoring**: Real-time tracking of Pod state changes and ReplicaSet transitions
 
 **Key Learning Points**:
+
 - Effects of RollingUpdate strategy's maxUnavailable/maxSurge settings
 - Pod version management mechanism through ReplicaSets
 - External traffic access and load balancing via NodePort

@@ -169,6 +169,7 @@ $ kubectl delete -f k8s/base/
 ```
 
 ### Key Observation Points
+
 - **ReplicaSet Template**: Changed to v2 image
 - **Existing Pods**: Remain with user-service:1.0.0
 - **New Pod Creation**: Uses v2 image (only after deleting existing Pods)
@@ -182,13 +183,13 @@ $ kubectl delete -f k8s/base/
   - **Deployment vs ReplicaSet**: Deployment supports rolling updates, ReplicaSet doesn't
   - **NodePort**: Service type accessible from outside the cluster
 
-| Aspect | ReplicaSet | Deployment |
-|--------|------------|------------|
-| **On Image Change** | Keep existing Pods | Progressive replacement via rolling update |
-| **Update Strategy** | None | RollingUpdate, Recreate supported |
-| **Rollback Feature** | None | `kubectl rollout undo` supported |
-| **Use Case** | Basic Pod replica management | Production deployment and updates |
-| **Recommended Usage** | Direct use not recommended | Recommended for production |
+| Aspect                | ReplicaSet                   | Deployment                                 |
+| --------------------- | ---------------------------- | ------------------------------------------ |
+| **On Image Change**   | Keep existing Pods           | Progressive replacement via rolling update |
+| **Update Strategy**   | None                         | RollingUpdate, Recreate supported          |
+| **Rollback Feature**  | None                         | `kubectl rollout undo` supported           |
+| **Use Case**          | Basic Pod replica management | Production deployment and updates          |
+| **Recommended Usage** | Direct use not recommended   | Recommended for production                 |
 
 ## 5. Manifest Structure
 
@@ -233,13 +234,13 @@ spec:
 ```
 
 ```yaml
-# k8s/base/deployment-v2.yaml  
+# k8s/base/deployment-v2.yaml
 # Purpose: Attempt to change image to payment-service:1.0.0 (won't apply)
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
   namespace: app-dev
-  name: user-service-rs  # Same name for change attempt
+  name: user-service-rs # Same name for change attempt
   labels:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/version: "2.0.0"
@@ -256,7 +257,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: mogumogusityau/payment-service:1.0.0  # Attempt to change to different service
+          image: mogumogusityau/payment-service:1.0.0 # Attempt to change to different service
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -330,12 +331,13 @@ No resources found in default namespace.
 
 Through this guide, we directly verified **ReplicaSet's image change characteristics**:
 
-* **Template Change**: ReplicaSet template is updated with new image
-* **Existing Pods Preserved**: Existing Pods remain unchanged despite image changes  
-* **New Pod Creation**: New image is used only when Pods are deleted and recreated
-* **Difference from Deployment**: Deployment automatically replaces via rolling updates, ReplicaSet requires manual replacement
+- **Template Change**: ReplicaSet template is updated with new image
+- **Existing Pods Preserved**: Existing Pods remain unchanged despite image changes
+- **New Pod Creation**: New image is used only when Pods are deleted and recreated
+- **Difference from Deployment**: Deployment automatically replaces via rolling updates, ReplicaSet requires manual replacement
 
 **Key Learning Points**:
+
 - ReplicaSet doesn't automatically update existing Pods when Pod template changes
 - Image changes take effect only when existing Pods are manually deleted
 - Real understanding of why Deployment is recommended in production environments

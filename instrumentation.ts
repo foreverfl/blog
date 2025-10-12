@@ -19,7 +19,7 @@ export async function onRequestError(
     path: string;
     method: string;
     headers: Record<string, string>;
-  }
+  },
 ) {
   Sentry.withScope((scope) => {
     scope.setTag("runtime", process.env.NEXT_RUNTIME || "unknown");

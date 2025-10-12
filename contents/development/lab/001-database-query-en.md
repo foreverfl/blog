@@ -10,8 +10,6 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250805-query-re
 
 This post handle a query performance test in a PostgreSQL database environment. Through this test, we will explore how different SQL queries perform under the same hardware specifications. After reading this post, you will understand how to conduct performance tests on SQL queries and the differences in performance between various query structures.
 
-
-
 ## How is PostgreSQL Installed?
 
 PostgreSQL is installed using Docker. The following `docker-compose.yml` file is used to set up the service:
@@ -33,8 +31,6 @@ services:
     mem_limit: 4g
 ```
 
-
-
 ## What Dataset is Used?
 
 ![IMDB Structure](https://blog_workers.forever-fl.workers.dev/posts-images/250805-imdb-structure.webp)
@@ -45,13 +41,12 @@ The dataset is available in TSV format and can be downloaded from the following 
 
 1. **Data Source** : TSV files from the [IMDB dataset](https://datasets.imdbws.com/) are used to populate the PostgreSQL database
 2. **Schema Reference**: Table structures and relationships follow the specifications defined in [IMDB Non-Commercial Datasets](https://developer.imdb.com/non-commercial-datasets/)
-3. **Data Characteristics**: 
-  - Large-scale production dataset with millions of records
-  - Complex relational structure with multiple interconnected tables
-  - Real-world data distribution patterns and constraints
-  - Provides realistic testing scenarios for query performance evaluation
+3. **Data Characteristics**:
 
-
+- Large-scale production dataset with millions of records
+- Complex relational structure with multiple interconnected tables
+- Real-world data distribution patterns and constraints
+- Provides realistic testing scenarios for query performance evaluation
 
 ## What Queries are Tested?
 
@@ -66,8 +61,6 @@ The following types of queries are tested to evaluate their performance (detaile
 - **CTE (Common Table Expression):** Aggregation and filtering with CTEs.
 - **Window Function:** Using window functions (e.g., `ROW_NUMBER()`) to select top results by group.
 
-
-
 ### Simple Select
 
 ```sql
@@ -81,8 +74,6 @@ WHERE
 ```
 
 This query retrieves a single row from the `title_basics` table using the primary key `tconst`. It is expected to perform well due to the indexed primary key. There is a default index on the `title_basics` table because PostgreSQL automatically creates a primary key index when a primary key constraint is defined. This index allows the query to efficiently locate the row with `tconst = 'tt1234567'` without performing a full table scan. The execution time is '0.045 ms'.
-
-
 
 ### Pattern Matching (ILIKE)
 
@@ -102,15 +93,13 @@ LIMIT
     100;
 ```
 
-This query retrieves rows from the `title_basics` table where the `primaryTitle` contains the substring 'naruto', using a case-insensitive search. The `ILIKE` operator is used for case-insensitive pattern matching. 
+This query retrieves rows from the `title_basics` table where the `primaryTitle` contains the substring 'naruto', using a case-insensitive search. The `ILIKE` operator is used for case-insensitive pattern matching.
 
 When using `ILIKE '%keyword%'` in PostgreSQL, the query is normally very slow because it requires a **full table scan**—the database must check every row to see if the pattern matches anywhere in the text. This is inherently inefficient for large tables.
 
 However, by creating a **GIN index with the `gin_trgm_ops` operator** (which comes from the `pg_trgm` extension), the database pre-processes each string into **trigrams (three-character chunks)** and builds an index based on these. When you run the same ILIKE query, PostgreSQL can quickly narrow down candidate rows using the trigram index, making the search dramatically faster—sometimes by hundreds or thousands of times.
 
 For example, without the index, the query took about **2,400 ms**, but with the GIN trigram index, it dropped to just **3 ms**. This is a massive improvement.
-
-
 
 ### Join: Top Rated Movies
 
@@ -133,13 +122,11 @@ LIMIT
     100;
 ```
 
-This query retrieves the top 100 rated movies by joining the `title_basics` and `title_ratings` tables. An index on `averageRating` is used to optimize the sorting operation. Without the index, the query took about **300 ms**; with the index, it dropped to just **100 ms**.  This demonstrates how indexing can significantly accelerate join and sorting operations.
+This query retrieves the top 100 rated movies by joining the `title_basics` and `title_ratings` tables. An index on `averageRating` is used to optimize the sorting operation. Without the index, the query took about **300 ms**; with the index, it dropped to just **100 ms**. This demonstrates how indexing can significantly accelerate join and sorting operations.
 
 When joining two tables, PostgreSQL must match rows based on the join condition. If the join or the sort column is not indexed, the database may need to perform a **nested loop join** or a **hash join**, which can be slow for large datasets. By creating an index on the `averageRating` column, PostgreSQL can efficiently retrieve rows in the desired order, dramatically reducing the time required for both joining and sorting.
 
 In summary, appropriate indexing—especially on columns used for sorting or joining—can greatly improve query performance on large tables.
-
-
 
 ### Multi-condition & Group By: Movie Count by Genre and Year
 
@@ -174,8 +161,6 @@ In the provided example, even after indexing, the query execution plan shows tha
 
 For high-cardinality aggregations or real-time analytics at scale, it's often more efficient to use pre-aggregated data, materialized views, or OLAP systems designed for fast, large-scale group by queries.
 
-
-
 ### Multi-table Join
 
 ```sql
@@ -200,8 +185,6 @@ LIMIT
     10;
 
 ```
-
-
 
 ### Subquery: Filmography of a Specific Actor
 
@@ -234,16 +217,12 @@ WHERE
     );
 ```
 
-
 This query retrieves the filmography of a specific actor (in this case, 'Tom Hanks') by using a subquery to find the actor's `nconst` and then filtering the `title_basics` table based on that. The query uses indexes on `primaryName` and `nconst` to optimize the subquery lookups. Without the indexes, the query took about **15,500 ms**; with the indexes, it dramatically dropped to just **250 ms**.
 
 This is because the subqueries allow us to apply targeted single-column indexes (primaryName and nconst), enabling efficient lookups at each stage.
 As a result, using subqueries is not inherently bad for performance; as long as the right indexes are in place for frequently queried fields within subqueries, performance can be fully optimized.
 
 In practice, it's more important to ensure proper indexing than to avoid subqueries altogether.
-
-
-
 
 ### CTE (Common Table Expression): Yearly Movie Counts
 
@@ -275,8 +254,6 @@ This query uses a Common Table Expression (CTE) to calculate the number of movie
 
 By creating a composite index that matches both the WHERE and GROUP BY columns (titleType, startYear), query performance improved dramatically.
 Even with a GROUP BY, the database can aggregate data very efficiently if the index order aligns with the query, because only the relevant rows are scanned and the grouped field is already sorted within the index.
-
-
 
 ### Window Function: Top Rated Movie by Year
 
@@ -317,8 +294,6 @@ Even with well-designed indexes, window function queries involving PARTITION BY 
 Indexes can reduce the number of rows to process in the filtering and join stages, but the window aggregation itself typically requires all relevant rows to be materialized and sorted, resulting in limited overall performance gains.
 
 For heavy window function workloads, pre-aggregation or OLAP solutions are usually more effective.
-
-
 
 ## Conclusion
 

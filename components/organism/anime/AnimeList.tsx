@@ -122,7 +122,7 @@ const AnimeList = () => {
     } finally {
       dispatch({ type: "STOP_LOADING" });
     }
-  }, []);
+  }, [dispatch]);
 
   const fetchAnimes = useCallback(async () => {
     try {
@@ -148,7 +148,7 @@ const AnimeList = () => {
     } finally {
       dispatch({ type: "STOP_LOADING" });
     }
-  }, [selectedSeason, selectedYear, page]);
+  }, [selectedSeason, selectedYear, page, dispatch]);
 
   const handleSync = useCallback(async () => {
     try {
@@ -188,8 +188,7 @@ const AnimeList = () => {
     } finally {
       dispatch({ type: "STOP_LOADING" });
     }
-  }, [selectedSeason, selectedYear, fetchAnimes]);
-
+  }, [selectedSeason, selectedYear, fetchAnimes, dispatch]);
 
   /**
    * Resets the anime list state and optionally updates the selected year and season.
@@ -214,7 +213,7 @@ const AnimeList = () => {
 
   useEffect(() => {
     fetchLibraries();
-  }, []);
+  }, [fetchLibraries]);
 
   // initialize selectedYear and selectedSeason
   useEffect(() => {
@@ -228,7 +227,7 @@ const AnimeList = () => {
   useEffect(() => {
     if (!selectedYear || !selectedSeason || !page) return;
     fetchAnimes();
-  }, [selectedYear, selectedSeason, page]);
+  }, [selectedYear, selectedSeason, page, fetchAnimes]);
 
   useEffect(() => {
     if (!loaderRef.current) return;

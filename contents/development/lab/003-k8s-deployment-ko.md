@@ -29,7 +29,7 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250906-deployme
 - **만들게 될 것들**
   - **Deployment** `user-service`: 롤링 업데이트를 관리하는 컨트롤러
   - **v1 ReplicaSet**: user-service:1.0.0 이미지를 실행하는 Pod들
-  - **v2 ReplicaSet**: payment-service:1.0.0 이미지를 실행하는 Pod들  
+  - **v2 ReplicaSet**: payment-service:1.0.0 이미지를 실행하는 Pod들
   - **NodePort Service**: 외부에서 접근 가능한 서비스 (포트 30000)
   - **자동화 스크립트**: 전체 과정을 자동으로 실행하고 모니터링
 
@@ -157,12 +157,12 @@ $ kubectl delete namespace app-dev
   - **NodePort**: 클러스터 외부에서 접근 가능한 서비스 타입
   - **Rollout Strategy**: maxUnavailable=1, maxSurge=1로 안전한 롤링 업데이트 설정
 
-| 구분 | 설명 | 주의사항 |
-|------|------|----------|
-| `kubectl rollout status` | 롤아웃 진행상황 실시간 모니터링 | 완료될 때까지 대기하는 블로킹 명령어 |
-| `kubectl rollout history` | 이전 배포 이력 확인 | revision 번호로 롤백 지점 선택 가능 |
-| `kubectl rollout undo` | 이전 버전으로 롤백 | --to-revision으로 특정 버전 지정 가능 |
-| `--no-keepalive` | HTTP 연결을 매번 새로 생성 | 로드밸런싱 분배 패턴을 정확히 관찰 가능 |
+| 구분                      | 설명                            | 주의사항                                |
+| ------------------------- | ------------------------------- | --------------------------------------- |
+| `kubectl rollout status`  | 롤아웃 진행상황 실시간 모니터링 | 완료될 때까지 대기하는 블로킹 명령어    |
+| `kubectl rollout history` | 이전 배포 이력 확인             | revision 번호로 롤백 지점 선택 가능     |
+| `kubectl rollout undo`    | 이전 버전으로 롤백              | --to-revision으로 특정 버전 지정 가능   |
+| `--no-keepalive`          | HTTP 연결을 매번 새로 생성      | 로드밸런싱 분배 패턴을 정확히 관찰 가능 |
 
 ## 5. 매니페스트 구조
 
@@ -211,12 +211,12 @@ spec:
 ```
 
 ```yaml
-# k8s/base/deployment-v2.yaml  
+# k8s/base/deployment-v2.yaml
 # 목적: payment-service:1.0.0으로 롤링 업데이트
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service  # 동일한 이름으로 업데이트
+  name: user-service # 동일한 이름으로 업데이트
   labels:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/version: "2.0.0"
@@ -238,7 +238,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: mogumogusityau/payment-service:1.0.0  # 다른 서비스로 변경
+          image: mogumogusityau/payment-service:1.0.0 # 다른 서비스로 변경
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -284,7 +284,7 @@ spec:
 # 1. 초기 상태 (v1 완전 배포)
 --- Pod Status ---
 user-service-7dbcddc6fc-5z5wp 1/1 Running
-user-service-7dbcddc6fc-fmwgq 1/1 Running  
+user-service-7dbcddc6fc-fmwgq 1/1 Running
 user-service-7dbcddc6fc-kbk57 1/1 Running
 
 --- Service Responses ---
@@ -352,7 +352,7 @@ user-service-5ffc8dbcf6   2         1         1       12s
 
 # 롤아웃 히스토리 확인
 $ kubectl -n app-dev rollout history deployment/user-service
-deployment.apps/user-service 
+deployment.apps/user-service
 REVISION  CHANGE-CAUSE
 1         <none>
 2         <none>
@@ -385,14 +385,15 @@ No resources found in app-dev namespace.
 
 이 가이드를 통해 **Kubernetes Deployment의 롤링 업데이트 전체 과정**을 완전히 경험했습니다:
 
-* **무중단 배포**: 서비스 중단 없이 v1 → v2로 점진적 업데이트
-* **트래픽 분배**: 업데이트 중 구버전과 신버전이 동시에 요청을 처리하는 구간 관찰
-* **자동화**: 전체 과정을 스크립트로 자동화하여 재현 가능한 테스트 환경 구축
-* **실시간 모니터링**: Pod 상태 변화와 ReplicaSet 전환 과정을 실시간으로 추적
+- **무중단 배포**: 서비스 중단 없이 v1 → v2로 점진적 업데이트
+- **트래픽 분배**: 업데이트 중 구버전과 신버전이 동시에 요청을 처리하는 구간 관찰
+- **자동화**: 전체 과정을 스크립트로 자동화하여 재현 가능한 테스트 환경 구축
+- **실시간 모니터링**: Pod 상태 변화와 ReplicaSet 전환 과정을 실시간으로 추적
 
 **핵심 학습 포인트**:
+
 - RollingUpdate 전략의 maxUnavailable/maxSurge 설정 효과
-- ReplicaSet을 통한 Pod 버전 관리 메커니즘  
+- ReplicaSet을 통한 Pod 버전 관리 메커니즘
 - NodePort를 통한 외부 트래픽 접근과 부하 분산
 - `--no-keepalive` 옵션을 통한 정확한 로드밸런싱 패턴 관찰
 

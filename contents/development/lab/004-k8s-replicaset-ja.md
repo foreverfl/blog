@@ -169,6 +169,7 @@ $ kubectl delete -f k8s/base/
 ```
 
 ### 核心観察ポイント
+
 - **ReplicaSet テンプレート**: v2イメージに変更済み
 - **既存Pod**: そのままuser-service:1.0.0維持
 - **新しいPod生成時**: v2イメージ使用（既存Pod削除後）
@@ -182,13 +183,13 @@ $ kubectl delete -f k8s/base/
   - **Deployment vs ReplicaSet**: Deploymentはローリングアップデート対応、ReplicaSetは非対応
   - **NodePort**: クラスタ外部からアクセス可能なサービスタイプ
 
-| 区分 | ReplicaSet | Deployment |
-|------|------------|------------|
-| **イメージ変更時** | 既存Pod維持 | ローリングアップデートで段階的置き換え |
-| **アップデート戦略** | なし | RollingUpdate、Recreate対応 |
-| **ロールバック機能** | なし | `kubectl rollout undo` 対応 |
-| **使用目的** | 基本Pod複製本管理 | プロダクション配備および更新 |
-| **推奨使用法** | 直接使用非推奨 | プロダクション環境推奨 |
+| 区分                 | ReplicaSet        | Deployment                             |
+| -------------------- | ----------------- | -------------------------------------- |
+| **イメージ変更時**   | 既存Pod維持       | ローリングアップデートで段階的置き換え |
+| **アップデート戦略** | なし              | RollingUpdate、Recreate対応            |
+| **ロールバック機能** | なし              | `kubectl rollout undo` 対応            |
+| **使用目的**         | 基本Pod複製本管理 | プロダクション配備および更新           |
+| **推奨使用法**       | 直接使用非推奨    | プロダクション環境推奨                 |
 
 ## 5. マニフェスト構造
 
@@ -233,13 +234,13 @@ spec:
 ```
 
 ```yaml
-# k8s/base/deployment-v2.yaml  
+# k8s/base/deployment-v2.yaml
 # 目的: payment-service:1.0.0にイメージ変更試行（適用されない）
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
   namespace: app-dev
-  name: user-service-rs  # 変更試行のため同じ名前
+  name: user-service-rs # 変更試行のため同じ名前
   labels:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/version: "2.0.0"
@@ -256,7 +257,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: mogumogusityau/payment-service:1.0.0  # 別のサービスに変更試行
+          image: mogumogusityau/payment-service:1.0.0 # 別のサービスに変更試行
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -330,12 +331,13 @@ No resources found in default namespace.
 
 このガイドを通じて **ReplicaSetのイメージ変更特性** を直接確認しました:
 
-* **テンプレート変更**: ReplicaSetテンプレートは新しいイメージで更新
-* **既存Pod保持**: イメージ変更しても既存Podはそのまま維持  
-* **新Pod生成時**: Pod削除後再生成される時のみ新イメージ使用
-* **Deploymentとの違い**: Deploymentはローリングアップデートで自動置き換え、ReplicaSetは手動置き換え必要
+- **テンプレート変更**: ReplicaSetテンプレートは新しいイメージで更新
+- **既存Pod保持**: イメージ変更しても既存Podはそのまま維持
+- **新Pod生成時**: Pod削除後再生成される時のみ新イメージ使用
+- **Deploymentとの違い**: Deploymentはローリングアップデートで自動置き換え、ReplicaSetは手動置き換え必要
 
 **核心学習ポイント**:
+
 - ReplicaSetはPodテンプレート変更時に既存Podを自動更新しない
 - イメージ変更が適用されるためには既存Podを手動削除する必要がある
 - プロダクション環境でDeployment使用が推奨される理由を実感

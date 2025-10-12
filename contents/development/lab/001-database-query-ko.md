@@ -12,7 +12,6 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250805-query-re
 동일한 하드웨어 환경에서 다양한 SQL 쿼리가 실제로 어떻게 동작하는지, 그리고 쿼리 구조별로 성능 차이가 어떻게 발생하는지 살펴봅니다.  
 이 글을 통해 SQL 쿼리 성능 테스트 방법과 쿼리 구조별 성능 차이를 이해할 수 있습니다.
 
-
 ## PostgreSQL 설치 방법
 
 PostgreSQL는 Docker를 이용해 설치했습니다.  
@@ -48,10 +47,11 @@ services:
 1. **데이터 소스** : [IMDB 데이터셋](https://datasets.imdbws.com/)의 TSV 파일을 PostgreSQL에 적재
 2. **스키마 참조** : 테이블 구조와 관계는 [IMDB Non-Commercial Datasets](https://developer.imdb.com/non-commercial-datasets/) 공식 문서 기준
 3. **데이터 특징** :
-  - 수백만 건 규모의 대용량 데이터셋
-  - 복잡하고 계층적인 관계형 구조
-  - 실제와 유사한 데이터 분포 및 제약 조건
-  - 쿼리 성능 평가에 최적화된 현실적인 환경 제공
+
+- 수백만 건 규모의 대용량 데이터셋
+- 복잡하고 계층적인 관계형 구조
+- 실제와 유사한 데이터 분포 및 제약 조건
+- 쿼리 성능 평가에 최적화된 현실적인 환경 제공
 
 ## 테스트한 쿼리 유형
 

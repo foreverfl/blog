@@ -1,6 +1,4 @@
-import {
-  getAnimesBySeason
-} from "@/lib/postgres/anime";
+import { getAnimesBySeason } from "@/lib/postgres/anime";
 
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,5 +34,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-

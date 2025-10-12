@@ -10,7 +10,6 @@ image: "https://blog_workers.forever-fl.workers.dev/posts-images/250805-query-re
 
 本記事では、PostgreSQLデータベース環境におけるクエリのパフォーマンステストを扱います。本テストを通じて、同一のハードウェア環境下でさまざまなSQLクエリがどのように動作するかを検証します。記事を読むことで、SQLクエリのパフォーマンステストの実施方法や、クエリ構造ごとのパフォーマンスの違いを理解できるでしょう。
 
-
 ## PostgreSQLのインストール方法
 
 PostgreSQLはDockerを利用してインストールしました。サービスのセットアップには、以下の `docker-compose.yml` ファイルを使用しています。
@@ -43,10 +42,11 @@ services:
 1. **データソース**: [IMDBデータセット](https://datasets.imdbws.com/)のTSVファイルをPostgreSQLにインポート
 2. **スキーマ参照**: テーブル構造とリレーションは[IMDB Non-Commercial Datasets](https://developer.imdb.com/non-commercial-datasets/)の仕様に準拠
 3. **データ特徴**:
-  - 数百万件規模の本番データセット
-  - 複雑かつ多階層のリレーショナル構造
-  - 現実的なデータ分布と制約
-  - クエリパフォーマンステストに最適な実データ環境を提供
+
+- 数百万件規模の本番データセット
+- 複雑かつ多階層のリレーショナル構造
+- 現実的なデータ分布と制約
+- クエリパフォーマンステストに最適な実データ環境を提供
 
 ## テストしたクエリの種類
 

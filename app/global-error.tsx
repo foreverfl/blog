@@ -25,7 +25,7 @@ export default function GlobalError({
             </h1>
             <p className="mb-6 leading-relaxed text-gray-600">
               A client-side exception has occurred. The error has been reported
-              to our team and we'll look into it as soon as possible.
+              to our team and we&apos;ll look into it as soon as possible.
             </p>
             <div className="flex gap-3">
               <button

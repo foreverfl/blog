@@ -27,6 +27,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code formatting with Prettier
+        run: npx prettier --check .
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: true  # ESLint 경고는 빌드를 막지 않음
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

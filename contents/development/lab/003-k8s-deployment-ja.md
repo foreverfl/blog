@@ -157,12 +157,12 @@ $ kubectl delete namespace app-dev
   - **NodePort**: クラスタ外部からアクセス可能なサービスタイプ
   - **Rollout Strategy**: maxUnavailable=1、maxSurge=1での安全なローリングアップデート設定
 
-| コマンド | 説明 | 注意事項 |
-|---------|------|----------|
-| `kubectl rollout status` | ロールアウト進行状況リアルタイムモニタリング | 完了まで待機するブロッキングコマンド |
-| `kubectl rollout history` | 過去のデプロイ履歴確認 | リビジョン番号でロールバック地点選択可能 |
-| `kubectl rollout undo` | 前バージョンにロールバック | --to-revisionで特定バージョン指定可能 |
-| `--no-keepalive` | HTTP接続を毎回新規作成 | ロードバランシング分散パターンを正確に観察可能 |
+| コマンド                  | 説明                                         | 注意事項                                       |
+| ------------------------- | -------------------------------------------- | ---------------------------------------------- |
+| `kubectl rollout status`  | ロールアウト進行状況リアルタイムモニタリング | 完了まで待機するブロッキングコマンド           |
+| `kubectl rollout history` | 過去のデプロイ履歴確認                       | リビジョン番号でロールバック地点選択可能       |
+| `kubectl rollout undo`    | 前バージョンにロールバック                   | --to-revisionで特定バージョン指定可能          |
+| `--no-keepalive`          | HTTP接続を毎回新規作成                       | ロードバランシング分散パターンを正確に観察可能 |
 
 ## 5. マニフェスト構造
 
@@ -211,12 +211,12 @@ spec:
 ```
 
 ```yaml
-# k8s/base/deployment-v2.yaml  
+# k8s/base/deployment-v2.yaml
 # 目的: payment-service:1.0.0へのローリングアップデート
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service  # 同じ名前でアップデート
+  name: user-service # 同じ名前でアップデート
   labels:
     app.kubernetes.io/name: user-service
     app.kubernetes.io/version: "2.0.0"
@@ -238,7 +238,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: mogumogusityau/payment-service:1.0.0  # 別サービスに変更
+          image: mogumogusityau/payment-service:1.0.0 # 別サービスに変更
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -284,7 +284,7 @@ spec:
 # 1. 初期状態（v1完全デプロイ）
 --- Pod Status ---
 user-service-7dbcddc6fc-5z5wp 1/1 Running
-user-service-7dbcddc6fc-fmwgq 1/1 Running  
+user-service-7dbcddc6fc-fmwgq 1/1 Running
 user-service-7dbcddc6fc-kbk57 1/1 Running
 
 --- Service Responses ---
@@ -352,7 +352,7 @@ user-service-5ffc8dbcf6   2         1         1       12s
 
 # ロールアウト履歴確認
 $ kubectl -n app-dev rollout history deployment/user-service
-deployment.apps/user-service 
+deployment.apps/user-service
 REVISION  CHANGE-CAUSE
 1         <none>
 2         <none>
@@ -385,12 +385,13 @@ No resources found in app-dev namespace.
 
 このガイドを通して、**Kubernetes Deploymentのローリングアップデート全体プロセス**を完全に体験しました：
 
-* **無停止デプロイ**: サービス中断なくv1 → v2への段階的アップデート
-* **トラフィック分散**: アップデート中に旧バージョンと新バージョンが同時にリクエストを処理する区間を観察
-* **自動化**: 全プロセスをスクリプトで自動化し、再現可能なテスト環境構築
-* **リアルタイムモニタリング**: Pod状態変化とReplicaSet切り替えプロセスをリアルタイムで追跡
+- **無停止デプロイ**: サービス中断なくv1 → v2への段階的アップデート
+- **トラフィック分散**: アップデート中に旧バージョンと新バージョンが同時にリクエストを処理する区間を観察
+- **自動化**: 全プロセスをスクリプトで自動化し、再現可能なテスト環境構築
+- **リアルタイムモニタリング**: Pod状態変化とReplicaSet切り替えプロセスをリアルタイムで追跡
 
 **主要学習ポイント**:
+
 - RollingUpdate戦略のmaxUnavailable/maxSurge設定の効果
 - ReplicaSetによるPodバージョン管理メカニズム
 - NodePortによる外部トラフィックアクセスと負荷分散

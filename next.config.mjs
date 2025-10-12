@@ -12,9 +12,9 @@ const nextConfig = {
       hmrRefreshes: true,
     },
   },
-  // eslint: {
-  //     ignoreDuringBuilds: true,
-  // },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   transpilePackages: ["next-mdx-remote", "react-joyride", "react-floater"],
   images: {
     remotePatterns: [

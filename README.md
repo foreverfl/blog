@@ -48,19 +48,16 @@ flowchart LR
 ## Main Features
 
 - **Frontend**:
-
   - MDX-based content system with rich, customizable components
   - Responsive UI with Tailwind CSS
   - Internationalization (multi-language support: EN/KO/JA)
 
 - **Backend**:
-
   - JWT & OAuth2.0 authentication
   - Secure, scalable REST API endpoints (Next.js API Routes)
   - Real-time features: comments, likes, user profiles
 
 - **Infrastructure**:
-
   - Multi-instance AWS EC2 architecture (API and DB separated)
   - Reverse proxy & SSL handled by Caddy (with auto-renew via Let's Encrypt)
   - Cloudflare CDN & R2 for global delivery and asset storage
