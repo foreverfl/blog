@@ -66,22 +66,30 @@ export async function keywords(date: string): Promise<string> {
       messages: [
         {
           role: "system",
-          content: keywordsPrompt + "\n\nYou must respond with a valid JSON object with this exact structure:\n" + JSON.stringify({
-            whatIsInTheImage: {
-              person: {
-                gender: "female",
-                age: "teenager",
-                emotion: "string or null"
+          content:
+            keywordsPrompt +
+            "\n\nYou must respond with a valid JSON object with this exact structure:\n" +
+            JSON.stringify(
+              {
+                whatIsInTheImage: {
+                  person: {
+                    gender: "female",
+                    age: "teenager",
+                    emotion: "string or null",
+                  },
+                  object: "string or null",
+                  action: "string or null",
+                },
+                background: {
+                  indoorOutdoor: "string or null",
+                  background: "string or null",
+                  timeOfDay: "string or null",
+                },
               },
-              object: "string or null",
-              action: "string or null"
-            },
-            background: {
-              indoorOutdoor: "string or null",
-              background: "string or null",
-              timeOfDay: "string or null"
-            }
-          }, null, 2) + "\n\nIMPORTANT: The 'gender' field MUST always be 'female' and the 'age' field MUST always be 'teenager'. Do not use any other values for these fields.",
+              null,
+              2,
+            ) +
+            "\n\nIMPORTANT: The 'gender' field MUST always be 'female' and the 'age' field MUST always be 'teenager'. Do not use any other values for these fields.",
         },
         { role: "user", content: summary },
       ],
