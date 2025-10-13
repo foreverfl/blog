@@ -117,7 +117,7 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
     <>
       <div className="my-56"></div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10 pb-20 md:pb-0">
+      <div className="grid grid-cols-2 portrait:grid-cols-2 portrait:lg:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10 pb-20 md:pb-0">
         {items.map(({ key, href, date, imageUrl }) => (
           <LinkWithSpinning key={key} href={href}>
             <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">

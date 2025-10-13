@@ -57,7 +57,7 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
             Recent Posts
           </h2>
         )}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
+        <div className="grid grid-cols-2 portrait:grid-cols-2 portrait:lg:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
           {currentPosts.map((post) => (
             <LinkWithSpinning
               key={post.fileName}
