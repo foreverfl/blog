@@ -10,8 +10,21 @@ services:
     container_name: blog-dev
     ports:
       - "3000:3000"
+    env_file:
+      - .env.local
     environment:
       - NODE_ENV=development
+      - ENV_STAGE=dev
+      # Local overrides for database connections
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mogumogu
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://user:password@postgres:5432/mogumogu
+      - SENTRY_ENVIRONMENT=development
     volumes:
       # 소스코드를 마운트하여 hot-reload 지원
       - .:/app

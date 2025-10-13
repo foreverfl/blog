@@ -83,6 +83,8 @@ jobs:
             NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}
             NEXT_PUBLIC_GITHUB_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GITHUB_CLIENT_ID }}
             NEXT_PUBLIC_GITHUB_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GITHUB_REDIRECT_URI }}
+            DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}
+            DISCORD_USER_ID=${{ secrets.DISCORD_USER_ID }}
 
   # EC2에 배포
   deploy:
