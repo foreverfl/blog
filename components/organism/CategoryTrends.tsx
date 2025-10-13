@@ -86,7 +86,9 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
       // 이미지 비동기 체크 및 PostItem 생성
       const promises = pageDates.map(async ({ folder, date }) => {
         const formatted = date.replace(/-/g, "");
-        const url = `${R2_BASE}/hackernews-images/${formatted}.webp`;
+        // Add timestamp parameter for cache busting
+        const timestamp = Date.now();
+        const url = `${R2_BASE}/hackernews-images/${formatted}.webp?t=${timestamp}`;
         const exists = await checkImageExists(url);
         return {
           key: `${folder}-${date}`,

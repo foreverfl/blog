@@ -3,7 +3,6 @@ import { getTodayKST } from "@/lib/date";
 import { logMessage } from "@/lib/logger";
 import dotenv from "dotenv";
 import { OpenAI } from "openai";
-import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
 dotenv.config({ path: "./.env.local" });
@@ -11,8 +10,8 @@ dotenv.config({ path: "./.env.local" });
 const ImageInfoSchema = z.object({
   whatIsInTheImage: z.object({
     person: z.object({
-      gender: z.literal("female"),
-      age: z.literal("teenager"),
+      gender: z.string(),
+      age: z.string(),
       emotion: z.string().nullable(),
     }),
     object: z.string().nullable(),
@@ -67,15 +66,31 @@ export async function keywords(date: string): Promise<string> {
       messages: [
         {
           role: "system",
-          content: keywordsPrompt,
+          content: keywordsPrompt + "\n\nYou must respond with a valid JSON object with this exact structure:\n" + JSON.stringify({
+            whatIsInTheImage: {
+              person: {
+                gender: "female",
+                age: "teenager",
+                emotion: "string or null"
+              },
+              object: "string or null",
+              action: "string or null"
+            },
+            background: {
+              indoorOutdoor: "string or null",
+              background: "string or null",
+              timeOfDay: "string or null"
+            }
+          }, null, 2) + "\n\nIMPORTANT: The 'gender' field MUST always be 'female' and the 'age' field MUST always be 'teenager'. Do not use any other values for these fields.",
         },
         { role: "user", content: summary },
       ],
       temperature: 1.0,
-      response_format: zodResponseFormat(ImageInfoSchema as any, "event"),
+      response_format: { type: "json_object" },
     });
 
     const content = completion.choices[0].message.content;
+    logMessage("OpenAI response: " + content); // Add logging to see actual response
     if (!content) {
       throw new Error("Content is null or undefined");
     }
