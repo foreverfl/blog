@@ -10,12 +10,15 @@ function getLocale(request) {
   try {
     const acceptLanguage = request.headers.get("accept-language") || "";
     const userAgent = request.headers.get("user-agent") || "";
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
 
     // Handle empty or invalid accept-language header
     if (!acceptLanguage || acceptLanguage.trim() === "") {
       // Log when Accept-Language is missing
-      console.warn(`Missing Accept-Language header from IP: ${ip}, UA: ${userAgent}`);
+      console.warn(
+        `Missing Accept-Language header from IP: ${ip}, UA: ${userAgent}`,
+      );
       return defaultLocale;
     }
 
@@ -29,7 +32,9 @@ function getLocale(request) {
 
     // Validate languages array before matching
     if (!languages || languages.length === 0) {
-      console.warn(`Empty languages array from Accept-Language: "${acceptLanguage}", IP: ${ip}`);
+      console.warn(
+        `Empty languages array from Accept-Language: "${acceptLanguage}", IP: ${ip}`,
+      );
       return defaultLocale;
     }
 
@@ -42,7 +47,7 @@ function getLocale(request) {
     if (validLanguages.length === 0) {
       // Log suspicious Accept-Language values
       console.warn(
-        `No valid languages found. Original: ${JSON.stringify(languages)}, Accept-Language: "${acceptLanguage}", IP: ${ip}, UA: ${userAgent}`
+        `No valid languages found. Original: ${JSON.stringify(languages)}, Accept-Language: "${acceptLanguage}", IP: ${ip}, UA: ${userAgent}`,
       );
       return defaultLocale;
     }
@@ -51,13 +56,14 @@ function getLocale(request) {
   } catch (error) {
     const acceptLanguage = request.headers.get("accept-language") || "";
     const userAgent = request.headers.get("user-agent") || "";
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
 
     console.error(
       `Error in getLocale: ${error.message}`,
       `\n  Accept-Language: "${acceptLanguage}"`,
       `\n  IP: ${ip}`,
-      `\n  User-Agent: ${userAgent}`
+      `\n  User-Agent: ${userAgent}`,
     );
     return defaultLocale;
   }

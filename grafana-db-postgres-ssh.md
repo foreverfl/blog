@@ -1,9 +1,11 @@
 # DB 서버 PostgreSQL 모니터링 (SSH 터널 방식)
 
 ## 🎯 목표
+
 Private Subnet의 DB 서버 (PostgreSQL)를 SSH 터널을 통해 WAS 서버로 메트릭 전달하여 Grafana Cloud에서 모니터링
 
 ## 🏗️ 아키텍처
+
 ```
 [Private Subnet]          [Public Subnet]           [Internet]
  DB Server (EC2)    SSH    WAS Server (EC2)   Push   Grafana Cloud
@@ -20,6 +22,7 @@ Private Subnet의 DB 서버 (PostgreSQL)를 SSH 터널을 통해 WAS 서버로 �
 ## 🔧 Step 1: PostgreSQL 설치 및 설정
 
 ### 1.1 PostgreSQL 15 설치 (Ubuntu 22.04 기준)
+
 ```bash
 # PostgreSQL 공식 리포지토리 추가
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -41,6 +44,7 @@ sudo -u postgres psql -c "SELECT version();"
 ```
 
 ### 1.2 모니터링용 PostgreSQL 사용자 생성
+
 ```bash
 # postgres 사용자로 전환
 sudo -u postgres psql
@@ -64,12 +68,14 @@ GRANT SELECT ON ALL SEQUENCES IN SCHEMA pg_catalog TO exporter;
 ```
 
 ### 1.3 PostgreSQL 접속 설정
+
 ```bash
 # pg_hba.conf 편집 (로컬 접속용)
 sudo nano /etc/postgresql/15/main/pg_hba.conf
 ```
 
 다음 라인 추가:
+
 ```conf
 # Monitoring user
 local   all             exporter                                md5
@@ -87,6 +93,7 @@ psql -U exporter -d postgres -h localhost -c "SELECT 1;"
 ## 🔧 Step 2: Node Exporter 설치 (시스템 메트릭)
 
 ### 2.1 Node Exporter 다운로드 및 설치
+
 ```bash
 # 다운로드
 cd /tmp
@@ -106,12 +113,14 @@ node_exporter --version
 ```
 
 ### 2.2 Node Exporter 서비스 설정
+
 ```bash
 # systemd 서비스 생성
 sudo nano /etc/systemd/system/node_exporter.service
 ```
 
 다음 내용 입력:
+
 ```ini
 [Unit]
 Description=Node Exporter
@@ -145,6 +154,7 @@ curl http://localhost:9100/metrics | grep node_
 ## 🔧 Step 3: PostgreSQL Exporter 설치
 
 ### 3.1 PostgreSQL Exporter 다운로드
+
 ```bash
 # 최신 버전 다운로드 (0.15.0)
 cd /tmp
@@ -164,12 +174,14 @@ postgres_exporter --version
 ```
 
 ### 3.2 PostgreSQL Exporter 환경 설정
+
 ```bash
 # 환경 변수 파일 생성
 sudo nano /etc/postgres_exporter.env
 ```
 
 다음 내용 입력:
+
 ```bash
 DATA_SOURCE_NAME="postgresql://exporter:your_secure_password_here@localhost:5432/postgres?sslmode=disable"
 ```
@@ -181,12 +193,14 @@ sudo chown nobody:nogroup /etc/postgres_exporter.env
 ```
 
 ### 3.3 PostgreSQL Exporter 서비스 설정
+
 ```bash
 # systemd 서비스 생성
 sudo nano /etc/systemd/system/postgres_exporter.service
 ```
 
 다음 내용 입력:
+
 ```ini
 [Unit]
 Description=PostgreSQL Exporter
@@ -259,6 +273,7 @@ curl http://localhost:9187/metrics | grep pg_
 ## 🔧 Step 5: SSH 터널 설정
 
 ### 5.1 SSH 키 설정
+
 ```bash
 # DB 서버 접속용 SSH 키가 있는지 확인
 ls ~/.ssh/
@@ -271,12 +286,14 @@ ssh -i ~/.ssh/your-db-key.pem ubuntu@10.0.2.10  # DB 서버 Private IP
 ```
 
 ### 5.2 자동 SSH 터널 스크립트 생성
+
 ```bash
 # 터널 스크립트 생성
 sudo nano /usr/local/bin/db-tunnel.sh
 ```
 
 다음 내용 입력:
+
 ```bash
 #!/bin/bash
 # DB 서버 메트릭 SSH 터널 스크립트
@@ -326,12 +343,14 @@ curl http://localhost:19187/metrics | head -20  # PostgreSQL Exporter
 ```
 
 ### 5.3 Systemd 서비스로 자동화
+
 ```bash
 # systemd 서비스 생성
 sudo nano /etc/systemd/system/db-tunnel.service
 ```
 
 다음 내용 입력:
+
 ```ini
 [Unit]
 Description=DB Metrics SSH Tunnel
@@ -366,35 +385,38 @@ netstat -tlnp | grep -E "19100|19187"
 ## 🔧 Step 6: Grafana Agent 설정 업데이트
 
 ### 6.1 기존 agent.yaml 수정
+
 ```bash
 # Grafana Agent 설정 편집
 sudo nano /etc/grafana-agent/agent.yaml
 ```
 
 scrape_configs 섹션에 추가:
-```yaml
-        # DB 서버 시스템 메트릭 (SSH 터널 경유)
-        - job_name: 'node-db'
-          static_configs:
-            - targets: ['localhost:19100']  # SSH 터널 포트
-              labels:
-                instance: 'db-server-01'
-                environment: 'production'
-                server_type: 'database'
-                tunnel: 'ssh'
 
-        # PostgreSQL 메트릭 (SSH 터널 경유)
-        - job_name: 'postgres'
-          static_configs:
-            - targets: ['localhost:19187']  # SSH 터널 포트
-              labels:
-                instance: 'postgres-01'
-                environment: 'production'
-                db_type: 'postgresql'
-                tunnel: 'ssh'
+```yaml
+# DB 서버 시스템 메트릭 (SSH 터널 경유)
+- job_name: "node-db"
+  static_configs:
+    - targets: ["localhost:19100"] # SSH 터널 포트
+      labels:
+        instance: "db-server-01"
+        environment: "production"
+        server_type: "database"
+        tunnel: "ssh"
+
+# PostgreSQL 메트릭 (SSH 터널 경유)
+- job_name: "postgres"
+  static_configs:
+    - targets: ["localhost:19187"] # SSH 터널 포트
+      labels:
+        instance: "postgres-01"
+        environment: "production"
+        db_type: "postgresql"
+        tunnel: "ssh"
 ```
 
 ### 6.2 Grafana Agent 재시작
+
 ```bash
 # 설정 검증
 grafana-agent --config.file=/etc/grafana-agent/agent.yaml --config.check
@@ -413,6 +435,7 @@ sudo journalctl -u grafana-agent -f
 ## 🔧 Step 7: Grafana Cloud에서 확인
 
 ### 7.1 메트릭 확인
+
 ```bash
 # Grafana Cloud 로그인 후 Explore 메뉴에서:
 
@@ -430,6 +453,7 @@ pg_database_size_bytes{datname="postgres"}
 ```
 
 ### 7.2 대시보드 Import
+
 ```bash
 # 추천 대시보드:
 # - 9628: PostgreSQL Database
@@ -440,6 +464,7 @@ pg_database_size_bytes{datname="postgres"}
 ## 📊 유용한 PostgreSQL 메트릭 쿼리
 
 ### 데이터베이스 메트릭
+
 ```promql
 # 활성 연결 수
 sum(pg_stat_database_numbackends)
@@ -467,6 +492,7 @@ topk(10, rate(pg_stat_statements_total_time_seconds[5m]))
 ```
 
 ### 시스템 메트릭 (DB 서버)
+
 ```promql
 # CPU 사용률
 100 - (avg(rate(node_cpu_seconds_total{job="node-db",mode="idle"}[5m])) * 100)
@@ -484,6 +510,7 @@ rate(node_disk_written_bytes_total{job="node-db"}[5m])
 ## 🔍 트러블슈팅
 
 ### SSH 터널 문제
+
 ```bash
 # 터널 상태 확인
 ps aux | grep ssh | grep -v grep
@@ -499,6 +526,7 @@ sudo journalctl -u db-tunnel -n 50
 ```
 
 ### PostgreSQL Exporter 문제
+
 ```bash
 # PostgreSQL 접속 테스트
 psql -U exporter -d postgres -h localhost -c "SELECT 1;"
@@ -515,6 +543,7 @@ DATA_SOURCE_NAME="postgresql://exporter:password@localhost:5432/postgres?sslmode
 ```
 
 ### 메트릭이 Grafana에 안 보일 때
+
 ```bash
 # 1. 로컬 메트릭 확인
 curl http://localhost:19100/metrics | grep up
@@ -534,6 +563,7 @@ telnet localhost 19187
 ## 💡 최적화 팁
 
 ### 1. SSH 터널 안정성
+
 ```bash
 # autossh 사용 (자동 재연결)
 sudo apt-get install autossh
@@ -544,6 +574,7 @@ autossh -M 20000 -N -L 19100:localhost:9100 \
 ```
 
 ### 2. PostgreSQL 성능 모니터링 강화
+
 ```sql
 -- pg_stat_statements 활성화 (슬로우 쿼리 추적)
 CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
@@ -554,11 +585,12 @@ pg_stat_statements.track = all
 ```
 
 ### 3. 메트릭 수집 최적화
+
 ```yaml
 # agent.yaml에서 불필요한 메트릭 필터링
 metric_relabel_configs:
   - source_labels: [__name__]
-    regex: 'go_.*|promhttp_.*'
+    regex: "go_.*|promhttp_.*"
     action: drop
 ```
 
@@ -570,6 +602,7 @@ metric_relabel_configs:
 4. **Replication 모니터링**: Primary-Standby 구성시 지연 추적
 
 ## 📚 참고 자료
+
 - [PostgreSQL Exporter](https://github.com/prometheus-community/postgres_exporter)
 - [PostgreSQL Monitoring Best Practices](https://www.postgresql.org/docs/current/monitoring.html)
 - [SSH Tunneling Guide](https://www.ssh.com/academy/ssh/tunneling)

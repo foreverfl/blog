@@ -1,11 +1,13 @@
 # WAS 서버 Prometheus + Grafana Cloud 설정 가이드
 
 ## 🎯 목표
+
 Public Subnet의 WAS 서버에서 Prometheus 메트릭을 수집하고 Grafana Cloud로 전송
 
 ## 📋 사전 준비사항
 
 ### 1. Grafana Cloud 무료 계정 생성
+
 ```bash
 # 1. https://grafana.com 접속
 # 2. "Get started for free" 클릭
@@ -14,6 +16,7 @@ Public Subnet의 WAS 서버에서 Prometheus 메트릭을 수집하고 Grafana C
 ```
 
 ### 2. Grafana Cloud 접속 정보 확인
+
 ```bash
 # Prometheus 섹션에서 "Details" 클릭하여 확인:
 # - Remote Write Endpoint: https://prometheus-xxx.grafana.net/api/prom/push
@@ -54,6 +57,7 @@ sudo nano /etc/systemd/system/node_exporter.service
 ```
 
 다음 내용 입력:
+
 ```ini
 [Unit]
 Description=Node Exporter
@@ -76,6 +80,7 @@ WantedBy=multi-user.target
 ```
 
 ### 1.3 Node Exporter 시작
+
 ```bash
 # 서비스 리로드
 sudo systemctl daemon-reload
@@ -96,6 +101,7 @@ curl http://localhost:9100/metrics | head -20
 ## 🔧 Step 2: Grafana Agent 설치 (메트릭 전송용)
 
 ### 2.1 Grafana Agent 다운로드
+
 ```bash
 # 아키텍처 확인
 uname -m  # x86_64 또는 aarch64
@@ -123,6 +129,7 @@ grafana-agent --version
 ```
 
 ### 2.2 Grafana Agent 설정 디렉토리 생성
+
 ```bash
 # 설정 디렉토리
 sudo mkdir -p /etc/grafana-agent
@@ -132,12 +139,14 @@ sudo mkdir -p /var/lib/grafana-agent
 ```
 
 ### 2.3 Grafana Agent 설정 파일 작성
+
 ```bash
 # 설정 파일 생성
 sudo nano /etc/grafana-agent/agent.yaml
 ```
 
 다음 내용 입력 (값 치환 필요):
+
 ```yaml
 server:
   log_level: info
@@ -172,12 +181,14 @@ integrations:
 ```
 
 ### 2.4 Grafana Agent 서비스 설정
+
 ```bash
 # systemd 서비스 파일 생성
 sudo nano /etc/systemd/system/grafana-agent.service
 ```
 
 다음 내용 입력:
+
 ```ini
 [Unit]
 Description=Grafana Agent
@@ -199,6 +210,7 @@ WantedBy=multi-user.target
 ```
 
 ### 2.5 Grafana Agent 시작
+
 ```bash
 # 서비스 리로드
 sudo systemctl daemon-reload
@@ -219,6 +231,7 @@ sudo journalctl -u grafana-agent -f
 ## 🔧 Step 3: 애플리케이션 메트릭 추가 (선택사항)
 
 ### 3.1 Docker 컨테이너 메트릭 (Docker 사용시)
+
 ```bash
 # cAdvisor 실행 (Docker 메트릭 수집)
 docker run \
@@ -235,23 +248,26 @@ docker run \
 ```
 
 agent.yaml에 추가:
+
 ```yaml
-        # Docker 메트릭
-        - job_name: 'cadvisor'
-          static_configs:
-            - targets: ['localhost:8080']
-              labels:
-                instance: 'was-server-01'
-                service: 'docker'
+# Docker 메트릭
+- job_name: "cadvisor"
+  static_configs:
+    - targets: ["localhost:8080"]
+      labels:
+        instance: "was-server-01"
+        service: "docker"
 ```
 
 ### 3.2 Nginx 메트릭 (Nginx 사용시)
+
 ```bash
 # Nginx status 모듈 활성화
 sudo nano /etc/nginx/sites-available/default
 ```
 
 server 블록에 추가:
+
 ```nginx
 location /nginx_status {
     stub_status on;
@@ -276,6 +292,7 @@ sudo mv nginx-prometheus-exporter /usr/local/bin/
 ## 🔧 Step 4: Grafana Cloud에서 확인
 
 ### 4.1 메트릭 확인
+
 ```bash
 # 1. Grafana Cloud 로그인
 # 2. Explore 메뉴 클릭
@@ -285,6 +302,7 @@ sudo mv nginx-prometheus-exporter /usr/local/bin/
 ```
 
 ### 4.2 대시보드 Import
+
 ```bash
 # 1. Dashboards → Browse 클릭
 # 2. New → Import 클릭
@@ -299,6 +317,7 @@ sudo mv nginx-prometheus-exporter /usr/local/bin/
 ## 📊 유용한 PromQL 쿼리
 
 ### 시스템 메트릭
+
 ```promql
 # CPU 사용률
 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
@@ -322,6 +341,7 @@ node_load1
 ## 🔍 트러블슈팅
 
 ### 메트릭이 Grafana Cloud에 안 보일 때
+
 ```bash
 # 1. Node Exporter 확인
 curl http://localhost:9100/metrics | grep -i "node_"
@@ -343,6 +363,7 @@ sudo systemctl restart node_exporter
 ```
 
 ### 포트 확인
+
 ```bash
 # 열린 포트 확인
 sudo netstat -tlnp | grep -E "9100|12345"
@@ -363,6 +384,7 @@ sudo ufw status
 4. **Alert**: Grafana에서 Alert rule 설정 가능 (무료 50개)
 
 ## 📚 참고 문서
+
 - [Grafana Agent Documentation](https://grafana.com/docs/agent/latest/)
 - [Node Exporter Documentation](https://github.com/prometheus/node_exporter)
 - [PromQL Basics](https://prometheus.io/docs/prometheus/latest/querying/basics/)
