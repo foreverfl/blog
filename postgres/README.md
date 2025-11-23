@@ -31,6 +31,7 @@ docker-compose -f docker-compose.dev.yml up -d postgres
 ```
 
 **Features:**
+
 - SQL files in `postgres/init/` folder auto-execute **on first run only**
 - Executes in alphabetical order (01 → 02 → 03...)
 - Can re-initialize anytime by deleting volumes
@@ -52,6 +53,7 @@ DATABASE_URL="postgresql://user:password@localhost:5433/mogumogu" npm run migrat
 ```
 
 **Features:**
+
 - Sequentially executes SQL files in `postgres/migrations/` folder
 - Automatically records execution history in `pgmigrations` table
 - Manages change history with Git
@@ -62,12 +64,14 @@ DATABASE_URL="postgresql://user:password@localhost:5433/mogumogu" npm run migrat
 ### 1. Creating New Migrations
 
 **Method A: Auto-generate (automatic numbering)**
+
 ```bash
 npm run migrate:create add-user-role
 # ❌ Issue: Creates .js file in root folder (configuration bug)
 ```
 
 **Method B: Manual creation (Recommended)**
+
 ```bash
 # Create postgres/migrations/003_add-user-role.sql
 ```
@@ -101,6 +105,7 @@ COMMIT;
 ```
 
 **File Naming Convention:**
+
 - `{number}_{description}.sql` (e.g., `003_add-user-role.sql`)
 - Numbers are 3-digit sequential increments
 - Use kebab-case for descriptions
@@ -122,6 +127,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mogumogu" npm run migrat
 ```
 
 **Example output:**
+
 ```
 ┌─────────────────────────┬─────────┐
 │ Migration               │ Status  │
@@ -139,6 +145,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mogumogu" npm run migrat
 ```
 
 **Important:**
+
 - Rollback only undoes the last migration
 - Manual reversal required if SQL file lacks rollback logic
 - Backup is essential in production!
@@ -148,6 +155,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mogumogu" npm run migrat
 ### Scenario 1: Adding a New Column
 
 **Step 1: Local Development**
+
 ```bash
 # Modify init/01-schema.sql (add column to table)
 vim postgres/init/01-schema.sql
@@ -158,12 +166,14 @@ docker-compose -f docker-compose.dev.yml up -d postgres
 ```
 
 **Step 2: Write Migration File**
+
 ```bash
 # Create postgres/migrations/003_add-user-role.sql
 vim postgres/migrations/003_add-user-role.sql
 ```
 
 **Step 3: Test Migration Locally**
+
 ```bash
 # Run migration
 DATABASE_URL="postgresql://user:password@localhost:5432/mogumogu" npm run migrate:up
@@ -173,12 +183,14 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mogumogu" npm run migrat
 ```
 
 **Step 4: Git Commit**
+
 ```bash
 git add postgres/
 git commit -m "feat: add user role column"
 ```
 
 **Step 5: Production Deployment**
+
 ```bash
 # Connect SSH Tunnel
 ssh -L 5433:localhost:5432 production-server
@@ -232,6 +244,7 @@ git commit -m "revert: remove user role column"
 ```
 
 **Benefits:**
+
 - Full change history preserved in Git
 - Clear audit trail of what changed and when
 - Can rollback the rollback if needed
@@ -263,6 +276,7 @@ rm postgres/migrations/003_add-user-role.sql  # Only for test files!
 ```
 
 **Warnings:**
+
 - ⚠️ Don't use in production (no audit trail)
 - ⚠️ Never delete migration files that were run in production
 - ⚠️ Make sure to update both DB and migration tracking table
@@ -270,31 +284,37 @@ rm postgres/migrations/003_add-user-role.sql  # Only for test files!
 ## 🔍 Useful Commands
 
 ### Connect to PostgreSQL Container
+
 ```bash
 docker exec -it postgres psql -U user -d mogumogu
 ```
 
 ### List Tables
+
 ```sql
 \dt public.*
 ```
 
 ### Show Table Schema
+
 ```sql
 \d public.users
 ```
 
 ### List Indexes
+
 ```sql
 \di public.*
 ```
 
 ### Check Migration History
+
 ```sql
 SELECT * FROM pgmigrations ORDER BY id;
 ```
 
 ### Manually Execute SQL File
+
 ```bash
 # Development environment
 psql -h localhost -p 5432 -U user -d mogumogu < postgres/migrations/003_add-user-role.sql
@@ -306,11 +326,13 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
 ## ⚠️ Important Notes
 
 ### Development Environment
+
 - ✅ `init/` folder auto-executes **on first run only**
 - ✅ Re-initialize by **deleting volumes** after schema changes
 - ✅ Use `IF NOT EXISTS` in all SQL statements (ensures idempotency)
 
 ### Production Environment
+
 - ⚠️ **NEVER** directly execute `init/` folder scripts in production
 - ⚠️ **Always backup** before running migrations
 - ⚠️ Use `BEGIN`/`COMMIT` transactions for rollback capability
@@ -318,6 +340,7 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
 - ⚠️ SSH Tunnel is for accessing VPC-internal DB (security essential)
 
 ### node-pg-migrate Limitations
+
 - ⚠️ Auto-generation (`migrate:create`) doesn't work properly → **Manual creation recommended**
 - ⚠️ Rollback only works for last migration
 - ⚠️ `.node-pg-migraterc` has configuration bugs (workaround: manual file creation)
@@ -325,6 +348,7 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
 ## 🎯 Best Practices
 
 1. **Ensure Idempotency**
+
    ```sql
    -- ✅ Good example
    ALTER TABLE users ADD COLUMN IF NOT EXISTS role varchar(32);
@@ -335,6 +359,7 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
    ```
 
 2. **Use Transactions**
+
    ```sql
    BEGIN;
    -- All change operations
@@ -342,6 +367,7 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
    ```
 
 3. **Include Verification Logic**
+
    ```sql
    DO $$
    BEGIN
@@ -353,6 +379,7 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
    ```
 
 4. **Comment Rollback Instructions**
+
    ```sql
    -- ROLLBACK INSTRUCTIONS:
    -- ALTER TABLE users DROP COLUMN role;
@@ -373,26 +400,34 @@ psql -h localhost -p 5433 -U user -d mogumogu < postgres/migrations/003_add-user
 ## 📝 Troubleshooting
 
 ### Q: `npm run migrate:create` creates files in root folder
+
 **A:** This is a `.node-pg-migraterc` configuration bug. Manually create files in `postgres/migrations/`.
 
 ### Q: Migrations aren't running
+
 **A:** Check if DATABASE_URL environment variable is properly set:
+
 ```bash
 DATABASE_URL="postgresql://user:password@localhost:5432/mogumogu" npm run migrate:up
 ```
 
 ### Q: Development and production schemas differ
+
 **A:**
+
 1. Update `init/` folder to latest state
 2. Record all migrations in `migrations/`
 3. Run same migration files in both environments
 
 ### Q: Rollback isn't working
+
 **A:** node-pg-migrate cannot auto-rollback SQL files without explicit down logic.
 Manually write rollback SQL or restore from backup.
 
 ### Q: SSH Tunnel port conflict
+
 **A:** Use a different port for tunneling:
+
 ```bash
 ssh -L 5434:localhost:5432 production-server
 DATABASE_URL="postgresql://user:password@localhost:5434/mogumogu" npm run migrate:up
