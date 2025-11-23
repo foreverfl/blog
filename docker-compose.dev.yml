@@ -15,18 +15,11 @@ services:
     environment:
       - NODE_ENV=development
       - ENV_STAGE=dev
-      # Local overrides for database connections
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=mogumogu
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - DATABASE_URL=postgresql://user:password@postgres:5432/mogumogu
-      - SENTRY_ENVIRONMENT=development
+    dns:
+      # Google Public DNS for Mac OS DNS resolution issues
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
-      # 소스코드를 마운트하여 hot-reload 지원
       - .:/app
       - /app/node_modules
       - /app/.next
