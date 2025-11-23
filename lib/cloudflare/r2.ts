@@ -111,6 +111,7 @@ export async function putToR2({ bucket, key }: R2Params, data: any) {
         "Content-Type": contentType,
       },
       body,
+      signal: AbortSignal.timeout(30000), // 30 second timeout for Docker networking
     });
     if (!res.ok) throw new Error(`❌ Failed to PUT to R2: ${res.statusText}`);
   });
@@ -121,7 +122,9 @@ export async function getFromR2({ bucket, key }: R2Params) {
   const url = `${R2_BASE}/${bucket}/${key}?t=${now}`;
 
   return retry(async () => {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(30000), // 30 second timeout for Docker networking
+    });
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`❌ Failed to GET from R2: ${res.statusText}`);
     return res.json();
@@ -134,6 +137,7 @@ export async function deleteFromR2({ bucket, key }: R2Params) {
   await retry(async () => {
     const res = await fetch(url, {
       method: "DELETE",
+      signal: AbortSignal.timeout(30000), // 30 second timeout for Docker networking
     });
     if (!res.ok)
       throw new Error(`❌ Failed to DELETE from R2: ${res.statusText}`);
@@ -145,7 +149,9 @@ export async function listFromR2(bucket: string): Promise<ListR2Result | null> {
   const url = `${R2_BASE}/${bucket}?t=${now}`;
 
   return retry(async () => {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(30000), // 30 second timeout for Docker networking
+    });
     if (res.status === 404) return null;
     if (!res.ok)
       throw new Error(`❌ Failed to LIST from R2: ${res.statusText}`);
