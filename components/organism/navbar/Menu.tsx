@@ -22,6 +22,7 @@ interface Category {
   name_en: string;
   name_ja: string;
   name_ko: string;
+  emoji: string;
   link: string;
 }
 
@@ -29,6 +30,7 @@ interface Classification {
   name_en: string;
   name_ja: string;
   name_ko: string;
+  emoji: string;
   link: string;
   categories: Category[];
 }
@@ -209,25 +211,6 @@ const Menu: React.FC<MenuProps> = ({
                 </li>
               </a>
 
-              {/* 문서 */}
-              <a
-                href="https://docs.mogumogu.dev/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2"
-              >
-                <li className="flex items-center">
-                  <Image
-                    src={"/images/icons8-document-white.svg"}
-                    alt={"docs"}
-                    width={15}
-                    height={15}
-                    className="flex-shrink-0"
-                  />
-                  <span className="ml-3 text-black">docs</span>
-                </li>
-              </a>
-
               {/* github */}
               <a
                 href="https://github.com/foreverfl"
@@ -268,22 +251,6 @@ const Menu: React.FC<MenuProps> = ({
               </a>
             </div>
 
-            {/* Custom Menu */}
-            <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
-              {/* Anime */}
-              <Link
-                href={`/${lan}/anime`}
-                scroll={false}
-                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md hover:rounded-t-md rounded-b-md hover:rounded-b-md space-x-2"
-                onClick={toggleMenu}
-              >
-                <li className="flex items-center">
-                  <Display size={16} color="black" />
-                  <span className="ml-3 text-black">Anime</span>
-                </li>
-              </Link>
-            </div>
-
             {/* Menu */}
             <div className="space-y-4">
               {classifications.map((classification) => (
@@ -295,11 +262,14 @@ const Menu: React.FC<MenuProps> = ({
                     className="px-8 py-4 rounded-t-md rounded-b-md hover:rounded-b-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center"
                     onClick={() => handleToggle(classification.link)}
                   >
-                    {(() => {
-                      if (lan === "en") return classification.name_en;
-                      if (lan === "ja") return classification.name_ja;
-                      return classification.name_ko;
-                    })()}
+                    <span>
+                      <span className="mr-3">{classification.emoji}</span>
+                      {(() => {
+                        if (lan === "en") return classification.name_en;
+                        if (lan === "ja") return classification.name_ja;
+                        return classification.name_ko;
+                      })()}
+                    </span>
                     {/* 조건부 아이콘 렌더링 */}
                     {toggleStates[classification.link] ? (
                       <svg
@@ -334,7 +304,7 @@ const Menu: React.FC<MenuProps> = ({
                     )}
                   </div>
 
-                  {/* 조건부 카테고리 목록 렌더링 */}
+                  {/* Category through `category.json` */}
                   <div
                     className={`overflow-hidden transition-all duration-1000 ${
                       toggleStates[classification.link]
@@ -350,9 +320,10 @@ const Menu: React.FC<MenuProps> = ({
                       >
                         <div
                           className={`px-8 py-4 hover:bg-gray-200 text-black hover:rounded-b-md`}
-                          onClick={(e) => e.stopPropagation()} // 이벤트 버블링 방지
+                          onClick={(e) => e.stopPropagation()} // prevent parent toggle
                         >
-                          {/* 카테고리 이름 표시 */}
+                          {/* Display category name */}
+                          <span className="mr-2">{category.emoji}</span>
                           {(() => {
                             if (lan === "ja") return category.name_ja;
                             if (lan === "en") return category.name_en;
@@ -366,7 +337,7 @@ const Menu: React.FC<MenuProps> = ({
               ))}
             </div>
 
-            {/* 메뉴 템플릿*/}
+            {/* Menu Template */}
             {/* <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer">
               <li className="px-8 py-4 rounded-t-md hover:bg-gray-20 text-black">
                 menu 1-1

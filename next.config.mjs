@@ -37,8 +37,15 @@ const nextConfig = {
     ],
   },
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  webpack: (config) => {
-    return config; // Alias 설정 추가
+  webpack: (config, { isServer }) => {
+    // Docker 환경에서 파일 변경 감지를 위한 polling 설정
+    if (!isServer) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+    return config;
   },
 };
 
