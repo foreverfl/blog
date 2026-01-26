@@ -69,7 +69,7 @@ function getLocale(request) {
   }
 }
 
-export function middleware(request) {
+export function proxy(request) {
   try {
     // logging
     logRequest(request);

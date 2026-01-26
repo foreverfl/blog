@@ -12,9 +12,6 @@ const nextConfig = {
       hmrRefreshes: true,
     },
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   transpilePackages: ["next-mdx-remote", "react-joyride", "react-floater"],
   images: {
     remotePatterns: [
@@ -74,8 +71,10 @@ const sentryWebpackPluginOptions = {
   tunnelRoute: "/monitoring",
   // Hides source maps from generated client bundles
   hideSourceMaps: true,
-  // Disables org/project/auth token validation during build
-  disableLogger: true,
+  // Disable debug logging via tree shaking
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+  },
 };
 
 // Wrap MDX config with Sentry config
