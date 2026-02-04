@@ -42,7 +42,7 @@
     "framer-motion": "^12.31.0",
     "fuse.js": "^7.1.0",
     "github-markdown-css": "^5.9.0",
-    "googleapis": "^171.1.0",
+    "googleapis": "^171.2.0",
     "graphql-request": "^7.4.0",
     "highlight.js": "^11.11.1",
     "i18next": "^25.8.1",
