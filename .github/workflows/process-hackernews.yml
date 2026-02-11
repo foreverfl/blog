@@ -2,7 +2,7 @@ name: Process HackerNews
 
 on:
   schedule:
-    - cron: "00 16 * * *" # KST (UTC+9) 01:00
+    - cron: "00 19 * * *" # KST (UTC+9) 04:00
   workflow_dispatch:
 
 jobs:
