@@ -1,15 +1,13 @@
-version: "3.8"
-
 services:
   app:
-    # GHCR에서 이미지 pull
+    # pull the production image from GitHub Container Registry
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/blog:${IMAGE_TAG:-latest}
     container_name: blog
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      # AWS 관련 환경변수는 .env.prod 파일 또는 시스템 환경변수로 관리
+      # AWS related environment variables are managed in the .env.prod file or system environment variables
     env_file:
       - .env.prod
     restart: unless-stopped
