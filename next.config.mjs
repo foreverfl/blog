@@ -10,7 +10,7 @@ const nextConfig = {
       hmrRefreshes: true,
     },
   },
-  transpilePackages: ["next-mdx-remote", "react-joyride", "react-floater"],
+  transpilePackages: ["next-mdx-remote"],
   images: {
     remotePatterns: [
       {

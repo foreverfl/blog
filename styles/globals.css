@@ -224,8 +224,3 @@ code[data-line-numbers-max-digits="4"] > [data-line]::before {
 .privacy-policy a {
   @apply text-blue-500 hover:underline;
 }
-
-/* BlogTourTooltip */
-.__floater__arrow {
-  display: none !important;
-}

@@ -1,6 +1,5 @@
 import Footer from "@/components/organism/Footer";
 import Navbar from "@/components/organism/navbar/Navbar";
-import BlogTourWrapper from "@/components/tour/BlogTourWrapper";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -31,7 +30,6 @@ export default function RootLayout({
       <Navbar />
       <main>{children}</main>
       <Footer />
-      <BlogTourWrapper />
     </ThemeProvider>
   );
 }
