@@ -2,8 +2,6 @@
 
 import { withSentryConfig } from "@sentry/nextjs";
 import createMDX from "@next/mdx";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
 
 const nextConfig = {
   logging: {
@@ -49,8 +47,8 @@ const nextConfig = {
 const withMDX = createMDX({
   extension: /\.mdx?$/, // MDX 확장자를 정규식으로 지정
   options: {
-    remarkPlugins: [remarkGfm],
-    rehypePlugins: [rehypeSlug],
+    remarkPlugins: ["remark-gfm"],
+    rehypePlugins: ["rehype-slug"],
   },
 });
 
