@@ -205,7 +205,6 @@ const Menu: React.FC<MenuProps> = ({
                     width={15}
                     height={15}
                     className="flex-shrink-0"
-                    style={{ width: "auto", height: "auto" }}
                   />
                   <span className="ml-3 text-black">portfolio</span>
                 </li>
