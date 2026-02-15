@@ -2,9 +2,26 @@
 // This file is automatically loaded by Next.js when the app starts
 import * as Sentry from "@sentry/nextjs";
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __didSyncPostsOnStartup: boolean | undefined;
+}
+
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     await import("./sentry.server.config");
+
+    if (
+      process.env.NODE_ENV === "development" &&
+      !globalThis.__didSyncPostsOnStartup
+    ) {
+      globalThis.__didSyncPostsOnStartup = true;
+
+      const { syncAllPosts } = await import("@/lib/postgres/sync-posts");
+      syncAllPosts().catch((e) =>
+        console.error("[sync-posts] Failed to sync posts on startup:", e),
+      );
+    }
   }
 
   if (process.env.NEXT_RUNTIME === "edge") {
