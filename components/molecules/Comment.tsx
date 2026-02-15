@@ -1,6 +1,6 @@
 "use client";
 
-import { redirectToLoginWithReturnUrl } from "@/lib/auth";
+import { useLoginModal } from "@/lib/context/login-modal-context";
 import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
 import Image from "next/image";
@@ -20,6 +20,8 @@ interface Comment {
 }
 
 const Comment = ({}) => {
+  const { openLoginModal } = useLoginModal();
+
   // i18n
   const { t, i18n } = useTranslation();
 
@@ -187,7 +189,7 @@ const Comment = ({}) => {
 
   const handleAddComment = async () => {
     if (!user) {
-      redirectToLoginWithReturnUrl();
+      openLoginModal();
       return;
     }
 
@@ -299,7 +301,7 @@ const Comment = ({}) => {
 
   const handleFocus = () => {
     if (!user) {
-      redirectToLoginWithReturnUrl();
+      openLoginModal();
     }
   };
 
@@ -492,7 +494,7 @@ const Comment = ({}) => {
             <div className="w-7 h-7 flex justify-center items-center"></div>
           </button>
           <div className="flex flex-col w-full">
-            <div className="relative bg-gray-200 dark:bg-neutral-700 rounded-lg p-3 mx-3 flex-grow">
+            <div className="relative bg-gray-200 dark:bg-neutral-700 rounded-lg p-3 mx-3 grow">
               <textarea
                 className="w-full h-full bg-gray-200 dark:bg-neutral-700 rounded-md text-lg dark:text-white leading-relaxed mb-14 p-2 resize-none"
                 rows={4}

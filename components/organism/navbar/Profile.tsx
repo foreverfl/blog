@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { redirectToLoginWithReturnUrl } from "@/lib/auth";
+import { useLoginModal } from "@/lib/context/login-modal-context";
 
 interface ProfileProps {
   isProfileOpen: boolean;
@@ -25,6 +25,7 @@ const Profile: React.FC<ProfileProps> = ({
   const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
   const [userData, setUserData] = useState<any>(null); // 사용자 데이터
+  const { openLoginModal } = useLoginModal();
 
   // authStatus 체크
   useEffect(() => {
@@ -99,7 +100,7 @@ const Profile: React.FC<ProfileProps> = ({
 
           {/* 프로필 창 */}
           <div
-            className={`h-screen overflow-y-auto fixed inset-0 flex justify-end bg-gradient-to-l from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
+            className={`h-screen overflow-y-auto fixed inset-0 flex justify-end bg-linear-to-l from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
               isProfileOpen ? "opacity-100" : "opacity-0"
             } ${isProfileOpen ? "pointer-events-auto" : "pointer-events-none"}`}
           >
@@ -187,7 +188,7 @@ const Profile: React.FC<ProfileProps> = ({
         <button
           id="profile-button"
           className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black p-2 overflow-hidden"
-          onClick={redirectToLoginWithReturnUrl}
+          onClick={openLoginModal}
         >
           <svg
             className="h-6 w-6 dark:fill-current dark:text-white"

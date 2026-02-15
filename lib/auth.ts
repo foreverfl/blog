@@ -22,11 +22,3 @@ export function checkBearerAuth(req: Request, envKey: string) {
   return true;
 }
 
-export function redirectToLoginWithReturnUrl() {
-  if (typeof window === "undefined") return;
-  document.cookie =
-    "preLoginUrl=" +
-    encodeURIComponent(window.location.href) +
-    "; path=/; max-age=600";
-  window.location.href = "/login";
-}

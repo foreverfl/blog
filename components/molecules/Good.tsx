@@ -1,6 +1,6 @@
 "use client";
 
-import { redirectToLoginWithReturnUrl } from "@/lib/auth";
+import { useLoginModal } from "@/lib/context/login-modal-context";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const Good = () => {
+  const { openLoginModal } = useLoginModal();
+
   // path
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -110,7 +112,7 @@ const Good = () => {
 
   const handleClick = () => {
     if (!userEmail) {
-      redirectToLoginWithReturnUrl();
+      openLoginModal();
       return;
     }
 
