@@ -1,12 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Modal from "react-modal";
 import LoginButton, { providers } from "@/components/organism/Login";
 import { useLoginModal } from "@/lib/context/login-modal-context";
+import { usePathname } from "next/navigation";
+import "@/lib/i18n";
+import { useTranslation } from "react-i18next";
 
 const LoginModal: React.FC = () => {
   const { isOpen, closeLoginModal } = useLoginModal();
+  const { t, i18n } = useTranslation();
+  const pathname = usePathname();
+  const lan = pathname.split("/")[1];
+
+  useEffect(() => {
+    if (["en", "ja", "ko"].includes(lan)) {
+      i18n.changeLanguage(lan);
+    }
+  }, [lan, i18n]);
 
   return (
     <Modal
@@ -42,7 +54,7 @@ const LoginModal: React.FC = () => {
             ✕
           </button>
         </div>
-        <h2 className="text-2xl font-bold mb-8 text-center">Sign In</h2>
+        <h2 className="text-2xl font-bold mb-8 text-center">{t("login_title")}</h2>
         <div className="flex flex-col space-y-4">
           {providers.map((p) => (
             <LoginButton key={p.id} provider={p} />

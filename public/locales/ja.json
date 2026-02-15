@@ -27,5 +27,8 @@
   "tour_language": "ここで言語を選択できます。",
   "tour_theme": "ここでテーマを変更できます。",
   "tour_profile": "これはログインボタンです。コメントを書いたり「いいね」するにはログインが必要です。",
-  "tour_scroll": "スクロールしてブログ記事を読んでください。"
+  "tour_scroll": "スクロールしてブログ記事を読んでください。",
+
+  "login_title": "ログイン",
+  "login_continue": "{{provider}}で続行"
 }
