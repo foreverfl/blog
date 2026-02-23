@@ -24,7 +24,7 @@ export const providers: ProviderConfig[] = [
     id: "github",
     clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
     redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI!,
+      process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI ?? "",
     ),
     authUrl: "https://github.com/login/oauth/authorize?",
     imageUrl: "/logo/GitHub_Invertocat_White.svg",
@@ -36,7 +36,7 @@ export const providers: ProviderConfig[] = [
     id: "apple",
     clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
     redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_APPLE_REDIRECT_URI!,
+      process.env.NEXT_PUBLIC_APPLE_REDIRECT_URI ?? "",
     ),
     authUrl:
       "https://appleid.apple.com/auth/authorize?response_type=code&scope=name%20email&",
@@ -49,7 +49,7 @@ export const providers: ProviderConfig[] = [
     id: "google",
     clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
+      process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ?? "",
     ),
     authUrl:
       "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&scope=openid%20email%20profile&",
@@ -62,7 +62,9 @@ export const providers: ProviderConfig[] = [
   {
     id: "line",
     clientId: process.env.NEXT_PUBLIC_LINE_CLIENT_ID,
-    redirectUri: encodeURIComponent(process.env.NEXT_PUBLIC_LINE_REDIRECT_URI!),
+    redirectUri: encodeURIComponent(
+      process.env.NEXT_PUBLIC_LINE_REDIRECT_URI ?? "",
+    ),
     authUrl:
       "https://access.line.me/oauth2/v2.1/authorize?response_type=code&scope=profile%20openid%20email&state=login&",
     imageUrl: "/logo/LINE_logo.svg",
@@ -74,7 +76,7 @@ export const providers: ProviderConfig[] = [
     id: "kakao",
     clientId: process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID,
     redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!,
+      process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ?? "",
     ),
     authUrl: "https://kauth.kakao.com/oauth/authorize?response_type=code&",
     imageUrl: "/logo/KakaoTalk_logo.svg",
@@ -92,6 +94,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   const { t, i18n } = useTranslation();
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
+  const isDisabled = !provider.clientId || !provider.redirectUri;
 
   useEffect(() => {
     if (["en", "ja", "ko"].includes(lan)) {
@@ -104,7 +107,8 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   return (
     <button
       onClick={() => (window.location.href = loginUrl)}
-      className={`flex items-center justify-center gap-2.5 py-3 px-3 rounded-lg w-full min-w-50 border text-sm font-medium ${provider.className} transition-colors duration-300`}
+      disabled={isDisabled}
+      className={`flex items-center justify-center gap-2.5 py-3 px-3 rounded-lg w-full min-w-50 border text-sm font-medium ${provider.className} transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none`}
     >
       <Image
         src={provider.imageUrl}
