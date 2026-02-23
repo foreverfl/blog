@@ -24,7 +24,7 @@
     "@next/mdx": "^16.1.6",
     "@next/third-parties": "^16.1.6",
     "@sentry/nextjs": "^10.39.0",
-    "@tailwindcss/postcss": "^4.2.0",
+    "@tailwindcss/postcss": "^4.2.1",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@types/cookie": "^1.0.0",
@@ -86,7 +86,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/jsdom": "^27.0.0",
+    "@types/jsdom": "^28.0.0",
     "@types/long": "^5.0.0",
     "@types/mdast": "^4.0.4",
     "@types/node": "^25",
