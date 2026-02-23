@@ -62,9 +62,7 @@ export const providers: ProviderConfig[] = [
   {
     id: "line",
     clientId: process.env.NEXT_PUBLIC_LINE_CLIENT_ID,
-    redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_LINE_REDIRECT_URI!,
-    ),
+    redirectUri: encodeURIComponent(process.env.NEXT_PUBLIC_LINE_REDIRECT_URI!),
     authUrl:
       "https://access.line.me/oauth2/v2.1/authorize?response_type=code&scope=profile%20openid%20email&state=login&",
     imageUrl: "/logo/LINE_logo.svg",

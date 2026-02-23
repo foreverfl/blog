@@ -21,4 +21,3 @@ export function checkBearerAuth(req: Request, envKey: string) {
 
   return true;
 }
-
