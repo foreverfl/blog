@@ -90,5 +90,21 @@
         "link": "anime-reviews"
       }
     ]
+  },
+  {
+    "name_ko": "실험실",
+    "name_ja": "実験室",
+    "name_en": "Playground",
+    "emoji": "🧪",
+    "link": "playground",
+    "categories": [
+      {
+        "name_ko": "오디오 랩",
+        "name_ja": "オーディオラボ",
+        "name_en": "Audio Lab",
+        "emoji": "🎵",
+        "link": "audio-lab"
+      }
+    ]
   }
 ]

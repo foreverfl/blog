@@ -30,5 +30,15 @@
   "tour_scroll": "スクロールしてブログ記事を読んでください。",
 
   "login_title": "ログイン",
-  "login_continue": "{{provider}}で続行"
+  "login_continue": "{{provider}}で続行",
+
+  "audio_lab_title": "オーディオラボ",
+  "audio_lab_description": "マイクから音声を録音し、周波数をリアルタイムで可視化します。",
+  "audio_lab_privacy": "すべてのデータはブラウザに保存され、ページを離れると削除されます。",
+  "audio_lab_record": "録音",
+  "audio_lab_stop": "停止",
+  "audio_lab_new_recording": "新しい録音",
+  "audio_lab_error_mic_denied": "マイクへのアクセスが拒否されました。マイクへのアクセスを許可してください。",
+  "audio_lab_error_start_failed": "録音の開始に失敗しました。",
+  "audio_lab_playback": "再生"
 }

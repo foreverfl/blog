@@ -30,5 +30,15 @@
   "tour_scroll": "Scroll down to read blog posts.",
 
   "login_title": "Sign In",
-  "login_continue": "Continue with {{provider}}"
+  "login_continue": "Continue with {{provider}}",
+
+  "audio_lab_title": "Audio Lab",
+  "audio_lab_description": "Record audio from your microphone and visualize frequencies in real time.",
+  "audio_lab_privacy": "All data stays in your browser and is discarded when you leave.",
+  "audio_lab_record": "Record",
+  "audio_lab_stop": "Stop",
+  "audio_lab_new_recording": "New Recording",
+  "audio_lab_error_mic_denied": "Microphone access denied. Please allow microphone access.",
+  "audio_lab_error_start_failed": "Failed to start recording.",
+  "audio_lab_playback": "Playback"
 }
