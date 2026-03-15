@@ -68,13 +68,18 @@ export async function GET(req: NextRequest) {
 
     logMessage("Decoded JWT: " + JSON.stringify(decoded));
 
+    // 쿠키에서 리다이렉션 링크 찾기
+    const preLoginUrl = req.cookies.get("preLoginUrl");
+    const redirectUrl = preLoginUrl
+      ? new URL(preLoginUrl.value, req.url)
+      : new URL("/", process.env.NEXT_PUBLIC_BASE_URL);
+
     // 쿠키에 JWT 토큰 저장
-    const response = NextResponse.redirect(
-      new URL("/", process.env.NEXT_PUBLIC_BASE_URL),
-    );
+    const response = NextResponse.redirect(redirectUrl);
     response.cookies.set("auth", jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
+      sameSite: "lax",
       maxAge: 7200, // 2시간
       path: "/",
     });

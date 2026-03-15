@@ -26,6 +26,7 @@ const LoginModal: React.FC = () => {
       onRequestClose={closeLoginModal}
       contentLabel="Sign In"
       ariaHideApp={false}
+      shouldReturnFocusAfterClose={false}
       style={{
         content: {
           top: "50%",
