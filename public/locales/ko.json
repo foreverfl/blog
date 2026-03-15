@@ -43,7 +43,16 @@
   "audio_lab_playback": "재생",
 
   "write_save": "저장",
+  "write_saving": "저장 중...",
+  "write_save_success": "포스트가 저장되었습니다!",
+  "write_save_fail": "저장에 실패했습니다. 다시 시도해 주세요.",
   "write_title_placeholder": "제목을 입력하세요",
   "write_thumbnail_placeholder": "대표 이미지 URL",
-  "write_editor_placeholder": "마크다운을 입력하세요..."
+  "write_classification_placeholder": "분류",
+  "write_category_placeholder": "카테고리",
+  "write_slug_placeholder": "slug (자동 생성)",
+  "write_editor_placeholder": "마크다운을 입력하세요...",
+  "write_uploading": "업로드 중...",
+  "write_login_required": "먼저 로그인해 주세요.",
+  "write_missing_fields": "분류, 카테고리, slug를 입력해 주세요."
 }

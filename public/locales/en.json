@@ -43,7 +43,16 @@
   "audio_lab_playback": "Playback",
 
   "write_save": "Save",
+  "write_saving": "Saving...",
+  "write_save_success": "Post saved successfully!",
+  "write_save_fail": "Failed to save post. Please try again.",
   "write_title_placeholder": "Enter a title",
   "write_thumbnail_placeholder": "Thumbnail image URL",
-  "write_editor_placeholder": "Write markdown here..."
+  "write_classification_placeholder": "Classification",
+  "write_category_placeholder": "Category",
+  "write_slug_placeholder": "slug (auto-generated)",
+  "write_editor_placeholder": "Write markdown here...",
+  "write_uploading": "Uploading...",
+  "write_login_required": "Please log in first.",
+  "write_missing_fields": "Please fill in classification, category, and slug."
 }

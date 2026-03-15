@@ -43,7 +43,16 @@
   "audio_lab_playback": "再生",
 
   "write_save": "保存",
+  "write_saving": "保存中...",
+  "write_save_success": "投稿が保存されました！",
+  "write_save_fail": "保存に失敗しました。もう一度お試しください。",
   "write_title_placeholder": "タイトルを入力してください",
   "write_thumbnail_placeholder": "サムネイル画像URL",
-  "write_editor_placeholder": "マークダウンを入力してください..."
+  "write_classification_placeholder": "分類",
+  "write_category_placeholder": "カテゴリ",
+  "write_slug_placeholder": "slug（自動生成）",
+  "write_editor_placeholder": "マークダウンを入力してください...",
+  "write_uploading": "アップロード中...",
+  "write_login_required": "先にログインしてください。",
+  "write_missing_fields": "分類、カテゴリ、slugを入力してください。"
 }

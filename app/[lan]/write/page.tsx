@@ -7,29 +7,39 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { useTranslation } from "react-i18next";
 import { usePathname } from "next/navigation";
 import "@/lib/i18n";
-import type { Root, Element } from "hast";
-import type { Plugin } from "unified";
 import "github-markdown-css";
+import categoryData from "@/public/category.json";
 
-// Rehype plugin: attach data-source-line to top-level block elements
-const rehypeSourceLine: Plugin<[], Root> = () => {
-  return (tree) => {
-    for (const node of tree.children) {
-      if (node.type === "element") {
-        const el = node as Element;
-        if (el.position?.start.line != null) {
-          el.properties = el.properties || {};
-          el.properties["dataSourceLine"] = el.position.start.line;
-        }
-      }
-    }
-  };
+import rehypeSourceLine from "@/lib/write/rehype-source-line";
+import slugify from "@/lib/write/slugify";
+import { uploadImages } from "@/lib/write/upload-images";
+import {
+  syncEditorToPreview,
+  syncPreviewToEditor,
+} from "@/lib/write/scroll-sync";
+
+const RUST_API =
+  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+
+// Skip rendering images with empty src to avoid browser warnings
+const markdownComponents: Components = {
+  img: ({ src, alt, ...props }) => {
+    if (!src) return null;
+    return (
+      <img
+        src={src}
+        alt={alt || ""}
+        {...props}
+        style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
+      />
+    );
+  },
 };
 
 export default function WritePage() {
@@ -41,138 +51,107 @@ export default function WritePage() {
     i18n.changeLanguage(lan);
   }, [lan, i18n]);
 
+  // Post metadata
   const [title, setTitle] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [classification, setClassification] = useState("");
+  const [category, setCategory] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  // Editor state
   const [markdown, setMarkdown] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  // Refs
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const isSyncingRef = useRef(false);
 
   const rehypePlugins = useMemo(() => [rehypeSlug, rehypeSourceLine], []);
 
-  // Calculate the top visible line number from editor scrollTop
-  const getEditorTopLine = useCallback(() => {
-    const editor = editorRef.current;
-    if (!editor) return 1;
-    const lineHeight = parseFloat(getComputedStyle(editor).lineHeight) || 20;
-    return Math.floor(editor.scrollTop / lineHeight) + 1;
-  }, []);
+  // Derive category options from selected classification
+  const selectedClassification = categoryData.find(
+    (c) => c.link === classification,
+  );
+  const categoryOptions = selectedClassification?.categories || [];
 
-  // Line-based scroll sync: editor → preview
+  useEffect(() => {
+    setCategory("");
+  }, [classification]);
+
+  useEffect(() => {
+    if (!slugManuallyEdited) setSlug(slugify(title));
+  }, [title, slugManuallyEdited]);
+
+  const getLocalizedName = (item: {
+    name_en: string;
+    name_ko: string;
+    name_ja: string;
+  }) => {
+    if (lan === "ko") return item.name_ko;
+    if (lan === "ja") return item.name_ja;
+    return item.name_en;
+  };
+
+  // Scroll sync refs bundle
+  const scrollRefs = useMemo(
+    () => ({ editorRef, previewRef, isSyncingRef }),
+    [],
+  );
+
   const handleEditorScroll = useCallback(() => {
-    if (isSyncingRef.current) return;
-    const editor = editorRef.current;
-    const preview = previewRef.current;
-    if (!editor || !preview) return;
-
-    const editorMaxScroll = editor.scrollHeight - editor.clientHeight;
-    if (editorMaxScroll <= 0) return;
-
-    // Snap to bottom
-    if (editor.scrollTop >= editorMaxScroll - 1) {
-      isSyncingRef.current = true;
-      preview.scrollTop = preview.scrollHeight - preview.clientHeight;
-      requestAnimationFrame(() => {
-        isSyncingRef.current = false;
-      });
-      return;
-    }
-
-    // Snap to top
-    if (editor.scrollTop <= 0) {
-      isSyncingRef.current = true;
-      preview.scrollTop = 0;
-      requestAnimationFrame(() => {
-        isSyncingRef.current = false;
-      });
-      return;
-    }
-
-    const topLine = getEditorTopLine();
-    const totalLines = markdown.split("\n").length;
-    const lineRatio = (topLine - 1) / Math.max(totalLines - 1, 1);
-
-    // Find elements with data-source-line for interpolation
-    const elements =
-      preview.querySelectorAll<HTMLElement>("[data-source-line]");
-    if (elements.length === 0) {
-      // Fallback to ratio-based sync
-      isSyncingRef.current = true;
-      const ratio = editor.scrollTop / editorMaxScroll;
-      preview.scrollTop = ratio * (preview.scrollHeight - preview.clientHeight);
-      requestAnimationFrame(() => {
-        isSyncingRef.current = false;
-      });
-      return;
-    }
-
-    // Find the two closest elements and interpolate
-    let before: HTMLElement | null = null;
-    let after: HTMLElement | null = null;
-    let beforeLine = 0;
-    let afterLine = totalLines;
-
-    for (const el of elements) {
-      const line = parseInt(el.dataset.sourceLine || "0", 10);
-      if (line <= topLine && line >= beforeLine) {
-        before = el;
-        beforeLine = line;
-      }
-      if (line > topLine && (after === null || line < afterLine)) {
-        after = el;
-        afterLine = line;
-      }
-    }
-
-    isSyncingRef.current = true;
-
-    const previewScrollArea = preview.scrollHeight - preview.clientHeight;
-    if (before && after) {
-      const beforeTop = before.offsetTop - preview.offsetTop;
-      const afterTop = after.offsetTop - preview.offsetTop;
-      const t =
-        afterLine === beforeLine
-          ? 0
-          : (topLine - beforeLine) / (afterLine - beforeLine);
-      preview.scrollTop = Math.min(
-        beforeTop + t * (afterTop - beforeTop),
-        previewScrollArea,
-      );
-    } else if (before) {
-      // After the last element → interpolate with ratio
-      const beforeTop = before.offsetTop - preview.offsetTop;
-      const t =
-        totalLines === beforeLine
-          ? 1
-          : (topLine - beforeLine) / (totalLines - beforeLine);
-      preview.scrollTop = Math.min(
-        beforeTop + t * (previewScrollArea - beforeTop),
-        previewScrollArea,
-      );
-    } else {
-      preview.scrollTop = lineRatio * previewScrollArea;
-    }
-
-    requestAnimationFrame(() => {
-      isSyncingRef.current = false;
-    });
-  }, [markdown, getEditorTopLine]);
+    syncEditorToPreview(scrollRefs, markdown);
+  }, [scrollRefs, markdown]);
 
   const handlePreviewScroll = useCallback(() => {
-    if (isSyncingRef.current) return;
-    const editor = editorRef.current;
-    const preview = previewRef.current;
-    if (!editor || !preview) return;
+    syncPreviewToEditor(scrollRefs);
+  }, [scrollRefs]);
 
-    isSyncingRef.current = true;
-    const ratio =
-      preview.scrollTop /
-      Math.max(preview.scrollHeight - preview.clientHeight, 1);
-    editor.scrollTop = ratio * (editor.scrollHeight - editor.clientHeight);
-    requestAnimationFrame(() => {
-      isSyncingRef.current = false;
-    });
-  }, []);
+  // Image upload
+  const handleUpload = useCallback(
+    (files: File[]) => {
+      uploadImages(files, {
+        editorRef,
+        markdown,
+        setMarkdown,
+        setUploading,
+        onAuthError: () => alert(t("write_login_required")),
+      });
+    },
+    [markdown, t],
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLTextAreaElement>) => {
+      e.preventDefault();
+      handleUpload(Array.from(e.dataTransfer.files));
+    },
+    [handleUpload],
+  );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent<HTMLTextAreaElement>) => e.preventDefault(),
+    [],
+  );
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const imageFiles: File[] = [];
+      for (const item of e.clipboardData.items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) imageFiles.push(file);
+        }
+      }
+      if (imageFiles.length > 0) {
+        e.preventDefault();
+        handleUpload(imageFiles);
+      }
+    },
+    [handleUpload],
+  );
 
   // Tab key indentation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -181,19 +160,65 @@ export default function WritePage() {
       const target = e.currentTarget;
       const start = target.selectionStart;
       const end = target.selectionEnd;
-      const newValue =
-        markdown.substring(0, start) + "  " + markdown.substring(end);
-      setMarkdown(newValue);
+      setMarkdown(
+        markdown.substring(0, start) + "  " + markdown.substring(end),
+      );
       requestAnimationFrame(() => {
         target.selectionStart = target.selectionEnd = start + 2;
       });
     }
   };
 
+  // Save post
   const handleSave = async () => {
     if (!title.trim() || !markdown.trim()) return;
-    // TODO: Connect to external backend via NEXT_PUBLIC_API_RUST_URL
-    console.log("save", { title, thumbnailUrl, content: markdown });
+    if (!classification || !category || !slug.trim()) {
+      alert(t("write_missing_fields"));
+      return;
+    }
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert(t("write_login_required"));
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch(`${RUST_API}/api/posts`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          classification,
+          category,
+          slug,
+          body: thumbnailUrl || null,
+          contents: [
+            {
+              lang: lan,
+              content_type: "text/markdown",
+              title,
+              body_markdown: markdown,
+            },
+          ],
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || `Save failed: ${res.status}`);
+      }
+
+      alert(t("write_save_success"));
+    } catch (err: any) {
+      console.error("Save failed:", err);
+      alert(err.message || t("write_save_fail"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -202,9 +227,10 @@ export default function WritePage() {
       <div className="mx-4 mb-3 flex justify-end">
         <button
           onClick={handleSave}
-          className="px-6 py-2.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          disabled={saving}
+          className="px-6 py-2.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {t("write_save")}
+          {saving ? t("write_saving") : t("write_save")}
         </button>
       </div>
 
@@ -220,7 +246,7 @@ export default function WritePage() {
       </div>
 
       {/* Thumbnail URL */}
-      <div className="max-w-full mx-4 mb-4">
+      <div className="max-w-full mx-4 mb-2">
         <input
           type="text"
           value={thumbnailUrl}
@@ -230,17 +256,63 @@ export default function WritePage() {
         />
       </div>
 
+      {/* Classification / Category / Slug */}
+      <div className="max-w-full mx-4 mb-4 flex gap-4">
+        <select
+          value={classification}
+          onChange={(e) => setClassification(e.target.value)}
+          className="flex-1 px-4 py-2 text-sm border-b border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent text-gray-700 dark:text-gray-300 dark:bg-transparent"
+        >
+          <option value="">{t("write_classification_placeholder")}</option>
+          {categoryData.map((c) => (
+            <option key={c.link} value={c.link}>
+              {c.emoji} {getLocalizedName(c)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          disabled={!classification}
+          className="flex-1 px-4 py-2 text-sm border-b border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent text-gray-700 dark:text-gray-300 dark:bg-transparent disabled:opacity-40"
+        >
+          <option value="">{t("write_category_placeholder")}</option>
+          {categoryOptions.map((c) => (
+            <option key={c.link} value={c.link}>
+              {c.emoji} {getLocalizedName(c)}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="text"
+          value={slug}
+          onChange={(e) => {
+            setSlug(e.target.value);
+            setSlugManuallyEdited(true);
+          }}
+          placeholder={t("write_slug_placeholder")}
+          className="flex-1 px-4 py-2 text-sm border-b border-gray-300 focus:border-blue-500 focus:outline-none bg-transparent text-gray-700 dark:text-gray-300"
+        />
+      </div>
+
       {/* Editor + Preview */}
       <div
         className="flex mx-4 gap-4"
-        style={{ height: "calc(100vh - 260px)" }}
+        style={{ height: "calc(100vh - 310px)" }}
       >
         {/* Left: Editor */}
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               EDITOR
             </span>
+            {uploading && (
+              <span className="text-xs text-blue-500 animate-pulse">
+                {t("write_uploading")}
+              </span>
+            )}
           </div>
           <textarea
             ref={editorRef}
@@ -248,6 +320,9 @@ export default function WritePage() {
             onChange={(e) => setMarkdown(e.target.value)}
             onKeyDown={handleKeyDown}
             onScroll={handleEditorScroll}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onPaste={handlePaste}
             placeholder={t("write_editor_placeholder")}
             className="flex-1 w-full p-4 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 dark:text-white"
             spellCheck={false}
@@ -274,6 +349,7 @@ export default function WritePage() {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={rehypePlugins}
+                components={markdownComponents}
               >
                 {markdown}
               </ReactMarkdown>
