@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
 
-export type Provider = "github" | "google" | "apple" | "line" | "kakao";
+export type Provider = "github" | "google" | "line" | "kakao";
 
 export interface ProviderConfig {
   id: Provider;
@@ -31,19 +31,6 @@ export const providers: ProviderConfig[] = [
     imageAlt: "GitHub",
     className:
       "bg-[#24292f] border-[#24292f] text-white hover:bg-[#333] dark:border-[#555] dark:hover:bg-[#444]",
-  },
-  {
-    id: "apple",
-    clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID,
-    redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_APPLE_REDIRECT_URI ?? "",
-    ),
-    authUrl:
-      "https://appleid.apple.com/auth/authorize?response_type=code&scope=name%20email&",
-    imageUrl: "/logo/Apple_logo_white.svg",
-    imageAlt: "Apple",
-    className:
-      "bg-black border-black text-white hover:bg-[#1a1a1a] dark:border-[#555] dark:hover:bg-[#333]",
   },
   {
     id: "google",
