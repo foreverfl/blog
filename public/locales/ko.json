@@ -40,5 +40,10 @@
   "audio_lab_new_recording": "새 녹음",
   "audio_lab_error_mic_denied": "마이크 접근이 거부되었습니다. 마이크 접근을 허용해 주세요.",
   "audio_lab_error_start_failed": "녹음을 시작하지 못했습니다.",
-  "audio_lab_playback": "재생"
+  "audio_lab_playback": "재생",
+
+  "write_save": "저장",
+  "write_title_placeholder": "제목을 입력하세요",
+  "write_thumbnail_placeholder": "대표 이미지 URL",
+  "write_editor_placeholder": "마크다운을 입력하세요..."
 }

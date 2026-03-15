@@ -40,5 +40,10 @@
   "audio_lab_new_recording": "新しい録音",
   "audio_lab_error_mic_denied": "マイクへのアクセスが拒否されました。マイクへのアクセスを許可してください。",
   "audio_lab_error_start_failed": "録音の開始に失敗しました。",
-  "audio_lab_playback": "再生"
+  "audio_lab_playback": "再生",
+
+  "write_save": "保存",
+  "write_title_placeholder": "タイトルを入力してください",
+  "write_thumbnail_placeholder": "サムネイル画像URL",
+  "write_editor_placeholder": "マークダウンを入力してください..."
 }

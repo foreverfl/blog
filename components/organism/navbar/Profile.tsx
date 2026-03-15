@@ -171,6 +171,23 @@ const Profile: React.FC<ProfileProps> = ({
                   </p>
                 </div>
 
+                {/* 글쓰기 버튼 (관리자만) */}
+                {process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
+                  .map((e) => e.trim())
+                  .includes(userData?.email) && (
+                  <div className="mx-8 my-4">
+                    <button
+                      onClick={() => {
+                        toggleProfile();
+                        router.push(`/${lan}/write`);
+                      }}
+                      className="w-full px-8 py-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    >
+                      Write Post
+                    </button>
+                  </div>
+                )}
+
                 {/* 로그아웃 버튼 */}
                 <div className="mx-8 my-4">
                   <button

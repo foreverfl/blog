@@ -156,8 +156,21 @@ const Navbar: React.FC = () => {
     }
   }, [isPost, postInfo?.title]);
 
-  // 스타일
+  // Fix navbar style when SubNavbar is not rendered (e.g. /write page)
+  const isWritePage = pathname.includes("/write");
+
   useEffect(() => {
+    if (isWritePage) {
+      setTitleColor("text-black dark:text-white");
+      setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
+      setMenuColor("text-black dark:text-white");
+      return;
+    }
+  }, [isWritePage]);
+
+  // Styles
+  useEffect(() => {
+    if (isWritePage) return;
     const subNavbar = subNavbarRef.current;
     if (!subNavbar) return;
 
@@ -271,15 +284,17 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* 서브 네이게이션 바*/}
-      <NavbarSub
-        ref={subNavbarRef}
-        isPost={isPost}
-        textColor={subNavbarTitleColor}
-        title={postInfo?.title || subnavTitle}
-        category={postInfo?.category || ""}
-        date={postInfo?.date || ""}
-      />
+      {/* 서브 네이게이션 바 (write 페이지에서는 숨김) */}
+      {!pathname.includes("/write") && (
+        <NavbarSub
+          ref={subNavbarRef}
+          isPost={isPost}
+          textColor={subNavbarTitleColor}
+          title={postInfo?.title || subnavTitle}
+          category={postInfo?.category || ""}
+          date={postInfo?.date || ""}
+        />
+      )}
     </>
   );
 };

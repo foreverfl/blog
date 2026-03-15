@@ -40,5 +40,10 @@
   "audio_lab_new_recording": "New Recording",
   "audio_lab_error_mic_denied": "Microphone access denied. Please allow microphone access.",
   "audio_lab_error_start_failed": "Failed to start recording.",
-  "audio_lab_playback": "Playback"
+  "audio_lab_playback": "Playback",
+
+  "write_save": "Save",
+  "write_title_placeholder": "Enter a title",
+  "write_thumbnail_placeholder": "Thumbnail image URL",
+  "write_editor_placeholder": "Write markdown here..."
 }
