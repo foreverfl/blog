@@ -10,9 +10,6 @@ export type Provider = "github" | "google" | "line" | "kakao";
 
 export interface ProviderConfig {
   id: Provider;
-  clientId: string | undefined;
-  redirectUri: string;
-  authUrl: string;
   imageUrl: string;
   imageAlt: string;
   darkImageUrl?: string;
@@ -22,11 +19,6 @@ export interface ProviderConfig {
 export const providers: ProviderConfig[] = [
   {
     id: "github",
-    clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
-    redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI ?? "",
-    ),
-    authUrl: "https://github.com/login/oauth/authorize?",
     imageUrl: "/logo/GitHub_Invertocat_White.svg",
     imageAlt: "GitHub",
     className:
@@ -34,12 +26,6 @@ export const providers: ProviderConfig[] = [
   },
   {
     id: "google",
-    clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ?? "",
-    ),
-    authUrl:
-      "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&scope=openid%20email%20profile&",
     imageUrl: "/logo/Google_logo_white.svg",
     imageAlt: "Google",
     darkImageUrl: "/logo/Google_logo_black.svg",
@@ -48,12 +34,6 @@ export const providers: ProviderConfig[] = [
   },
   {
     id: "line",
-    clientId: process.env.NEXT_PUBLIC_LINE_CLIENT_ID,
-    redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_LINE_REDIRECT_URI ?? "",
-    ),
-    authUrl:
-      "https://access.line.me/oauth2/v2.1/authorize?response_type=code&scope=profile%20openid%20email&state=login&",
     imageUrl: "/logo/LINE_logo.svg",
     imageAlt: "LINE",
     className:
@@ -61,11 +41,6 @@ export const providers: ProviderConfig[] = [
   },
   {
     id: "kakao",
-    clientId: process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID,
-    redirectUri: encodeURIComponent(
-      process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ?? "",
-    ),
-    authUrl: "https://kauth.kakao.com/oauth/authorize?response_type=code&",
     imageUrl: "/logo/KakaoTalk_logo.svg",
     imageAlt: "Kakao",
     className:
@@ -77,11 +52,13 @@ interface LoginButtonProps {
   provider: ProviderConfig;
 }
 
+const AUTH_API_URL =
+  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+
 const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   const { t, i18n } = useTranslation();
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
-  const isDisabled = !provider.clientId || !provider.redirectUri;
 
   useEffect(() => {
     if (["en", "ja", "ko"].includes(lan)) {
@@ -89,13 +66,14 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
     }
   }, [lan, i18n]);
 
-  const loginUrl = `${provider.authUrl}client_id=${provider.clientId}&redirect_uri=${provider.redirectUri}`;
+  const handleLogin = () => {
+    window.location.href = `${AUTH_API_URL}/auth/login/${provider.id}`;
+  };
 
   return (
     <button
-      onClick={() => (window.location.href = loginUrl)}
-      disabled={isDisabled}
-      className={`flex items-center justify-center gap-2.5 py-3 px-3 rounded-lg w-full min-w-50 border text-sm font-medium ${provider.className} transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none`}
+      onClick={handleLogin}
+      className={`flex items-center justify-center gap-2.5 py-3 px-3 rounded-lg w-full min-w-50 border text-sm font-medium ${provider.className} transition-colors duration-300`}
     >
       <Image
         src={provider.imageUrl}

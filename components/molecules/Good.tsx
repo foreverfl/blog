@@ -7,6 +7,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+const AUTH_API_URL =
+  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+
 const Good = () => {
   const { openLoginModal } = useLoginModal();
 
@@ -42,10 +45,15 @@ const Good = () => {
 
   const fetchUserEmail = useCallback(async () => {
     try {
-      const res = await fetch("/api/auth/status");
-      const data = await res.json();
-      if (data.isAuthenticated) {
-        setUserEmail(data.user.email);
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const res = await fetch(`${AUTH_API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUserEmail(data.email);
       }
     } catch (error) {
       console.error("Error fetching user email:", error);

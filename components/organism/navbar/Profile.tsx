@@ -5,6 +5,9 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 
+const AUTH_API_URL =
+  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+
 interface ProfileProps {
   isProfileOpen: boolean;
   isMenuOpen: boolean;
@@ -22,53 +25,116 @@ const Profile: React.FC<ProfileProps> = ({
   const lan = pathname.split("/")[1];
 
   // State
-  const [isReady, setIsReady] = useState(false); // 렌더링 이전에 보여줄 요소
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 상태
-  const [userData, setUserData] = useState<any>(null); // 사용자 데이터
+  const [isReady, setIsReady] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   const { openLoginModal } = useLoginModal();
 
-  // authStatus 체크
+  // Check authentication status
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const response = await fetch("/api/auth/status", {
+        const token = localStorage.getItem("access_token");
+        const expiresAt = localStorage.getItem("token_expires_at");
+
+        if (!token) {
+          setIsReady(true);
+          return;
+        }
+
+        // Check token expiration → try refresh
+        if (expiresAt && Date.now() > Number(expiresAt)) {
+          const refreshed = await tryRefreshToken();
+          if (!refreshed) {
+            clearAuth();
+            setIsReady(true);
+            return;
+          }
+        }
+
+        // Call Auth backend /auth/me
+        const currentToken = localStorage.getItem("access_token");
+        const response = await fetch(`${AUTH_API_URL}/auth/me`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentToken}`,
           },
         });
 
         if (response.ok) {
           const data = await response.json();
-          if (data.isAuthenticated) {
-            setUserData(data.user); // 사용자 정보 설정
-            setIsLoggedIn(true); // 로그인 상태 설정
+          setUserData(data);
+          setIsLoggedIn(true);
+        } else if (response.status === 401) {
+          // access_token expired, try refresh
+          const refreshed = await tryRefreshToken();
+          if (refreshed) {
+            const retryToken = localStorage.getItem("access_token");
+            const retryRes = await fetch(`${AUTH_API_URL}/auth/me`, {
+              method: "GET",
+              headers: { Authorization: `Bearer ${retryToken}` },
+            });
+            if (retryRes.ok) {
+              const data = await retryRes.json();
+              setUserData(data);
+              setIsLoggedIn(true);
+            } else {
+              clearAuth();
+            }
+          } else {
+            clearAuth();
           }
         }
       } catch (error) {
         console.error("Error fetching authentication status:", error);
       }
 
-      setIsReady(true); // 상태가 확정되면 준비 상태를 true로 설정
+      setIsReady(true);
     };
 
     checkAuthStatus();
   }, []);
 
+  const tryRefreshToken = async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${AUTH_API_URL}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem(
+          "token_expires_at",
+          String(Date.now() + data.expires_in * 1000),
+        );
+        return true;
+      }
+    } catch (e) {
+      console.error("Token refresh failed:", e);
+    }
+    return false;
+  };
+
+  const clearAuth = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("token_expires_at");
+    setIsLoggedIn(false);
+    setUserData(null);
+  };
+
   const handleLogout = async () => {
     try {
-      const response = await fetch("/api/auth/logout", {
+      await fetch(`${AUTH_API_URL}/auth/logout`, {
         method: "POST",
+        credentials: "include",
       });
-      if (response.ok) {
-        setIsLoggedIn(false);
-        setUserData(null);
-        toggleProfile(); // 프로필 창 닫기
-      } else {
-        console.error("로그아웃 실패");
-      }
+      clearAuth();
+      toggleProfile();
     } catch (error) {
-      console.error("로그아웃 시도 중 오류 발생", error);
+      console.error("Logout failed:", error);
+      clearAuth();
+      toggleProfile();
     }
   };
 
@@ -84,7 +150,7 @@ const Profile: React.FC<ProfileProps> = ({
     <>
       {isLoggedIn ? (
         <>
-          {/* 프로필 버튼 */}
+          {/* Profile button */}
           <button
             className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black overflow-hidden"
             onClick={toggleProfile}
@@ -98,13 +164,13 @@ const Profile: React.FC<ProfileProps> = ({
             />
           </button>
 
-          {/* 프로필 창 */}
+          {/* Profile panel */}
           <div
             className={`h-screen overflow-y-auto fixed inset-0 flex justify-end bg-linear-to-l from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
               isProfileOpen ? "opacity-100" : "opacity-0"
             } ${isProfileOpen ? "pointer-events-auto" : "pointer-events-none"}`}
           >
-            {/* 프로필 컨테이너 */}
+            {/* Profile container */}
             <div
               className={`w-full md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 min-h-screen pb-10 z-10 transition-all duration-500 ease-out ${
                 isProfileOpen
@@ -113,7 +179,7 @@ const Profile: React.FC<ProfileProps> = ({
               }`}
             >
               <ul className="py-20 space-y-4">
-                {/* 프로필 닫기 버튼 */}
+                {/* Close button */}
                 <div className="absolute top-0 right-0 pt-6 pr-5">
                   <svg
                     onClick={toggleProfile}
@@ -133,10 +199,10 @@ const Profile: React.FC<ProfileProps> = ({
                   </svg>
                 </div>
 
-                {/* 프로필 이미지 및 사용자 이름 */}
+                {/* Profile image and username */}
                 <div className="relative mx-8 mt-8">
                   <div className="bg-gray-200 square rounded-lg flex justify-center items-center overflow-hidden">
-                    {/* 배경 이미지 */}
+                    {/* Background image */}
                     <Image
                       src="/images/profile_background.webp"
                       alt="Background"
@@ -144,7 +210,7 @@ const Profile: React.FC<ProfileProps> = ({
                       height={0}
                       className="w-full h-full object-cover"
                     />
-                    {/* 프로필 이미지 */}
+                    {/* Profile image */}
                     <div className="absolute">
                       <Image
                         src={userData?.photo || "/images/smile.png"}
@@ -155,7 +221,7 @@ const Profile: React.FC<ProfileProps> = ({
                         className="w-full h-full object-cover rounded-full"
                       />
                     </div>
-                    {/* 사용자 이름 */}
+                    {/* Username */}
                     <div className="absolute bottom-10">
                       <p className="text-white text-lg text-center">
                         {userData?.userName}
@@ -164,14 +230,14 @@ const Profile: React.FC<ProfileProps> = ({
                   </div>
                 </div>
 
-                {/* 환영 인사 */}
+                {/* Welcome message */}
                 <div className="mx-8 my-2">
                   <p className="px-8 py-4 text-center text-sm font-semibold text-gray-700 bg-white rounded-md">
                     {`${userData?.username}`}
                   </p>
                 </div>
 
-                {/* 글쓰기 버튼 (관리자만) */}
+                {/* Write Post button (admin only) */}
                 {process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
                   .map((e) => e.trim())
                   .includes(userData?.email) && (
@@ -188,7 +254,7 @@ const Profile: React.FC<ProfileProps> = ({
                   </div>
                 )}
 
-                {/* 로그아웃 버튼 */}
+                {/* Logout button */}
                 <div className="mx-8 my-4">
                   <button
                     onClick={handleLogout}

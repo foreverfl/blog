@@ -19,6 +19,9 @@ interface Comment {
   repliedAt: string | null;
 }
 
+const AUTH_API_URL =
+  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+
 const Comment = ({}) => {
   const { openLoginModal } = useLoginModal();
 
@@ -45,10 +48,18 @@ const Comment = ({}) => {
   const fetchUserData = useCallback(async () => {
     setUserLoading(true);
     try {
-      const res = await fetch("/api/auth/status");
-      const data = await res.json();
-      if (data.isAuthenticated) {
-        setUser(data.user);
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const res = await fetch(`${AUTH_API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
       } else {
         setUser(null);
       }

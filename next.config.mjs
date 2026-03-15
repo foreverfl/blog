@@ -29,6 +29,18 @@ const nextConfig = {
         protocol: "https",
         hostname: "s4.anilist.co",
       },
+      {
+        protocol: "http",
+        hostname: "k.kakaocdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "k.kakaocdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "profile.kakaocdn.net",
+      },
     ],
   },
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],

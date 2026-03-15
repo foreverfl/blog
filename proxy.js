@@ -84,6 +84,7 @@ export function proxy(request) {
       pathname.startsWith("/images") ||
       pathname.startsWith("/prompts") ||
       pathname.startsWith("/logo") ||
+      pathname.startsWith("/auth") ||
       pathname.startsWith("/login") ||
       pathname.startsWith("/policy") ||
       pathname.startsWith("/monitoring") || // Sentry tunnel route for ad-blocker circumvention
