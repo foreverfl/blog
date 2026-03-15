@@ -219,7 +219,7 @@ const Menu: React.FC<MenuProps> = ({
               >
                 <li className="flex items-center">
                   <Image
-                    src={"/logo/github.svg"}
+                    src={"/logo/GitHub_Invertocat_Black.svg"}
                     alt={"Github"}
                     width={15}
                     height={15}
