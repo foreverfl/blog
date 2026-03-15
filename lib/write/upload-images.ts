@@ -53,7 +53,7 @@ export async function uploadImages(files: File[], ctx: UploadContext) {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch(`${RUST_API}/api/uploads`, {
+      const res = await fetch(`${RUST_API}/uploads`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

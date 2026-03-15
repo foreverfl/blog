@@ -11,7 +11,7 @@ import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { useTranslation } from "react-i18next";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import "@/lib/i18n";
 import "github-markdown-css";
 import categoryData from "@/public/category.json";
@@ -44,6 +44,7 @@ const markdownComponents: Components = {
 
 export default function WritePage() {
   const pathname = usePathname();
+  const router = useRouter();
   const lan = pathname.split("/")[1];
   const { t, i18n } = useTranslation();
 
@@ -185,7 +186,7 @@ export default function WritePage() {
 
     setSaving(true);
     try {
-      const res = await fetch(`${RUST_API}/api/posts`, {
+      const res = await fetch(`${RUST_API}/posts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -213,6 +214,7 @@ export default function WritePage() {
       }
 
       alert(t("write_save_success"));
+      router.push(`/${lan}`);
     } catch (err: any) {
       console.error("Save failed:", err);
       alert(err.message || t("write_save_fail"));
