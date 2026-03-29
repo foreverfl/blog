@@ -1,11 +1,9 @@
 import Comment from "@/components/molecules/Comment";
 import Good from "@/components/molecules/Good";
 import Article from "@/components/molecules/Article";
+import SlugContent from "@/components/template/SlugContent";
 import { getContents } from "@/lib/content/jsonHelpers";
-import { compileMdxContent, getMdxFileContent } from "@/lib/content/mdxHelpers";
 import "github-markdown-css";
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 
 export default async function Page({
   params,
@@ -16,38 +14,18 @@ export default async function Page({
     slug: string;
   }>;
 }) {
-  const cookiesList = await cookies();
-  const lan = cookiesList.get("lan")?.value;
-
   const { classification, category, slug } = await params;
-  const trendsPage = classification === "trends";
 
-  let content;
   if (classification === "trends") {
-    const jsonContents = await getContents(category, slug);
-    content = jsonContents;
-  } else {
-    const fileContent = getMdxFileContent(
-      lan ?? "en",
-      classification,
-      category,
-      slug + "-" + (lan ?? "en"),
+    const content = await getContents(category, slug);
+    return (
+      <>
+        <Article trendsPage={true} content={content} />
+        <Good />
+        <Comment />
+      </>
     );
-    if (!fileContent) {
-      notFound();
-    }
-    const { content: mdxContent } = await compileMdxContent(fileContent);
-    if (!mdxContent) {
-      notFound();
-    }
-    content = mdxContent;
   }
 
-  return (
-    <>
-      <Article trendsPage={trendsPage} content={content} />
-      <Good />
-      <Comment />
-    </>
-  );
+  return <SlugContent />;
 }
