@@ -11,7 +11,7 @@ import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { useTranslation } from "react-i18next";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import "@/lib/i18n";
 import "github-markdown-css";
 import categoryData from "@/public/category.json";
@@ -28,6 +28,14 @@ import {
 
 const RUST_API =
   process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+
+const LANGS = ["en", "ja", "ko"] as const;
+type Lang = (typeof LANGS)[number];
+
+interface LangContent {
+  title: string;
+  markdown: string;
+}
 
 // Skip rendering images with empty src to avoid browser warnings
 const markdownComponents: Components = {
@@ -65,15 +73,31 @@ const markdownComponents: Components = {
 export default function WritePage() {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const lan = pathname.split("/")[1];
   const { t, i18n } = useTranslation();
+
+  // Edit mode detection
+  const editClassification = searchParams.get("classification");
+  const editCategory = searchParams.get("category");
+  const editSlug = searchParams.get("slug");
+  const isEditMode = !!(editClassification && editCategory && editSlug);
 
   useEffect(() => {
     i18n.changeLanguage(lan);
   }, [lan, i18n]);
 
+  // Language selector state
+  const [activeLang, setActiveLang] = useState<Lang>(lan as Lang);
+
+  // Per-language content
+  const [langContents, setLangContents] = useState<Record<Lang, LangContent>>({
+    en: { title: "", markdown: "" },
+    ja: { title: "", markdown: "" },
+    ko: { title: "", markdown: "" },
+  });
+
   // Post metadata
-  const [title, setTitle] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [classification, setClassification] = useState("");
   const [category, setCategory] = useState("");
@@ -81,9 +105,11 @@ export default function WritePage() {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   // Editor state
-  const [markdown, setMarkdown] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [loadingPost, setLoadingPost] = useState(isEditMode);
 
   // Refs
   const editorRef = useRef<HTMLTextAreaElement>(null);
@@ -95,6 +121,70 @@ export default function WritePage() {
     [],
   );
 
+  // Current language content helpers
+  const currentContent = langContents[activeLang];
+  const title = currentContent.title;
+  const markdown = currentContent.markdown;
+
+  const setTitle = (val: string) => {
+    setLangContents((prev) => ({
+      ...prev,
+      [activeLang]: { ...prev[activeLang], title: val },
+    }));
+  };
+
+  const setMarkdown: React.Dispatch<React.SetStateAction<string>> = (val) => {
+    setLangContents((prev) => {
+      const current = prev[activeLang].markdown;
+      const newVal = typeof val === "function" ? val(current) : val;
+      return {
+        ...prev,
+        [activeLang]: { ...prev[activeLang], markdown: newVal },
+      };
+    });
+  };
+
+  // Fetch existing post in edit mode
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    const token = localStorage.getItem("access_token");
+    fetch(
+      `${RUST_API}/posts/${editClassification}/${editCategory}/${editSlug}`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
+    )
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Failed to fetch post");
+        const data = await res.json();
+
+        setClassification(data.classification);
+        setCategory(data.category);
+        setSlug(data.slug);
+        setSlugManuallyEdited(true);
+        if (data.image) setThumbnailUrl(data.image);
+
+        // Fill per-language contents
+        const newContents = { ...langContents };
+        for (const content of data.contents) {
+          const lang = content.lang as Lang;
+          if (LANGS.includes(lang)) {
+            newContents[lang] = {
+              title: content.title || "",
+              markdown: content.body_markdown || "",
+            };
+          }
+        }
+        setLangContents(newContents);
+      })
+      .catch((err) => {
+        console.error("Failed to load post for editing:", err);
+        alert("Failed to load post");
+      })
+      .finally(() => setLoadingPost(false));
+  }, [isEditMode, editClassification, editCategory, editSlug]);
+
   // Derive category options from selected classification
   const selectedClassification = categoryData.find(
     (c) => c.link === classification,
@@ -102,8 +192,8 @@ export default function WritePage() {
   const categoryOptions = selectedClassification?.categories || [];
 
   useEffect(() => {
-    setCategory("");
-  }, [classification]);
+    if (!isEditMode) setCategory("");
+  }, [classification, isEditMode]);
 
   useEffect(() => {
     if (!slugManuallyEdited) setSlug(slugify(title));
@@ -193,9 +283,67 @@ export default function WritePage() {
     }
   };
 
+  // Translate
+  const handleTranslate = async () => {
+    const current = langContents[activeLang];
+    if (!current.markdown.trim()) {
+      alert("No content to translate");
+      return;
+    }
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert(t("write_login_required"));
+      return;
+    }
+
+    setTranslating(true);
+    try {
+      const res = await fetch(
+        `${RUST_API}/posts/translate?origin=${activeLang}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: current.title,
+            content: current.markdown,
+          }),
+        },
+      );
+
+      if (!res.ok) throw new Error("Translation failed");
+      const data = await res.json();
+
+      setLangContents((prev) => {
+        const updated = { ...prev };
+        for (const lang of LANGS) {
+          if (lang !== activeLang) {
+            updated[lang] = {
+              title: data[lang]?.title || prev[lang].title,
+              markdown: data[lang]?.content || prev[lang].markdown,
+            };
+          }
+        }
+        return updated;
+      });
+    } catch (err: any) {
+      console.error("Translation error:", err);
+      alert(err.message || "Translation failed");
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   // Save post
   const handleSave = async () => {
-    if (!title.trim() || !markdown.trim()) return;
+    if (
+      !langContents[activeLang].title.trim() ||
+      !langContents[activeLang].markdown.trim()
+    )
+      return;
     if (!classification || !category || !slug.trim()) {
       alert(t("write_missing_fields"));
       return;
@@ -209,35 +357,69 @@ export default function WritePage() {
 
     setSaving(true);
     try {
-      const res = await fetch(`${RUST_API}/posts`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          classification,
-          category,
-          slug,
-          body: thumbnailUrl || null,
-          contents: [
-            {
-              lang: lan,
-              content_type: "text/markdown",
-              title,
-              body_markdown: markdown,
+      // Build contents array from all languages that have content
+      const contents = LANGS.filter(
+        (lang) =>
+          langContents[lang].title.trim() || langContents[lang].markdown.trim(),
+      ).map((lang) => ({
+        lang,
+        content_type: "text/markdown",
+        title: langContents[lang].title,
+        body_markdown: langContents[lang].markdown,
+      }));
+
+      if (isEditMode) {
+        // PUT update
+        const res = await fetch(
+          `${RUST_API}/posts/${editClassification}/${editCategory}/${editSlug}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
-          ],
-        }),
-      });
+            body: JSON.stringify({
+              classification,
+              category,
+              slug,
+              image: thumbnailUrl || null,
+              contents,
+            }),
+          },
+        );
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || `Save failed: ${res.status}`);
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || `Update failed: ${res.status}`);
+        }
+
+        alert(t("write_save_success"));
+        router.push(`/${lan}/${classification}/${category}/${slug}`);
+      } else {
+        // POST create
+        const res = await fetch(`${RUST_API}/posts`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            classification,
+            category,
+            slug,
+            body: thumbnailUrl || null,
+            contents,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || `Save failed: ${res.status}`);
+        }
+
+        alert(t("write_save_success"));
+        router.push(`/${lan}`);
       }
-
-      alert(t("write_save_success"));
-      router.push(`/${lan}`);
     } catch (err: any) {
       console.error("Save failed:", err);
       alert(err.message || t("write_save_fail"));
@@ -246,17 +428,104 @@ export default function WritePage() {
     }
   };
 
+  // Delete post
+  const handleDelete = async () => {
+    if (!isEditMode) return;
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert(t("write_login_required"));
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const res = await fetch(
+        `${RUST_API}/posts/${editClassification}/${editCategory}/${editSlug}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!res.ok) {
+        throw new Error(`Delete failed: ${res.status}`);
+      }
+
+      alert("Post deleted");
+      router.push(`/${lan}`);
+    } catch (err: any) {
+      console.error("Delete failed:", err);
+      alert(err.message || "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  if (loadingPost) {
+    return (
+      <div className="min-h-screen pt-20 px-4 flex items-center justify-center">
+        <span className="text-gray-400 animate-pulse">Loading post...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pt-20 px-4">
-      {/* Save button */}
-      <div className="mx-4 mb-3 flex justify-end">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-6 py-2.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {saving ? t("write_saving") : t("write_save")}
-        </button>
+      {/* Top bar: Language selector + Translate | Delete + Save */}
+      <div className="mx-4 mb-3 flex items-center justify-between">
+        {/* Left: Language selector + Translate */}
+        <div className="flex items-center gap-3">
+          <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
+            {LANGS.map((lang) => (
+              <button
+                key={lang}
+                onClick={() => setActiveLang(lang)}
+                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  activeLang === lang
+                    ? "bg-blue-500 text-white"
+                    : "bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                }`}
+              >
+                {lang === "en" ? "EN" : lang === "ja" ? "JA" : "KO"}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={handleTranslate}
+            disabled={translating}
+            className="px-4 py-2.5 text-sm font-medium bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {translating ? "Translating..." : "Translate"}
+          </button>
+        </div>
+
+        {/* Right: Delete + Save */}
+        <div className="flex items-center gap-2">
+          {isEditMode && (
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="px-6 py-2.5 text-sm font-semibold bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </button>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-6 py-2.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving
+              ? t("write_saving")
+              : isEditMode
+                ? "Update"
+                : t("write_save")}
+          </button>
+        </div>
       </div>
 
       {/* Title */}
@@ -336,6 +605,11 @@ export default function WritePage() {
             {uploading && (
               <span className="text-xs text-blue-500 animate-pulse">
                 {t("write_uploading")}
+              </span>
+            )}
+            {translating && (
+              <span className="text-xs text-purple-500 animate-pulse">
+                Translating...
               </span>
             )}
           </div>

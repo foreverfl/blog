@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -13,6 +13,10 @@ import "github-markdown-css";
 
 const RUST_API =
   process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+const AUTH_API_URL =
+  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+const ADMIN_EMAILS =
+  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
 
 interface PostContent {
   lang: string;
@@ -30,6 +34,7 @@ interface PostData {
 
 const SlugContent: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const segments = pathname.split("/").filter(Boolean);
   const lan = segments[0] || "en";
   const classification = segments[1];
@@ -39,6 +44,24 @@ const SlugContent: React.FC = () => {
   const [post, setPost] = useState<PostData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check if current user is admin
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    fetch(`${AUTH_API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.email && ADMIN_EMAILS.includes(data.email)) {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!classification || !category || !slug) return;
@@ -80,11 +103,39 @@ const SlugContent: React.FC = () => {
   const content = post.contents[0];
   const markdown = content?.body_markdown || "";
 
+  const handleEdit = () => {
+    const params = new URLSearchParams({ classification, category, slug });
+    router.push(`/${lan}/write?${params.toString()}`);
+  };
+
   return (
     <>
       <div className="flex items-center justify-center min-h-screen">
         <div className="markdown-body w-full md:w-3/5">
           <div className="my-56" />
+          {isAdmin && (
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={handleEdit}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Edit
+              </button>
+            </div>
+          )}
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, rehypeSlug]}
