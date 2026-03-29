@@ -47,10 +47,20 @@ export default async function Index() {
     console.error("Failed to fetch posts from API:", err);
   }
 
+  const recentPosts = frontMatters.filter(
+    (p) => !(p.classification === "trends" && p.category === "hackernews"),
+  );
+  const hackernewsPosts = frontMatters.filter(
+    (p) => p.classification === "trends" && p.category === "hackernews",
+  );
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full md:w-3/5">
-        <AllCategory posts={frontMatters} />
+        <div className="my-56"></div>
+        <AllCategory posts={recentPosts} title="Recent Posts" />
+        <AllCategory posts={hackernewsPosts} title="Recent Hackernews" />
+        <div className="my-56"></div>
       </div>
     </div>
   );

@@ -16,9 +16,10 @@ interface FrontMatter {
 
 interface Props {
   posts: FrontMatter[];
+  title: string;
 }
 
-const AllCategory: React.FC<Props> = ({ posts }) => {
+const AllCategory: React.FC<Props> = ({ posts, title }) => {
   // Utilities
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
@@ -48,13 +49,11 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
 
   return (
     <>
-      <div className="my-56"></div>
-
-      {/* Recent Posts */}
+      {/* Section */}
       <div>
         {posts.length > 0 && (
           <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
-            Recent Posts
+            {title}
           </h2>
         )}
         <div className="grid grid-cols-2 portrait:grid-cols-2 portrait:lg:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
@@ -94,8 +93,6 @@ const AllCategory: React.FC<Props> = ({ posts }) => {
           onPageChange={handlePageChange}
         />
       </div>
-
-      <div className="my-56"></div>
     </>
   );
 };
