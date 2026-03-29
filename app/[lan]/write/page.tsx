@@ -25,6 +25,7 @@ import {
   syncEditorToPreview,
   syncPreviewToEditor,
 } from "@/lib/write/scroll-sync";
+import { useLoadingDispatch } from "@/lib/context/loading-context";
 
 const RUST_API =
   process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
@@ -76,6 +77,7 @@ export default function WritePage() {
   const searchParams = useSearchParams();
   const lan = pathname.split("/")[1];
   const { t, i18n } = useTranslation();
+  const loadingDispatch = useLoadingDispatch();
 
   // Edit mode detection
   const editClassification = searchParams.get("classification");
@@ -298,6 +300,7 @@ export default function WritePage() {
     }
 
     setTranslating(true);
+    loadingDispatch({ type: "START_LOADING" });
     try {
       const res = await fetch(
         `${RUST_API}/posts/translate?origin=${activeLang}`,
@@ -334,6 +337,7 @@ export default function WritePage() {
       alert(err.message || "Translation failed");
     } finally {
       setTranslating(false);
+      loadingDispatch({ type: "STOP_LOADING" });
     }
   };
 
