@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import rehypeRaw from "rehype-raw";
+import CodeBlock from "@/components/atom/CodeBlock";
 import Comment from "@/components/molecules/Comment";
 import Good from "@/components/molecules/Good";
 import "github-markdown-css";
@@ -87,20 +87,21 @@ const SlugContent: React.FC = () => {
           <div className="my-56" />
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSlug]}
+            rehypePlugins={[rehypeRaw, rehypeSlug]}
             components={{
+              pre({ children }) {
+                return <>{children}</>;
+              },
               code({ className, children, ...props }) {
                 const match = /language-(\w+)/.exec(className || "");
-                const inline = !match;
-                return !inline ? (
-                  <SyntaxHighlighter
-                    style={oneDark}
-                    language={match[1]}
-                    PreTag="div"
-                  >
-                    {String(children).replace(/\n$/, "")}
-                  </SyntaxHighlighter>
-                ) : (
+                if (match) {
+                  return (
+                    <CodeBlock language={match[1]}>
+                      {String(children).replace(/\n$/, "")}
+                    </CodeBlock>
+                  );
+                }
+                return (
                   <code className={className} {...props}>
                     {children}
                   </code>

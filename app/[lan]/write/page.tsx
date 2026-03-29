@@ -16,7 +16,9 @@ import "@/lib/i18n";
 import "github-markdown-css";
 import categoryData from "@/public/category.json";
 
+import rehypeRaw from "rehype-raw";
 import rehypeSourceLine from "@/lib/write/rehype-source-line";
+import CodeBlock from "@/components/atom/CodeBlock";
 import slugify from "@/lib/write/slugify";
 import { uploadImages } from "@/lib/write/upload-images";
 import {
@@ -38,6 +40,24 @@ const markdownComponents: Components = {
         {...props}
         style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
       />
+    );
+  },
+  pre: ({ children }) => {
+    return <>{children}</>;
+  },
+  code: ({ className, children, ...props }) => {
+    const match = /language-(\w+)/.exec(className || "");
+    if (match) {
+      return (
+        <CodeBlock language={match[1]}>
+          {String(children).replace(/\n$/, "")}
+        </CodeBlock>
+      );
+    }
+    return (
+      <code className={className} {...props}>
+        {children}
+      </code>
     );
   },
 };
@@ -70,7 +90,10 @@ export default function WritePage() {
   const previewRef = useRef<HTMLDivElement>(null);
   const isSyncingRef = useRef(false);
 
-  const rehypePlugins = useMemo(() => [rehypeSlug, rehypeSourceLine], []);
+  const rehypePlugins = useMemo(
+    () => [rehypeRaw, rehypeSlug, rehypeSourceLine],
+    [],
+  );
 
   // Derive category options from selected classification
   const selectedClassification = categoryData.find(
