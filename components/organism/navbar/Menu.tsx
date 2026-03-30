@@ -137,13 +137,13 @@ const Menu: React.FC<MenuProps> = ({
       {/* 메뉴 */}
       {/* 메뉴 배경 */}
       <div
-        className={`h-screen overflow-y-auto fixed inset-0 bg-gradient-to-r from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
+        className={`h-dvh overflow-y-auto fixed inset-0 bg-gradient-to-r from-neutral-800 to-transparent dark:from-neutral-600 dark:to-transparent z-10 transition-opacity duration-500 ease-in-out ${
           isMenuOpen ? "opacity-100" : "opacity-0"
         } ${isMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
         {/* 메뉴 컨테이너 */}
         <div
-          className={`md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 min-h-screen z-10 pb-10 transition-all duration-500 ease-out ${
+          className={`md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 min-h-dvh z-10 pb-10 transition-all duration-500 ease-out ${
             isMenuOpen
               ? "translate-y-0 opacity-100"
               : "-translate-y-full opacity-0"
