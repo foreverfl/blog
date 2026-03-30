@@ -26,6 +26,7 @@ import {
   syncPreviewToEditor,
 } from "@/lib/write/scroll-sync";
 import { useLoadingDispatch } from "@/lib/context/loading-context";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/write/draft-store";
 
 const RUST_API =
   process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
@@ -90,7 +91,7 @@ export default function WritePage() {
   }, [lan, i18n]);
 
   // Language selector state
-  const [activeLang, setActiveLang] = useState<Lang>(lan as Lang);
+  const [activeLang, setActiveLang] = useState<Lang>("en");
 
   // Per-language content
   const [langContents, setLangContents] = useState<Record<Lang, LangContent>>({
@@ -117,6 +118,60 @@ export default function WritePage() {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const isSyncingRef = useRef(false);
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Restore draft on mount (new post only)
+  useEffect(() => {
+    if (isEditMode) return;
+    loadDraft().then((draft) => {
+      if (!draft) return;
+      const age = Date.now() - draft.updatedAt;
+      if (age > 7 * 24 * 60 * 60 * 1000) {
+        clearDraft();
+        return;
+      }
+      setLangContents(draft.langContents as Record<Lang, LangContent>);
+      setActiveLang(draft.activeLang as Lang);
+      setClassification(draft.classification);
+      setCategory(draft.category);
+      setSlug(draft.slug);
+      setThumbnailUrl(draft.thumbnailUrl);
+      if (draft.slug) setSlugManuallyEdited(true);
+    });
+  }, []);
+
+  // Auto-save draft every 3 seconds after changes (new post only)
+  useEffect(() => {
+    if (isEditMode) return;
+    if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = setTimeout(() => {
+      const hasContent = Object.values(langContents).some(
+        (c) => c.title.trim() || c.markdown.trim(),
+      );
+      if (hasContent) {
+        saveDraft({
+          langContents,
+          activeLang,
+          classification,
+          category,
+          slug,
+          thumbnailUrl,
+          updatedAt: Date.now(),
+        });
+      }
+    }, 3000);
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+  }, [
+    langContents,
+    activeLang,
+    classification,
+    category,
+    slug,
+    thumbnailUrl,
+    isEditMode,
+  ]);
 
   const rehypePlugins = useMemo(
     () => [rehypeRaw, rehypeSlug, rehypeSourceLine],
@@ -397,6 +452,7 @@ export default function WritePage() {
           throw new Error(err.error || `Update failed: ${res.status}`);
         }
 
+        await clearDraft();
         alert(t("write_save_success"));
         router.push(`/${lan}/${classification}/${category}/${slug}`);
       } else {
@@ -421,6 +477,7 @@ export default function WritePage() {
           throw new Error(err.error || `Save failed: ${res.status}`);
         }
 
+        await clearDraft();
         alert(t("write_save_success"));
         router.push(`/${lan}`);
       }

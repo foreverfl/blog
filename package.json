@@ -47,6 +47,7 @@
     "graphql-request": "^7.4.0",
     "highlight.js": "^11.11.1",
     "i18next": "^25.8.20",
+    "idb": "^8.0.3",
     "ioredis": "^5.10.1",
     "js-cookie": "^3.0.5",
     "jsdom": "^29.0.1",
