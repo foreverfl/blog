@@ -1,8 +1,6 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import Error from "next/error";
-import { useEffect } from "react";
 
 export default function GlobalError({
   error,
@@ -11,10 +9,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    Sentry.captureException(error);
-  }, [error]);
-
   return (
     <html>
       <body className="bg-gray-100">
@@ -24,8 +18,8 @@ export default function GlobalError({
               Application Error
             </h1>
             <p className="mb-6 leading-relaxed text-gray-600">
-              A client-side exception has occurred. The error has been reported
-              to our team and we&apos;ll look into it as soon as possible.
+              A client-side exception has occurred. We&apos;ll look into it as
+              soon as possible.
             </p>
             <div className="flex gap-3">
               <button

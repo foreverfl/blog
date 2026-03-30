@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-import { withSentryConfig } from "@sentry/nextjs";
 import createMDX from "@next/mdx";
 
 const nextConfig = {
@@ -64,30 +63,4 @@ const withMDX = createMDX({
   },
 });
 
-// Sentry configuration options
-const sentryWebpackPluginOptions = {
-  // Suppresses source map uploading logs during build
-  silent: true,
-  // Organization and project slug from your Sentry account
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  // Auth token for uploading source maps
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  // Will create a release and upload source maps automatically
-  widenClientFileUpload: true,
-  // Transpiles SDK for compatibility with IE11 (if needed)
-  transpileClientSDK: true,
-  // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers
-  tunnelRoute: "/monitoring",
-  // Hides source maps from generated client bundles
-  hideSourceMaps: true,
-  // Disable debug logging via tree shaking
-  bundleSizeOptimizations: {
-    excludeDebugStatements: true,
-  },
-};
-
-// Wrap MDX config with Sentry config
-const mdxConfig = withMDX(nextConfig);
-
-export default withSentryConfig(mdxConfig, sentryWebpackPluginOptions);
+export default withMDX(nextConfig);
