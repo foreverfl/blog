@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { usePathname } from "next/navigation";
 
 import NavbarSub from "./NavbarSub";
@@ -82,51 +88,43 @@ const Navbar: React.FC = () => {
   };
 
   // Refs
-  const subNavbarRef = useRef<HTMLDivElement>(null); // useRef로 DOM 요소 참조 생성
+  const subNavbarRef = useRef<HTMLDivElement>(null);
 
   // States
-  // 페이지 정보
-  const [isPost, setIsPost] = useState(isPostPage());
+  // Initialize as false to match server render and avoid hydration mismatch.
+  // useLayoutEffect below sets the correct value before paint.
+  const [isPost, setIsPost] = useState(false);
   const [postInfo, setPostInfo] = useState<PostInfo | null>(null);
   const [title, setTitle] = useState("");
   const [hoveredTitle, setHoveredTitle] = useState(title);
   const [subnavTitle, setSubnavTitle] = useState("");
 
-  // 스타일
-  const [titleColor, setTitleColor] = useState(
-    isPost ? "text-transparent" : "text-black dark:text-white",
-  );
+  // Styles - initialize with non-post defaults to match server render (isPost starts as false)
+  const [titleColor, setTitleColor] = useState("text-black dark:text-white");
   const [subNavbarTitleColor, setSubNavbarTitleColor] = useState(
-    isPost ? "text-white dark:text-white" : "text-black dark:text-white",
+    "text-black dark:text-white",
   );
   const [titleBackgroundColor, setTitleBackgroundColor] = useState(
-    isPost ? "bg-transparent" : "bg-slate-50 dark:bg-neutral-800",
+    "bg-slate-50 dark:bg-neutral-800",
   );
-  const [menuColor, setMenuColor] = useState(
-    isPost ? "text-white dark:text-white" : "text-black dark:text-white",
-  );
+  const [menuColor, setMenuColor] = useState("text-black dark:text-white");
 
-  // 스크롤바
+  // Scroll progress
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [scrollColor, setScrollColor] = useState(
-    "bg-gray-900 dark:bg-neutral-50",
-  );
+  const scrollColor = "bg-gray-900 dark:bg-neutral-50";
 
-  // 기타
+  // Menu / Profile
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
-  // 포스트 정보 업데이트
+  // Fetch post info when navigating to a post page
   useEffect(() => {
-    const postPage = isPostPage();
-    setIsPost(postPage);
-
-    if (postPage) {
+    if (isPost) {
       fetchPostInfo();
     }
-  }, [pathname, fetchPostInfo, isPostPage]);
+  }, [isPost, fetchPostInfo]);
 
-  // 가로 스크롤
+  // Horizontal scroll progress bar
   useEffect(() => {
     const updateScrollProgress = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -136,14 +134,14 @@ const Navbar: React.FC = () => {
       setScrollProgress(scrolled);
     };
 
-    window.addEventListener("scroll", updateScrollProgress); // 스크롤 이벤트 리스너 추가
+    window.addEventListener("scroll", updateScrollProgress);
 
     return () => {
-      window.removeEventListener("scroll", updateScrollProgress); // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+      window.removeEventListener("scroll", updateScrollProgress);
     };
   }, []);
 
-  // 타이틀
+  // Title text
   useEffect(() => {
     if (isPost) {
       setTitle(postInfo?.title || "");
@@ -159,16 +157,32 @@ const Navbar: React.FC = () => {
   // Fix navbar style when SubNavbar is not rendered (e.g. /write page)
   const isWritePage = pathname.includes("/write");
 
-  useEffect(() => {
+  // Sync isPost and styles before paint to prevent CSR navigation flash
+  useLayoutEffect(() => {
+    const postPage = isPostPage();
+    setIsPost(postPage);
+
     if (isWritePage) {
       setTitleColor("text-black dark:text-white");
       setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
       setMenuColor("text-black dark:text-white");
       return;
     }
-  }, [isWritePage]);
 
-  // Styles
+    if (postPage) {
+      setTitleColor("text-transparent dark:text-transparent");
+      setTitleBackgroundColor("bg-transparent");
+      setSubNavbarTitleColor("text-white dark:text-white");
+      setMenuColor("text-white dark:text-white");
+    } else {
+      setTitleColor("text-transparent dark:text-transparent");
+      setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
+      setSubNavbarTitleColor("text-black dark:text-white");
+      setMenuColor("text-black dark:text-white");
+    }
+  }, [pathname, isWritePage, isPostPage]);
+
+  // Scroll-based style updates
   useEffect(() => {
     if (isWritePage) return;
     const subNavbar = subNavbarRef.current;
@@ -179,49 +193,44 @@ const Navbar: React.FC = () => {
 
       if (isPost) {
         if (scrollPosition <= subNavbarHeight) {
-          // SubNavbar가 보일 때
+          // SubNavbar visible
           setTitleColor("text-transparent dark:text-transparent");
           setTitleBackgroundColor("bg-transparent");
           setSubNavbarTitleColor("text-white dark:text-white");
           setMenuColor("text-white dark:text-white");
         } else {
-          // SubNavbar가 보이지 않을 때
+          // SubNavbar scrolled out
           setTitleColor("bg-transparent");
           setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
           setSubNavbarTitleColor("text-white dark:text-white");
           setMenuColor("text-black dark:text-white");
         }
       } else {
-        // SubNavbar가 보일 때
         if (scrollPosition <= subNavbarHeight) {
+          // SubNavbar visible
           setTitleColor("text-transparent dark:text-transparent");
           setSubNavbarTitleColor("text-black dark:text-white");
-        }
-
-        // SubNavbar가 보이지 않을 때
-        else {
+        } else {
+          // SubNavbar scrolled out
           setTitleColor("text-black dark:text-white");
           setSubNavbarTitleColor("text-black dark:text-white");
         }
       }
     };
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      updateStyles(scrollPosition);
-    };
-
-    // 초기 설정 - 현재 스크롤 위치에 따라 즉시 스타일 업데이트
+    // Apply styles immediately based on current scroll position
     updateStyles(window.scrollY);
 
-    // 스크롤 이벤트 리스너 추가
+    const handleScroll = () => {
+      updateStyles(window.scrollY);
+    };
+
     window.addEventListener("scroll", handleScroll);
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [isPost]);
+  }, [isPost, isWritePage]);
 
   if (shouldHideNavbar()) {
     return null;
