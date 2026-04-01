@@ -10,7 +10,7 @@ export async function summarize(text: string): Promise<string> {
     });
 
     // Get the prompt file from the server
-    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://mogumogu.dev";
     const res = await fetch(`${siteUrl}/prompts/summary.md`);
 
     if (!res.ok) throw new Error("Prompt file fetch failed");
