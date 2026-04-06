@@ -37,7 +37,8 @@ const HomeContent: React.FC = () => {
       posts.map((p) => ({
         fileName: p.slug,
         title: p.title || "Untitled",
-        date: p.created_at.split("T")[0],
+        date:
+          p.classification === "trends" ? p.slug : p.created_at.split("T")[0],
         classification: p.classification,
         category: p.category,
         image: p.image || "",
