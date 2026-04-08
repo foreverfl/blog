@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveHackernewsThumbnail } from "@/lib/hackernews/resolveImage";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
@@ -66,36 +67,23 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   };
 
   useEffect(() => {
-    const checkImageExists = async (url: string) => {
-      try {
-        const res = await fetch(url, { method: "HEAD" });
-        return res.ok;
-      } catch {
-        return false;
-      }
-    };
-
     const processItems = async () => {
       setIsLoading(true);
 
-      // 전체 날짜 중 이번 페이지에 보여줄 부분만 추출
+      // Slice the full date list down to the current page window.
       const startIdx = (currentPage - 1) * postsPerPage;
       const endIdx = currentPage * postsPerPage;
       const pageDates = allDates.slice(startIdx, endIdx);
 
-      // 이미지 비동기 체크 및 PostItem 생성
+      // Resolve thumbnails asynchronously and build PostItems.
+      const timestamp = Date.now();
       const promises = pageDates.map(async ({ folder, date }) => {
         const formatted = date.replace(/-/g, "");
-        // Add timestamp parameter for cache busting
-        const timestamp = Date.now();
-        const pngUrl = `${R2_BASE}/hackernews-images/${formatted}.png?t=${timestamp}`;
-        const webpUrl = `${R2_BASE}/hackernews-images/${formatted}.webp?t=${timestamp}`;
-        let imageUrl = "/images/placeholder.png";
-        if (await checkImageExists(pngUrl)) {
-          imageUrl = pngUrl;
-        } else if (await checkImageExists(webpUrl)) {
-          imageUrl = webpUrl;
-        }
+        const imageUrl = await resolveHackernewsThumbnail(
+          R2_BASE ?? "",
+          formatted,
+          timestamp,
+        );
         return {
           key: `${folder}-${date}`,
           href: `/${lan}/trends/${folder}/${date}`,
