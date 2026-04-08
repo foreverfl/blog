@@ -88,13 +88,19 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
         const formatted = date.replace(/-/g, "");
         // Add timestamp parameter for cache busting
         const timestamp = Date.now();
-        const url = `${R2_BASE}/hackernews-images/${formatted}.webp?t=${timestamp}`;
-        const exists = await checkImageExists(url);
+        const pngUrl = `${R2_BASE}/hackernews-images/${formatted}.png?t=${timestamp}`;
+        const webpUrl = `${R2_BASE}/hackernews-images/${formatted}.webp?t=${timestamp}`;
+        let imageUrl = "/images/placeholder.png";
+        if (await checkImageExists(pngUrl)) {
+          imageUrl = pngUrl;
+        } else if (await checkImageExists(webpUrl)) {
+          imageUrl = webpUrl;
+        }
         return {
           key: `${folder}-${date}`,
           href: `/${lan}/trends/${folder}/${date}`,
           date,
-          imageUrl: exists ? url : "/images/placeholder.png",
+          imageUrl,
         };
       });
 
