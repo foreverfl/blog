@@ -1,19 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import { useEffect } from "react";
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
+import dynamic from "next/dynamic";
+import type { MapCoords } from "./map-lab/types";
 
-const TILE_URL = "/osm/tile";
+const GoogleMapView = dynamic(() => import("./map-lab/GoogleMap"), {
+  ssr: false,
+});
+const MapboxMapView = dynamic(() => import("./map-lab/MapboxMap"), {
+  ssr: false,
+});
+const OsmProviderMapView = dynamic(() => import("./map-lab/OsmProviderMap"), {
+  ssr: false,
+});
+const SelfHostedOsmMapView = dynamic(
+  () => import("./map-lab/SelfHostedOsmMap"),
+  { ssr: false },
+);
 
-interface LocationInfo {
-  lat: number;
-  lng: number;
-  label: string;
-}
+const DEFAULT_CENTER: MapCoords = { lat: 35.6832, lng: 139.702 }; // Yoyogi
+const DEFAULT_ZOOM = 17;
 
 export default function MapLab() {
   const { t, i18n } = useTranslation();
@@ -26,96 +36,59 @@ export default function MapLab() {
     }
   }, [lan, i18n]);
 
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-  const markerRef = useRef<maplibregl.Marker | null>(null);
-
-  const [location, setLocation] = useState<LocationInfo | null>(null);
+  const [center, setCenter] = useState<MapCoords>(DEFAULT_CENTER);
+  const [marker, setMarker] = useState<(MapCoords & { label: string }) | null>(
+    null,
+  );
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [confirmedCoords, setConfirmedCoords] = useState<MapCoords | null>(
+    null,
+  );
 
-  // Initialize map
-  useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
+  // Search via Google Geocoding API
+  const handleSearch = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!searchQuery.trim()) return;
 
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          osm: {
-            type: "raster",
-            tiles: [`${TILE_URL}/{z}/{x}/{y}.png`],
-            tileSize: 256,
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          },
-        },
-        layers: [
-          {
-            id: "osm-tiles",
-            type: "raster",
-            source: "osm",
-            minzoom: 0,
-            maxzoom: 19,
-          },
-        ],
-      },
-      center: [139.7005, 35.6938],
-      zoom: 15,
-    });
+      setError(null);
+      setLoading(true);
 
-    map.addControl(new maplibregl.NavigationControl(), "top-right");
-    mapRef.current = map;
+      try {
+        if (typeof google === "undefined" || !google.maps?.Geocoder) {
+          setError(t("map_lab_search_fail"));
+          return;
+        }
+        const geocoder = new google.maps.Geocoder();
+        const response = await geocoder.geocode({
+          address: searchQuery.trim(),
+        });
 
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
-  }, []);
+        if (response.results && response.results.length > 0) {
+          const loc = response.results[0].geometry.location;
+          const name =
+            response.results[0].formatted_address || searchQuery.trim();
+          const coords = { lat: loc.lat(), lng: loc.lng() };
+          setCenter(coords);
+          setMarker({ ...coords, label: name });
+          setZoom(14);
+          setConfirmedCoords(null);
+        } else {
+          setError(t("map_lab_search_no_result"));
+        }
+      } catch {
+        setError(t("map_lab_search_fail"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchQuery, t],
+  );
 
-  // Update marker when location changes
-  useEffect(() => {
-    if (!mapRef.current || !location) return;
-
-    if (markerRef.current) {
-      markerRef.current.remove();
-    }
-
-    const el = document.createElement("div");
-    el.className = "map-lab-marker";
-    el.style.cssText = `
-      width: 20px; height: 20px;
-      background: #3b82f6;
-      border: 3px solid white;
-      border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    `;
-
-    const popup = new maplibregl.Popup({ offset: 15 }).setHTML(
-      `<div style="padding:4px 8px;font-size:13px;color:#333;">
-        <strong>${location.label}</strong><br/>
-        ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}
-      </div>`,
-    );
-
-    const marker = new maplibregl.Marker({ element: el })
-      .setLngLat([location.lng, location.lat])
-      .setPopup(popup)
-      .addTo(mapRef.current);
-
-    marker.togglePopup();
-    markerRef.current = marker;
-
-    mapRef.current.flyTo({
-      center: [location.lng, location.lat],
-      zoom: 14,
-      duration: 1500,
-    });
-  }, [location]);
-
-  // Fetch precise location via Browser Geolocation API
+  // My Location via Browser Geolocation
   const fetchMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError(t("map_lab_geo_unavailable"));
@@ -127,11 +100,14 @@ export default function MapLab() {
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setLocation({
+        const coords = {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
-          label: t("map_lab_your_location"),
-        });
+        };
+        setCenter(coords);
+        setMarker({ ...coords, label: t("map_lab_your_location") });
+        setZoom(14);
+        setConfirmedCoords(coords);
         setLoading(false);
       },
       (err) => {
@@ -152,98 +128,100 @@ export default function MapLab() {
     );
   }, [t]);
 
-  // Search location (frontend stub — backend logic TBD)
-  const handleSearch = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!searchQuery.trim()) return;
+  // Confirm current marker coords
+  const handleConfirm = useCallback(() => {
+    if (marker) {
+      setConfirmedCoords({ lat: marker.lat, lng: marker.lng });
+    }
+  }, [marker]);
 
-      setError(null);
-      setLoading(true);
-
-      try {
-        // TODO: replace with your own backend endpoint
-        const res = await fetch(
-          `/api/geocode?q=${encodeURIComponent(searchQuery.trim())}`,
-        );
-        if (!res.ok) throw new Error("search failed");
-        const data = await res.json();
-
-        if (data.lat && data.lng) {
-          setLocation({
-            lat: data.lat,
-            lng: data.lng,
-            label: data.name || searchQuery.trim(),
-          });
-        } else {
-          setError(t("map_lab_search_no_result"));
-        }
-      } catch {
-        setError(t("map_lab_search_fail"));
-      } finally {
-        setLoading(false);
-      }
-    },
-    [searchQuery, t],
-  );
+  const mapProps = { center, marker, zoom };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 mt-16">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-        {t("map_lab_title")}
-      </h1>
-      <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-        {t("map_lab_description")}
-      </p>
-
-      {/* Search bar + My Location button */}
-      <div className="w-full max-w-4xl flex gap-2">
+    <div className="flex flex-col h-screen">
+      {/* Top bar */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mt-16">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("map_lab_search_placeholder")}
-            className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
             disabled={loading || !searchQuery.trim()}
-            className="px-4 py-2.5 rounded-lg font-medium text-white bg-gray-700 hover:bg-gray-800 disabled:opacity-50 transition-colors text-sm"
+            className="px-4 py-2 rounded-lg font-medium text-white bg-gray-700 hover:bg-gray-800 disabled:opacity-50 transition-colors text-sm"
           >
             {t("map_lab_search")}
           </button>
         </form>
+
         <button
           onClick={fetchMyLocation}
           disabled={loading}
-          className="px-4 py-2.5 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 transition-colors text-sm whitespace-nowrap"
+          className="px-4 py-2 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 transition-colors text-sm whitespace-nowrap"
         >
           {loading ? t("map_lab_locating") : t("map_lab_my_location")}
         </button>
+
+        {marker && !confirmedCoords && (
+          <button
+            onClick={handleConfirm}
+            className="px-4 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700 transition-colors text-sm whitespace-nowrap"
+          >
+            {t("map_lab_confirm")}
+          </button>
+        )}
       </div>
 
-      {/* Map */}
-      <div
-        ref={mapContainerRef}
-        className="w-full max-w-4xl h-125 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden"
-      />
-
-      {/* Location info */}
-      {location && !loading && (
-        <div className="text-sm text-gray-600 dark:text-gray-300 text-center">
-          <span
-            className="inline-block w-3 h-3 rounded-full mr-2 align-middle"
-            style={{ background: "#3b82f6" }}
-          />
-          {location.label}
+      {/* Coords display */}
+      {(confirmedCoords || marker) && (
+        <div className="flex items-center justify-center gap-4 px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 text-sm">
+          {confirmedCoords ? (
+            <span className="text-green-600 dark:text-green-400 font-mono">
+              {t("map_lab_confirmed")}: {confirmedCoords.lat.toFixed(6)},{" "}
+              {confirmedCoords.lng.toFixed(6)}
+            </span>
+          ) : (
+            marker && (
+              <span className="text-gray-600 dark:text-gray-300 font-mono">
+                {marker.label}: {marker.lat.toFixed(6)}, {marker.lng.toFixed(6)}
+                \{" "}
+              </span>
+            )
+          )}
+          {error && (
+            <span className="text-red-500 dark:text-red-400">{error}</span>
+          )}
         </div>
       )}
 
-      {/* Error */}
-      {error && (
-        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+      {/* Error only (no coords) */}
+      {error && !confirmedCoords && !marker && (
+        <div className="flex items-center justify-center px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <span className="text-sm text-red-500 dark:text-red-400">
+            {error}
+          </span>
+        </div>
       )}
+
+      {/* 2x2 Map Grid */}
+      <div className="flex-1 grid grid-cols-2 grid-rows-2 min-h-0">
+        <div className="border-r border-b border-gray-300 dark:border-gray-600">
+          <GoogleMapView {...mapProps} title="Google Maps" />
+        </div>
+        <div className="border-b border-gray-300 dark:border-gray-600">
+          <MapboxMapView {...mapProps} title="Mapbox" />
+        </div>
+        <div className="border-r border-gray-300 dark:border-gray-600">
+          <OsmProviderMapView {...mapProps} title="OSM (Provider)" />
+        </div>
+        <div>
+          <SelfHostedOsmMapView {...mapProps} title="OSM (Self-hosted)" />
+        </div>
+      </div>
     </div>
   );
 }

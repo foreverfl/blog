@@ -54,6 +54,8 @@
   "map_lab_search": "Search",
   "map_lab_search_no_result": "No results found.",
   "map_lab_search_fail": "Location search failed.",
+  "map_lab_confirm": "Confirm",
+  "map_lab_confirmed": "Confirmed",
 
   "write_save": "Save",
   "write_saving": "Saving...",

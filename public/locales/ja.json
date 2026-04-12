@@ -54,6 +54,8 @@
   "map_lab_search": "検索",
   "map_lab_search_no_result": "検索結果がありません。",
   "map_lab_search_fail": "場所の検索に失敗しました。",
+  "map_lab_confirm": "確認",
+  "map_lab_confirmed": "確定座標",
 
   "write_save": "保存",
   "write_saving": "保存中...",

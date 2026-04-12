@@ -54,6 +54,8 @@
   "map_lab_search": "검색",
   "map_lab_search_no_result": "검색 결과가 없습니다.",
   "map_lab_search_fail": "위치 검색에 실패했습니다.",
+  "map_lab_confirm": "확인",
+  "map_lab_confirmed": "확정 좌표",
 
   "write_save": "저장",
   "write_saving": "저장 중...",
