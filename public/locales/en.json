@@ -45,11 +45,15 @@
   "map_lab_description": "Interactive map powered by a self-hosted OpenStreetMap server.",
   "map_lab_your_location": "Your Location",
 
-  "map_lab_precise_location": "Show precise location",
   "map_lab_locating": "Locating...",
   "map_lab_geo_denied": "Location access denied. Please allow it in your browser settings.",
   "map_lab_geo_unavailable": "Location information is unavailable.",
   "map_lab_geo_timeout": "Location request timed out.",
+  "map_lab_my_location": "My Location",
+  "map_lab_search_placeholder": "Search location...",
+  "map_lab_search": "Search",
+  "map_lab_search_no_result": "No results found.",
+  "map_lab_search_fail": "Location search failed.",
 
   "write_save": "Save",
   "write_saving": "Saving...",

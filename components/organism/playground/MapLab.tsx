@@ -13,7 +13,6 @@ interface LocationInfo {
   lat: number;
   lng: number;
   label: string;
-  precise: boolean;
 }
 
 export default function MapLab() {
@@ -34,6 +33,7 @@ export default function MapLab() {
   const [location, setLocation] = useState<LocationInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Initialize map
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function MapLab() {
     el.className = "map-lab-marker";
     el.style.cssText = `
       width: 20px; height: 20px;
-      background: ${location.precise ? "#3b82f6" : "#f59e0b"};
+      background: #3b82f6;
       border: 3px solid white;
       border-radius: 50%;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
@@ -110,13 +110,13 @@ export default function MapLab() {
 
     mapRef.current.flyTo({
       center: [location.lng, location.lat],
-      zoom: location.precise ? 14 : 10,
+      zoom: 14,
       duration: 1500,
     });
   }, [location]);
 
   // Fetch precise location via Browser Geolocation API
-  const fetchPreciseLocation = useCallback(() => {
+  const fetchMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError(t("map_lab_geo_unavailable"));
       return;
@@ -131,7 +131,6 @@ export default function MapLab() {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
           label: t("map_lab_your_location"),
-          precise: true,
         });
         setLoading(false);
       },
@@ -153,8 +152,43 @@ export default function MapLab() {
     );
   }, [t]);
 
+  // Search location (frontend stub — backend logic TBD)
+  const handleSearch = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!searchQuery.trim()) return;
+
+      setError(null);
+      setLoading(true);
+
+      try {
+        // TODO: replace with your own backend endpoint
+        const res = await fetch(
+          `/api/geocode?q=${encodeURIComponent(searchQuery.trim())}`,
+        );
+        if (!res.ok) throw new Error("search failed");
+        const data = await res.json();
+
+        if (data.lat && data.lng) {
+          setLocation({
+            lat: data.lat,
+            lng: data.lng,
+            label: data.name || searchQuery.trim(),
+          });
+        } else {
+          setError(t("map_lab_search_no_result"));
+        }
+      } catch {
+        setError(t("map_lab_search_fail"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchQuery, t],
+  );
+
   return (
-    <div className="flex flex-col items-center gap-6 p-6 mt-16">
+    <div className="flex flex-col items-center gap-4 p-6 mt-16">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
         {t("map_lab_title")}
       </h1>
@@ -162,22 +196,38 @@ export default function MapLab() {
         {t("map_lab_description")}
       </p>
 
+      {/* Search bar + My Location button */}
+      <div className="w-full max-w-4xl flex gap-2">
+        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("map_lab_search_placeholder")}
+            className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="submit"
+            disabled={loading || !searchQuery.trim()}
+            className="px-4 py-2.5 rounded-lg font-medium text-white bg-gray-700 hover:bg-gray-800 disabled:opacity-50 transition-colors text-sm"
+          >
+            {t("map_lab_search")}
+          </button>
+        </form>
+        <button
+          onClick={fetchMyLocation}
+          disabled={loading}
+          className="px-4 py-2.5 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 transition-colors text-sm whitespace-nowrap"
+        >
+          {loading ? t("map_lab_locating") : t("map_lab_my_location")}
+        </button>
+      </div>
+
       {/* Map */}
       <div
         ref={mapContainerRef}
         className="w-full max-w-4xl h-125 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden"
       />
-
-      {/* Controls */}
-      <div className="flex gap-3">
-        <button
-          onClick={fetchPreciseLocation}
-          disabled={loading}
-          className="px-5 py-2.5 rounded-lg font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 transition-colors"
-        >
-          {loading ? t("map_lab_locating") : t("map_lab_precise_location")}
-        </button>
-      </div>
 
       {/* Location info */}
       {location && !loading && (
