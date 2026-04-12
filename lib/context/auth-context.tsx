@@ -8,8 +8,8 @@ import {
   useState,
 } from "react";
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+const API_AUTH_URL =
+  process.env.NEXT_PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
 
 const ADMIN_EMAILS =
   process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
@@ -36,7 +36,7 @@ const AuthContext = createContext<AuthState | undefined>(undefined);
 
 async function tryRefreshToken(): Promise<boolean> {
   try {
-    const res = await fetch(`${AUTH_API_URL}/auth/refresh`, {
+    const res = await fetch(`${API_AUTH_URL}/refresh`, {
       method: "POST",
       credentials: "include",
     });
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         const currentToken = localStorage.getItem("access_token");
-        const res = await fetch(`${AUTH_API_URL}/auth/me`, {
+        const res = await fetch(`${API_AUTH_URL}/me`, {
           headers: { Authorization: `Bearer ${currentToken}` },
         });
 
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const refreshed = await tryRefreshToken();
           if (refreshed) {
             const retryToken = localStorage.getItem("access_token");
-            const retryRes = await fetch(`${AUTH_API_URL}/auth/me`, {
+            const retryRes = await fetch(`${API_AUTH_URL}/me`, {
               headers: { Authorization: `Bearer ${retryToken}` },
             });
             if (retryRes.ok) {
@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch(`${AUTH_API_URL}/auth/logout`, {
+      await fetch(`${API_AUTH_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });

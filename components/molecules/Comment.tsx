@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
@@ -19,11 +20,9 @@ interface Comment {
   repliedAt: string | null;
 }
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
-
 const Comment = ({}) => {
   const { openLoginModal } = useLoginModal();
+  const { userData: user, isReady, isAdmin } = useAuth();
 
   // i18n
   const { t, i18n } = useTranslation();
@@ -36,50 +35,13 @@ const Comment = ({}) => {
   const category = parts[3] || "";
   const slug = parts[4].replace(/-(ko|ja|en)$/, "") || "";
 
-  // admin email
-  const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || [];
-
   // state
-  const [user, setUser] = useState<any>(null);
-  const [userLoading, setUserLoading] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
 
-  const fetchUserData = useCallback(async () => {
-    setUserLoading(true);
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        setUser(null);
-        return;
-      }
-
-      const res = await fetch(`${AUTH_API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-      } else {
-        setUser(null);
-      }
-    } catch (e) {
-      setUser(null);
-    } finally {
-      setUserLoading(false);
-    }
-  }, []);
-
-  const fetchComments = useCallback(async () => {
-    const res = await fetch(
-      `/api/comment/${classification}/${category}/${slug}`,
-    );
-    const data = await res.json();
-    setComments(data);
-  }, [category, classification, slug]);
-
   const createComment = useCallback(
     async (commentText: string) => {
+      if (!user) throw new Error("not authenticated");
       const res = await fetch(
         `/api/comment/${classification}/${category}/${slug}`,
         {
@@ -110,6 +72,7 @@ const Comment = ({}) => {
 
   const updateComment = useCallback(
     async (commentId: string, updatedComment: string) => {
+      if (!user) throw new Error("not authenticated");
       const res = await fetch(
         `/api/comment/${classification}/${category}/${slug}/${commentId}`,
         {
@@ -138,6 +101,7 @@ const Comment = ({}) => {
 
   const deleteComment = useCallback(
     async (commentId: string, userId: string) => {
+      if (!user) throw new Error("not authenticated");
       const res = await fetch(
         `/api/comment/${classification}/${category}/${slug}/${commentId}`,
         {
@@ -253,6 +217,7 @@ const Comment = ({}) => {
   };
 
   const handleDeleteComment = async (commentId: string) => {
+    if (!user?.userId) return;
     try {
       const isConfirmed = confirm(t("comment_delete_confirm"));
       if (!isConfirmed) return;
@@ -317,9 +282,23 @@ const Comment = ({}) => {
   };
 
   useEffect(() => {
-    fetchUserData();
-    fetchComments();
-  }, [fetchUserData, fetchComments]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/comment/${classification}/${category}/${slug}`,
+        );
+        const data = await res.json();
+        if (cancelled) return;
+        setComments(data);
+      } catch (e) {
+        console.error("Failed to fetch comments:", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [classification, category, slug]);
 
   useEffect(() => {
     if (["en", "ja", "ko"].includes(lan)) {
@@ -414,7 +393,7 @@ const Comment = ({}) => {
                     )}
 
                     {/* reply button */}
-                    {adminEmails.includes(user?.email) && (
+                    {isAdmin && (
                       <>
                         <button
                           onClick={() => handleAddReplyComment(comment.id)}
@@ -459,7 +438,7 @@ const Comment = ({}) => {
                     {/* 관리자 버튼 */}
                     <div className="flex justify-end mt-2 px-4 space-x-2">
                       {/* 삭제 버튼 */}
-                      {adminEmails.includes(user?.email) && (
+                      {isAdmin && (
                         <button
                           onClick={() => handleDeleteAdminComment(comment.id)}
                         >
@@ -513,7 +492,7 @@ const Comment = ({}) => {
                 onChange={(e) => setNewComment(e.target.value)}
                 onFocus={handleFocus}
                 placeholder={t("comment_placeholder")}
-                disabled={userLoading}
+                disabled={!isReady}
               ></textarea>
               <div className="absolute right-3 bottom-5">
                 <button

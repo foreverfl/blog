@@ -52,8 +52,8 @@ interface LoginButtonProps {
   provider: ProviderConfig;
 }
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+const API_AUTH_URL =
+  process.env.NEXT_PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
 
 const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   const { t, i18n } = useTranslation();
@@ -67,7 +67,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   }, [lan, i18n]);
 
   const handleLogin = () => {
-    window.location.href = `${AUTH_API_URL}/auth/login/${provider.id}`;
+    window.location.href = `${API_AUTH_URL}/login/${provider.id}`;
   };
 
   return (

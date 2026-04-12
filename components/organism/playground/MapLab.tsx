@@ -207,18 +207,18 @@ export default function MapLab() {
         </div>
       )}
 
-      {/* 2x2 Map Grid */}
-      <div className="flex-1 grid grid-cols-2 grid-rows-2 min-h-0">
-        <div className="border-r border-b border-gray-300 dark:border-gray-600">
+      {/* Map Grid: vertical stack on mobile, 2x2 on md+ */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 min-h-0 overflow-y-auto md:overflow-hidden">
+        <div className="min-h-[60vh] md:min-h-0 border-b md:border-r border-gray-300 dark:border-gray-600">
           <GoogleMapView {...mapProps} title="Google Maps" />
         </div>
-        <div className="border-b border-gray-300 dark:border-gray-600">
+        <div className="min-h-[60vh] md:min-h-0 border-b border-gray-300 dark:border-gray-600">
           <MapboxMapView {...mapProps} title="Mapbox" />
         </div>
-        <div className="border-r border-gray-300 dark:border-gray-600">
+        <div className="min-h-[60vh] md:min-h-0 border-b md:border-b-0 md:border-r border-gray-300 dark:border-gray-600">
           <OsmProviderMapView {...mapProps} title="OSM (Raster)" />
         </div>
-        <div>
+        <div className="min-h-[60vh] md:min-h-0">
           <SelfHostedOsmMapView {...mapProps} title="OSM (Vector)" />
         </div>
       </div>

@@ -9,14 +9,11 @@ import rehypeRaw from "rehype-raw";
 import CodeBlock from "@/components/atom/CodeBlock";
 import Comment from "@/components/molecules/Comment";
 import Good from "@/components/molecules/Good";
+import { useAuth } from "@/lib/context/auth-context";
 import "github-markdown-css";
 
 const RUST_API =
   process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
-const ADMIN_EMAILS =
-  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
 
 interface PostContent {
   lang: string;
@@ -35,6 +32,7 @@ interface PostData {
 const SlugContent: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const { isAdmin } = useAuth();
   const segments = pathname.split("/").filter(Boolean);
   const lan = segments[0] || "en";
   const classification = segments[1];
@@ -44,24 +42,6 @@ const SlugContent: React.FC = () => {
   const [post, setPost] = useState<PostData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Check if current user is admin
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-
-    fetch(`${AUTH_API_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.email && ADMIN_EMAILS.includes(data.email)) {
-          setIsAdmin(true);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     if (!classification || !category || !slug) return;

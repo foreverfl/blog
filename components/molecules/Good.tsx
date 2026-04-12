@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -7,11 +8,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
-
 const Good = () => {
   const { openLoginModal } = useLoginModal();
+  const { userData } = useAuth();
+  const userEmail = userData?.email ?? null;
 
   // path
   const pathname = usePathname();
@@ -22,43 +22,6 @@ const Good = () => {
 
   const [heartState, setHeartState] = useState("before");
   const [likeCount, setLikeCount] = useState(0);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-
-  const fetchLikeData = useCallback(async () => {
-    try {
-      const url =
-        `/api/like/${classification}/${category}/${slug}` +
-        (userEmail ? `?userEmail=${userEmail}` : "");
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data && data.likeCount !== undefined) {
-        setLikeCount(data.likeCount);
-      }
-      if (data && data.liked !== undefined) {
-        setHeartState(data.liked ? "after" : "before");
-      }
-    } catch (error) {
-      console.error("Error fetching like count:", error);
-    }
-  }, [category, classification, slug, userEmail]);
-
-  const fetchUserEmail = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
-
-      const res = await fetch(`${AUTH_API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUserEmail(data.email);
-      }
-    } catch (error) {
-      console.error("Error fetching user email:", error);
-    }
-  }, []);
 
   const addLike = useCallback(
     async (userEmail: string | null): Promise<boolean> => {
@@ -132,12 +95,29 @@ const Good = () => {
   };
 
   useEffect(() => {
-    fetchUserEmail();
-  }, [fetchUserEmail]);
-
-  useEffect(() => {
-    fetchLikeData();
-  }, [fetchLikeData]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const url =
+          `/api/like/${classification}/${category}/${slug}` +
+          (userEmail ? `?userEmail=${userEmail}` : "");
+        const res = await fetch(url);
+        const data = await res.json();
+        if (cancelled) return;
+        if (data && data.likeCount !== undefined) {
+          setLikeCount(data.likeCount);
+        }
+        if (data && data.liked !== undefined) {
+          setHeartState(data.liked ? "after" : "before");
+        }
+      } catch (error) {
+        console.error("Error fetching like count:", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [classification, category, slug, userEmail]);
 
   return (
     <div className="flex items-center justify-center">
