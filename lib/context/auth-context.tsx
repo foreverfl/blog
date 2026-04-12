@@ -12,7 +12,9 @@ const AUTH_API_URL =
   process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
 
 const ADMIN_EMAILS =
-  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map((e) => e.trim()) ?? [];
+  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
+    .map((e) => e.trim())
+    .filter(Boolean) ?? [];
 
 interface UserData {
   email: string;
@@ -134,7 +136,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserData(null);
   };
 
-  const isAdmin = ADMIN_EMAILS.includes(userData?.email ?? "");
+  const isAdmin =
+    isLoggedIn && !!userData?.email && ADMIN_EMAILS.includes(userData.email);
 
   return (
     <AuthContext.Provider
