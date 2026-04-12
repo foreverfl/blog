@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { MapViewProps } from "./types";
-
-const TILE_URL = "/osm/tile";
+import { createVectorStyle } from "./selfHostedOsmStyle";
 
 export default function SelfHostedOsmMapView({
   center,
@@ -17,37 +16,64 @@ export default function SelfHostedOsmMapView({
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
 
-  // Initialize map
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          osm: {
-            type: "raster",
-            tiles: [`${TILE_URL}/{z}/{x}/{y}.png`],
-            tileSize: 256,
-            attribution: "Self-hosted OpenStreetMap",
-          },
-        },
-        layers: [
-          {
-            id: "osm-tiles",
-            type: "raster",
-            source: "osm",
-            minzoom: 0,
-            maxzoom: 19,
-          },
-        ],
-      },
+      style: createVectorStyle(),
       center: [center.lng, center.lat],
       zoom,
     });
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+    map.on("load", () => {
+      map.addSource("custom-spots", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: { type: "Point", coordinates: [139.70392, 35.68386] },
+              properties: { name: "A-Place代々木" },
+            },
+          ],
+        },
+      });
+
+      map.addLayer({
+        id: "custom-spots-icon",
+        type: "circle",
+        source: "custom-spots",
+        paint: {
+          "circle-radius": 7,
+          "circle-color": "#e63946",
+          "circle-stroke-color": "#fff",
+          "circle-stroke-width": 2,
+        },
+      });
+
+      map.addLayer({
+        id: "custom-spots-label",
+        type: "symbol",
+        source: "custom-spots",
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": ["Noto Sans Bold"],
+          "text-size": 12,
+          "text-offset": [0, 1.5],
+          "text-anchor": "top",
+        },
+        paint: {
+          "text-color": "#e63946",
+          "text-halo-color": "#fff",
+          "text-halo-width": 1.5,
+        },
+      });
+    });
+
     mapRef.current = map;
 
     return () => {
@@ -56,7 +82,6 @@ export default function SelfHostedOsmMapView({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update center
   useEffect(() => {
     if (!mapRef.current) return;
     mapRef.current.flyTo({
@@ -66,7 +91,6 @@ export default function SelfHostedOsmMapView({
     });
   }, [center, zoom]);
 
-  // Update marker
   useEffect(() => {
     if (!mapRef.current) return;
     if (markerRef.current) {

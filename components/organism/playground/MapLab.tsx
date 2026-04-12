@@ -22,7 +22,7 @@ const SelfHostedOsmMapView = dynamic(
   { ssr: false },
 );
 
-const DEFAULT_CENTER: MapCoords = { lat: 35.6832, lng: 139.702 }; // Yoyogi
+const DEFAULT_CENTER: MapCoords = { lat: 35.68386, lng: 139.70392 };
 const DEFAULT_ZOOM = 17;
 
 export default function MapLab() {
@@ -216,10 +216,10 @@ export default function MapLab() {
           <MapboxMapView {...mapProps} title="Mapbox" />
         </div>
         <div className="border-r border-gray-300 dark:border-gray-600">
-          <OsmProviderMapView {...mapProps} title="OSM (Provider)" />
+          <OsmProviderMapView {...mapProps} title="OSM (Raster)" />
         </div>
         <div>
-          <SelfHostedOsmMapView {...mapProps} title="OSM (Self-hosted)" />
+          <SelfHostedOsmMapView {...mapProps} title="OSM (Vector)" />
         </div>
       </div>
     </div>

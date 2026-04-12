@@ -30,6 +30,7 @@ export default function OsmProviderMapView({
               `${process.env.NEXT_PUBLIC_OSM_PROVIDER_TILE_URL}/{z}/{x}/{y}.png`,
             ],
             tileSize: 256,
+            maxzoom: 19,
             attribution:
               '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           },

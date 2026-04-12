@@ -92,6 +92,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@mapbox/maki": "^8.2.0",
     "@types/jsdom": "^28.0.1",
     "@types/long": "^5.0.0",
     "@types/mdast": "^4.0.4",

@@ -15,9 +15,21 @@ let scriptLoading = false;
 const callbacks: (() => void)[] = [];
 
 function loadGoogleMaps(apiKey: string): Promise<void> {
-  if (scriptLoaded) return Promise.resolve();
+  if (scriptLoaded || typeof google !== "undefined") {
+    scriptLoaded = true;
+    return Promise.resolve();
+  }
   return new Promise((resolve) => {
     if (scriptLoading) {
+      callbacks.push(resolve);
+      return;
+    }
+    // Check if script tag already exists in DOM (e.g. React Strict Mode re-run)
+    const existing = document.querySelector(
+      'script[src*="maps.googleapis.com/maps/api/js"]',
+    );
+    if (existing) {
+      scriptLoading = true;
       callbacks.push(resolve);
       return;
     }
