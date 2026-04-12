@@ -1,48 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/context/auth-context";
 import MapLab from "@/components/organism/playground/MapLab";
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
-
-const ADMIN_EMAILS =
-  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map((e) => e.trim()) ?? [];
-
 export default function Page() {
-  const [status, setStatus] = useState<"loading" | "authorized" | "denied">(
-    "loading",
-  );
+  const { isReady, isAdmin } = useAuth();
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          setStatus("denied");
-          return;
-        }
-
-        const res = await fetch(`${AUTH_API_URL}/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          setStatus("denied");
-          return;
-        }
-
-        const data = await res.json();
-        setStatus(ADMIN_EMAILS.includes(data.email) ? "authorized" : "denied");
-      } catch {
-        setStatus("denied");
-      }
-    };
-
-    checkAdmin();
-  }, []);
-
-  if (status === "loading") {
+  if (!isReady) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="text-gray-400 animate-pulse">Loading...</span>
@@ -50,7 +14,7 @@ export default function Page() {
     );
   }
 
-  if (status === "denied") {
+  if (!isAdmin) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-gray-500 dark:text-gray-400">

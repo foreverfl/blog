@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoginModal } from "@/lib/context/login-modal-context";
-
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:8001";
+import { useAuth } from "@/lib/context/auth-context";
 
 interface ProfileProps {
   isProfileOpen: boolean;
@@ -19,123 +17,16 @@ const Profile: React.FC<ProfileProps> = ({
   isMenuOpen,
   toggleProfile,
 }) => {
-  // Utilities
   const router = useRouter();
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
-  // State
-  const [isReady, setIsReady] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
+  const { isReady, isLoggedIn, isAdmin, userData, logout } = useAuth();
   const { openLoginModal } = useLoginModal();
 
-  // Check authentication status
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        const expiresAt = localStorage.getItem("token_expires_at");
-
-        if (!token) {
-          setIsReady(true);
-          return;
-        }
-
-        // Check token expiration → try refresh
-        if (expiresAt && Date.now() > Number(expiresAt)) {
-          const refreshed = await tryRefreshToken();
-          if (!refreshed) {
-            clearAuth();
-            setIsReady(true);
-            return;
-          }
-        }
-
-        // Call Auth backend /auth/me
-        const currentToken = localStorage.getItem("access_token");
-        const response = await fetch(`${AUTH_API_URL}/auth/me`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${currentToken}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUserData(data);
-          setIsLoggedIn(true);
-        } else if (response.status === 401) {
-          // access_token expired, try refresh
-          const refreshed = await tryRefreshToken();
-          if (refreshed) {
-            const retryToken = localStorage.getItem("access_token");
-            const retryRes = await fetch(`${AUTH_API_URL}/auth/me`, {
-              method: "GET",
-              headers: { Authorization: `Bearer ${retryToken}` },
-            });
-            if (retryRes.ok) {
-              const data = await retryRes.json();
-              setUserData(data);
-              setIsLoggedIn(true);
-            } else {
-              clearAuth();
-            }
-          } else {
-            clearAuth();
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching authentication status:", error);
-      }
-
-      setIsReady(true);
-    };
-
-    checkAuthStatus();
-  }, []);
-
-  const tryRefreshToken = async (): Promise<boolean> => {
-    try {
-      const res = await fetch(`${AUTH_API_URL}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("access_token", data.access_token);
-        localStorage.setItem(
-          "token_expires_at",
-          String(Date.now() + data.expires_in * 1000),
-        );
-        return true;
-      }
-    } catch (e) {
-      console.error("Token refresh failed:", e);
-    }
-    return false;
-  };
-
-  const clearAuth = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("token_expires_at");
-    setIsLoggedIn(false);
-    setUserData(null);
-  };
-
   const handleLogout = async () => {
-    try {
-      await fetch(`${AUTH_API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-      clearAuth();
-      toggleProfile();
-    } catch (error) {
-      console.error("Logout failed:", error);
-      clearAuth();
-      toggleProfile();
-    }
+    await logout();
+    toggleProfile();
   };
 
   if (!isReady) {
@@ -238,9 +129,7 @@ const Profile: React.FC<ProfileProps> = ({
                 </div>
 
                 {/* Write Post button (admin only) */}
-                {process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
-                  .map((e) => e.trim())
-                  .includes(userData?.email) && (
+                {isAdmin && (
                   <div className="mx-8 my-4">
                     <button
                       onClick={() => {

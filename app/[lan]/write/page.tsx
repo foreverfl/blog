@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
+import { useAuth } from "@/lib/context/auth-context";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -73,6 +74,7 @@ const markdownComponents: Components = {
 };
 
 export default function WritePage() {
+  const { isReady, isAdmin } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -525,6 +527,24 @@ export default function WritePage() {
       setDeleting(false);
     }
   };
+
+  if (!isReady) {
+    return (
+      <div className="min-h-screen pt-20 px-4 flex items-center justify-center">
+        <span className="text-gray-400 animate-pulse">Loading...</span>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen pt-20 px-4 flex items-center justify-center">
+        <p className="text-gray-500 dark:text-gray-400">
+          Access denied. Admin login required.
+        </p>
+      </div>
+    );
+  }
 
   if (loadingPost) {
     return (
