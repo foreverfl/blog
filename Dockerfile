@@ -11,8 +11,6 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
-RUN npx playwright install --with-deps
-
 COPY . .
 
 RUN npx prettier --write . || true
