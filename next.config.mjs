@@ -43,6 +43,14 @@ const nextConfig = {
     ],
   },
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  async rewrites() {
+    return [
+      {
+        source: "/osm/:path*",
+        destination: `${process.env.OSM_TILE_HOME_SERVER_URL}/:path*`,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     // Docker 환경에서 파일 변경 감지를 위한 polling 설정
     if (!isServer) {

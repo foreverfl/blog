@@ -104,6 +104,13 @@
         "name_en": "Audio Lab",
         "emoji": "🎵",
         "link": "audio-lab"
+      },
+      {
+        "name_ko": "지도 랩",
+        "name_ja": "マップラボ",
+        "name_en": "Map Lab",
+        "emoji": "🗺️",
+        "link": "map-lab"
       }
     ]
   }

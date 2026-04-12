@@ -84,6 +84,7 @@ export function proxy(request) {
       pathname.startsWith("/images") ||
       pathname.startsWith("/prompts") ||
       pathname.startsWith("/logo") ||
+      pathname.startsWith("/osm") ||
       pathname.startsWith("/auth") ||
       pathname.startsWith("/login") ||
       pathname.startsWith("/policy") ||

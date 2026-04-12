@@ -41,6 +41,15 @@
   "audio_lab_error_mic_denied": "마이크 접근이 거부되었습니다. 마이크 접근을 허용해 주세요.",
   "audio_lab_error_start_failed": "녹음을 시작하지 못했습니다.",
   "audio_lab_playback": "재생",
+  "map_lab_title": "지도 랩",
+  "map_lab_description": "셀프호스팅 OpenStreetMap 서버와 연동한 인터랙티브 지도입니다.",
+  "map_lab_your_location": "내 위치",
+
+  "map_lab_precise_location": "정확한 위치 보기",
+  "map_lab_locating": "위치 확인 중...",
+  "map_lab_geo_denied": "위치 접근이 거부되었습니다. 브라우저 설정에서 허용해 주세요.",
+  "map_lab_geo_unavailable": "위치 정보를 사용할 수 없습니다.",
+  "map_lab_geo_timeout": "위치 요청 시간이 초과되었습니다.",
 
   "write_save": "저장",
   "write_saving": "저장 중...",

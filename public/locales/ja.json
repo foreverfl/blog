@@ -41,6 +41,15 @@
   "audio_lab_error_mic_denied": "マイクへのアクセスが拒否されました。マイクへのアクセスを許可してください。",
   "audio_lab_error_start_failed": "録音の開始に失敗しました。",
   "audio_lab_playback": "再生",
+  "map_lab_title": "マップラボ",
+  "map_lab_description": "セルフホスティングのOpenStreetMapサーバーと連携したインタラクティブマップです。",
+  "map_lab_your_location": "現在地",
+
+  "map_lab_precise_location": "正確な位置を表示",
+  "map_lab_locating": "位置確認中...",
+  "map_lab_geo_denied": "位置情報へのアクセスが拒否されました。ブラウザの設定で許可してください。",
+  "map_lab_geo_unavailable": "位置情報を利用できません。",
+  "map_lab_geo_timeout": "位置情報のリクエストがタイムアウトしました。",
 
   "write_save": "保存",
   "write_saving": "保存中...",
