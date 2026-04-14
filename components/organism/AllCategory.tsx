@@ -2,6 +2,7 @@
 
 import Pagination from "@/components/molecules/Pagination";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import React, { useState } from "react";
 import LinkWithSpinning from "../molecules/LinkWithSpinning";
 
@@ -17,6 +18,35 @@ interface FrontMatter {
 interface Props {
   posts: FrontMatter[];
   title: string;
+}
+
+function swapExt(url: string): string | null {
+  if (/\.webp(\?.*)?$/.test(url))
+    return url.replace(/\.webp(\?.*)?$/, ".png$1");
+  if (/\.png(\?.*)?$/.test(url)) return url.replace(/\.png(\?.*)?$/, ".webp$1");
+  return null;
+}
+
+function PostThumbnail({ src, alt }: { src: string; alt: string }) {
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [fallbackTried, setFallbackTried] = useState(false);
+
+  return (
+    <Image
+      src={currentSrc}
+      alt={alt}
+      fill
+      loading="lazy"
+      className="absolute inset-0 w-full h-full object-cover object-center"
+      onError={() => {
+        if (fallbackTried) return;
+        const swapped = swapExt(currentSrc);
+        if (!swapped) return;
+        setFallbackTried(true);
+        setCurrentSrc(swapped);
+      }}
+    />
+  );
 }
 
 const AllCategory: React.FC<Props> = ({ posts, title }) => {
@@ -67,12 +97,9 @@ const AllCategory: React.FC<Props> = ({ posts, title }) => {
               }`}
             >
               <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(${post.image || "기본 이미지 경로"})`,
-                  }}
-                ></div>
+                {post.image && (
+                  <PostThumbnail src={post.image} alt={post.title} />
+                )}
                 <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
                   <div className="text-center w-full">
                     <p className="text-sm dark:text-neutral-300">{post.date}</p>

@@ -22,6 +22,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "assets.mogumogu.dev",
+      },
+      {
+        protocol: "https",
         hostname: "blog_workers.forever-fl.workers.dev",
       },
       {
