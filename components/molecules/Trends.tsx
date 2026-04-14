@@ -1,11 +1,14 @@
 "use client";
 
-import { Copy, ExternalLink } from "@geist-ui/icons";
+import TrendItemActions from "@/components/atom/TrendItemActions";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
+
+const RUST_API =
+  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 type TrendItem = {
   id: string;
@@ -33,6 +36,50 @@ export default function Trends({ items }: { items: TrendItem[] }) {
   const lan = pathname.split("/")[1] as "en" | "ja" | "ko";
   const [sortBy, setSortBy] = useState<"default" | "score">("default");
   const [copiedList, setCopiedList] = useState<string[]>([]);
+  const [likedIds, setLikedIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${RUST_API}/hackernews/likes`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : { ids: [] }))
+      .then((data: { ids: number[] }) => {
+        if (!cancelled && Array.isArray(data.ids)) {
+          setLikedIds(new Set(data.ids));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const toggleLike = (hnId: number) => {
+    const wasLiked = likedIds.has(hnId);
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      if (wasLiked) next.delete(hnId);
+      else next.add(hnId);
+      return next;
+    });
+
+    const revert = () => {
+      setLikedIds((prev) => {
+        const next = new Set(prev);
+        if (wasLiked) next.add(hnId);
+        else next.delete(hnId);
+        return next;
+      });
+    };
+
+    fetch(`${RUST_API}/hackernews/likes/${hnId}`, {
+      method: wasLiked ? "DELETE" : "POST",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) revert();
+      })
+      .catch(revert);
+  };
 
   const labels = {
     en: {
@@ -143,24 +190,14 @@ export default function Trends({ items }: { items: TrendItem[] }) {
             </div>
 
             <div className="mt-5 text-sm text-neutral-400 flex justify-between items-center">
-              {/* Copy and external link buttons */}
-              <div className="flex gap-4">
-                <button
-                  onClick={() =>
-                    handleCopy(item.summary[lan] ?? localeLabel.noSummary)
-                  }
-                  className="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Copy size={16} />
-                </button>
-
-                <button
-                  onClick={() => handleExternalLink(item)}
-                  className="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <ExternalLink size={16} />
-                </button>
-              </div>
+              <TrendItemActions
+                isLiked={likedIds.has(item.hnId)}
+                onToggleLike={() => toggleLike(item.hnId)}
+                onCopy={() =>
+                  handleCopy(item.summary[lan] ?? localeLabel.noSummary)
+                }
+                onExternalLink={() => handleExternalLink(item)}
+              />
 
               {/* Author and score information */}
               <div className="text-right">
@@ -180,7 +217,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
             animate={{ opacity: 1, y: -idx * 60 }} // Y축 offset 위로 쌓이게
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed bottom-6 right-6 w-[320px] min-h-[48px] bg-blue-600 text-white px-6 py-3 text-sm rounded shadow-md z-50 flex items-center"
+            className="fixed bottom-6 right-6 w-[320px] min-h-12 bg-blue-600 text-white px-6 py-3 text-sm rounded shadow-md z-50 flex items-center"
           >
             Copied to clipboard!
           </motion.div>
