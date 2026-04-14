@@ -185,7 +185,7 @@ const Menu: React.FC<MenuProps> = ({
                 href="https://foreverfl.github.io/portfolio-v2/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2"
+                className="px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2"
               >
                 <li className="flex items-center">
                   <Image
@@ -193,7 +193,8 @@ const Menu: React.FC<MenuProps> = ({
                     alt={"Portfolio"}
                     width={15}
                     height={15}
-                    className="flex-shrink-0"
+                    className="shrink-0"
+                    style={{ width: 15, height: 15 }}
                   />
                   <span className="ml-3 text-black">portfolio</span>
                 </li>
@@ -204,7 +205,7 @@ const Menu: React.FC<MenuProps> = ({
                 href="https://github.com/foreverfl"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-8 py-4 flex items-center hover:bg-gray-200 space-x-2"
+                className="px-8 py-4 flex items-center hover:bg-gray-200 space-x-2"
               >
                 <li className="flex items-center">
                   <Image
@@ -212,7 +213,8 @@ const Menu: React.FC<MenuProps> = ({
                     alt={"Github"}
                     width={15}
                     height={15}
-                    className="flex-shrink-0"
+                    className="shrink-0"
+                    style={{ width: 15, height: 15 }}
                   />
                   <span className="ml-3 text-black">github</span>
                 </li>
@@ -223,16 +225,17 @@ const Menu: React.FC<MenuProps> = ({
                 href="https://qiita.com/mogumogusityau"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-8 py-4 flex items-center hover:bg-gray-200 rounded-b-md space-x-2"
+                className="px-8 py-4 flex items-center hover:bg-gray-200 rounded-b-md space-x-2"
               >
                 {/* qiita */}
                 <li className="flex items-center">
                   <Image
-                    src={"/logo/qiita.png"}
+                    src={"/logo/qiita-icon.png"}
                     alt={"Qiita"}
                     width={15}
                     height={15}
-                    className="flex-shrink-0"
+                    className="shrink-0"
+                    style={{ width: 15, height: 15 }}
                   />
                   <span className="ml-3 text-black">qiita</span>
                 </li>

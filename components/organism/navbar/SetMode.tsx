@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -8,8 +8,16 @@ interface SetModeProps {
   id?: string;
 }
 
+const subscribe = () => () => {};
+const useMounted = () =>
+  useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+
 const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
-  // 모드 설정
+  const mounted = useMounted();
   const { theme, setTheme, systemTheme, resolvedTheme } = useTheme();
 
   const toggleTheme = () => {
@@ -18,7 +26,7 @@ const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
     );
   };
 
-  if (!resolvedTheme) {
+  if (!mounted) {
     return (
       <div className="animate-pulse">
         <div className="rounded-full bg-gray-400 h-8 w-14"></div>

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import AllCategory from "@/components/organism/AllCategory";
-import { preferPngOverWebp } from "@/lib/hackernews/resolveImage";
 
 const RUST_API =
   process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
@@ -56,14 +55,7 @@ const HomeContent: React.FC = () => {
         }
         if (hnRes.ok) {
           const data = await hnRes.json();
-          const mapped = mapPosts(data.posts);
-          const withPng = await Promise.all(
-            mapped.map(async (p) => ({
-              ...p,
-              image: await preferPngOverWebp(p.image),
-            })),
-          );
-          setHackernewsPosts(withPng);
+          setHackernewsPosts(mapPosts(data.posts));
         }
       })
       .catch((err) => console.error("Failed to fetch posts:", err));
