@@ -47,6 +47,7 @@ export default function OsmProviderMapView({
       },
       center: [center.lng, center.lat],
       zoom,
+      cooperativeGestures: true,
     });
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");

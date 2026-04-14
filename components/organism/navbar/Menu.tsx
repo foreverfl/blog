@@ -88,17 +88,6 @@ const Menu: React.FC<MenuProps> = ({
     }
   }, [isMenuOpen]);
 
-  useEffect(() => {
-    const initialToggleStates = classifications.reduce(
-      (acc, classification) => {
-        acc[classification.link] = false; // 기본적으로 모든 분류를 접혀있는 상태로 초기화
-        return acc;
-      },
-      {} as { [key: string]: boolean },
-    );
-    setToggleStates(initialToggleStates);
-  }, [classifications]);
-
   // Handler
   // 분류 토글 핸들러
   const handleToggle = (classificationId: string) => {

@@ -2,7 +2,7 @@
 
 import { useLoadingDispatch } from "@/lib/context/loading-context";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 interface SetLanguageProps {
   id?: string;
@@ -18,11 +18,6 @@ const SetLanguage: React.FC<SetLanguageProps> = ({
   const [currentLanguage, setCurrentLanguage] = useState(
     pathname.split("/")[1],
   );
-  const [isReady, setIsReady] = useState(false); // loading state
-
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
 
   const handleLanguageChange = async (
     e: React.ChangeEvent<HTMLSelectElement>,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -11,13 +11,6 @@ interface SetModeProps {
 const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
   // 모드 설정
   const { theme, setTheme, systemTheme, resolvedTheme } = useTheme();
-  const [isReady, setIsReady] = useState(false); // 로딩 상태
-
-  useEffect(() => {
-    if (resolvedTheme) {
-      setIsReady(true);
-    }
-  }, [resolvedTheme]);
 
   const toggleTheme = () => {
     setTheme(
@@ -25,7 +18,7 @@ const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
     );
   };
 
-  if (!isReady) {
+  if (!resolvedTheme) {
     return (
       <div className="animate-pulse">
         <div className="rounded-full bg-gray-400 h-8 w-14"></div>

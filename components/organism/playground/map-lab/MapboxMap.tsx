@@ -28,6 +28,7 @@ export default function MapboxMapView({
       style: "mapbox://styles/mapbox/streets-v12",
       center: [center.lng, center.lat],
       zoom,
+      cooperativeGestures: true,
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-right");

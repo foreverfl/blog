@@ -24,6 +24,7 @@ export default function SelfHostedOsmMapView({
       style: createVectorStyle(),
       center: [center.lng, center.lat],
       zoom,
+      cooperativeGestures: true,
     });
 
     map.addControl(new maplibregl.NavigationControl(), "top-right");

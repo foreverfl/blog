@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 import NavbarSub from "./NavbarSub";
@@ -24,215 +18,150 @@ interface PostInfo {
 }
 
 const Navbar: React.FC = () => {
-  // Utilities
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
-  // Check if the current page is a post page
-  const isPostPage = useCallback(() => {
-    const pathSegments = pathname.split("/").filter(Boolean);
-    return pathSegments.length === 4;
-  }, [pathname]);
+  const subNavbarRef = useRef<HTMLDivElement>(null);
 
-  // 특정 경로에서는 Navbar를 숨김
-  const shouldHideNavbar = useCallback(() => {
-    const hiddenRoutes = ["/login"];
-    return hiddenRoutes.some((route) => pathname.includes(route));
-  }, [pathname]);
+  const [postData, setPostData] = useState<{
+    path: string;
+    info: PostInfo;
+  } | null>(null);
+  const postInfo = postData?.path === pathname ? postData.info : null;
+  const [scrollY, setScrollY] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(0);
+  const [subNavbarHeight, setSubNavbarHeight] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // Fetch post metadata
-  const fetchPostInfo = useCallback(async () => {
-    const pathSegments = pathname.split("/").filter(Boolean);
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const isPost = pathSegments.length === 4;
+  const isWritePage = pathname.includes("/write");
+  const shouldHideNavbar = ["/login"].some((route) => pathname.includes(route));
 
-    if (isPostPage()) {
-      const classification = pathSegments[1];
-      const category = pathSegments[2];
-      const slug = pathSegments[3];
+  const title = isPost ? postInfo?.title || "" : "mogumogu";
+  const subnavTitle = isPost ? postInfo?.title || "" : "mogumogu's lab";
 
+  // Fetch post metadata on post pages
+  useEffect(() => {
+    if (!isPost) return;
+    const [, , classification, category, slug] = pathname.split("/");
+    if (!classification || !category || !slug) return;
+
+    let cancelled = false;
+    (async () => {
       try {
         const response = await fetch(
           `/api/post/meta?lan=${lan}&classification=${classification}&category=${category}&slug=${slug}-${lan}`,
         );
-
-        if (response.ok) {
-          const data = await response.json();
-          setPostInfo(data); // Set the post info in state
-        } else {
+        if (!response.ok) {
           console.error("Failed to fetch post metadata");
+          return;
         }
+        const data = await response.json();
+        if (cancelled) return;
+        setPostData({ path: pathname, info: data });
       } catch (error) {
         console.error("Error fetching post metadata:", error);
       }
-    }
-  }, [pathname, lan, isPostPage]);
-
-  const handleNavbarClick = () => {
-    if (window.scrollY === 0) {
-      if (lan === "en") {
-        window.location.href = "/en";
-      } else if (lan === "ja") {
-        window.location.href = "/ja";
-      } else if (lan === "ko") {
-        window.location.href = "/ko";
-      }
-    } else {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  // Refs
-  const subNavbarRef = useRef<HTMLDivElement>(null);
-
-  // States
-  // Initialize as false to match server render and avoid hydration mismatch.
-  // useLayoutEffect below sets the correct value before paint.
-  const [isPost, setIsPost] = useState(false);
-  const [postInfo, setPostInfo] = useState<PostInfo | null>(null);
-  const [title, setTitle] = useState("");
-  const [hoveredTitle, setHoveredTitle] = useState(title);
-  const [subnavTitle, setSubnavTitle] = useState("");
-
-  // Styles - initialize with non-post defaults to match server render (isPost starts as false)
-  const [titleColor, setTitleColor] = useState("text-black dark:text-white");
-  const [subNavbarTitleColor, setSubNavbarTitleColor] = useState(
-    "text-black dark:text-white",
-  );
-  const [titleBackgroundColor, setTitleBackgroundColor] = useState(
-    "bg-slate-50 dark:bg-neutral-800",
-  );
-  const [menuColor, setMenuColor] = useState("text-black dark:text-white");
-
-  // Scroll progress
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const scrollColor = "bg-gray-900 dark:bg-neutral-50";
-
-  // Menu / Profile
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
-
-  // Fetch post info when navigating to a post page
-  useEffect(() => {
-    if (isPost) {
-      fetchPostInfo();
-    }
-  }, [isPost, fetchPostInfo]);
-
-  // Horizontal scroll progress bar
-  useEffect(() => {
-    const updateScrollProgress = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = document.documentElement.clientHeight;
-      const scrolled = (scrollTop / (scrollHeight - clientHeight)) * 100;
-      setScrollProgress(scrolled);
-    };
-
-    window.addEventListener("scroll", updateScrollProgress);
-
+    })();
     return () => {
-      window.removeEventListener("scroll", updateScrollProgress);
+      cancelled = true;
+    };
+  }, [isPost, pathname, lan]);
+
+  // Track scroll position + total scrollable height for progress bar
+  useEffect(() => {
+    const update = () => {
+      setScrollY(window.scrollY || document.documentElement.scrollTop);
+      setScrollHeight(
+        document.documentElement.scrollHeight -
+          document.documentElement.clientHeight,
+      );
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
     };
   }, []);
 
-  // Title text
+  // Observe SubNavbar height so color transitions track its real height
   useEffect(() => {
-    if (isPost) {
-      setTitle(postInfo?.title || "");
-      setSubnavTitle(postInfo?.title || "");
-      setHoveredTitle(postInfo?.title || "");
-    } else {
-      setTitle("mogumogu");
-      setHoveredTitle("mogumogu");
-      setSubnavTitle("mogumogu's lab");
-    }
-  }, [isPost, postInfo?.title]);
+    const node = subNavbarRef.current;
+    if (!node) return;
+    const ro = new ResizeObserver(() => {
+      setSubNavbarHeight(node.offsetHeight);
+    });
+    ro.observe(node);
+    setSubNavbarHeight(node.offsetHeight);
+    return () => ro.disconnect();
+  }, []);
 
-  // Fix navbar style when SubNavbar is not rendered (e.g. /write page)
-  const isWritePage = pathname.includes("/write");
+  const scrollProgress = scrollHeight > 0 ? (scrollY / scrollHeight) * 100 : 0;
+  const scrollColor = "bg-gray-900 dark:bg-neutral-50";
 
-  // Sync isPost and styles before paint to prevent CSR navigation flash
-  useLayoutEffect(() => {
-    const postPage = isPostPage();
-    setIsPost(postPage);
+  const { titleColor, titleBackgroundColor, subNavbarTitleColor, menuColor } =
+    useMemo(() => {
+      if (isWritePage) {
+        return {
+          titleColor: "text-black dark:text-white",
+          titleBackgroundColor: "bg-slate-50 dark:bg-neutral-800",
+          subNavbarTitleColor: "text-black dark:text-white",
+          menuColor: "text-black dark:text-white",
+        };
+      }
 
-    if (isWritePage) {
-      setTitleColor("text-black dark:text-white");
-      setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
-      setMenuColor("text-black dark:text-white");
-      return;
-    }
-
-    if (postPage) {
-      setTitleColor("text-transparent dark:text-transparent");
-      setTitleBackgroundColor("bg-transparent");
-      setSubNavbarTitleColor("text-white dark:text-white");
-      setMenuColor("text-white dark:text-white");
-    } else {
-      setTitleColor("text-transparent dark:text-transparent");
-      setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
-      setSubNavbarTitleColor("text-black dark:text-white");
-      setMenuColor("text-black dark:text-white");
-    }
-  }, [pathname, isWritePage, isPostPage]);
-
-  // Scroll-based style updates
-  useEffect(() => {
-    if (isWritePage) return;
-    const subNavbar = subNavbarRef.current;
-    if (!subNavbar) return;
-
-    const updateStyles = (scrollPosition: number) => {
-      const subNavbarHeight = subNavbar.offsetHeight;
+      const subNavbarVisible = scrollY <= subNavbarHeight;
 
       if (isPost) {
-        if (scrollPosition <= subNavbarHeight) {
-          // SubNavbar visible
-          setTitleColor("text-transparent dark:text-transparent");
-          setTitleBackgroundColor("bg-transparent");
-          setSubNavbarTitleColor("text-white dark:text-white");
-          setMenuColor("text-white dark:text-white");
-        } else {
-          // SubNavbar scrolled out
-          setTitleColor("bg-transparent");
-          setTitleBackgroundColor("bg-slate-50 dark:bg-neutral-800");
-          setSubNavbarTitleColor("text-white dark:text-white");
-          setMenuColor("text-black dark:text-white");
+        if (subNavbarVisible) {
+          return {
+            titleColor: "text-transparent dark:text-transparent",
+            titleBackgroundColor: "bg-transparent",
+            subNavbarTitleColor: "text-white dark:text-white",
+            menuColor: "text-white dark:text-white",
+          };
         }
-      } else {
-        if (scrollPosition <= subNavbarHeight) {
-          // SubNavbar visible
-          setTitleColor("text-transparent dark:text-transparent");
-          setSubNavbarTitleColor("text-black dark:text-white");
-        } else {
-          // SubNavbar scrolled out
-          setTitleColor("text-black dark:text-white");
-          setSubNavbarTitleColor("text-black dark:text-white");
-        }
+        return {
+          titleColor: "bg-transparent",
+          titleBackgroundColor: "bg-slate-50 dark:bg-neutral-800",
+          subNavbarTitleColor: "text-white dark:text-white",
+          menuColor: "text-black dark:text-white",
+        };
       }
-    };
 
-    // Apply styles immediately based on current scroll position
-    updateStyles(window.scrollY);
+      if (subNavbarVisible) {
+        return {
+          titleColor: "text-transparent dark:text-transparent",
+          titleBackgroundColor: "bg-slate-50 dark:bg-neutral-800",
+          subNavbarTitleColor: "text-black dark:text-white",
+          menuColor: "text-black dark:text-white",
+        };
+      }
+      return {
+        titleColor: "text-black dark:text-white",
+        titleBackgroundColor: "bg-slate-50 dark:bg-neutral-800",
+        subNavbarTitleColor: "text-black dark:text-white",
+        menuColor: "text-black dark:text-white",
+      };
+    }, [isPost, isWritePage, scrollY, subNavbarHeight]);
 
-    const handleScroll = () => {
-      updateStyles(window.scrollY);
-    };
+  const handleNavbarClick = () => {
+    if (window.scrollY === 0) {
+      if (lan === "en" || lan === "ja" || lan === "ko") {
+        window.location.href = `/${lan}`;
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-    window.addEventListener("scroll", handleScroll);
+  const closeMenu = () => setIsMenuOpen(false);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isPost, isWritePage]);
-
-  if (shouldHideNavbar()) {
+  if (shouldHideNavbar) {
     return null;
   }
 
@@ -258,7 +187,7 @@ const Navbar: React.FC = () => {
             onClick={handleNavbarClick}
             className={`min-w-32 max-w-80 sm:max-w-96 md:max-w-full text-2xl sm:text-3xl truncate text-center font-navbar dark:text-slate-50 px-5 select-none cursor-pointer ${titleColor}`}
           >
-            {hoveredTitle}
+            {title}
           </div>
         </div>
 
@@ -294,7 +223,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* 서브 네이게이션 바 (write 페이지에서는 숨김) */}
-      {!pathname.includes("/write") && (
+      {!isWritePage && (
         <NavbarSub
           ref={subNavbarRef}
           isPost={isPost}

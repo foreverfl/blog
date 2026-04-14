@@ -70,6 +70,7 @@ export default function GoogleMapView({
       center: { lat: center.lat, lng: center.lng },
       zoom,
       mapId: "map-lab-google",
+      gestureHandling: "cooperative",
     });
   }, [center, zoom]);
 
