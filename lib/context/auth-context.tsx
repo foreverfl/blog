@@ -2,7 +2,9 @@
 
 import {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useState,
@@ -17,11 +19,11 @@ const ADMIN_EMAILS =
     .filter(Boolean) ?? [];
 
 interface UserData {
+  id: string;
   email: string;
   username: string;
-  userName: string;
-  photo: string;
-  [key: string]: string | undefined;
+  photo: string | null;
+  auth_provider: string;
 }
 
 interface AuthState {
@@ -154,4 +156,28 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+}
+
+/**
+ * useState variant that automatically resets to `initial` when the logged-in
+ * user changes (login, logout, account switch). Uses the render-time state
+ * adjustment pattern so no extra effect or frame flicker.
+ *
+ * Use this for per-user UI state such as liked lists, draft comments, etc.
+ */
+export function useUserScopedState<T>(
+  initial: T | (() => T),
+): [T, Dispatch<SetStateAction<T>>] {
+  const { userData } = useAuth();
+  const userKey = userData?.email ?? null;
+
+  const [state, setState] = useState<T>(initial);
+  const [prevUserKey, setPrevUserKey] = useState<string | null>(userKey);
+
+  if (prevUserKey !== userKey) {
+    setPrevUserKey(userKey);
+    setState(typeof initial === "function" ? (initial as () => T)() : initial);
+  }
+
+  return [state, setState];
 }

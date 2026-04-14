@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/context/auth-context";
+import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
@@ -37,7 +37,7 @@ const Comment = ({}) => {
 
   // state
   const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useUserScopedState("");
 
   const createComment = useCallback(
     async (commentText: string) => {
@@ -48,7 +48,7 @@ const Comment = ({}) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            user_id: user.userId,
+            user_id: user.id,
             user_photo: user.photo,
             content: commentText,
           }),
@@ -217,12 +217,12 @@ const Comment = ({}) => {
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    if (!user?.userId) return;
+    if (!user) return;
     try {
       const isConfirmed = confirm(t("comment_delete_confirm"));
       if (!isConfirmed) return;
 
-      const { deletedCommentId } = await deleteComment(commentId, user.userId);
+      const { deletedCommentId } = await deleteComment(commentId, user.id);
       setComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== deletedCommentId),
       );

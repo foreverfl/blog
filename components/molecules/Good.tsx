@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/context/auth-context";
+import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -20,7 +20,9 @@ const Good = () => {
   const category = parts[3] || "";
   const slug = parts[4].replace(/-(ko|ja|en)$/, "") || "";
 
-  const [heartState, setHeartState] = useState("before");
+  const [heartState, setHeartState] = useUserScopedState<"before" | "after">(
+    "before",
+  );
   const [likeCount, setLikeCount] = useState(0);
 
   const addLike = useCallback(
@@ -117,7 +119,7 @@ const Good = () => {
     return () => {
       cancelled = true;
     };
-  }, [classification, category, slug, userEmail]);
+  }, [classification, category, slug, userEmail, setHeartState]);
 
   return (
     <div className="flex items-center justify-center">

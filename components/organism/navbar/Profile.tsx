@@ -115,7 +115,7 @@ const Profile: React.FC<ProfileProps> = ({
                     {/* Username */}
                     <div className="absolute bottom-10">
                       <p className="text-white text-lg text-center">
-                        {userData?.userName}
+                        {userData?.username}
                       </p>
                     </div>
                   </div>

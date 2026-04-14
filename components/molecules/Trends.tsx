@@ -1,6 +1,8 @@
 "use client";
 
 import TrendItemActions from "@/components/atom/TrendItemActions";
+import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
+import { useLoginModal } from "@/lib/context/login-modal-context";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,13 +36,26 @@ type TrendItem = {
 export default function Trends({ items }: { items: TrendItem[] }) {
   const pathname = usePathname();
   const lan = pathname.split("/")[1] as "en" | "ja" | "ko";
+  const { userData: user } = useAuth();
+  const { openLoginModal } = useLoginModal();
   const [sortBy, setSortBy] = useState<"default" | "score">("default");
   const [copiedList, setCopiedList] = useState<string[]>([]);
-  const [likedIds, setLikedIds] = useState<Set<number>>(new Set());
+  const [likedIds, setLikedIds] = useUserScopedState<Set<number>>(
+    () => new Set(),
+  );
 
   useEffect(() => {
+    if (!user) return;
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null;
+    if (!token) return;
+
     let cancelled = false;
-    fetch(`${RUST_API}/hackernews/likes`, { credentials: "include" })
+    fetch(`${RUST_API}/hackernews/likes`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => (res.ok ? res.json() : { ids: [] }))
       .then((data: { ids: number[] }) => {
         if (!cancelled && Array.isArray(data.ids)) {
@@ -51,9 +66,22 @@ export default function Trends({ items }: { items: TrendItem[] }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user]);
 
   const toggleLike = (hnId: number) => {
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null;
+    if (!token) {
+      openLoginModal();
+      return;
+    }
+
     const wasLiked = likedIds.has(hnId);
     setLikedIds((prev) => {
       const next = new Set(prev);
@@ -73,7 +101,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
 
     fetch(`${RUST_API}/hackernews/likes/${hnId}`, {
       method: wasLiked ? "DELETE" : "POST",
-      credentials: "include",
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (!res.ok) revert();
