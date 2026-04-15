@@ -5,6 +5,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -31,6 +32,7 @@ interface AuthState {
   isLoggedIn: boolean;
   isAdmin: boolean;
   userData: UserData | null;
+  refreshAuth: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -67,62 +69,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          setIsReady(true);
+  const refreshAuth = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        setIsLoggedIn(false);
+        setUserData(null);
+        return;
+      }
+
+      const expiresAt = localStorage.getItem("token_expires_at");
+      if (expiresAt && Date.now() > Number(expiresAt)) {
+        const refreshed = await tryRefreshToken();
+        if (!refreshed) {
+          clearAuth();
+          setIsLoggedIn(false);
+          setUserData(null);
           return;
         }
+      }
 
-        const expiresAt = localStorage.getItem("token_expires_at");
-        if (expiresAt && Date.now() > Number(expiresAt)) {
-          const refreshed = await tryRefreshToken();
-          if (!refreshed) {
-            clearAuth();
-            setIsReady(true);
+      const currentToken = localStorage.getItem("access_token");
+      const res = await fetch(`${API_AUTH_URL}/me`, {
+        headers: { Authorization: `Bearer ${currentToken}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setUserData(data);
+        setIsLoggedIn(true);
+        return;
+      }
+
+      if (res.status === 401) {
+        const refreshed = await tryRefreshToken();
+        if (refreshed) {
+          const retryToken = localStorage.getItem("access_token");
+          const retryRes = await fetch(`${API_AUTH_URL}/me`, {
+            headers: { Authorization: `Bearer ${retryToken}` },
+          });
+          if (retryRes.ok) {
+            const data = await retryRes.json();
+            setUserData(data);
+            setIsLoggedIn(true);
             return;
           }
         }
-
-        const currentToken = localStorage.getItem("access_token");
-        const res = await fetch(`${API_AUTH_URL}/me`, {
-          headers: { Authorization: `Bearer ${currentToken}` },
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setUserData(data);
-          setIsLoggedIn(true);
-        } else if (res.status === 401) {
-          const refreshed = await tryRefreshToken();
-          if (refreshed) {
-            const retryToken = localStorage.getItem("access_token");
-            const retryRes = await fetch(`${API_AUTH_URL}/me`, {
-              headers: { Authorization: `Bearer ${retryToken}` },
-            });
-            if (retryRes.ok) {
-              const data = await retryRes.json();
-              setUserData(data);
-              setIsLoggedIn(true);
-            } else {
-              clearAuth();
-            }
-          } else {
-            clearAuth();
-          }
-        }
-      } catch (e) {
-        console.error("Auth check failed:", e);
         clearAuth();
-      } finally {
-        setIsReady(true);
+        setIsLoggedIn(false);
+        setUserData(null);
       }
-    };
-
-    checkAuth();
+    } catch (e) {
+      console.error("Auth check failed:", e);
+      clearAuth();
+      setIsLoggedIn(false);
+      setUserData(null);
+    } finally {
+      setIsReady(true);
+    }
   }, []);
+
+  useEffect(() => {
+    void refreshAuth();
+  }, [refreshAuth]);
 
   const logout = async () => {
     try {
@@ -143,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isReady, isLoggedIn, isAdmin, userData, logout }}
+      value={{ isReady, isLoggedIn, isAdmin, userData, refreshAuth, logout }}
     >
       {children}
     </AuthContext.Provider>
