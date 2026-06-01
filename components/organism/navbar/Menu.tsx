@@ -250,7 +250,7 @@ const Menu: React.FC<MenuProps> = ({
                   className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md cursor-pointer"
                 >
                   <div
-                    className="px-8 py-4 rounded-t-md rounded-b-md hover:rounded-b-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center"
+                    className="px-8 py-4 rounded-t-md rounded-b-md hover:rounded-b-md hover:bg-gray-200 text-black font-bold text-lg flex justify-between items-center cursor-pointer"
                     onClick={() => handleToggle(classification.link)}
                   >
                     <span>
@@ -310,7 +310,7 @@ const Menu: React.FC<MenuProps> = ({
                         scroll={false}
                       >
                         <div
-                          className={`px-8 py-4 hover:bg-gray-200 text-black hover:rounded-b-md`}
+                          className={`px-8 py-4 hover:bg-gray-200 text-black hover:rounded-b-md cursor-pointer`}
                           onClick={(e) => e.stopPropagation()} // prevent parent toggle
                         >
                           {/* Display category name */}
