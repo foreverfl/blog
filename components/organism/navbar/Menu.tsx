@@ -308,6 +308,7 @@ const Menu: React.FC<MenuProps> = ({
                         key={category.link}
                         href={`/${lan}/${classification.link}/${category.link}`}
                         scroll={false}
+                        className="block"
                       >
                         <div
                           className={`px-8 py-4 hover:bg-gray-200 text-black hover:rounded-b-md cursor-pointer`}
