@@ -1,8 +1,0 @@
-before
-node_modules
-.next
-.git
-Dockerfile*
-.dockerignore
-*.log
-.DS_Store
