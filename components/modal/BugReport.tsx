@@ -81,7 +81,7 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
       {!turnstileToken && (
         <>
           <CloudflareTurnstile
-            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY!}
             onSuccess={setTurnstileToken}
             resetDeps={[isOpen]} // 모달 열릴 때마다 새로 mount
           />

@@ -1,5 +1,8 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import ko from "../public/locales/ko.json";
+import ja from "../public/locales/ja.json";
+import en from "../public/locales/en.json";
 
 i18n.use(initReactI18next).init({
   lng: "ko",
@@ -9,15 +12,9 @@ i18n.use(initReactI18next).init({
     escapeValue: false, // react escapes by default
   },
   resources: {
-    ko: {
-      translation: require("../public/locales/ko.json"),
-    },
-    ja: {
-      translation: require("../public/locales/ja.json"),
-    },
-    en: {
-      translation: require("../public/locales/en.json"),
-    },
+    ko: { translation: ko },
+    ja: { translation: ja },
+    en: { translation: en },
   },
 });
 
