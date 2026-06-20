@@ -1,0 +1,31 @@
+---
+import Base from "../../../layouts/Base.astro";
+import CategoryIsland from "@/components/islands/CategoryIsland";
+import categories from "@/public/category.json";
+
+export function getStaticPaths() {
+  const langs = ["en", "ko", "ja"];
+  const paths = [];
+  for (const lan of langs) {
+    for (const cls of categories) {
+      for (const cat of cls.categories) {
+        paths.push({
+          params: { lan, classification: cls.link, category: cat.link },
+        });
+      }
+    }
+  }
+  return paths;
+}
+
+const { lan, classification, category } = Astro.params;
+---
+
+<Base lang={lan}>
+  <CategoryIsland
+    client:only="react"
+    lan={lan}
+    classification={classification}
+    category={category}
+  />
+</Base>

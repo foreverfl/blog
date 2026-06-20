@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import LinkWithSpinning from "../molecules/LinkWithSpinning";
 import Pagination from "../molecules/Pagination";
 
-const RUST_API =
-  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostItem {
   slug: string;
@@ -32,13 +30,17 @@ interface Classification {
 
 const POSTS_PER_PAGE = 8;
 
-const CategoryContent: React.FC = () => {
-  const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
-  const lan = segments[0] || "en";
-  const classification = segments[1];
-  const category = segments[2];
+interface Props {
+  lan: string;
+  classification: string;
+  category: string;
+}
 
+const CategoryContent: React.FC<Props> = ({
+  lan,
+  classification,
+  category,
+}) => {
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
