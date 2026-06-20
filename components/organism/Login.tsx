@@ -53,7 +53,7 @@ interface LoginButtonProps {
 }
 
 const API_AUTH_URL =
-  process.env.NEXT_PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
+  import.meta.env.PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
 
 const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   const { t, i18n } = useTranslation();

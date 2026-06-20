@@ -12,8 +12,7 @@ import Good from "@/components/molecules/Good";
 import { useAuth } from "@/lib/context/auth-context";
 import "github-markdown-css";
 
-const RUST_API =
-  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostContent {
   lang: string;

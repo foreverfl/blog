@@ -26,7 +26,7 @@ interface PostItem {
 const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
-  const R2_BASE = process.env.NEXT_PUBLIC_R2_URI;
+  const R2_BASE = import.meta.env.PUBLIC_R2_URI;
 
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<PostItem[]>([]);

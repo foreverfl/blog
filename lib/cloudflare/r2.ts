@@ -1,7 +1,7 @@
-const R2_BASE = process.env.NEXT_PUBLIC_R2_URI;
+const R2_BASE = import.meta.env.PUBLIC_R2_URI;
 
 if (!R2_BASE) {
-  throw new Error("❌ NEXT_PUBLIC_R2_URI is not defined");
+  throw new Error("❌ PUBLIC_R2_URI is not defined");
 }
 
 type R2Params = {

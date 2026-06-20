@@ -1,6 +1,5 @@
-const RUST_API =
-  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
-const UPLOAD_BASE = process.env.NEXT_PUBLIC_UPLOAD_BASE_URL || "";
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
+const UPLOAD_BASE = import.meta.env.PUBLIC_UPLOAD_BASE_URL || "";
 
 interface UploadContext {
   editorRef: React.RefObject<HTMLTextAreaElement | null>;

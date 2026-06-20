@@ -9,8 +9,7 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 
-const RUST_API =
-  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 type TrendItem = {
   id: string;

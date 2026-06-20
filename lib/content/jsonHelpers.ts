@@ -7,7 +7,7 @@ export async function getContentsStructure(
     throw new Error("❌ Bucket name is invalid or null");
   }
 
-  const listUrl = `${process.env.NEXT_PUBLIC_R2_URI}/${bucket}`;
+  const listUrl = `${import.meta.env.PUBLIC_R2_URI}/${bucket}`;
   const res = await fetch(listUrl);
 
   if (!res.ok) {
