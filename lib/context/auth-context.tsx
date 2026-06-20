@@ -12,11 +12,11 @@ import {
 } from "react";
 
 const API_AUTH_URL =
-  process.env.NEXT_PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
+  import.meta.env.PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
 
 const ADMIN_EMAILS =
-  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
-    .map((e) => e.trim())
+  import.meta.env.PUBLIC_ADMIN_EMAILS?.split(",")
+    .map((e: string) => e.trim())
     .filter(Boolean) ?? [];
 
 interface UserData {
