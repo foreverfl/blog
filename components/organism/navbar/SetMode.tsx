@@ -2,7 +2,6 @@
 
 import React, { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 
 interface SetModeProps {
   id?: string;
@@ -53,7 +52,7 @@ const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
               resolvedTheme === "dark" ? "translate-x-6" : ""
             }`}
           >
-            <Image
+            <img
               src={
                 resolvedTheme === "dark"
                   ? "/images/moon.png"
@@ -62,7 +61,6 @@ const SetMode: React.FC<SetModeProps> = ({ id = "theme-toggle" }) => {
               alt={resolvedTheme === "dark" ? "Dark Mode On" : "Dark Mode Off"}
               width={24}
               height={24}
-              priority={true}
               className="rounded-full"
             />
           </div>

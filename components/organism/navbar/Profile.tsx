@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { useAuth } from "@/lib/context/auth-context";
 
@@ -17,8 +16,7 @@ const Profile: React.FC<ProfileProps> = ({
   isMenuOpen,
   toggleProfile,
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
 
   const { isReady, isLoggedIn, isAdmin, userData, logout } = useAuth();
@@ -46,11 +44,9 @@ const Profile: React.FC<ProfileProps> = ({
             className="border border-gray-300 dark:border-transparent rounded-full bg-white dark:bg-black overflow-hidden"
             onClick={toggleProfile}
           >
-            <Image
+            <img
               src={userData?.photo || "/default_profile.jpg"}
               alt={userData?.username || "Profile"}
-              width={100}
-              height={100}
               className="w-8 h-8 rounded-full object-cover"
             />
           </button>
@@ -94,21 +90,16 @@ const Profile: React.FC<ProfileProps> = ({
                 <div className="relative mx-8 mt-8">
                   <div className="bg-gray-200 square rounded-lg flex justify-center items-center overflow-hidden">
                     {/* Background image */}
-                    <Image
+                    <img
                       src="/images/profile_background.webp"
                       alt="Background"
-                      width={0}
-                      height={0}
                       className="w-full h-full object-cover"
                     />
                     {/* Profile image */}
                     <div className="absolute">
-                      <Image
+                      <img
                         src={userData?.photo || "/images/smile.png"}
                         alt="Inner Profile"
-                        width={100}
-                        height={100}
-                        priority={true}
                         className="w-full h-full object-cover rounded-full"
                       />
                     </div>
@@ -134,7 +125,7 @@ const Profile: React.FC<ProfileProps> = ({
                     <button
                       onClick={() => {
                         toggleProfile();
-                        router.push(`/${lan}/write`);
+                        window.location.assign(`/${lan}/write`);
                       }}
                       className="w-full px-8 py-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     >

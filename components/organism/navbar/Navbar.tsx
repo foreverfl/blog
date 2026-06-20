@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 
 import NavbarSub from "./NavbarSub";
 import Menu from "./Menu";
@@ -9,8 +9,7 @@ import Profile from "./Profile";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
 
-const RUST_API =
-  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostInfo {
   title: string;
@@ -19,7 +18,7 @@ interface PostInfo {
 }
 
 const Navbar: React.FC = () => {
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
 
   const subNavbarRef = useRef<HTMLDivElement>(null);

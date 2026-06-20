@@ -1,7 +1,7 @@
 "use client";
 
 import { useLoadingDispatch } from "@/lib/context/loading-context";
-import { usePathname, useRouter } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import React, { useState } from "react";
 
 interface SetLanguageProps {
@@ -11,8 +11,7 @@ interface SetLanguageProps {
 const SetLanguage: React.FC<SetLanguageProps> = ({
   id = "language-select",
 }) => {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useClientPathname();
   const dispatch = useLoadingDispatch();
 
   const [currentLanguage, setCurrentLanguage] = useState(
@@ -40,19 +39,14 @@ const SetLanguage: React.FC<SetLanguageProps> = ({
     // combine the path parts
     const newPathname = pathParts.join("/");
 
-    try {
-      await fetch(`/api/language/${newLanguage}`, {
-        method: "POST",
-      });
-    } catch (error) {
-      console.error("Failed to update language cookie", error);
-    }
+    // Persist the chosen locale (used by the root redirect script)
+    document.cookie = `lan=${newLanguage}; path=/; max-age=${60 * 60 * 24 * 30}`;
 
     // Dispatch loading action
     dispatch({ type: "START_LOADING" });
 
-    // Use router to navigate to the new path
-    router.push(newPathname, { scroll: false });
+    // MPA navigation: full page reload to the new locale path
+    window.location.assign(newPathname);
   };
 
   return (

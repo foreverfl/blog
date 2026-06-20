@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useEffect, useState } from "react";
 
 type LangType = "en" | "ja" | "ko";
@@ -19,7 +19,7 @@ function detectLang(pathname: string): LangType {
 }
 
 export default function PrivacyPolicyEn() {
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const [html, setHtml] = useState("");
   const lang = detectLang(pathname);
 

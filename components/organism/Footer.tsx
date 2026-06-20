@@ -1,7 +1,6 @@
 "use client";
 
 import BugReport from "@/components/modal/BugReport";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import PrivacyPolicy from "@/components/modal/PrivacyPolicy";
@@ -9,7 +8,6 @@ import PrivacyPolicy from "@/components/modal/PrivacyPolicy";
 const Footer: React.FC = () => {
   const [isPrivacyOpen, setPrivacyOpen] = useState(false);
   const [isBugBountyOpen, setBugBountyOpen] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     Modal.setAppElement("body");

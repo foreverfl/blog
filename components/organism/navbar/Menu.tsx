@@ -1,11 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import React, { useEffect, useState } from "react";
 
-import { Display } from "@geist-ui/icons";
-import Link from "next/link";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
 
@@ -40,7 +37,7 @@ const Menu: React.FC<MenuProps> = ({
   toggleMenu,
 }) => {
   // Utilities
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
 
   // State
@@ -170,11 +167,9 @@ const Menu: React.FC<MenuProps> = ({
                 className="px-8 py-4 flex items-center hover:bg-gray-200 rounded-t-md space-x-2"
               >
                 <li className="flex items-center">
-                  <Image
+                  <img
                     src={"/images/smile.png"}
                     alt={"Portfolio"}
-                    width={15}
-                    height={15}
                     className="shrink-0"
                     style={{ width: 15, height: 15 }}
                   />
@@ -190,11 +185,9 @@ const Menu: React.FC<MenuProps> = ({
                 className="px-8 py-4 flex items-center hover:bg-gray-200 space-x-2"
               >
                 <li className="flex items-center">
-                  <Image
+                  <img
                     src={"/logo/GitHub_Invertocat_Black.svg"}
                     alt={"Github"}
-                    width={15}
-                    height={15}
                     className="shrink-0"
                     style={{ width: 15, height: 15 }}
                   />
@@ -211,11 +204,9 @@ const Menu: React.FC<MenuProps> = ({
               >
                 {/* qiita */}
                 <li className="flex items-center">
-                  <Image
+                  <img
                     src={"/logo/qiita-icon.png"}
                     alt={"Qiita"}
-                    width={15}
-                    height={15}
                     className="shrink-0"
                     style={{ width: 15, height: 15 }}
                   />
@@ -286,10 +277,9 @@ const Menu: React.FC<MenuProps> = ({
                     }`}
                   >
                     {classification.categories.map((category) => (
-                      <Link
+                      <a
                         key={category.link}
                         href={`/${lan}/${classification.link}/${category.link}`}
-                        scroll={false}
                         className="block"
                       >
                         <div
@@ -304,7 +294,7 @@ const Menu: React.FC<MenuProps> = ({
                             return category.name_ko;
                           })()}
                         </div>
-                      </Link>
+                      </a>
                     ))}
                   </div>
                 </div>

@@ -3,7 +3,7 @@
 import CloudflareTurnstile from "@/components/atom/CloudflareTurnstile";
 import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,7 +15,7 @@ interface BugReportProps {
 const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
   const { t, i18n } = useTranslation();
 
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const parts = pathname.split("/");
   const lan = pathname.split("/")[1];
 
