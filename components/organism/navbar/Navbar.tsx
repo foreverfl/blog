@@ -159,8 +159,6 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const closeMenu = () => setIsMenuOpen(false);
-
   if (shouldHideNavbar) {
     return null;
   }
@@ -174,7 +172,6 @@ const Navbar: React.FC = () => {
         <div className="flex-1">
           <Menu
             isMenuOpen={isMenuOpen}
-            closeMenu={closeMenu}
             menuColor={menuColor}
             isProfileOpen={isProfileOpen}
             toggleMenu={() => setIsMenuOpen(!isMenuOpen)}

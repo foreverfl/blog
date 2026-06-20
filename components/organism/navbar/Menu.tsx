@@ -6,13 +6,11 @@ import React, { useEffect, useState } from "react";
 
 import { Display } from "@geist-ui/icons";
 import Link from "next/link";
-import Search from "./Search";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
 
 interface MenuProps {
   isMenuOpen: boolean;
-  closeMenu: () => void;
   menuColor: string;
   isProfileOpen: boolean;
   toggleMenu: () => void;
@@ -37,28 +35,17 @@ interface Classification {
 
 const Menu: React.FC<MenuProps> = ({
   isMenuOpen,
-  closeMenu,
   menuColor,
   isProfileOpen,
-  toggleMenu: originalToggleMenu,
+  toggleMenu,
 }) => {
   // Utilities
   const pathname = usePathname();
   const lan = pathname.split("/")[1];
 
   // State
-  const [inputValue, setInputValue] = useState(""); // 검색창 텍스트
-  const [isInputFilled, setIsInputFilled] = useState(false); // 검색창 상태
   const [classifications, setClassifications] = useState<Classification[]>([]);
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({}); // Menu Expansion
-
-  // Other Hooks
-  // 토글 메뉴 재정의
-  const toggleMenu = () => {
-    originalToggleMenu(); // 원래의 토글 함수 호출
-    setInputValue(""); // 검색창 텍스트 비우기
-    setIsInputFilled(false); // 검색창 채워짐 상태 업데이트
-  };
 
   useEffect(() => {
     // JSON 파일에서 데이터 가져오기
@@ -172,11 +159,6 @@ const Menu: React.FC<MenuProps> = ({
                   <SetMode id="theme-toggle-mobile" />
                 </div>
               </div>
-            </div>
-
-            {/* 검색창 */}
-            <div className="mx-8 flex items-center">
-              <Search isMenuOpen={isMenuOpen} closeMenu={closeMenu} />
             </div>
 
             <div className="mx-8 divide-y divide-gray-400 bg-gray-100 rounded-md">
