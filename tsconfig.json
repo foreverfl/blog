@@ -17,6 +17,7 @@
     "app",
     "scripts",
     "test",
-    "proxy.js"
+    "lib/logger.ts",
+    "lib/auth.ts"
   ]
 }
