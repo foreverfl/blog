@@ -28,10 +28,6 @@ const nextConfig = {
         hostname: "blog_workers.forever-fl.workers.dev",
       },
       {
-        protocol: "https",
-        hostname: "s4.anilist.co",
-      },
-      {
         protocol: "http",
         hostname: "k.kakaocdn.net",
       },

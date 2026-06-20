@@ -39,7 +39,6 @@
     "framer-motion": "^12.38.0",
     "github-markdown-css": "^5.9.0",
     "googleapis": "^171.4.0",
-    "graphql-request": "^7.4.0",
     "highlight.js": "^11.11.1",
     "i18next": "^25.8.20",
     "idb": "^8.0.3",
