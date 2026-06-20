@@ -1,5 +1,7 @@
 ---
 import "../../styles/globals.css";
+import NavbarIsland from "@/components/islands/NavbarIsland";
+import Footer from "@/components/organism/Footer";
 
 interface Props {
   title?: string;
@@ -24,6 +26,8 @@ const {
     {description && <meta name="description" content={description} />}
   </head>
   <body>
+    <NavbarIsland client:only="react" />
     <slot />
+    <Footer client:only="react" />
   </body>
 </html>
