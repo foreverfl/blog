@@ -11,7 +11,6 @@
   "comment_admin_reply_success": "Admin reply submitted successfully.",
   "comment_admin_reply_fail": "Failed to submit admin reply. Please try again.",
   "comment_admin_reply_delete_fail": "Admin comment deletion failed. Please try again.",
-
   "bug_report_title": "Bug Report",
   "bug_report_form_title_label": "Title",
   "bug_report_form_title_placeholder": "Unable to post comments on blog articles",
@@ -22,16 +21,13 @@
   "bug_report_form_success": "Thank you! Bug report sent.",
   "bug_report_form_error": "Failed to submit. Please try again.",
   "bug_report_form_turnstile_notice": "The bug report form will open after verification.",
-
   "tour_menu": "This is the menu button. Click to open the menu.",
   "tour_language": "Here you can select your language.",
   "tour_theme": "Here you can change the theme.",
   "tour_profile": "This is the login button. You need to log in to leave a comment or like a post.",
   "tour_scroll": "Scroll down to read blog posts.",
-
   "login_title": "Sign In",
   "login_continue": "Continue with {{provider}}",
-
   "audio_lab_title": "Audio Lab",
   "audio_lab_description": "Record audio from your microphone and visualize frequencies in real time.",
   "audio_lab_privacy": "All data stays in your browser and is discarded when you leave.",
@@ -41,22 +37,6 @@
   "audio_lab_error_mic_denied": "Microphone access denied. Please allow microphone access.",
   "audio_lab_error_start_failed": "Failed to start recording.",
   "audio_lab_playback": "Playback",
-  "map_lab_title": "Map Lab",
-  "map_lab_description": "Interactive map powered by a self-hosted OpenStreetMap server.",
-  "map_lab_your_location": "Your Location",
-
-  "map_lab_locating": "Locating...",
-  "map_lab_geo_denied": "Location access denied. Please allow it in your browser settings.",
-  "map_lab_geo_unavailable": "Location information is unavailable.",
-  "map_lab_geo_timeout": "Location request timed out.",
-  "map_lab_my_location": "My Location",
-  "map_lab_search_placeholder": "Search location...",
-  "map_lab_search": "Search",
-  "map_lab_search_no_result": "No results found.",
-  "map_lab_search_fail": "Location search failed.",
-  "map_lab_confirm": "Confirm",
-  "map_lab_confirmed": "Confirmed",
-
   "write_save": "Save",
   "write_saving": "Saving...",
   "write_save_success": "Post saved successfully!",

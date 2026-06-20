@@ -42,14 +42,6 @@ const nextConfig = {
     ],
   },
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  async rewrites() {
-    return [
-      {
-        source: "/osm/:path*",
-        destination: `${process.env.OSM_TILE_HOME_SERVER_URL}/:path*`,
-      },
-    ];
-  },
 };
 
 const withMDX = createMDX({

@@ -11,7 +11,6 @@
   "comment_admin_reply_success": "管理者の返信が正常に送信されました。",
   "comment_admin_reply_fail": "管理者の返信の送信に失敗しました。再度お試しください。",
   "comment_admin_reply_delete_fail": "管理者の返信の削除に失敗しました。再度お試しください。",
-
   "bug_report_title": "不具合報告",
   "bug_report_form_title_label": "タイトル",
   "bug_report_form_title_placeholder": "ブログ記事にコメントを投稿できません",
@@ -22,16 +21,13 @@
   "bug_report_form_success": "ありがとうございます！バグ報告が送信されました。",
   "bug_report_form_error": "送信に失敗しました。もう一度お試しください。",
   "bug_report_form_turnstile_notice": "認証に成功するとバグ報告フォームが表示されます。",
-
   "tour_menu": "これはメニューボタンです。クリックしてメニューを開いてください。",
   "tour_language": "ここで言語を選択できます。",
   "tour_theme": "ここでテーマを変更できます。",
   "tour_profile": "これはログインボタンです。コメントを書いたり「いいね」するにはログインが必要です。",
   "tour_scroll": "スクロールしてブログ記事を読んでください。",
-
   "login_title": "ログイン",
   "login_continue": "{{provider}}で続行",
-
   "audio_lab_title": "オーディオラボ",
   "audio_lab_description": "マイクから音声を録音し、周波数をリアルタイムで可視化します。",
   "audio_lab_privacy": "すべてのデータはブラウザに保存され、ページを離れると削除されます。",
@@ -41,22 +37,6 @@
   "audio_lab_error_mic_denied": "マイクへのアクセスが拒否されました。マイクへのアクセスを許可してください。",
   "audio_lab_error_start_failed": "録音の開始に失敗しました。",
   "audio_lab_playback": "再生",
-  "map_lab_title": "マップラボ",
-  "map_lab_description": "セルフホスティングのOpenStreetMapサーバーと連携したインタラクティブマップです。",
-  "map_lab_your_location": "現在地",
-
-  "map_lab_locating": "位置確認中...",
-  "map_lab_geo_denied": "位置情報へのアクセスが拒否されました。ブラウザの設定で許可してください。",
-  "map_lab_geo_unavailable": "位置情報を利用できません。",
-  "map_lab_geo_timeout": "位置情報のリクエストがタイムアウトしました。",
-  "map_lab_my_location": "現在地",
-  "map_lab_search_placeholder": "場所を検索...",
-  "map_lab_search": "検索",
-  "map_lab_search_no_result": "検索結果がありません。",
-  "map_lab_search_fail": "場所の検索に失敗しました。",
-  "map_lab_confirm": "確認",
-  "map_lab_confirmed": "確定座標",
-
   "write_save": "保存",
   "write_saving": "保存中...",
   "write_save_success": "投稿が保存されました！",
