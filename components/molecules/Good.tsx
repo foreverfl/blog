@@ -2,10 +2,8 @@
 
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const Good = () => {
@@ -14,7 +12,7 @@ const Good = () => {
   const userEmail = userData?.email ?? null;
 
   // path
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const parts = pathname.split("/");
   const classification = parts[2] || "";
   const category = parts[3] || "";
@@ -133,7 +131,7 @@ const Good = () => {
               whileTap={{ scale: 0.8 }} // animated when clicked
               transition={{ duration: 0.2, ease: "easeInOut" }} // animation transition
             >
-              <Image
+              <img
                 src={
                   heartState === "before"
                     ? "/images/heart_before.png"
@@ -149,19 +147,19 @@ const Good = () => {
           </div>
           {/* Creative Commons */}
           <div>
-            <Link
+            <a
               href={"https://creativecommons.org/licenses/by-nc-nd/4.0/"}
               target="_blank"
+              rel="noopener noreferrer"
             >
-              <Image
+              <img
                 src={"/images/by-nc-nd.svg"}
                 alt={"Creative Commons"}
                 width={100}
                 height={100}
-                priority={true}
                 className="w-32 object-cover"
               />
-            </Link>
+            </a>
           </div>
         </div>
       </div>

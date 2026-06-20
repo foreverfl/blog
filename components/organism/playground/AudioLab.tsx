@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
 
@@ -9,7 +9,7 @@ type Status = "idle" | "recording" | "recorded";
 
 export default function AudioLab() {
   const { t, i18n } = useTranslation();
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
 
   useEffect(() => {

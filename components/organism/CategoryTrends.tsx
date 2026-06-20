@@ -1,8 +1,7 @@
 "use client";
 
 import { resolveHackernewsThumbnail } from "@/lib/hackernews/resolveImage";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import React, { useEffect, useMemo, useState } from "react";
 import Spinner from "../atom/Spinner";
 import LinkWithSpinning from "../molecules/LinkWithSpinning";
@@ -24,7 +23,7 @@ interface PostItem {
 }
 
 const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
   const R2_BASE = import.meta.env.PUBLIC_R2_URI;
 
@@ -115,12 +114,10 @@ const CategoryTrends: React.FC<Props> = ({ jsonContents }) => {
         {items.map(({ key, href, date, imageUrl }) => (
           <LinkWithSpinning key={key} href={href}>
             <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
-              <Image
+              <img
                 src={imageUrl}
                 alt={`HackerNews thumbnail for ${date}`}
-                fill
-                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 25vw"
-                className="object-cover"
+                className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
                 <div className="text-center w-full">

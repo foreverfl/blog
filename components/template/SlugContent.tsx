@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -29,8 +29,7 @@ interface PostData {
 }
 
 const SlugContent: React.FC = () => {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useClientPathname();
   const { isAdmin } = useAuth();
   const segments = pathname.split("/").filter(Boolean);
   const lan = segments[0] || "en";
@@ -84,7 +83,7 @@ const SlugContent: React.FC = () => {
 
   const handleEdit = () => {
     const params = new URLSearchParams({ classification, category, slug });
-    router.push(`/${lan}/write?${params.toString()}`);
+    window.location.assign(`/${lan}/write?${params.toString()}`);
   };
 
   return (

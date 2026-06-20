@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useLoadingDispatch } from "@/lib/context/loading-context";
 
 export function useStopLoadingOnPathChange() {
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const prevPathRef = useRef(pathname);
   const dispatch = useLoadingDispatch();
 

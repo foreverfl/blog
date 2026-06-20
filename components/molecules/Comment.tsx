@@ -4,8 +4,7 @@ import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -28,7 +27,7 @@ const Comment = ({}) => {
   const { t, i18n } = useTranslation();
 
   // path
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const parts = pathname.split("/");
   const lan = pathname.split("/")[1];
   const classification = parts[2] || "";
@@ -318,7 +317,7 @@ const Comment = ({}) => {
               <div
                 className={`items-start flex ${comment.reply ? "mb-2" : "mb-5"}`}
               >
-                <Image
+                <img
                   src={comment.photo || "/images/smile.png"}
                   alt={"profile"}
                   width={40}
@@ -463,7 +462,7 @@ const Comment = ({}) => {
                       )}
                     </div>
                   </div>
-                  <Image
+                  <img
                     src="https://lh3.googleusercontent.com/a/ACg8ocI8X2Jbh-TFKKw6ofceWDFRfJaa2p9toHBlA617QBuFY_cSFs1wWg=s96-c"
                     alt="profile"
                     width={40}

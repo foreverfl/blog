@@ -5,11 +5,11 @@ import {
   useLoadingDispatch,
   useLoadingState,
 } from "@/lib/context/loading-context";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useEffect } from "react";
 
 export default function LoadingOverlay() {
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const { isLoading } = useLoadingState();
   const dispatch = useLoadingDispatch();
 

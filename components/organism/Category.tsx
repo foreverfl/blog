@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import React, { useEffect, useState } from "react";
 import LinkWithSpinning from "../molecules/LinkWithSpinning";
 import Pagination from "../molecules/Pagination";
@@ -35,7 +35,7 @@ interface Classification {
 
 const Category: React.FC<Props> = ({ posts }) => {
   // Utilities
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
   const classificationLink = pathname.split("/")[2];
   const categoryLink = pathname.split("/")[3];

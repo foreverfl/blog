@@ -3,8 +3,8 @@
 import TrendItemActions from "@/components/atom/TrendItemActions";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
@@ -33,7 +33,7 @@ type TrendItem = {
 };
 
 export default function Trends({ items }: { items: TrendItem[] }) {
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1] as "en" | "ja" | "ko";
   const { userData: user } = useAuth();
   const { openLoginModal } = useLoginModal();
