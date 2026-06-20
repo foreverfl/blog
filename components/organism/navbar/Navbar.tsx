@@ -9,12 +9,13 @@ import Profile from "./Profile";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
 
+const RUST_API =
+  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+
 interface PostInfo {
-  fileName: string;
   title: string;
   category: string;
   date: string;
-  image: string;
 }
 
 const Navbar: React.FC = () => {
@@ -52,7 +53,7 @@ const Navbar: React.FC = () => {
     (async () => {
       try {
         const response = await fetch(
-          `/api/post/meta?lan=${lan}&classification=${classification}&category=${category}&slug=${slug}-${lan}`,
+          `${RUST_API}/posts/${classification}/${category}/${slug}?lang=${lan}`,
         );
         if (!response.ok) {
           console.error("Failed to fetch post metadata");
@@ -60,7 +61,14 @@ const Navbar: React.FC = () => {
         }
         const data = await response.json();
         if (cancelled) return;
-        setPostData({ path: pathname, info: data });
+        setPostData({
+          path: pathname,
+          info: {
+            title: data.contents?.[0]?.title || "",
+            category: data.category || "",
+            date: data.created_at || "",
+          },
+        });
       } catch (error) {
         console.error("Error fetching post metadata:", error);
       }
