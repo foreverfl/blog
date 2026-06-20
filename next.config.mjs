@@ -9,7 +9,6 @@ const nextConfig = {
       hmrRefreshes: true,
     },
   },
-  transpilePackages: ["next-mdx-remote"],
   images: {
     remotePatterns: [
       {
