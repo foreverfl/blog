@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
 
@@ -57,7 +56,7 @@ const API_AUTH_URL =
 
 const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   const { t, i18n } = useTranslation();
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
 
   useEffect(() => {
@@ -75,7 +74,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
       onClick={handleLogin}
       className={`flex items-center justify-center gap-2.5 py-3 px-3 rounded-lg w-full min-w-50 border text-sm font-medium ${provider.className} transition-colors duration-300`}
     >
-      <Image
+      <img
         src={provider.imageUrl}
         alt={provider.imageAlt}
         width={20}
@@ -83,7 +82,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
         className={`w-5 h-5 shrink-0 object-contain ${provider.darkImageUrl ? "dark:hidden" : ""}`}
       />
       {provider.darkImageUrl && (
-        <Image
+        <img
           src={provider.darkImageUrl}
           alt={provider.imageAlt}
           width={20}
