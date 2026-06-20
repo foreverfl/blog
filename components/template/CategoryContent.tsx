@@ -89,54 +89,56 @@ const CategoryContent: React.FC<Props> = ({
   };
 
   return (
-    <>
-      <div className="my-56"></div>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full md:w-3/5">
+        <div className="my-56"></div>
 
-      <div>
-        {posts.length > 0 && (
-          <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
-            {categoryName}
-          </h2>
-        )}
-        <div className="grid grid-cols-2 portrait:grid-cols-2 portrait:lg:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
-          {posts.map((post) => (
-            <LinkWithSpinning
-              key={post.slug}
-              href={`/${lan}/${post.classification}/${post.category}/${post.slug}`}
-            >
-              <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url(${post.image || ""})`,
-                  }}
-                ></div>
-                <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
-                  <div className="text-center w-full">
-                    <p className="text-sm dark:text-neutral-300">
-                      {post.classification === "trends"
-                        ? post.slug
-                        : post.created_at.split("T")[0]}
-                    </p>
-                    <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
-                      {post.title || "Untitled"}
-                    </h3>
+        <div>
+          {posts.length > 0 && (
+            <h2 className="text-5xl font-semibold text-center my-10 text-neutral-800 dark:text-neutral-200">
+              {categoryName}
+            </h2>
+          )}
+          <div className="grid grid-cols-2 portrait:grid-cols-2 portrait:lg:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 px-5 md:px-10">
+            {posts.map((post) => (
+              <LinkWithSpinning
+                key={post.slug}
+                href={`/${lan}/${post.classification}/${post.category}/${post.slug}`}
+              >
+                <div className="relative bg-white dark:bg-neutral-800 shadow rounded overflow-hidden aspect-square">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${post.image || ""})`,
+                    }}
+                  ></div>
+                  <div className="absolute h-1/4 w-full bottom-0 flex items-center justify-center bg-gray-200 dark:bg-neutral-700 bg-opacity-50 dark:bg-opacity-50">
+                    <div className="text-center w-full">
+                      <p className="text-sm dark:text-neutral-300">
+                        {post.classification === "trends"
+                          ? post.slug
+                          : post.created_at.split("T")[0]}
+                      </p>
+                      <h3 className="font-semibold dark:text-neutral-100 truncate mx-5">
+                        {post.title || "Untitled"}
+                      </h3>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </LinkWithSpinning>
-          ))}
+              </LinkWithSpinning>
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <div className="my-56"></div>
       </div>
-
-      <div className="my-56"></div>
-    </>
+    </div>
   );
 };
 
