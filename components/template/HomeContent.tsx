@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import AllCategory from "@/components/organism/AllCategory";
 
-const RUST_API =
-  process.env.NEXT_PUBLIC_API_RUST_URL || "http://localhost:8002";
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostItem {
   fileName?: string;
@@ -16,10 +14,11 @@ interface PostItem {
   image: string;
 }
 
-const HomeContent: React.FC = () => {
-  const pathname = usePathname();
-  const lan = pathname.split("/")[1] || "en";
+interface Props {
+  lan: string;
+}
 
+const HomeContent: React.FC<Props> = ({ lan }) => {
   const [recentPosts, setRecentPosts] = useState<PostItem[]>([]);
   const [hackernewsPosts, setHackernewsPosts] = useState<PostItem[]>([]);
 
@@ -65,9 +64,13 @@ const HomeContent: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full md:w-3/5">
         <div className="my-56"></div>
-        <AllCategory posts={recentPosts} title="Recent Posts" />
+        <AllCategory posts={recentPosts} title="Recent Posts" lan={lan} />
         <div className="my-56"></div>
-        <AllCategory posts={hackernewsPosts} title="Recent Hackernews" />
+        <AllCategory
+          posts={hackernewsPosts}
+          title="Recent Hackernews"
+          lan={lan}
+        />
         <div className="my-56"></div>
       </div>
     </div>

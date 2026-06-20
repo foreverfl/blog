@@ -1,8 +1,6 @@
 "use client";
 
 import Pagination from "@/components/molecules/Pagination";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
 import React, { useState } from "react";
 import LinkWithSpinning from "../molecules/LinkWithSpinning";
 
@@ -18,6 +16,7 @@ interface FrontMatter {
 interface Props {
   posts: FrontMatter[];
   title: string;
+  lan: string;
 }
 
 function swapExt(url: string): string | null {
@@ -32,10 +31,9 @@ function PostThumbnail({ src, alt }: { src: string; alt: string }) {
   const [fallbackTried, setFallbackTried] = useState(false);
 
   return (
-    <Image
+    <img
       src={currentSrc}
       alt={alt}
-      fill
       loading="lazy"
       className="absolute inset-0 w-full h-full object-cover object-center"
       onError={() => {
@@ -49,11 +47,7 @@ function PostThumbnail({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-const AllCategory: React.FC<Props> = ({ posts, title }) => {
-  // Utilities
-  const pathname = usePathname();
-  const lan = pathname.split("/")[1];
-
+const AllCategory: React.FC<Props> = ({ posts, title, lan }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 8;
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useLoadingDispatch } from "@/lib/context/loading-context";
 import React from "react";
 
@@ -11,22 +10,19 @@ interface Props {
   onClick?: () => void;
 }
 
+// MPA navigation: let the browser follow the <a>; the spinner shows until the
+// full page reload swaps the document.
 export default function LinkWithSpinning({
   href,
   children,
   className,
   onClick,
 }: Props) {
-  const router = useRouter();
   const dispatch = useLoadingDispatch();
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
+  const handleClick = () => {
     dispatch({ type: "START_LOADING" });
     if (onClick) onClick();
-    setTimeout(() => {
-      router.push(href);
-    }, 0);
   };
 
   return (

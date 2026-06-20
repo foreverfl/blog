@@ -1,0 +1,14 @@
+---
+import Base from "../../layouts/Base.astro";
+import HomeIsland from "@/components/islands/HomeIsland";
+
+export function getStaticPaths() {
+  return [{ params: { lan: "en" } }, { params: { lan: "ko" } }, { params: { lan: "ja" } }];
+}
+
+const { lan } = Astro.params;
+---
+
+<Base lang={lan}>
+  <HomeIsland client:only="react" lan={lan} />
+</Base>
