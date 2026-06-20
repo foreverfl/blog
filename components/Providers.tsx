@@ -1,6 +1,7 @@
 "use client";
 
 import Spinner from "@/components/atom/Spinner";
+import LoginModal from "@/components/modal/LoginModal";
 import {
   LoadingProvider,
   useLoadingState,
@@ -21,6 +22,7 @@ function InnerProviders({ children }: { children: ReactNode }) {
     <>
       {isLoading && <Spinner />}
       {children}
+      <LoginModal />
     </>
   );
 }

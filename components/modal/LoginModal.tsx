@@ -4,14 +4,14 @@ import React, { useEffect } from "react";
 import Modal from "react-modal";
 import LoginButton, { providers } from "@/components/organism/Login";
 import { useLoginModal } from "@/lib/context/login-modal-context";
-import { usePathname } from "next/navigation";
+import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
 
 const LoginModal: React.FC = () => {
   const { isOpen, closeLoginModal } = useLoginModal();
   const { t, i18n } = useTranslation();
-  const pathname = usePathname();
+  const pathname = useClientPathname();
   const lan = pathname.split("/")[1];
 
   useEffect(() => {
