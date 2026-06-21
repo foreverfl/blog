@@ -1,8 +1,10 @@
 ---
 import Base from "../../../../layouts/Base.astro";
 import SlugIsland from "@/components/islands/SlugIsland";
+import TrendsIsland from "@/components/islands/TrendsIsland";
 import classifications from "@/public/category.json";
 import { buildExcerpt } from "@/lib/markdown/excerpt";
+import { getContentsStructure } from "@/lib/content/jsonHelpers";
 
 // NOTE: Astro hoists getStaticPaths out of the frontmatter, so anything it
 // uses must live inside it (frontmatter consts are not in scope here).
@@ -17,10 +19,46 @@ export async function getStaticPaths() {
 
   for (const lan of langs) {
     for (const classification of classifications) {
-      // trends is R2-backed (separate unit);
-      // every other classification is a DB-backed article.
+      // trends is R2-backed: slugs (dates) and content come from R2 JSON,
+      // not the DB. Every other classification is a DB-backed article.
       const isR2Backed = classification.link === "trends";
       if (isR2Backed) {
+        for (const category of classification.categories) {
+          // List the R2 bucket to collect available dates (= slugs).
+          let structure: { folder: string; dates: string[] }[] = [];
+          try {
+            structure = await getContentsStructure(category.link);
+          } catch {
+            structure = [];
+          }
+
+          let digestTitle = "해커뉴스 요약";
+          if (lan === "ja") digestTitle = "ハッカーニュースダイジェスト";
+          else if (lan === "en") digestTitle = "Hacker News Digest";
+
+          const r2Base = import.meta.env.PUBLIC_R2_URI || "";
+
+          for (const group of structure) {
+            for (const date of group.dates) {
+              const yyyymmdd = date.replace(/-/g, "");
+              paths.push({
+                params: {
+                  lan,
+                  classification: classification.link,
+                  category: category.link,
+                  slug: date,
+                },
+                props: {
+                  title: `${digestTitle} (${date})`,
+                  description: `${digestTitle} — ${date}`,
+                  image: r2Base
+                    ? `${r2Base}/hackernews-images/${yyyymmdd}.png`
+                    : "",
+                },
+              });
+            }
+          }
+        }
         continue;
       }
 
@@ -71,11 +109,18 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { lan } = Astro.params;
+const { lan, classification } = Astro.params;
 const { title, description, image } = Astro.props;
 const pageTitle = title ? `${title} | mogumogu's blog` : "mogumogu's blog";
+const isTrends = classification === "trends";
 ---
 
 <Base lang={lan} title={pageTitle} description={description} image={image}>
-  <SlugIsland client:only="react" />
+  {
+    isTrends ? (
+      <TrendsIsland client:only="react" />
+    ) : (
+      <SlugIsland client:only="react" />
+    )
+  }
 </Base>
