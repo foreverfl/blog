@@ -6,6 +6,7 @@ import {
   LoadingProvider,
   useLoadingState,
 } from "@/lib/context/loading-context";
+import { useStopLoadingOnPageShow } from "@/lib/hooks/useStopLoadingOnPageShow";
 import { AuthProvider } from "@/lib/context/auth-context";
 import { LoginModalProvider } from "@/lib/context/login-modal-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ const queryClient = new QueryClient();
 
 function InnerProviders({ children }: { children: ReactNode }) {
   const { isLoading } = useLoadingState();
+  useStopLoadingOnPageShow();
 
   return (
     <>
