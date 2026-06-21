@@ -1,0 +1,81 @@
+---
+import Base from "../../../../layouts/Base.astro";
+import SlugIsland from "@/components/islands/SlugIsland";
+import classifications from "@/public/category.json";
+import { buildExcerpt } from "@/lib/markdown/excerpt";
+
+// NOTE: Astro hoists getStaticPaths out of the frontmatter, so anything it
+// uses must live inside it (frontmatter consts are not in scope here).
+// Module imports are fine — they are module-scoped, not frontmatter-scoped.
+export async function getStaticPaths() {
+  const RUST_API =
+    import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
+
+  const langs = ["en", "ko", "ja"];
+  const perPage = 100;
+  const paths = [];
+
+  for (const lan of langs) {
+    for (const classification of classifications) {
+      // trends is R2-backed (separate unit);
+      // every other classification is a DB-backed article.
+      const isR2Backed = classification.link === "trends";
+      if (isR2Backed) {
+        continue;
+      }
+
+      for (const category of classification.categories) {
+        // Collect every slug in this category (paginate via total).
+        const slugs: string[] = [];
+        let page = 1;
+        let total = Infinity;
+        while ((page - 1) * perPage < total) {
+          const listUrl = `${RUST_API}/posts/${classification.link}/${category.link}?lang=${lan}&page=${page}&per_page=${perPage}`;
+          const res = await fetch(listUrl).catch(() => null);
+          if (!res || !res.ok) break;
+          const data = await res.json();
+          total = data.total ?? 0;
+          for (const post of data.posts ?? []) slugs.push(post.slug);
+          if (!data.posts || data.posts.length === 0) break;
+          page++;
+        }
+
+        // Fetch each post once for build-time SEO meta (title/excerpt/image).
+        for (const slug of slugs) {
+          let title = slug;
+          let description = "";
+          let image = "";
+          const detailUrl = `${RUST_API}/posts/${classification.link}/${category.link}/${slug}?lang=${lan}`;
+          const res = await fetch(detailUrl).catch(() => null);
+          if (res && res.ok) {
+            const post = await res.json();
+            image = post.image ?? "";
+            const content = post.contents?.[0];
+            title = content?.title || slug;
+            description = buildExcerpt(content?.body_markdown);
+          }
+          paths.push({
+            params: {
+              lan,
+              classification: classification.link,
+              category: category.link,
+              slug,
+            },
+            props: { title, description, image },
+          });
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { lan } = Astro.params;
+const { title, description, image } = Astro.props;
+const pageTitle = title ? `${title} | mogumogu's blog` : "mogumogu's blog";
+---
+
+<Base lang={lan} title={pageTitle} description={description} image={image}>
+  <SlugIsland client:only="react" />
+</Base>
