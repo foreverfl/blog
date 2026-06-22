@@ -1,0 +1,72 @@
+menus:
+  - slug: "development"
+    label:
+      en: "Development"
+      ko: "개발"
+      ja: "開発"
+    position: 1
+    pages:
+      - slug: "project"
+        label: "Project Retrospective"
+        url: "https://mogumogu.dev/development/project"
+        status: "pending"
+      - slug: "devnotes"
+        label: "Dev Notes"
+        url: "https://mogumogu.dev/development/devnotes"
+        status: "pending"
+      - slug: "lab"
+        label: "Lab"
+        url: "https://mogumogu.dev/development/lab"
+        status: "pending"
+  - slug: "miscellaneous"
+    label:
+      en: "Ramblings"
+      ko: "주저리주저리"
+      ja: "ひとりごと"
+    position: 2
+    pages:
+      - slug: "my-thoughts"
+        label: "My Thoughts"
+        url: "https://mogumogu.dev/miscellaneous/my-thoughts"
+        status: "pending"
+  - slug: "trends"
+    label:
+      en: "Trends"
+      ko: "트렌드"
+      ja: "トレンド"
+    position: 3
+    pages:
+      - slug: "hackernews"
+        label: "Hacker News"
+        url: "https://mogumogu.dev/trends/hackernews"
+        status: "pending"
+  - slug: "records"
+    label:
+      en: "Records"
+      ko: "기록"
+      ja: "記録"
+    position: 4
+    pages:
+      - slug: "travel-map"
+        label: "Travel Map"
+        url: "https://mogumogu.dev/records/travel-map"
+        status: "pending"
+      - slug: "recipes"
+        label: "Recipes"
+        url: "https://mogumogu.dev/records/recipes"
+        status: "pending"
+      - slug: "anime-reviews"
+        label: "Anime Reviews"
+        url: "https://mogumogu.dev/records/anime-reviews"
+        status: "pending"
+  - slug: "playground"
+    label:
+      en: "Playground"
+      ko: "실험실"
+      ja: "実験室"
+    position: 5
+    pages:
+      - slug: "audio-lab"
+        label: "Audio Lab"
+        url: "https://mogumogu.dev/playground/audio-lab"
+        status: "pending"
