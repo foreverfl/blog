@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import AllCategory from "@/components/organism/AllCategory";
+import { resolveExistingThumbnail } from "@/lib/hackernews/resolveImage";
 
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
@@ -32,16 +33,18 @@ const HomeContent: React.FC<Props> = ({ lan }) => {
         category: string;
         image?: string;
       }[],
-    ): PostItem[] =>
-      posts.map((p) => ({
-        fileName: p.slug,
-        title: p.title || "Untitled",
-        date:
-          p.classification === "trends" ? p.slug : p.created_at.split("T")[0],
-        classification: p.classification,
-        category: p.category,
-        image: p.image || "",
-      }));
+    ): Promise<PostItem[]> =>
+      Promise.all(
+        posts.map(async (p) => ({
+          fileName: p.slug,
+          title: p.title || "Untitled",
+          date:
+            p.classification === "trends" ? p.slug : p.created_at.split("T")[0],
+          classification: p.classification,
+          category: p.category,
+          image: await resolveExistingThumbnail(p.image || ""),
+        })),
+      );
 
     Promise.all([
       fetch(`${RUST_API}/posts/recent?lang=${lan}&per_page=8`),
@@ -50,11 +53,11 @@ const HomeContent: React.FC<Props> = ({ lan }) => {
       .then(async ([recentRes, hnRes]) => {
         if (recentRes.ok) {
           const data = await recentRes.json();
-          setRecentPosts(mapPosts(data.posts));
+          setRecentPosts(await mapPosts(data.posts));
         }
         if (hnRes.ok) {
           const data = await hnRes.json();
-          setHackernewsPosts(mapPosts(data.posts));
+          setHackernewsPosts(await mapPosts(data.posts));
         }
       })
       .catch((err) => console.error("Failed to fetch posts:", err));

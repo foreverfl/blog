@@ -25,6 +25,22 @@ export async function preferPngOverWebp(webpUrl: string): Promise<string> {
 }
 
 /**
+ * Pick whichever variant (png/webp) of a hackernews thumbnail actually exists,
+ * preferring png, so the <img> never requests a missing file (no console 404).
+ * Non-hackernews URLs pass through unchanged; placeholder if neither exists.
+ */
+export async function resolveExistingThumbnail(url: string): Promise<string> {
+  if (!url) return url;
+  const isThumb = /\/hackernews-images\/[^/]+\.(png|webp)(\?.*)?$/.test(url);
+  if (!isThumb) return url;
+  const pngUrl = url.replace(/\.webp(\?.*)?$/, ".png$1");
+  if (await headOk(pngUrl)) return pngUrl;
+  const webpUrl = url.replace(/\.png(\?.*)?$/, ".webp$1");
+  if (await headOk(webpUrl)) return webpUrl;
+  return PLACEHOLDER;
+}
+
+/**
  * Resolve a hackernews thumbnail URL from the R2 base path and a date (YYYYMMDD).
  * Fallback order: png → webp → placeholder.
  */
