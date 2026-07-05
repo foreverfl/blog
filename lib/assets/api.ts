@@ -64,6 +64,17 @@ export async function uploadAssets(
   return res.json();
 }
 
+// 204 No Content on success, so this skips the JSON helpers too.
+export async function deleteAsset(id: string): Promise<void> {
+  const res = await fetch(`${RUST_API}/assets/${id}`, {
+    method: "DELETE",
+    headers: authHeader(),
+  });
+  if (!res.ok) {
+    throw new Error(`Delete failed (${res.status}): ${await res.text()}`);
+  }
+}
+
 export function listAssets(bucket: string, page: number, perPage = 20) {
   const params = new URLSearchParams({
     bucket,

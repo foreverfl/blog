@@ -3,6 +3,7 @@
 import Pagination from "@/components/molecules/Pagination";
 import {
   AssetResponse,
+  deleteAsset,
   listAssets,
   listBuckets,
   uploadAssets,
@@ -30,6 +31,7 @@ const AssetsContent: React.FC = () => {
   );
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Server state (react-query).
@@ -53,6 +55,17 @@ const AssetsContent: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["assets", selectedBucket] });
       setPage(1);
       if (uploaded.length > 0) setSelectedAsset(uploaded[0]);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteAsset(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets", selectedBucket] });
+      // Deleting the last item of a page would leave an empty page behind.
+      if (assetData?.items.length === 1 && page > 1) setPage(page - 1);
+      setSelectedAsset(null);
+      setConfirmingDelete(false);
     },
   });
 
@@ -87,13 +100,44 @@ const AssetsContent: React.FC = () => {
       <div className="space-y-1 text-sm">
         <div className="flex items-start justify-between gap-2">
           <p className="break-all font-medium">{selectedAsset.file_name}</p>
-          <button
-            onClick={() => copyUrl(selectedAsset)}
-            className="shrink-0 rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
-          >
-            {copiedId === selectedAsset.id ? "Copied!" : "Copy URL"}
-          </button>
+          <div className="flex shrink-0 gap-2">
+            <button
+              onClick={() => copyUrl(selectedAsset)}
+              className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
+            >
+              {copiedId === selectedAsset.id ? "Copied!" : "Copy URL"}
+            </button>
+            {confirmingDelete ? (
+              <>
+                <button
+                  onClick={() => deleteMutation.mutate(selectedAsset.id)}
+                  disabled={deleteMutation.isPending}
+                  className="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700 disabled:opacity-50"
+                >
+                  {deleteMutation.isPending ? "Deleting…" : "Really delete"}
+                </button>
+                <button
+                  onClick={() => setConfirmingDelete(false)}
+                  className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setConfirmingDelete(true)}
+                className="rounded border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950"
+              >
+                Delete
+              </button>
+            )}
+          </div>
         </div>
+        {deleteMutation.isError && (
+          <p className="text-xs text-red-500">
+            {(deleteMutation.error as Error).message}
+          </p>
+        )}
         <p className="text-gray-500">
           {selectedAsset.mime_type} · {formatBytes(selectedAsset.size_bytes)}
           {selectedAsset.width && selectedAsset.height
@@ -194,7 +238,10 @@ const AssetsContent: React.FC = () => {
               {assetData?.items.map((asset) => (
                 <li key={asset.id} className="flex items-center gap-2">
                   <button
-                    onClick={() => setSelectedAsset(asset)}
+                    onClick={() => {
+                      setSelectedAsset(asset);
+                      setConfirmingDelete(false);
+                    }}
                     className={`flex min-w-0 flex-1 items-center gap-4 rounded px-2 py-3 text-left ${
                       selectedAsset?.id === asset.id
                         ? "bg-gray-100 dark:bg-neutral-800"
