@@ -39,6 +39,13 @@ const AssetsContent: React.FC = () => {
     ? Math.max(1, Math.ceil(assetData.total / assetData.per_page))
     : 1;
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const copyUrl = (asset: AssetResponse) => {
+    navigator.clipboard.writeText(asset.url);
+    setCopiedId(asset.id);
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
   // Wait for the auth check to avoid a "not found" flash for the admin.
   if (!isReady) return null;
 
@@ -82,10 +89,10 @@ const AssetsContent: React.FC = () => {
           <div>
             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
               {assetData?.items.map((asset) => (
-                <li key={asset.id}>
+                <li key={asset.id} className="flex items-center gap-2">
                   <button
                     onClick={() => setSelectedAsset(asset)}
-                    className={`flex w-full items-center gap-4 rounded px-2 py-3 text-left ${
+                    className={`flex min-w-0 flex-1 items-center gap-4 rounded px-2 py-3 text-left ${
                       selectedAsset?.id === asset.id
                         ? "bg-gray-100 dark:bg-neutral-800"
                         : "hover:bg-gray-50 dark:hover:bg-neutral-900"
@@ -108,6 +115,12 @@ const AssetsContent: React.FC = () => {
                         {formatBytes(asset.size_bytes)} · {asset.kind}
                       </p>
                     </div>
+                  </button>
+                  <button
+                    onClick={() => copyUrl(asset)}
+                    className="shrink-0 rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
+                  >
+                    {copiedId === asset.id ? "Copied!" : "Copy"}
                   </button>
                 </li>
               ))}
@@ -137,9 +150,17 @@ const AssetsContent: React.FC = () => {
                   </div>
                 )}
                 <div className="space-y-1 text-sm">
-                  <p className="break-all font-medium">
-                    {selectedAsset.file_name}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="break-all font-medium">
+                      {selectedAsset.file_name}
+                    </p>
+                    <button
+                      onClick={() => copyUrl(selectedAsset)}
+                      className="shrink-0 rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
+                    >
+                      {copiedId === selectedAsset.id ? "Copied!" : "Copy URL"}
+                    </button>
+                  </div>
                   <p className="text-gray-500">
                     {selectedAsset.mime_type} ·{" "}
                     {formatBytes(selectedAsset.size_bytes)}
