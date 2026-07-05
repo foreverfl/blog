@@ -30,7 +30,7 @@ export interface AssetResponse {
   duration_ms: number | null;
   kind: "image" | "video" | "audio" | "document";
   status: string;
-  url: string | null;
+  url: string;
   created_at: string;
   updated_at: string;
 }

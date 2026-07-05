@@ -1,5 +1,4 @@
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
-const UPLOAD_BASE = import.meta.env.PUBLIC_UPLOAD_BASE_URL || "";
 
 interface UploadContext {
   editorRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -65,12 +64,9 @@ export async function uploadImages(files: File[], ctx: UploadContext) {
 
       const assets = await res.json();
       const asset = assets[0];
-      const imageUrl = UPLOAD_BASE
-        ? `${UPLOAD_BASE}/${asset.object_key}`
-        : asset.object_key;
 
       ctx.setMarkdown((prev) =>
-        prev.replace(placeholder, `![${file.name}](${imageUrl})`),
+        prev.replace(placeholder, `![${file.name}](${asset.url})`),
       );
     } catch (err) {
       console.error("Image upload failed:", err);
