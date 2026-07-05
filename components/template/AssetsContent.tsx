@@ -4,6 +4,7 @@ import Pagination from "@/components/molecules/Pagination";
 import { AssetResponse, listAssets, listBuckets } from "@/lib/assets/api";
 import { useAuth } from "@/lib/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 
 function formatBytes(bytes: number) {
@@ -46,6 +47,43 @@ const AssetsContent: React.FC = () => {
     setTimeout(() => setCopiedId(null), 1500);
   };
 
+  // Shared by the desktop side pane and the mobile bottom sheet.
+  const previewContent = selectedAsset && (
+    <div className="space-y-3">
+      {selectedAsset.kind === "image" && selectedAsset.url ? (
+        <img
+          src={selectedAsset.url}
+          alt={selectedAsset.file_name}
+          className="max-h-80 w-full rounded object-contain"
+        />
+      ) : (
+        <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-500 dark:bg-neutral-800">
+          {selectedAsset.kind}
+        </div>
+      )}
+      <div className="space-y-1 text-sm">
+        <div className="flex items-start justify-between gap-2">
+          <p className="break-all font-medium">{selectedAsset.file_name}</p>
+          <button
+            onClick={() => copyUrl(selectedAsset)}
+            className="shrink-0 rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
+          >
+            {copiedId === selectedAsset.id ? "Copied!" : "Copy URL"}
+          </button>
+        </div>
+        <p className="text-gray-500">
+          {selectedAsset.mime_type} · {formatBytes(selectedAsset.size_bytes)}
+          {selectedAsset.width && selectedAsset.height
+            ? ` · ${selectedAsset.width}×${selectedAsset.height}`
+            : ""}
+        </p>
+        <p className="text-gray-500">
+          {new Date(selectedAsset.created_at).toLocaleString()}
+        </p>
+      </div>
+    </div>
+  );
+
   // Wait for the auth check to avoid a "not found" flash for the admin.
   if (!isReady) return null;
 
@@ -85,7 +123,7 @@ const AssetsContent: React.FC = () => {
           </p>
         )}
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <div className="mt-6 grid gap-6 landscape:grid-cols-2">
           <div>
             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
               {assetData?.items.map((asset) => (
@@ -133,49 +171,37 @@ const AssetsContent: React.FC = () => {
             />
           </div>
 
-          <aside className="h-fit rounded border border-gray-200 p-4 dark:border-gray-700">
-            {!selectedAsset ? (
+          <aside className="hidden h-fit rounded border border-gray-200 p-4 dark:border-gray-700 landscape:block">
+            {previewContent || (
               <p className="text-sm text-gray-500">Select a file to preview.</p>
-            ) : (
-              <div className="space-y-3">
-                {selectedAsset.kind === "image" && selectedAsset.url ? (
-                  <img
-                    src={selectedAsset.url}
-                    alt={selectedAsset.file_name}
-                    className="max-h-80 w-full rounded object-contain"
-                  />
-                ) : (
-                  <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-500 dark:bg-neutral-800">
-                    {selectedAsset.kind}
-                  </div>
-                )}
-                <div className="space-y-1 text-sm">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="break-all font-medium">
-                      {selectedAsset.file_name}
-                    </p>
-                    <button
-                      onClick={() => copyUrl(selectedAsset)}
-                      className="shrink-0 rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
-                    >
-                      {copiedId === selectedAsset.id ? "Copied!" : "Copy URL"}
-                    </button>
-                  </div>
-                  <p className="text-gray-500">
-                    {selectedAsset.mime_type} ·{" "}
-                    {formatBytes(selectedAsset.size_bytes)}
-                    {selectedAsset.width && selectedAsset.height
-                      ? ` · ${selectedAsset.width}×${selectedAsset.height}`
-                      : ""}
-                  </p>
-                  <p className="text-gray-500">
-                    {new Date(selectedAsset.created_at).toLocaleString()}
-                  </p>
-                </div>
-              </div>
             )}
           </aside>
         </div>
+
+        {/* Narrow screens: preview slides up from the bottom instead of
+            sitting below the fold. */}
+        <AnimatePresence>
+          {selectedAsset && (
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "tween", duration: 0.2 }}
+              className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-gray-200 bg-white p-4 shadow-2xl dark:border-gray-700 dark:bg-neutral-900 landscape:hidden"
+            >
+              <div className="mb-2 flex justify-end">
+                <button
+                  onClick={() => setSelectedAsset(null)}
+                  aria-label="Close preview"
+                  className="rounded px-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                >
+                  ✕
+                </button>
+              </div>
+              {previewContent}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
