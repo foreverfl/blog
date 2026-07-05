@@ -1,7 +1,7 @@
 "use client";
 
 import Pagination from "@/components/molecules/Pagination";
-import { listAssets, listBuckets } from "@/lib/assets/api";
+import { AssetResponse, listAssets, listBuckets } from "@/lib/assets/api";
 import { useAuth } from "@/lib/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
@@ -27,6 +27,9 @@ const AssetsContent: React.FC = () => {
   const selectedBucket = pickedBucket ?? bucketData?.default;
 
   const [page, setPage] = useState(1);
+  const [selectedAsset, setSelectedAsset] = useState<AssetResponse | null>(
+    null,
+  );
   const { data: assetData, isLoading } = useQuery({
     queryKey: ["assets", selectedBucket, page],
     queryFn: () => listAssets(selectedBucket as string, page),
@@ -75,35 +78,83 @@ const AssetsContent: React.FC = () => {
           </p>
         )}
 
-        <ul className="mt-6 divide-y divide-gray-200 dark:divide-gray-700">
-          {assetData?.items.map((asset) => (
-            <li key={asset.id} className="flex items-center gap-4 py-3">
-              {asset.kind === "image" && asset.url ? (
-                <img
-                  src={asset.url}
-                  alt={asset.file_name}
-                  className="h-12 w-12 shrink-0 rounded object-cover"
-                />
-              ) : (
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-gray-100 text-xs text-gray-500 dark:bg-neutral-800">
-                  {asset.kind}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="truncate">{asset.file_name}</p>
-                <p className="text-sm text-gray-500">
-                  {formatBytes(asset.size_bytes)} · {asset.kind}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div>
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+              {assetData?.items.map((asset) => (
+                <li key={asset.id}>
+                  <button
+                    onClick={() => setSelectedAsset(asset)}
+                    className={`flex w-full items-center gap-4 rounded px-2 py-3 text-left ${
+                      selectedAsset?.id === asset.id
+                        ? "bg-gray-100 dark:bg-neutral-800"
+                        : "hover:bg-gray-50 dark:hover:bg-neutral-900"
+                    }`}
+                  >
+                    {asset.kind === "image" && asset.url ? (
+                      <img
+                        src={asset.url}
+                        alt={asset.file_name}
+                        className="h-12 w-12 shrink-0 rounded object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-gray-100 text-xs text-gray-500 dark:bg-neutral-800">
+                        {asset.kind}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate">{asset.file_name}</p>
+                      <p className="text-sm text-gray-500">
+                        {formatBytes(asset.size_bytes)} · {asset.kind}
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+
+          <aside className="h-fit rounded border border-gray-200 p-4 dark:border-gray-700">
+            {!selectedAsset ? (
+              <p className="text-sm text-gray-500">Select a file to preview.</p>
+            ) : (
+              <div className="space-y-3">
+                {selectedAsset.kind === "image" && selectedAsset.url ? (
+                  <img
+                    src={selectedAsset.url}
+                    alt={selectedAsset.file_name}
+                    className="max-h-80 w-full rounded object-contain"
+                  />
+                ) : (
+                  <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-500 dark:bg-neutral-800">
+                    {selectedAsset.kind}
+                  </div>
+                )}
+                <div className="space-y-1 text-sm">
+                  <p className="break-all font-medium">
+                    {selectedAsset.file_name}
+                  </p>
+                  <p className="text-gray-500">
+                    {selectedAsset.mime_type} ·{" "}
+                    {formatBytes(selectedAsset.size_bytes)}
+                    {selectedAsset.width && selectedAsset.height
+                      ? ` · ${selectedAsset.width}×${selectedAsset.height}`
+                      : ""}
+                  </p>
+                  <p className="text-gray-500">
+                    {new Date(selectedAsset.created_at).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            )}
+          </aside>
+        </div>
       </div>
     </div>
   );
