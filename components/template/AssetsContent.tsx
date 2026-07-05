@@ -1,11 +1,16 @@
 "use client";
 
 import Pagination from "@/components/molecules/Pagination";
-import { AssetResponse, listAssets, listBuckets } from "@/lib/assets/api";
+import {
+  AssetResponse,
+  listAssets,
+  listBuckets,
+  uploadAssets,
+} from "@/lib/assets/api";
 import { useAuth } from "@/lib/context/auth-context";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -17,34 +22,52 @@ function formatBytes(bytes: number) {
 const AssetsContent: React.FC = () => {
   const { isReady, isAdmin } = useAuth();
 
+  // Local UI state.
+  const [pickedBucket, setPickedBucket] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [selectedAsset, setSelectedAsset] = useState<AssetResponse | null>(
+    null,
+  );
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Server state (react-query).
+  const queryClient = useQueryClient();
   const { data: bucketData } = useQuery({
     queryKey: ["assets", "buckets"],
     queryFn: listBuckets,
     enabled: isReady && isAdmin,
   });
-
-  // null until the admin picks one; fall back to the server default.
-  const [pickedBucket, setPickedBucket] = useState<string | null>(null);
   const selectedBucket = pickedBucket ?? bucketData?.default;
-
-  const [page, setPage] = useState(1);
-  const [selectedAsset, setSelectedAsset] = useState<AssetResponse | null>(
-    null,
-  );
   const { data: assetData, isLoading } = useQuery({
     queryKey: ["assets", selectedBucket, page],
     queryFn: () => listAssets(selectedBucket as string, page),
     enabled: !!selectedBucket,
   });
+  const uploadMutation = useMutation({
+    mutationFn: (files: File[]) =>
+      uploadAssets(selectedBucket as string, files),
+    onSuccess: (uploaded) => {
+      // Drop every cached page of this bucket; new items sort first.
+      queryClient.invalidateQueries({ queryKey: ["assets", selectedBucket] });
+      setPage(1);
+      if (uploaded.length > 0) setSelectedAsset(uploaded[0]);
+    },
+  });
+
+  // Derived values and handlers.
   const totalPages = assetData
     ? Math.max(1, Math.ceil(assetData.total / assetData.per_page))
     : 1;
-
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const copyUrl = (asset: AssetResponse) => {
     navigator.clipboard.writeText(asset.url);
     setCopiedId(asset.id);
     setTimeout(() => setCopiedId(null), 1500);
+  };
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0 || !selectedBucket) return;
+    uploadMutation.mutate(Array.from(files));
   };
 
   // Shared by the desktop side pane and the mobile bottom sheet.
@@ -100,20 +123,39 @@ const AssetsContent: React.FC = () => {
       <div className="w-full px-5 md:w-3/5 my-56">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Assets</h1>
-          <select
-            value={selectedBucket ?? ""}
-            onChange={(event) => {
-              setPickedBucket(event.target.value);
-              setPage(1);
-            }}
-            className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-neutral-800"
-          >
-            {(bucketData?.buckets ?? []).map((bucketName) => (
-              <option key={bucketName} value={bucketName}>
-                {bucketName}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedBucket ?? ""}
+              onChange={(event) => {
+                setPickedBucket(event.target.value);
+                setPage(1);
+              }}
+              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-neutral-800"
+            >
+              {(bucketData?.buckets ?? []).map((bucketName) => (
+                <option key={bucketName} value={bucketName}>
+                  {bucketName}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadMutation.isPending}
+              className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-100 disabled:opacity-50 dark:border-gray-600 dark:hover:bg-neutral-800"
+            >
+              {uploadMutation.isPending ? "Uploading…" : "Upload"}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              hidden
+              onChange={(event) => {
+                handleFiles(event.target.files);
+                event.target.value = "";
+              }}
+            />
+          </div>
         </div>
 
         {isLoading && <p className="mt-6 text-sm text-gray-500">Loading…</p>}
@@ -122,8 +164,31 @@ const AssetsContent: React.FC = () => {
             No assets in this bucket.
           </p>
         )}
+        {uploadMutation.isError && (
+          <p className="mt-6 text-sm text-red-500">
+            {(uploadMutation.error as Error).message}
+          </p>
+        )}
 
-        <div className="mt-6 grid gap-6 landscape:grid-cols-2">
+        <div
+          onDragOver={(event) => {
+            event.preventDefault();
+            setIsDragging(true);
+          }}
+          onDragLeave={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+              setIsDragging(false);
+            }
+          }}
+          onDrop={(event) => {
+            event.preventDefault();
+            setIsDragging(false);
+            handleFiles(event.dataTransfer.files);
+          }}
+          className={`mt-6 grid gap-6 landscape:grid-cols-2 ${
+            isDragging ? "rounded ring-2 ring-blue-400" : ""
+          }`}
+        >
           <div>
             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
               {assetData?.items.map((asset) => (

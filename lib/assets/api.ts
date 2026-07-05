@@ -42,6 +42,28 @@ export interface ListAssetsResponse {
   per_page: number;
 }
 
+// Multipart body, so this bypasses the JSON helpers in lib/query/query.ts.
+// No manual Content-Type: the browser sets the multipart boundary itself.
+export async function uploadAssets(
+  bucket: string,
+  files: File[],
+): Promise<AssetResponse[]> {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append("file", file);
+  }
+  const params = new URLSearchParams({ bucket });
+  const res = await fetch(`${RUST_API}/assets?${params}`, {
+    method: "POST",
+    headers: authHeader(),
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error(`Upload failed (${res.status}): ${await res.text()}`);
+  }
+  return res.json();
+}
+
 export function listAssets(bucket: string, page: number, perPage = 20) {
   const params = new URLSearchParams({
     bucket,
