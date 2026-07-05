@@ -66,3 +66,6 @@ key.json
 # Grafana AWS credentials
 grafana-aws-credentials.txt
 grafana-cloudwatch-policy.json
+
+# Parallel-work worktrees (created by /worktree skill)
+.worktrees/
