@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --port 3000",
+    "dev:1": "PUBLIC_API_AUTH_URL=http://localhost:4001/auth PUBLIC_API_RUST_URL=http://localhost:4002 astro dev --port 3001",
+    "dev:2": "PUBLIC_API_AUTH_URL=http://localhost:5001/auth PUBLIC_API_RUST_URL=http://localhost:5002 astro dev --port 3002",
+    "dev:3": "PUBLIC_API_AUTH_URL=http://localhost:6001/auth PUBLIC_API_RUST_URL=http://localhost:6002 astro dev --port 3003",
+    "dev:4": "PUBLIC_API_AUTH_URL=http://localhost:7001/auth PUBLIC_API_RUST_URL=http://localhost:7002 astro dev --port 3004",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
