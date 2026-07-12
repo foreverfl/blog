@@ -4,7 +4,6 @@ import ConfirmModal from "@/components/modal/ConfirmModal";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
-import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useCallback, useEffect, useState } from "react";
@@ -74,26 +73,20 @@ const Comment = ({}) => {
   const updateComment = useCallback(
     async (commentId: string, updatedComment: string) => {
       if (!user) throw new Error("not authenticated");
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("not authenticated");
       const res = await fetch(
-        `/api/comment/${classification}/${category}/${slug}/${commentId}`,
+        `${RUST_API}/comments/${classification}/${category}/${slug}/${commentId}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: updatedComment,
-          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content: updatedComment }),
         },
       );
       if (!res.ok) throw new Error("failed to update comment");
-
-      await sendDiscord({
-        type: "comment_update",
-        payload: {
-          post_url: window.location.href,
-          username: user.username,
-          updatedContent: updatedComment,
-        },
-      });
 
       return res.json();
     },
@@ -101,29 +94,18 @@ const Comment = ({}) => {
   );
 
   const deleteComment = useCallback(
-    async (commentId: string, userId: string) => {
+    async (commentId: string) => {
       if (!user) throw new Error("not authenticated");
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("not authenticated");
       const res = await fetch(
-        `/api/comment/${classification}/${category}/${slug}/${commentId}`,
+        `${RUST_API}/comments/${classification}/${category}/${slug}/${commentId}`,
         {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            commentId,
-            user_id: userId,
-          }),
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
       if (!res.ok) throw new Error("failed to delete comment");
-
-      await sendDiscord({
-        type: "comment_delete",
-        payload: {
-          post_url: window.location.href,
-          username: user.username,
-        },
-      });
-      return res.json();
     },
     [category, classification, slug, user],
   );
@@ -226,9 +208,9 @@ const Comment = ({}) => {
       danger: true,
       onConfirm: async () => {
         try {
-          const { deletedCommentId } = await deleteComment(commentId, user.id);
+          await deleteComment(commentId);
           setComments((prevComments) =>
-            prevComments.filter((comment) => comment.id !== deletedCommentId),
+            prevComments.filter((comment) => comment.id !== commentId),
           );
         } catch (e) {
           alert(t("comment_delete_fail"));
