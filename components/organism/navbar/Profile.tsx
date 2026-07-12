@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { useAuth } from "@/lib/context/auth-context";
 
@@ -16,10 +15,7 @@ const Profile: React.FC<ProfileProps> = ({
   isMenuOpen,
   toggleProfile,
 }) => {
-  const pathname = useClientPathname();
-  const lan = pathname.split("/")[1];
-
-  const { isReady, isLoggedIn, isAdmin, userData, logout } = useAuth();
+  const { isReady, isLoggedIn, userData, logout } = useAuth();
   const { openLoginModal } = useLoginModal();
 
   const handleLogout = async () => {
@@ -118,21 +114,6 @@ const Profile: React.FC<ProfileProps> = ({
                     {`${userData?.username}`}
                   </p>
                 </div>
-
-                {/* Write Post button (admin only) */}
-                {isAdmin && (
-                  <div className="mx-8 my-4">
-                    <button
-                      onClick={() => {
-                        toggleProfile();
-                        window.location.assign(`/${lan}/write`);
-                      }}
-                      className="w-full px-8 py-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                    >
-                      Write Post
-                    </button>
-                  </div>
-                )}
 
                 {/* Logout button */}
                 <div className="mx-8 my-4">

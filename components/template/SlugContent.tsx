@@ -9,7 +9,6 @@ import rehypeRaw from "rehype-raw";
 import CodeBlock from "@/components/atom/CodeBlock";
 import Comment from "@/components/molecules/Comment";
 import Good from "@/components/molecules/Good";
-import { useAuth } from "@/lib/context/auth-context";
 import "github-markdown-css";
 
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
@@ -30,7 +29,6 @@ interface PostData {
 
 const SlugContent: React.FC = () => {
   const pathname = useClientPathname();
-  const { isAdmin } = useAuth();
   const segments = pathname.split("/").filter(Boolean);
   const lan = segments[0] || "en";
   const classification = segments[1];
@@ -81,39 +79,11 @@ const SlugContent: React.FC = () => {
   const content = post.contents[0];
   const markdown = content?.body_markdown || "";
 
-  const handleEdit = () => {
-    const params = new URLSearchParams({ classification, category, slug });
-    window.location.assign(`/${lan}/write?${params.toString()}`);
-  };
-
   return (
     <>
       <div className="flex items-center justify-center min-h-screen">
         <div className="markdown-body w-full md:w-3/5">
           <div className="my-56" />
-          {isAdmin && (
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={handleEdit}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-                Edit
-              </button>
-            </div>
-          )}
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, rehypeSlug]}

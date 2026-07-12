@@ -36,7 +36,6 @@ const Navbar: React.FC = () => {
 
   const pathSegments = pathname.split("/").filter(Boolean);
   const isPost = pathSegments.length === 4;
-  const isWritePage = pathname.includes("/write");
   const shouldHideNavbar = ["/login"].some((route) => pathname.includes(route));
 
   const title = isPost ? postInfo?.title || "" : "mogumogu";
@@ -112,15 +111,6 @@ const Navbar: React.FC = () => {
 
   const { titleColor, titleBackgroundColor, subNavbarTitleColor, menuColor } =
     useMemo(() => {
-      if (isWritePage) {
-        return {
-          titleColor: "text-black dark:text-white",
-          titleBackgroundColor: "bg-slate-50 dark:bg-neutral-800",
-          subNavbarTitleColor: "text-black dark:text-white",
-          menuColor: "text-black dark:text-white",
-        };
-      }
-
       const subNavbarVisible = scrollY <= subNavbarHeight;
 
       if (isPost) {
@@ -154,7 +144,7 @@ const Navbar: React.FC = () => {
         subNavbarTitleColor: "text-black dark:text-white",
         menuColor: "text-black dark:text-white",
       };
-    }, [isPost, isWritePage, scrollY, subNavbarHeight]);
+    }, [isPost, scrollY, subNavbarHeight]);
 
   const handleNavbarClick = () => {
     if (window.scrollY === 0) {
@@ -226,17 +216,15 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* 서브 네이게이션 바 (write 페이지에서는 숨김) */}
-      {!isWritePage && (
-        <NavbarSub
-          ref={subNavbarRef}
-          isPost={isPost}
-          textColor={subNavbarTitleColor}
-          title={postInfo?.title || subnavTitle}
-          category={postInfo?.category || ""}
-          date={postInfo?.date || ""}
-        />
-      )}
+      {/* 서브 네비게이션 바 */}
+      <NavbarSub
+        ref={subNavbarRef}
+        isPost={isPost}
+        textColor={subNavbarTitleColor}
+        title={postInfo?.title || subnavTitle}
+        category={postInfo?.category || ""}
+        date={postInfo?.date || ""}
+      />
     </>
   );
 };
