@@ -1,11 +1,12 @@
 "use client";
 
 import CloudflareTurnstile from "@/components/atom/CloudflareTurnstile";
-import { sendDiscord } from "@/lib/discord";
 import "@/lib/i18n";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface BugReportProps {
   isOpen: boolean;
@@ -28,28 +29,12 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Turnstile authentication token is required
-      const verifyRes = await fetch("/api/cloudflare/turnstile-verify", {
+      // Turnstile-gated submit; the Rust endpoint verifies the token server-side.
+      const res = await fetch(`${RUST_API}/bug-reports`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ turnstileToken }),
+        body: JSON.stringify({ turnstileToken, title, content }),
       });
-      const verifyJson = await verifyRes.json();
-      if (!verifyJson.ok) {
-        alert("Verification failed: " + verifyJson.error);
-        setLoading(false);
-        return;
-      }
-
-      const res = await sendDiscord({
-        type: "bug_report",
-        payload: {
-          turnstileToken,
-          title,
-          content,
-        },
-      });
-      if (!res.ok) throw new Error("API error");
       if (!res.ok) throw new Error("API error");
 
       setTitle("");
