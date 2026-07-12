@@ -1,6 +1,7 @@
 "use client";
 
 import FileIcon from "@/components/atom/FileIcon";
+import ConfirmModal from "@/components/modal/ConfirmModal";
 import Pagination from "@/components/molecules/Pagination";
 import {
   AssetResponse,
@@ -187,30 +188,13 @@ const AssetsContent: React.FC = () => {
             >
               {copiedId === selectedAsset.id ? "Copied!" : "Copy URL"}
             </button>
-            {confirmingDelete ? (
-              <>
-                <button
-                  onClick={() => deleteMutation.mutate(selectedAsset.id)}
-                  disabled={deleteMutation.isPending}
-                  className="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700 disabled:opacity-50"
-                >
-                  {deleteMutation.isPending ? "Deleting…" : "Really delete"}
-                </button>
-                <button
-                  onClick={() => setConfirmingDelete(false)}
-                  className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-neutral-800"
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setConfirmingDelete(true)}
-                className="rounded border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950"
-              >
-                Delete
-              </button>
-            )}
+            <button
+              onClick={() => setConfirmingDelete(true)}
+              disabled={deleteMutation.isPending}
+              className="rounded border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:hover:bg-red-950"
+            >
+              {deleteMutation.isPending ? "Deleting…" : "Delete"}
+            </button>
           </div>
         </div>
         {deleteMutation.isError && (
@@ -244,6 +228,21 @@ const AssetsContent: React.FC = () => {
 
   return (
     <div className="flex justify-center min-h-screen">
+      <ConfirmModal
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        title="Delete asset"
+        description={
+          selectedAsset
+            ? `Delete "${selectedAsset.file_name}"? This cannot be undone.`
+            : undefined
+        }
+        confirmLabel="Delete"
+        danger
+        onConfirm={() =>
+          selectedAsset && deleteMutation.mutate(selectedAsset.id)
+        }
+      />
       <div className="w-full px-5 md:w-3/5 my-56">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Assets</h1>
