@@ -1,5 +1,6 @@
 "use client";
 
+import ConfirmModal from "@/components/modal/ConfirmModal";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { sendDiscord } from "@/lib/discord";
@@ -37,6 +38,12 @@ const Comment = ({}) => {
   // state
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useUserScopedState("");
+  // Confirm popup replaces window.confirm; holds the message + deferred action.
+  const [pendingConfirm, setPendingConfirm] = useState<{
+    message: string;
+    danger?: boolean;
+    onConfirm: () => void;
+  } | null>(null);
 
   const createComment = useCallback(
     async (commentText: string) => {
@@ -184,7 +191,7 @@ const Comment = ({}) => {
     }
   };
 
-  const handleUpdateComment = async (commentId: string) => {
+  const handleUpdateComment = (commentId: string) => {
     const currentComment =
       comments.find((c) => c.id === commentId)?.content || "";
     const updatedComment = window.prompt(
@@ -198,36 +205,41 @@ const Comment = ({}) => {
       return;
     }
 
-    const isConfirmed = window.confirm(t("comment_update_confirm"));
-    if (!isConfirmed) return;
-
-    try {
-      await updateComment(commentId, updatedComment);
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === commentId
-            ? { ...comment, content: updatedComment }
-            : comment,
-        ),
-      );
-    } catch (e) {
-      alert(t("comment_update_fail"));
-    }
+    setPendingConfirm({
+      message: t("comment_update_confirm"),
+      onConfirm: async () => {
+        try {
+          await updateComment(commentId, updatedComment);
+          setComments((prevComments) =>
+            prevComments.map((comment) =>
+              comment.id === commentId
+                ? { ...comment, content: updatedComment }
+                : comment,
+            ),
+          );
+        } catch (e) {
+          alert(t("comment_update_fail"));
+        }
+      },
+    });
   };
 
-  const handleDeleteComment = async (commentId: string) => {
+  const handleDeleteComment = (commentId: string) => {
     if (!user) return;
-    try {
-      const isConfirmed = confirm(t("comment_delete_confirm"));
-      if (!isConfirmed) return;
-
-      const { deletedCommentId } = await deleteComment(commentId, user.id);
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== deletedCommentId),
-      );
-    } catch (e) {
-      alert(t("comment_delete_fail"));
-    }
+    setPendingConfirm({
+      message: t("comment_delete_confirm"),
+      danger: true,
+      onConfirm: async () => {
+        try {
+          const { deletedCommentId } = await deleteComment(commentId, user.id);
+          setComments((prevComments) =>
+            prevComments.filter((comment) => comment.id !== deletedCommentId),
+          );
+        } catch (e) {
+          alert(t("comment_delete_fail"));
+        }
+      },
+    });
   };
 
   const handleAddReplyComment = async (commentId: string) => {
@@ -307,6 +319,17 @@ const Comment = ({}) => {
 
   return (
     <div className="flex items-center justify-center mb-8">
+      <ConfirmModal
+        open={!!pendingConfirm}
+        onOpenChange={(open) => {
+          if (!open) setPendingConfirm(null);
+        }}
+        title={pendingConfirm?.message ?? ""}
+        confirmLabel={t("confirm")}
+        cancelLabel={t("cancel")}
+        danger={pendingConfirm?.danger}
+        onConfirm={() => pendingConfirm?.onConfirm()}
+      />
       <div className="w-full md:w-3/5">
         <div className="my-24"></div>
         {/* comment list */}

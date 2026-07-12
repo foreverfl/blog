@@ -8,6 +8,7 @@ interface ConfirmModalProps {
   title: string;
   description?: string;
   confirmLabel?: string;
+  cancelLabel?: string;
   danger?: boolean;
   onConfirm: () => void;
 }
@@ -18,6 +19,7 @@ export default function ConfirmModal({
   title,
   description,
   confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
   danger = false,
   onConfirm,
 }: ConfirmModalProps) {
@@ -65,7 +67,7 @@ export default function ConfirmModal({
             onClick={() => onOpenChange(false)}
             className="px-4 py-2 rounded text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800"
           >
-            Cancel
+            {cancelLabel}
           </button>
           <button
             onClick={handleConfirm}

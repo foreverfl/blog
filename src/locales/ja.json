@@ -6,6 +6,8 @@
   "comment_update_confirm": "このコメントを更新してもよろしいですか？",
   "comment_update_fail": "コメントの更新に失敗しました。再度お試しください。",
   "comment_delete_confirm": "このコメントを削除してもよろしいですか？",
+  "confirm": "確認",
+  "cancel": "キャンセル",
   "comment_delete_fail": "コメントの削除に失敗しました。再度お試しください。",
   "comment_admin_reply_prompt": "管理者の返信を入力してください。",
   "comment_admin_reply_success": "管理者の返信が正常に送信されました。",
