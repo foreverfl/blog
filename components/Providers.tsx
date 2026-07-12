@@ -1,6 +1,7 @@
 "use client";
 
 import Spinner from "@/components/atom/Spinner";
+import Toaster from "@/components/atom/Toaster";
 import LoginModal from "@/components/modal/LoginModal";
 import {
   LoadingProvider,
@@ -9,6 +10,7 @@ import {
 import { useStopLoadingOnPageShow } from "@/lib/hooks/useStopLoadingOnPageShow";
 import { AuthProvider } from "@/lib/context/auth-context";
 import { LoginModalProvider } from "@/lib/context/login-modal-context";
+import { ToastProvider } from "@/lib/context/toast-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "next-themes";
@@ -25,6 +27,7 @@ function InnerProviders({ children }: { children: ReactNode }) {
       {isLoading && <Spinner />}
       {children}
       <LoginModal />
+      <Toaster />
     </>
   );
 }
@@ -41,7 +44,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <AuthProvider>
           <LoadingProvider>
             <LoginModalProvider>
-              <InnerProviders>{children}</InnerProviders>
+              <ToastProvider>
+                <InnerProviders>{children}</InnerProviders>
+              </ToastProvider>
             </LoginModalProvider>
           </LoadingProvider>
         </AuthProvider>
