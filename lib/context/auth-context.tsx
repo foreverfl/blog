@@ -11,8 +11,7 @@ import {
   useState,
 } from "react";
 
-const API_AUTH_URL =
-  import.meta.env.PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
+import { API_AUTH_URL, clearAuth, tryRefreshToken } from "@/lib/auth/token";
 
 const ADMIN_EMAILS =
   import.meta.env.PUBLIC_ADMIN_EMAILS?.split(",")
@@ -37,32 +36,6 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
-
-async function tryRefreshToken(): Promise<boolean> {
-  try {
-    const res = await fetch(`${API_AUTH_URL}/refresh`, {
-      method: "POST",
-      credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem(
-        "token_expires_at",
-        String(Date.now() + data.expires_in * 1000),
-      );
-      return true;
-    }
-  } catch (e) {
-    console.error("Token refresh failed:", e);
-  }
-  return false;
-}
-
-function clearAuth() {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("token_expires_at");
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
