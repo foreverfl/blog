@@ -1,6 +1,7 @@
 "use client";
 
 import CloudflareTurnstile from "@/components/atom/CloudflareTurnstile";
+import { useToast } from "@/lib/context/toast-context";
 import "@/lib/i18n";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { FC, useEffect, useState } from "react";
@@ -15,6 +16,7 @@ interface BugReportProps {
 
 const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
   const { t, i18n } = useTranslation();
+  const { showToast } = useToast();
 
   const pathname = useClientPathname();
   const parts = pathname.split("/");
@@ -40,10 +42,10 @@ const BugReport: FC<BugReportProps> = ({ isOpen, setIsOpen }) => {
       setTitle("");
       setContent("");
 
-      alert(t("bug_report_form_success"));
+      showToast(t("bug_report_form_success"), "success");
       if (setIsOpen) setIsOpen(false);
     } catch {
-      alert(t("bug_report_form_error"));
+      showToast(t("bug_report_form_error"), "error");
     }
     setLoading(false);
   };

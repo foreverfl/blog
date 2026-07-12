@@ -4,6 +4,7 @@ import TrendItemActions from "@/components/atom/TrendItemActions";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
+import { useToast } from "@/lib/context/toast-context";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -38,6 +39,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
   const lan = pathname.split("/")[1] as "en" | "ja" | "ko";
   const { userData: user } = useAuth();
   const { openLoginModal } = useLoginModal();
+  const { showToast } = useToast();
   const [sortBy, setSortBy] = useState<"default" | "score">("default");
   const [copiedList, setCopiedList] = useState<string[]>([]);
   const [likedIds, setLikedIds] = useUserScopedState<Set<number>>(
@@ -115,6 +117,8 @@ export default function Trends({ items }: { items: TrendItem[] }) {
       noSummary: "No summary available.",
       sortDefault: "Default Order",
       sortScore: "Sort by Score",
+      clipboardUnsupported:
+        "Clipboard copy is not supported in this environment.",
     },
     ko: {
       author: "작성자",
@@ -123,6 +127,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
       noSummary: "요약이 없습니다.",
       sortDefault: "기본순",
       sortScore: "점수순",
+      clipboardUnsupported: "이 환경에서는 클립보드 복사가 지원되지 않습니다.",
     },
     ja: {
       author: "投稿者",
@@ -131,6 +136,8 @@ export default function Trends({ items }: { items: TrendItem[] }) {
       noSummary: "要約がありません。",
       sortDefault: "デフォルト順",
       sortScore: "スコア順",
+      clipboardUnsupported:
+        "この環境ではクリップボードへのコピーがサポートされていません。",
     },
   };
 
@@ -141,7 +148,7 @@ export default function Trends({ items }: { items: TrendItem[] }) {
 
   const handleCopy = (text: string) => {
     if (typeof navigator.clipboard === "undefined") {
-      alert("이 환경에서는 클립보드 복사가 지원되지 않습니다.");
+      showToast(localeLabel.clipboardUnsupported, "error");
       return;
     }
 

@@ -4,6 +4,7 @@ import ConfirmModal from "@/components/modal/ConfirmModal";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
+import { useToast } from "@/lib/context/toast-context";
 import "@/lib/i18n";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useCallback, useEffect, useState } from "react";
@@ -24,6 +25,7 @@ interface Comment {
 
 const Comment = ({}) => {
   const { openLoginModal } = useLoginModal();
+  const { showToast } = useToast();
   const { userData: user, isReady, isAdmin } = useAuth();
 
   // i18n
@@ -157,7 +159,7 @@ const Comment = ({}) => {
     if (!trimmed) return;
 
     if (trimmed.length < 10) {
-      alert(t("comment_min_length"));
+      showToast(t("comment_min_length"), "error");
       return;
     }
 
@@ -166,7 +168,7 @@ const Comment = ({}) => {
       setComments((prev) => [...prev, newCommentObj]);
       setNewComment("");
     } catch (e) {
-      alert(t("comment_add_fail"));
+      showToast(t("comment_add_fail"), "error");
     }
   };
 
@@ -180,7 +182,7 @@ const Comment = ({}) => {
 
     if (!updatedComment || !updatedComment.trim()) return;
     if (updatedComment.trim().length < 10) {
-      alert(t("comment_min_length"));
+      showToast(t("comment_min_length"), "error");
       return;
     }
 
@@ -197,7 +199,7 @@ const Comment = ({}) => {
             ),
           );
         } catch (e) {
-          alert(t("comment_update_fail"));
+          showToast(t("comment_update_fail"), "error");
         }
       },
     });
@@ -215,7 +217,7 @@ const Comment = ({}) => {
             prevComments.filter((comment) => comment.id !== commentId),
           );
         } catch (e) {
-          alert(t("comment_delete_fail"));
+          showToast(t("comment_delete_fail"), "error");
         }
       },
     });
@@ -240,9 +242,9 @@ const Comment = ({}) => {
             : comment,
         ),
       );
-      alert(t("comment_admin_reply_success"));
+      showToast(t("comment_admin_reply_success"), "success");
     } catch (e) {
-      alert(t("comment_admin_reply_fail"));
+      showToast(t("comment_admin_reply_fail"), "error");
     }
   };
 
@@ -261,7 +263,7 @@ const Comment = ({}) => {
         ),
       );
     } catch (error) {
-      alert(t("comment_admin_reply_delete_fail"));
+      showToast(t("comment_admin_reply_delete_fail"), "error");
     }
   };
 
