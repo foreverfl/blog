@@ -1,10 +1,13 @@
 "use client";
 
+import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 const Good = () => {
   const { openLoginModal } = useLoginModal();
@@ -23,50 +26,44 @@ const Good = () => {
   );
   const [likeCount, setLikeCount] = useState(0);
 
-  const addLike = useCallback(
-    async (userEmail: string | null): Promise<boolean> => {
-      if (!userEmail) return false;
-      try {
-        const res = await fetch(
-          `/api/like/${classification}/${category}/${slug}?userEmail=${userEmail}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userEmail }),
-          },
-        );
-        return res.ok;
-      } catch (error) {
-        console.error("Error adding like:", error);
-        return false;
-      }
-    },
-    [category, classification, slug],
-  );
+  const addLike = useCallback(async (): Promise<boolean> => {
+    const token = await getValidAccessToken();
+    if (!token) return false;
+    try {
+      const res = await fetch(
+        `${RUST_API}/likes/${classification}/${category}/${slug}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      return res.ok;
+    } catch (error) {
+      console.error("Error adding like:", error);
+      return false;
+    }
+  }, [category, classification, slug]);
 
-  const removeLike = useCallback(
-    async (userEmail: string | null): Promise<boolean> => {
-      if (!userEmail) return false;
-      try {
-        const res = await fetch(
-          `/api/like/${classification}/${category}/${slug}?userEmail=${userEmail}`,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userEmail }),
-          },
-        );
-        return res.ok;
-      } catch (error) {
-        console.error("Error removing like:", error);
-        return false;
-      }
-    },
-    [category, classification, slug],
-  );
+  const removeLike = useCallback(async (): Promise<boolean> => {
+    const token = await getValidAccessToken();
+    if (!token) return false;
+    try {
+      const res = await fetch(
+        `${RUST_API}/likes/${classification}/${category}/${slug}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      return res.ok;
+    } catch (error) {
+      console.error("Error removing like:", error);
+      return false;
+    }
+  }, [category, classification, slug]);
 
   const handleAddLike = async () => {
-    const ok = await addLike(userEmail);
+    const ok = await addLike();
     if (ok) {
       setLikeCount((prev) => prev + 1);
       setHeartState("after");
@@ -74,7 +71,7 @@ const Good = () => {
   };
 
   const handleRemoveLike = async () => {
-    const ok = await removeLike(userEmail);
+    const ok = await removeLike();
     if (ok) {
       setLikeCount((prev) => prev - 1);
       setHeartState("before");
@@ -98,14 +95,17 @@ const Good = () => {
     let cancelled = false;
     (async () => {
       try {
-        const url =
-          `/api/like/${classification}/${category}/${slug}` +
-          (userEmail ? `?userEmail=${userEmail}` : "");
-        const res = await fetch(url);
+        // Bearer is only needed for the caller-specific `liked` flag; the count
+        // is public, so an anonymous read still returns it.
+        const token = userEmail ? await getValidAccessToken() : null;
+        const res = await fetch(
+          `${RUST_API}/likes/${classification}/${category}/${slug}`,
+          token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+        );
         const data = await res.json();
         if (cancelled) return;
-        if (data && data.likeCount !== undefined) {
-          setLikeCount(data.likeCount);
+        if (data && data.like_count !== undefined) {
+          setLikeCount(data.like_count);
         }
         if (data && data.liked !== undefined) {
           setHeartState(data.liked ? "after" : "before");
