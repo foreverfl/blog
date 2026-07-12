@@ -20,6 +20,48 @@ function formatBytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// Only text-like assets get an inline content preview; the rest stay an icon.
+const PREVIEW_MAX_BYTES = 64 * 1024;
+
+// Synced assets carry a guessed mime (often octet-stream), so fall back to the
+// file extension — otherwise a .json synced by the pipeline never previews.
+const TEXT_EXTENSIONS = [
+  "json",
+  "txt",
+  "md",
+  "csv",
+  "log",
+  "xml",
+  "yaml",
+  "yml",
+];
+
+function isTextLike(asset: { mime_type: string; file_name: string }) {
+  if (
+    asset.mime_type === "application/json" ||
+    asset.mime_type.startsWith("text/")
+  ) {
+    return true;
+  }
+  const extension = asset.file_name.split(".").pop()?.toLowerCase();
+  return !!extension && TEXT_EXTENSIONS.includes(extension);
+}
+
+// Fetch just the head of the object (Range caps huge files like the 1.5MB json).
+async function fetchTextPreview(url: string): Promise<string> {
+  const res = await fetch(url, {
+    headers: { Range: `bytes=0-${PREVIEW_MAX_BYTES - 1}` },
+  });
+  if (!res.ok) throw new Error(`Preview failed (${res.status})`);
+  const text = (await res.text()).slice(0, PREVIEW_MAX_BYTES);
+  // Pretty-print when the (possibly truncated) body is still complete JSON.
+  try {
+    return JSON.stringify(JSON.parse(text), null, 2);
+  } catch {
+    return text;
+  }
+}
+
 // Admin-only asset file manager (skeleton — list/upload UI comes in later units).
 const AssetsContent: React.FC = () => {
   const { isReady, isAdmin } = useAuth();
@@ -47,6 +89,16 @@ const AssetsContent: React.FC = () => {
     queryKey: ["assets", selectedBucket, page],
     queryFn: () => listAssets(selectedBucket as string, page),
     enabled: !!selectedBucket,
+  });
+  const canPreviewText = !!selectedAsset && isTextLike(selectedAsset);
+  const {
+    data: textPreview,
+    isLoading: textLoading,
+    isError: textError,
+  } = useQuery({
+    queryKey: ["asset-text", selectedAsset?.id],
+    queryFn: () => fetchTextPreview(selectedAsset!.url),
+    enabled: canPreviewText,
   });
   const uploadMutation = useMutation({
     mutationFn: (files: File[]) =>
@@ -84,20 +136,47 @@ const AssetsContent: React.FC = () => {
     uploadMutation.mutate(Array.from(files));
   };
 
-  // Shared by the desktop side pane and the mobile bottom sheet.
-  const previewContent = selectedAsset && (
-    <div className="space-y-3">
-      {selectedAsset.kind === "image" && selectedAsset.url ? (
+  const renderMedia = () => {
+    if (!selectedAsset) return null;
+    if (selectedAsset.kind === "image" && selectedAsset.url) {
+      return (
         <img
           src={selectedAsset.url}
           alt={selectedAsset.file_name}
           className="max-h-80 w-full rounded object-contain"
         />
-      ) : (
-        <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-400 dark:bg-neutral-800">
-          <FileIcon kind={selectedAsset.kind} className="h-16 w-16" />
+      );
+    }
+    if (canPreviewText) {
+      let body;
+      if (textLoading) {
+        body = <p className="p-3 text-sm text-gray-500">Loading…</p>;
+      } else if (textError) {
+        body = <p className="p-3 text-sm text-red-500">Preview unavailable.</p>;
+      } else {
+        body = (
+          <pre className="whitespace-pre-wrap break-all p-3 text-xs">
+            {textPreview}
+          </pre>
+        );
+      }
+      return (
+        <div className="max-h-80 overflow-auto rounded bg-gray-100 dark:bg-neutral-800">
+          {body}
         </div>
-      )}
+      );
+    }
+    return (
+      <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-400 dark:bg-neutral-800">
+        <FileIcon kind={selectedAsset.kind} className="h-16 w-16" />
+      </div>
+    );
+  };
+
+  // Shared by the desktop side pane and the mobile bottom sheet.
+  const previewContent = selectedAsset && (
+    <div className="space-y-3">
+      {renderMedia()}
       <div className="space-y-1 text-sm">
         <div className="flex items-start justify-between gap-2">
           <p className="break-all font-medium">{selectedAsset.file_name}</p>
