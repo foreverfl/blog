@@ -1,3 +1,4 @@
+import { getValidAccessToken } from "@/lib/auth/token";
 import { apiGet } from "@/lib/query/query";
 
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
@@ -7,13 +8,16 @@ export interface ListBucketsResponse {
   default: string;
 }
 
-function authHeader() {
-  return { Authorization: `Bearer ${localStorage.getItem("access_token")}` };
+// Refresh the token if expired before every request, so a long-idle page
+// doesn't send a stale token and get stuck on 401.
+async function authHeader() {
+  const token = await getValidAccessToken();
+  return { Authorization: `Bearer ${token}` };
 }
 
-export function listBuckets() {
+export async function listBuckets() {
   return apiGet<ListBucketsResponse>(`${RUST_API}/assets/buckets`, {
-    headers: authHeader(),
+    headers: await authHeader(),
   });
 }
 
@@ -55,7 +59,7 @@ export async function uploadAssets(
   const params = new URLSearchParams({ bucket });
   const res = await fetch(`${RUST_API}/assets?${params}`, {
     method: "POST",
-    headers: authHeader(),
+    headers: await authHeader(),
     body: formData,
   });
   if (!res.ok) {
@@ -68,20 +72,20 @@ export async function uploadAssets(
 export async function deleteAsset(id: string): Promise<void> {
   const res = await fetch(`${RUST_API}/assets/${id}`, {
     method: "DELETE",
-    headers: authHeader(),
+    headers: await authHeader(),
   });
   if (!res.ok) {
     throw new Error(`Delete failed (${res.status}): ${await res.text()}`);
   }
 }
 
-export function listAssets(bucket: string, page: number, perPage = 20) {
+export async function listAssets(bucket: string, page: number, perPage = 20) {
   const params = new URLSearchParams({
     bucket,
     page: String(page),
     per_page: String(perPage),
   });
   return apiGet<ListAssetsResponse>(`${RUST_API}/assets?${params}`, {
-    headers: authHeader(),
+    headers: await authHeader(),
   });
 }
