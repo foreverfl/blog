@@ -1,5 +1,6 @@
 "use client";
 
+import FileIcon from "@/components/atom/FileIcon";
 import Pagination from "@/components/molecules/Pagination";
 import {
   AssetResponse,
@@ -93,8 +94,8 @@ const AssetsContent: React.FC = () => {
           className="max-h-80 w-full rounded object-contain"
         />
       ) : (
-        <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-500 dark:bg-neutral-800">
-          {selectedAsset.kind}
+        <div className="flex h-40 items-center justify-center rounded bg-gray-100 text-gray-400 dark:bg-neutral-800">
+          <FileIcon kind={selectedAsset.kind} className="h-16 w-16" />
         </div>
       )}
       <div className="space-y-1 text-sm">
@@ -255,8 +256,8 @@ const AssetsContent: React.FC = () => {
                         className="h-12 w-12 shrink-0 rounded object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-gray-100 text-xs text-gray-500 dark:bg-neutral-800">
-                        {asset.kind}
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-gray-100 text-gray-400 dark:bg-neutral-800">
+                        <FileIcon kind={asset.kind} className="h-6 w-6" />
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
