@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmModal from "@/components/modal/ConfirmModal";
+import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { sendDiscord } from "@/lib/discord";
@@ -9,15 +10,17 @@ import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
+
 interface Comment {
   id: string;
   email: string;
   username: string;
   photo: string;
   content: string;
-  createdAt: string;
+  created_at: string;
   reply: string;
-  repliedAt: string | null;
+  replied_at: string | null;
 }
 
 const Comment = ({}) => {
@@ -48,28 +51,20 @@ const Comment = ({}) => {
   const createComment = useCallback(
     async (commentText: string) => {
       if (!user) throw new Error("not authenticated");
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("not authenticated");
       const res = await fetch(
-        `/api/comment/${classification}/${category}/${slug}`,
+        `${RUST_API}/comments/${classification}/${category}/${slug}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: user.id,
-            user_photo: user.photo,
-            content: commentText,
-          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content: commentText }),
         },
       );
       if (!res.ok) throw new Error("failed to post comment");
-
-      await sendDiscord({
-        type: "comment_create",
-        payload: {
-          post_url: window.location.href,
-          username: user.username,
-          content: commentText,
-        },
-      });
 
       return res.json();
     },
@@ -256,7 +251,7 @@ const Comment = ({}) => {
             ? {
                 ...comment,
                 reply: reply.trim(),
-                repliedAt: new Date().toISOString(),
+                replied_at: new Date().toISOString(),
               }
             : comment,
         ),
@@ -276,7 +271,7 @@ const Comment = ({}) => {
             ? {
                 ...comment,
                 reply: "",
-                repliedAt: null,
+                replied_at: null,
               }
             : comment,
         ),
@@ -297,7 +292,7 @@ const Comment = ({}) => {
     (async () => {
       try {
         const res = await fetch(
-          `/api/comment/${classification}/${category}/${slug}`,
+          `${RUST_API}/comments/${classification}/${category}/${slug}`,
         );
         const data = await res.json();
         if (cancelled) return;
@@ -360,7 +355,7 @@ const Comment = ({}) => {
                         <span>{comment.username}</span>
                         <span className="hidden md:block">|</span>
                         <span className="hidden md:block">
-                          {new Date(comment.createdAt).toLocaleDateString()}
+                          {new Date(comment.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -453,7 +448,7 @@ const Comment = ({}) => {
                       <span>mogumogu</span>
                       <span className="hidden md:block">|</span>
                       <span className="hidden md:block">
-                        {new Date(comment.repliedAt!).toLocaleDateString()}
+                        {new Date(comment.replied_at!).toLocaleDateString()}
                       </span>
                     </div>
 
