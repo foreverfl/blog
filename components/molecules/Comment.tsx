@@ -112,15 +112,17 @@ const Comment = ({}) => {
 
   const upsertAdminReply = useCallback(
     async (commentId: string, reply: string) => {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("not authenticated");
       const res = await fetch(
-        `/api/comment/${classification}/${category}/${slug}/${commentId}/admin`,
+        `${RUST_API}/comments/${classification}/${category}/${slug}/${commentId}/admin`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            commentId,
-            reply,
-          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ reply }),
         },
       );
       if (!res.ok) throw new Error("Admin comment submission failed");
@@ -131,16 +133,16 @@ const Comment = ({}) => {
 
   const deleteAdminReply = useCallback(
     async (commentId: string) => {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("not authenticated");
       const res = await fetch(
-        `/api/comment/${classification}/${category}/${slug}/${commentId}/admin`,
+        `${RUST_API}/comments/${classification}/${category}/${slug}/${commentId}/admin`,
         {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ commentId }),
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
       if (!res.ok) throw new Error("Admin comment deletion failed");
-      return res.json();
     },
     [category, classification, slug],
   );
