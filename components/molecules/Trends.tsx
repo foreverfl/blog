@@ -1,6 +1,7 @@
 "use client";
 
 import TrendItemActions from "@/components/atom/TrendItemActions";
+import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
@@ -45,17 +46,16 @@ export default function Trends({ items }: { items: TrendItem[] }) {
 
   useEffect(() => {
     if (!user) return;
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("access_token")
-        : null;
-    if (!token) return;
 
     let cancelled = false;
-    fetch(`${RUST_API}/hackernews/likes`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : { ids: [] }))
+    getValidAccessToken()
+      .then((token) => {
+        if (cancelled || !token) return;
+        return fetch(`${RUST_API}/hackernews/likes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      })
+      .then((res) => (res && res.ok ? res.json() : { ids: [] }))
       .then((data: { ids: number[] }) => {
         if (!cancelled && Array.isArray(data.ids)) {
           setLikedIds(new Set(data.ids));
@@ -69,14 +69,6 @@ export default function Trends({ items }: { items: TrendItem[] }) {
 
   const toggleLike = (hnId: number) => {
     if (!user) {
-      openLoginModal();
-      return;
-    }
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("access_token")
-        : null;
-    if (!token) {
       openLoginModal();
       return;
     }
@@ -98,12 +90,19 @@ export default function Trends({ items }: { items: TrendItem[] }) {
       });
     };
 
-    fetch(`${RUST_API}/hackernews/likes/${hnId}`, {
-      method: wasLiked ? "DELETE" : "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) revert();
+    getValidAccessToken()
+      .then((token) => {
+        if (!token) {
+          revert();
+          openLoginModal();
+          return;
+        }
+        return fetch(`${RUST_API}/hackernews/likes/${hnId}`, {
+          method: wasLiked ? "DELETE" : "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((res) => {
+          if (!res.ok) revert();
+        });
       })
       .catch(revert);
   };

@@ -1,3 +1,5 @@
+import { getValidAccessToken } from "@/lib/auth/token";
+
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface UploadContext {
@@ -9,7 +11,7 @@ interface UploadContext {
 }
 
 export async function uploadImages(files: File[], ctx: UploadContext) {
-  const token = localStorage.getItem("access_token");
+  const token = await getValidAccessToken();
   if (!token) {
     ctx.onAuthError();
     return;
