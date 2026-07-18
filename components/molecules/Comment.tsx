@@ -165,11 +165,6 @@ const Comment = ({}) => {
     const trimmed = newComment.trim();
     if (!trimmed) return;
 
-    if (trimmed.length < 10) {
-      showToast(t("comment_min_length"), "error");
-      return;
-    }
-
     try {
       const newCommentObj = await createComment(newComment.trim());
       setComments((prev) => [...prev, newCommentObj]);
@@ -188,10 +183,6 @@ const Comment = ({}) => {
       onConfirm: async (value) => {
         const updatedComment = value.trim();
         if (!updatedComment) return;
-        if (updatedComment.length < 10) {
-          showToast(t("comment_min_length"), "error");
-          return;
-        }
         try {
           await updateComment(commentId, updatedComment);
           setComments((prevComments) =>

@@ -1,6 +1,5 @@
 {
   "comment_placeholder": "회원님의 댓글을 여기에 작성해 주세요.",
-  "comment_min_length": "댓글은 최소 10자 이상 입력해 주세요.",
   "comment_add_fail": "댓글 등록에 실패했습니다. 다시 시도해 주세요.",
   "comment_update_prompt": "댓글을 입력해 주세요.",
   "comment_update_confirm": "이 댓글을 수정하시겠습니까?",

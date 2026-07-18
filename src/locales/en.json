@@ -1,6 +1,5 @@
 {
   "comment_placeholder": "Please write your comment here.",
-  "comment_min_length": "Please enter at least 10 characters in your comment.",
   "comment_add_fail": "Failed to add comment. Please try again later.",
   "comment_update_prompt": "Enter your comment:",
   "comment_update_confirm": "Are you sure you want to update this comment?",

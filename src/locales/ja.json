@@ -1,6 +1,5 @@
 {
   "comment_placeholder": "ここにコメントを書いてください。",
-  "comment_min_length": "コメントは10文字以上入力してください。",
   "comment_add_fail": "コメントの投稿に失敗しました。再度お試しください。",
   "comment_update_prompt": "コメントを入力してください。",
   "comment_update_confirm": "このコメントを更新してもよろしいですか？",
