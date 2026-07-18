@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmModal from "@/components/modal/ConfirmModal";
+import PromptModal from "@/components/modal/PromptModal";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
@@ -47,6 +48,12 @@ const Comment = ({}) => {
     message: string;
     danger?: boolean;
     onConfirm: () => void;
+  } | null>(null);
+  // Prompt popup replaces window.prompt; holds title + initial value + deferred action.
+  const [pendingPrompt, setPendingPrompt] = useState<{
+    title: string;
+    initialValue: string;
+    onConfirm: (value: string) => void;
   } | null>(null);
 
   const createComment = useCallback(
@@ -175,20 +182,16 @@ const Comment = ({}) => {
   const handleUpdateComment = (commentId: string) => {
     const currentComment =
       comments.find((c) => c.id === commentId)?.content || "";
-    const updatedComment = window.prompt(
-      t("comment_update_prompt"),
-      currentComment,
-    );
-
-    if (!updatedComment || !updatedComment.trim()) return;
-    if (updatedComment.trim().length < 10) {
-      showToast(t("comment_min_length"), "error");
-      return;
-    }
-
-    setPendingConfirm({
-      message: t("comment_update_confirm"),
-      onConfirm: async () => {
+    setPendingPrompt({
+      title: t("comment_update_prompt"),
+      initialValue: currentComment,
+      onConfirm: async (value) => {
+        const updatedComment = value.trim();
+        if (!updatedComment) return;
+        if (updatedComment.length < 10) {
+          showToast(t("comment_min_length"), "error");
+          return;
+        }
         try {
           await updateComment(commentId, updatedComment);
           setComments((prevComments) =>
@@ -223,29 +226,33 @@ const Comment = ({}) => {
     });
   };
 
-  const handleAddReplyComment = async (commentId: string) => {
+  const handleAddReplyComment = (commentId: string) => {
     const currentReply = comments.find((c) => c.id === commentId)?.reply || "";
-    const reply = window.prompt(t("comment_admin_reply_prompt"), currentReply);
-
-    if (!reply || !reply.trim()) return;
-
-    try {
-      await upsertAdminReply(commentId, reply.trim());
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                reply: reply.trim(),
-                replied_at: new Date().toISOString(),
-              }
-            : comment,
-        ),
-      );
-      showToast(t("comment_admin_reply_success"), "success");
-    } catch (e) {
-      showToast(t("comment_admin_reply_fail"), "error");
-    }
+    setPendingPrompt({
+      title: t("comment_admin_reply_prompt"),
+      initialValue: currentReply,
+      onConfirm: async (value) => {
+        const reply = value.trim();
+        if (!reply) return;
+        try {
+          await upsertAdminReply(commentId, reply);
+          setComments((prevComments) =>
+            prevComments.map((comment) =>
+              comment.id === commentId
+                ? {
+                    ...comment,
+                    reply,
+                    replied_at: new Date().toISOString(),
+                  }
+                : comment,
+            ),
+          );
+          showToast(t("comment_admin_reply_success"), "success");
+        } catch (e) {
+          showToast(t("comment_admin_reply_fail"), "error");
+        }
+      },
+    });
   };
 
   const handleDeleteAdminComment = async (commentId: string) => {
@@ -310,6 +317,17 @@ const Comment = ({}) => {
         cancelLabel={t("cancel")}
         danger={pendingConfirm?.danger}
         onConfirm={() => pendingConfirm?.onConfirm()}
+      />
+      <PromptModal
+        open={!!pendingPrompt}
+        onOpenChange={(open) => {
+          if (!open) setPendingPrompt(null);
+        }}
+        title={pendingPrompt?.title ?? ""}
+        initialValue={pendingPrompt?.initialValue}
+        confirmLabel={t("confirm")}
+        cancelLabel={t("cancel")}
+        onConfirm={(value) => pendingPrompt?.onConfirm(value)}
       />
       <div className="w-full md:w-3/5">
         <div className="my-24"></div>
