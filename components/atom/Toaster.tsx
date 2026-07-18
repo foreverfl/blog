@@ -31,7 +31,7 @@ function ToastItem({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: "100%" }}
       transition={{ duration: 0.2 }}
-      className={`flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg ${typeStyles[toast.type]}`}
+      className={`flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-lg px-4 py-3 shadow-lg ${typeStyles[toast.type]}`}
     >
       <span className="text-sm">{toast.message}</span>
       <button
@@ -49,7 +49,7 @@ export default function Toaster() {
   const { toasts, dismissToast } = useToast();
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] flex w-72 flex-col gap-2">
+    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2">
       <AnimatePresence>
         {toasts.map((toast) => (
           <ToastItem key={toast.id} toast={toast} onDismiss={dismissToast} />
