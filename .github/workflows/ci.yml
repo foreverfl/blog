@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (astro)
+    runs-on: ubuntu-latest
+    env:
+      # Build-time page enumeration (getStaticPaths) reads production APIs.
+      # Public URLs baked into the client bundle anyway — not secrets.
+      PUBLIC_API_RUST_URL: ${{ vars.PUBLIC_API_RUST_URL }}
+      PUBLIC_R2_URI: ${{ vars.PUBLIC_R2_URI }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  notify-failure:
+    name: Notify CI failure
+    needs: [build]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      # Only static fields in the payload — commit messages can hold quotes/newlines
+      # that would break the inline JSON.
+      - run: |
+          curl -sf -H "Content-Type: application/json" -d '{
+            "content": "@everyone CI failed",
+            "embeds": [{
+              "title": "❌ CI failed — ${{ github.repository }}",
+              "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "description": "branch `${{ github.ref_name }}` · commit `${{ github.sha }}`",
+              "color": 15548997
+            }]
+          }' "${{ secrets.DISCORD_GITHUB_WEBHOOK }}"
