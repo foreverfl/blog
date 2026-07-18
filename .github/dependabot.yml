@@ -9,3 +9,6 @@ updates:
       all-minor-patch-updates:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"

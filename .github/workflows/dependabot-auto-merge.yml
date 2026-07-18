@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.actor == 'dependabot[bot]'
     steps:
+      - name: Fetch dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -41,4 +45,5 @@ jobs:
         with:
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: rebase
-        if: success()
+        # Majors stay open for manual review — only minor/patch auto-merge
+        if: success() && steps.metadata.outputs.update-type != 'version-update:semver-major'
