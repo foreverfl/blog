@@ -23,7 +23,7 @@
     "@tanstack/react-query": "^5.101.3",
     "@tanstack/react-query-devtools": "^5.101.3",
     "@types/react-modal": "^3.16.3",
-    "astro": "^6.4.8",
+    "astro": "^7.1.2",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.42.2",
     "github-markdown-css": "^5.9.0",
