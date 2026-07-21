@@ -55,7 +55,7 @@
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.1",
     "tsx": "^4.23.1",
-    "typescript": "^6"
+    "typescript": "^7"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md,mdx}": "prettier --write"
