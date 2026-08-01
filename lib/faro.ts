@@ -18,7 +18,19 @@ if (collectorUrl) {
     // add tracing (fetch/xhr + page load spans)
     instrumentations: [
       ...getWebInstrumentations(),
-      new TracingInstrumentation(),
+      new TracingInstrumentation({
+        instrumentationOptions: {
+          propagateTraceHeaderCorsUrls: [
+            new RegExp(
+              import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002",
+            ),
+            new RegExp(
+              import.meta.env.PUBLIC_API_AUTH_URL ||
+                "http://localhost:8001/auth",
+            ),
+          ],
+        },
+      }),
     ],
   });
 }
