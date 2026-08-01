@@ -1,4 +1,5 @@
-import { initializeFaro } from "@grafana/faro-web-sdk";
+import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
+import { TracingInstrumentation } from "@grafana/faro-web-tracing";
 
 // localhost fallback is dev-only: leaking it into a prod build would make
 // every visitor's browser POST telemetry to their own machine
@@ -13,5 +14,11 @@ if (collectorUrl) {
       name: "blog-front",
       environment: import.meta.env.DEV ? "local" : "production",
     },
+    // Explicit instrumentations replace the default set: keep the defaults and
+    // add tracing (fetch/xhr + page load spans)
+    instrumentations: [
+      ...getWebInstrumentations(),
+      new TracingInstrumentation(),
+    ],
   });
 }
