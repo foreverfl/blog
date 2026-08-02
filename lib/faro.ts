@@ -14,9 +14,6 @@ if (collectorUrl) {
       name: "blog-front",
       environment: import.meta.env.DEV ? "local" : "production",
     },
-    // Ship the culprit element with each vital (CLS shift target, LCP element,
-    // INP target) — without this the dashboard only says "0.6", never "what"
-    trackWebVitalsAttribution: true,
     // Explicit instrumentations replace the default set: keep the defaults and
     // add tracing (fetch/xhr + page load spans)
     instrumentations: [
