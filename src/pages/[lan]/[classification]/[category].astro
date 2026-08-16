@@ -9,6 +9,8 @@ export function getStaticPaths() {
   for (const lan of langs) {
     for (const cls of categories) {
       for (const cat of cls.categories) {
+        // Skip menu entries served by a dedicated page file of their own.
+        if (cat.hasOwnPage) continue;
         paths.push({
           params: { lan, classification: cls.link, category: cat.link },
         });

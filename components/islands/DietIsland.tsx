@@ -2,10 +2,10 @@ import Providers from "@/components/Providers";
 import DietContent from "@/components/template/DietContent";
 
 // Single React island for the calorie tracking dashboard.
-export default function DietIsland() {
+export default function DietIsland({ lan }: { lan: string }) {
   return (
     <Providers>
-      <DietContent />
+      <DietContent lan={lan} />
     </Providers>
   );
 }

@@ -22,18 +22,15 @@ const buttonClass =
 
 // Calorie tracking dashboard (skeleton — status card, calendar and detail panel
 // are empty until their own units land).
-const DietContent: React.FC = () => {
+const DietContent: React.FC<{ lan: string }> = ({ lan }) => {
   const { isReady, isLoggedIn } = useAuth();
   const { openLoginModal } = useLoginModal();
   const { t, i18n } = useTranslation();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // This page sits outside /{lan}/, so the locale comes from the cookie the
-  // navbar's language selector writes.
   useEffect(() => {
-    const chosen = document.cookie.match(/(?:^|;\s*)lan=([^;]+)/)?.[1];
-    if (chosen && chosen in DATE_LOCALES) i18n.changeLanguage(chosen);
-  }, [i18n]);
+    if (lan in DATE_LOCALES) i18n.changeLanguage(lan);
+  }, [lan, i18n]);
 
   // Wait for the auth check so a logged-in visitor never sees the login prompt.
   if (!isReady) return null;
@@ -49,10 +46,10 @@ const DietContent: React.FC = () => {
     );
   }
 
-  const today = new Date().toLocaleDateString(
-    DATE_LOCALES[i18n.language] ?? "ko-KR",
-    { month: "long", day: "numeric" },
-  );
+  const today = new Date().toLocaleDateString(DATE_LOCALES[lan] ?? "ko-KR", {
+    month: "long",
+    day: "numeric",
+  });
 
   // Detail panel: the picked day's activity, meals and balance.
   const detailPanel = (
