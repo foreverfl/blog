@@ -37,5 +37,12 @@
   "audio_lab_new_recording": "新しい録音",
   "audio_lab_error_mic_denied": "マイクへのアクセスが拒否されました。マイクへのアクセスを許可してください。",
   "audio_lab_error_start_failed": "録音の開始に失敗しました。",
-  "audio_lab_playback": "再生"
+  "audio_lab_playback": "再生",
+  "diet_login_required": "記録を見るにはログインが必要です。",
+  "diet_status_placeholder": "現在の体重 · 目標 · BMI · 今日の残りkcal",
+  "diet_edit_profile": "プロフィール編集",
+  "diet_tdee_settings": "TDEE設定",
+  "diet_calendar": "カレンダー",
+  "diet_calendar_placeholder": "日ごとの体重とバランス",
+  "diet_detail_placeholder": "活動 · 食事 · バランス"
 }

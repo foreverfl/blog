@@ -37,5 +37,12 @@
   "audio_lab_new_recording": "New Recording",
   "audio_lab_error_mic_denied": "Microphone access denied. Please allow microphone access.",
   "audio_lab_error_start_failed": "Failed to start recording.",
-  "audio_lab_playback": "Playback"
+  "audio_lab_playback": "Playback",
+  "diet_login_required": "Sign in to see your records.",
+  "diet_status_placeholder": "Weight · Goal · BMI · Remaining kcal today",
+  "diet_edit_profile": "Edit profile",
+  "diet_tdee_settings": "TDEE settings",
+  "diet_calendar": "Calendar",
+  "diet_calendar_placeholder": "Weight and balance per day",
+  "diet_detail_placeholder": "Activity · Meals · Balance"
 }

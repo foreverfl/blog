@@ -37,5 +37,12 @@
   "audio_lab_new_recording": "새 녹음",
   "audio_lab_error_mic_denied": "마이크 접근이 거부되었습니다. 마이크 접근을 허용해 주세요.",
   "audio_lab_error_start_failed": "녹음을 시작하지 못했습니다.",
-  "audio_lab_playback": "재생"
+  "audio_lab_playback": "재생",
+  "diet_login_required": "기록을 보려면 로그인이 필요합니다.",
+  "diet_status_placeholder": "현재 체중 · 목표 · BMI · 오늘 잔여 kcal",
+  "diet_edit_profile": "내 정보 수정",
+  "diet_tdee_settings": "TDEE 설정",
+  "diet_calendar": "달력",
+  "diet_calendar_placeholder": "날짜별 체중과 balance",
+  "diet_detail_placeholder": "활동 · 식사 · Balance"
 }
