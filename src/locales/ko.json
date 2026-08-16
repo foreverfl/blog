@@ -44,5 +44,14 @@
   "diet_tdee_settings": "TDEE 설정",
   "diet_calendar": "달력",
   "diet_calendar_placeholder": "날짜별 체중과 balance",
-  "diet_detail_placeholder": "활동 · 식사 · Balance"
+  "diet_detail_placeholder": "활동 · 식사 · Balance",
+  "diet_balance_help": "적자가 뭔가요?",
+  "diet_balance_title": "balance는 두 선의 간격",
+  "diet_balance_description": "예시입니다. 점 하나가 하루 — 그날 쓴 양과 먹은 양의 간격이 그날 balance입니다.",
+  "diet_balance_burn": "소모",
+  "diet_balance_intake": "섭취",
+  "close": "닫기",
+  "diet_balance_band": "띠 = 그날 balance",
+  "diet_balance_x_axis": "일차",
+  "diet_balance_y_axis": "kcal"
 }

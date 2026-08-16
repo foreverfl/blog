@@ -44,5 +44,14 @@
   "diet_tdee_settings": "TDEE設定",
   "diet_calendar": "カレンダー",
   "diet_calendar_placeholder": "日ごとの体重とバランス",
-  "diet_detail_placeholder": "活動 · 食事 · バランス"
+  "diet_detail_placeholder": "活動 · 食事 · バランス",
+  "diet_balance_help": "赤字とは？",
+  "diet_balance_title": "balanceは2本の線の差",
+  "diet_balance_description": "例です。点ひとつが1日 — その日に使った量と食べた量の差が、その日のbalanceです。",
+  "diet_balance_burn": "消費",
+  "diet_balance_intake": "摂取",
+  "close": "閉じる",
+  "diet_balance_band": "帯 = その日のbalance",
+  "diet_balance_x_axis": "日目",
+  "diet_balance_y_axis": "kcal"
 }

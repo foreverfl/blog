@@ -44,5 +44,14 @@
   "diet_tdee_settings": "TDEE settings",
   "diet_calendar": "Calendar",
   "diet_calendar_placeholder": "Weight and balance per day",
-  "diet_detail_placeholder": "Activity · Meals · Balance"
+  "diet_detail_placeholder": "Activity · Meals · Balance",
+  "diet_balance_help": "What is a deficit?",
+  "diet_balance_title": "The balance is the gap between two lines",
+  "diet_balance_description": "An example. One dot is one day — the gap between what was burned and what was eaten is that day's balance.",
+  "diet_balance_burn": "Burned",
+  "diet_balance_intake": "Eaten",
+  "close": "Close",
+  "diet_balance_band": "band = that day's balance",
+  "diet_balance_x_axis": "day",
+  "diet_balance_y_axis": "kcal"
 }

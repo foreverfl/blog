@@ -15,7 +15,7 @@ What remains here is being migrated from Next.js to a static, Cloudflare Pages-b
 - **Framework**: Astro (static output) with React islands
 - **Styling**: Tailwind CSS (v4, via PostCSS)
 - **Content**: Rendered at runtime with `react-markdown`, fetched from the backend
-- **Charts**: `d3` — colour scales and line generators, used directly rather than through a chart library
+- **Charts**: `d3` for scales, axes and shape generators, drawn into React-rendered SVG rather than through a chart library
 - **i18n**: Multi-language support (EN / KO / JA)
 
 ---

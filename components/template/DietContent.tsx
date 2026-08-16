@@ -1,5 +1,6 @@
 "use client";
 
+import DietBalanceModal from "@/components/modal/DietBalanceModal";
 import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import "@/lib/i18n";
@@ -27,6 +28,7 @@ const DietContent: React.FC<{ lan: string }> = ({ lan }) => {
   const { openLoginModal } = useLoginModal();
   const { t, i18n } = useTranslation();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isBalanceOpen, setIsBalanceOpen] = useState(false);
 
   useEffect(() => {
     if (lan in DATE_LOCALES) i18n.changeLanguage(lan);
@@ -61,12 +63,34 @@ const DietContent: React.FC<{ lan: string }> = ({ lan }) => {
 
   return (
     <div className="flex min-h-screen justify-center">
+      <DietBalanceModal
+        open={isBalanceOpen}
+        onOpenChange={setIsBalanceOpen}
+        title={t("diet_balance_title")}
+        description={t("diet_balance_description")}
+        closeLabel={t("close")}
+        burnLabel={t("diet_balance_burn")}
+        intakeLabel={t("diet_balance_intake")}
+        bandLabel={t("diet_balance_band")}
+        xAxisLabel={t("diet_balance_x_axis")}
+        yAxisLabel={t("diet_balance_y_axis")}
+      />
       <div className="my-56 w-full px-5 md:w-4/5">
         {/* Status card: today's numbers and the two settings modals. */}
         <section className={panelClass}>
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold">Diet</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold">Diet</h1>
+                <button
+                  onClick={() => setIsBalanceOpen(true)}
+                  title={t("diet_balance_help")}
+                  aria-label={t("diet_balance_help")}
+                  className="h-5 w-5 rounded-full border border-gray-300 text-xs text-gray-500 dark:border-gray-600 dark:text-gray-400"
+                >
+                  ?
+                </button>
+              </div>
               <p className={placeholderClass}>{t("diet_status_placeholder")}</p>
             </div>
             <div className="flex gap-2">
