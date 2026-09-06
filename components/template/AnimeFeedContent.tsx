@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { listClips, recordView, type ClipResponse } from "@/lib/anime/api";
+import {
+  likeClip,
+  listClips,
+  recordView,
+  unlikeClip,
+  type ClipResponse,
+} from "@/lib/anime/api";
 import { useAuth } from "@/lib/context/auth-context";
 
 // Fake but stable engagement numbers — seeded by clip id so a clip keeps the
@@ -49,6 +55,10 @@ function ClipSlide({
   const [paused, setPaused] = useState(false);
   const counts = seededCounts(clip.id);
   const [progress, setProgress] = useState(0);
+  const [liked, setLiked] = useState(clip.liked);
+  const [heartBurst, setHeartBurst] = useState(false);
+  const [likeTapCount, setLikeTapCount] = useState(0);
+  const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -87,10 +97,37 @@ function ClipSlide({
     }
   };
 
+  // Optimistic: flip the heart now, roll back if the server call fails.
+  const toggleLike = () => {
+    const next = !liked;
+    setLiked(next);
+    setLikeTapCount((n) => n + 1);
+    (next ? likeClip(clip.id) : unlikeClip(clip.id)).catch(() =>
+      setLiked(!next),
+    );
+  };
+
+  // Single tap pauses, double tap likes — the pause waits 250ms to see
+  // whether a second tap turns it into a like.
+  const handleTap = () => {
+    if (tapTimer.current) {
+      clearTimeout(tapTimer.current);
+      tapTimer.current = null;
+      if (!liked) toggleLike();
+      setHeartBurst(true);
+      setTimeout(() => setHeartBurst(false), 600);
+    } else {
+      tapTimer.current = setTimeout(() => {
+        tapTimer.current = null;
+        togglePlay();
+      }, 250);
+    }
+  };
+
   return (
     <section
       className="relative flex h-dvh w-full snap-start items-center justify-center overflow-hidden"
-      onClick={togglePlay}
+      onClick={handleTap}
     >
       <video
         ref={backdropRef}
@@ -136,6 +173,18 @@ function ClipSlide({
           <polygon points="8 5 19 12 8 19 8 5" />
         </svg>
       )}
+      {heartBurst && (
+        <svg
+          className="absolute left-1/2 top-1/2 text-red-500/90"
+          style={{ animation: "heart-pop 600ms ease-out forwards" }}
+          width="96"
+          height="96"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z" />
+        </svg>
+      )}
       <div
         className="absolute bottom-24 right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
         onClick={(e) => e.stopPropagation()}
@@ -150,9 +199,21 @@ function ClipSlide({
         <button
           type="button"
           aria-label="좋아요"
-          className="flex flex-col items-center gap-1"
+          onClick={toggleLike}
+          className={`flex flex-col items-center gap-1 ${liked ? "text-red-500" : ""}`}
         >
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+          <svg
+            key={likeTapCount}
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            style={
+              likeTapCount > 0
+                ? { animation: "heart-tap 300ms ease-out" }
+                : undefined
+            }
+          >
             <path d="M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z" />
           </svg>
           <span className="text-xs">{formatCount(counts.likes)}</span>

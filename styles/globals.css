@@ -224,3 +224,39 @@ code[data-line-numbers-max-digits="4"] > [data-line]::before {
 .privacy-policy a {
   @apply text-blue-500 hover:underline;
 }
+
+/* Anime feed: double-tap heart — pop up, drift slightly, shrink away. */
+@keyframes heart-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  25% {
+    transform: translate(-50%, -58%) scale(1.3);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-50%, -63%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -72%) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Anime feed: rail heart — quick bounce on every like/unlike tap. */
+@keyframes heart-tap {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  70% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

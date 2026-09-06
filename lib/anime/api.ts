@@ -1,5 +1,5 @@
 import { getValidAccessToken } from "@/lib/auth/token";
-import { apiGet, apiPost } from "@/lib/query/query";
+import { apiDelete, apiGet, apiPost } from "@/lib/query/query";
 
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
@@ -56,4 +56,30 @@ export async function recordView(id: number): Promise<ClipResponse> {
     {},
     { headers: await authHeader() },
   );
+}
+
+/**
+ * Like a clip (server also moves its R2 object feed/ -> liked/).
+ *
+ * @param id - clip id
+ * @returns the updated clip (liked true, url under liked/)
+ */
+export async function likeClip(id: number): Promise<ClipResponse> {
+  return apiPost<ClipResponse>(
+    `${RUST_API}/anime/clips/${id}/like`,
+    {},
+    { headers: await authHeader() },
+  );
+}
+
+/**
+ * Undo a like (moves the R2 object back to feed/).
+ *
+ * @param id - clip id
+ * @returns the updated clip (liked false, url under feed/)
+ */
+export async function unlikeClip(id: number): Promise<ClipResponse> {
+  return apiDelete<ClipResponse>(`${RUST_API}/anime/clips/${id}/like`, {
+    headers: await authHeader(),
+  });
 }
