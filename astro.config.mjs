@@ -13,7 +13,7 @@ export default defineConfig({
     react(),
     sitemap({
       filter: (page) =>
-        !page.includes("/auth/") && !page.includes("/assets"),
+        !page.includes("/auth/") && !page.includes("/assets") && !page.includes("/anime"),
     }),
   ],
 });
