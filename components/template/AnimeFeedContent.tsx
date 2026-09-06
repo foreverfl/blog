@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { listClips, type ClipResponse } from "@/lib/anime/api";
+import { listClips, recordView, type ClipResponse } from "@/lib/anime/api";
 import { useAuth } from "@/lib/context/auth-context";
 
 function ClipSlide({
@@ -11,11 +11,13 @@ function ClipSlide({
   soundOn,
   volume,
   onVolumeChange,
+  onView,
 }: {
   clip: ClipResponse;
   soundOn: boolean;
   volume: number;
   onVolumeChange: (volume: number) => void;
+  onView: (id: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -25,6 +27,7 @@ function ClipSlide({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          onView(clip.id);
           video.play().catch(() => {
             // sound autoplay blocked: play this one muted
             video.muted = true;
@@ -38,7 +41,7 @@ function ClipSlide({
     );
     observer.observe(video);
     return () => observer.disconnect();
-  }, []);
+  }, [clip.id, onView]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -68,6 +71,14 @@ export default function AnimeFeedContent() {
   const { isReady, isAdmin } = useAuth();
   const [soundOn, setSoundOn] = useState(false);
   const [volume, setVolume] = useState(1);
+  const viewedIds = useRef(new Set<number>());
+
+  // Once per clip per page load — re-entering a slide doesn't recount.
+  const markViewed = useCallback((id: number) => {
+    if (viewedIds.current.has(id)) return;
+    viewedIds.current.add(id);
+    recordView(id).catch(() => {});
+  }, []);
 
   const { data: clips, isLoading } = useQuery({
     queryKey: ["anime", "clips"],
@@ -98,6 +109,7 @@ export default function AnimeFeedContent() {
             soundOn={soundOn}
             volume={volume}
             onVolumeChange={setVolume}
+            onView={markViewed}
           />
         ))
       ) : (

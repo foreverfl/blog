@@ -1,5 +1,5 @@
 import { getValidAccessToken } from "@/lib/auth/token";
-import { apiGet } from "@/lib/query/query";
+import { apiGet, apiPost } from "@/lib/query/query";
 
 const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
@@ -42,4 +42,18 @@ export async function listClips(
   return apiGet<ClipResponse[]>(`${RUST_API}/anime/clips?${params}`, {
     headers: await authHeader(),
   });
+}
+
+/**
+ * Count one viewing of a clip.
+ *
+ * @param id - clip id
+ * @returns the updated clip (view_count bumped, last_viewed_at set)
+ */
+export async function recordView(id: number): Promise<ClipResponse> {
+  return apiPost<ClipResponse>(
+    `${RUST_API}/anime/clips/${id}/view`,
+    {},
+    { headers: await authHeader() },
+  );
 }
