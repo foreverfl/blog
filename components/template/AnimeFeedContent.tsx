@@ -12,6 +12,9 @@ import {
 } from "@/lib/anime/api";
 import { useAuth } from "@/lib/context/auth-context";
 
+// Reachable from anywhere via Tailscale (phone included).
+const JELLYFIN_URL = "http://mogumogu-ubuntu:8096";
+
 // Fake but stable engagement numbers — seeded by clip id so a clip keeps the
 // same counts across renders and reloads.
 function seededCounts(id: number) {
@@ -189,13 +192,25 @@ function ClipSlide({
         className="absolute bottom-24 right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          type="button"
-          aria-label="원작 보기"
-          className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/20 text-lg font-bold uppercase"
-        >
-          {clip.series_slug[0]}
-        </button>
+        {clip.jellyfin_item ? (
+          <a
+            href={`${JELLYFIN_URL}/web/#/details?id=${clip.jellyfin_item}`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="원작 보기"
+            className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/20 text-lg font-bold uppercase"
+          >
+            {clip.series_slug[0]}
+          </a>
+        ) : (
+          <button
+            type="button"
+            aria-label="원작 보기"
+            className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/20 text-lg font-bold uppercase opacity-60"
+          >
+            {clip.series_slug[0]}
+          </button>
+        )}
         <button
           type="button"
           aria-label="좋아요"
