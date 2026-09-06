@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { listClips, type ClipResponse } from "@/lib/anime/api";
 import { useAuth } from "@/lib/context/auth-context";
 
-// One full-screen slide; plays only while (mostly) on screen.
-function ClipSlide({ clip }: { clip: ClipResponse }) {
+function ClipSlide({
+  clip,
+  soundOn,
+  volume,
+  onVolumeChange,
+}: {
+  clip: ClipResponse;
+  soundOn: boolean;
+  volume: number;
+  onVolumeChange: (volume: number) => void;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -16,9 +25,11 @@ function ClipSlide({ clip }: { clip: ClipResponse }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Autoplay can be blocked before the first tap — ignore and let
-          // the controls handle it.
-          video.play().catch(() => {});
+          video.play().catch(() => {
+            // sound autoplay blocked: play this one muted
+            video.muted = true;
+            video.play().catch(() => {});
+          });
         } else {
           video.pause();
         }
@@ -28,6 +39,13 @@ function ClipSlide({ clip }: { clip: ClipResponse }) {
     observer.observe(video);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !soundOn;
+    video.volume = volume;
+  }, [soundOn, volume]);
 
   return (
     <section className="flex h-dvh w-full snap-start items-center justify-center">
@@ -40,24 +58,24 @@ function ClipSlide({ clip }: { clip: ClipResponse }) {
         loop
         controls
         preload="metadata"
+        onVolumeChange={(e) => onVolumeChange(e.currentTarget.volume)}
       />
     </section>
   );
 }
 
-// Personal TikTok-style clip feed: vertical snap scroll, one clip per screen.
 export default function AnimeFeedContent() {
   const { isReady, isAdmin } = useAuth();
+  const [soundOn, setSoundOn] = useState(false);
+  const [volume, setVolume] = useState(1);
 
   const { data: clips, isLoading } = useQuery({
     queryKey: ["anime", "clips"],
     queryFn: () => listClips(false, 50),
     enabled: isReady && isAdmin,
-    // Random server order — a refocus refetch would reshuffle mid-scroll.
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // random order: a refetch would reshuffle mid-scroll
   });
 
-  // Wait for the auth check to avoid a "not found" flash for the admin.
   if (!isReady) return null;
 
   if (!isAdmin) {
@@ -71,13 +89,48 @@ export default function AnimeFeedContent() {
   const playable = (clips ?? []).filter((clip) => clip.url);
 
   return (
-    <div className="h-dvh w-full snap-y snap-mandatory overflow-y-auto bg-black">
+    <div className="relative h-dvh w-full snap-y snap-mandatory overflow-y-auto bg-black">
       {isLoading ? null : playable.length ? (
-        playable.map((clip) => <ClipSlide key={clip.id} clip={clip} />)
+        playable.map((clip) => (
+          <ClipSlide
+            key={clip.id}
+            clip={clip}
+            soundOn={soundOn}
+            volume={volume}
+            onVolumeChange={setVolume}
+          />
+        ))
       ) : (
         <p className="flex h-dvh items-center justify-center text-white">
           No clips
         </p>
+      )}
+      {!soundOn && !isLoading && playable.length > 0 && (
+        <button
+          type="button"
+          aria-label="소리 켜기"
+          onClick={() => setSoundOn(true)}
+          className="fixed left-1/2 top-6 z-10 -translate-x-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polygon
+              points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"
+              fill="currentColor"
+              stroke="none"
+            />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+        </button>
       )}
     </div>
   );
