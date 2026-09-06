@@ -9,18 +9,16 @@ import { useAuth } from "@/lib/context/auth-context";
 function ClipSlide({
   clip,
   soundOn,
-  volume,
-  onVolumeChange,
   onView,
 }: {
   clip: ClipResponse;
   soundOn: boolean;
-  volume: number;
-  onVolumeChange: (volume: number) => void;
   onView: (id: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const backdropRef = useRef<HTMLVideoElement>(null);
+  const [paused, setPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -46,13 +44,24 @@ function ClipSlide({
 
   useEffect(() => {
     const video = videoRef.current;
+    if (video) video.muted = !soundOn;
+  }, [soundOn]);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
     if (!video) return;
-    video.muted = !soundOn;
-    video.volume = volume;
-  }, [soundOn, volume]);
+    if (video.paused) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  };
 
   return (
-    <section className="relative flex h-dvh w-full snap-start items-center justify-center overflow-hidden">
+    <section
+      className="relative flex h-dvh w-full snap-start items-center justify-center overflow-hidden"
+      onClick={togglePlay}
+    >
       <video
         ref={backdropRef}
         src={clip.url as string}
@@ -71,12 +80,103 @@ function ClipSlide({
         playsInline
         muted
         loop
-        controls
         preload="metadata"
-        onVolumeChange={(e) => onVolumeChange(e.currentTarget.volume)}
-        onPlay={() => backdropRef.current?.play().catch(() => {})}
-        onPause={() => backdropRef.current?.pause()}
+        onPlay={() => {
+          setPaused(false);
+          backdropRef.current?.play().catch(() => {});
+        }}
+        onPause={() => {
+          setPaused(true);
+          backdropRef.current?.pause();
+        }}
+        onTimeUpdate={(e) =>
+          setProgress(
+            e.currentTarget.currentTime / (e.currentTarget.duration || 1),
+          )
+        }
       />
+      {paused && (
+        <svg
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white/80"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <polygon points="8 5 19 12 8 19 8 5" />
+        </svg>
+      )}
+      <div
+        className="absolute bottom-24 right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          aria-label="원작 보기"
+          className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/20 text-lg font-bold uppercase"
+        >
+          {clip.series_slug[0]}
+        </button>
+        <button
+          type="button"
+          aria-label="좋아요"
+          className="flex flex-col items-center gap-1"
+        >
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z" />
+          </svg>
+          <span className="text-xs">0</span>
+        </button>
+        <button
+          type="button"
+          aria-label="댓글"
+          className="flex flex-col items-center gap-1"
+        >
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.3 8.9 8.9 0 0 1-3.8-.8L3 20l1.1-4.1a8.1 8.1 0 0 1-1.1-4.4A8.38 8.38 0 0 1 11.5 3.2 8.38 8.38 0 0 1 21 11.5z" />
+          </svg>
+          <span className="text-xs">0</span>
+        </button>
+        <button
+          type="button"
+          aria-label="북마크"
+          className="flex flex-col items-center gap-1"
+        >
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+          </svg>
+          <span className="text-xs">0</span>
+        </button>
+        <button
+          type="button"
+          aria-label="공유"
+          className="flex flex-col items-center gap-1"
+        >
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="text-xs">0</span>
+        </button>
+      </div>
+      <div className="absolute bottom-6 left-4 right-20 z-10 text-white drop-shadow">
+        <p className="font-semibold">@{clip.series_slug}</p>
+        <p className="mt-1 text-sm text-white/85">
+          {clip.episode} · {Math.floor(clip.start_sec / 60)}분{" "}
+          {Math.floor(clip.start_sec % 60)}초부터
+        </p>
+      </div>
+      <div className="absolute bottom-0 left-0 h-0.5 w-full bg-white/20">
+        <div
+          className="h-full bg-white/80"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
     </section>
   );
 }
@@ -100,7 +200,6 @@ function LoadMoreSentinel({ onHit }: { onHit: () => void }) {
 export default function AnimeFeedContent() {
   const { isReady, isAdmin } = useAuth();
   const [soundOn, setSoundOn] = useState(false);
-  const [volume, setVolume] = useState(1);
   const [extraClips, setExtraClips] = useState<ClipResponse[]>([]);
   const viewedIds = useRef(new Set<number>());
   const feedIds = useRef(new Set<number>());
@@ -168,8 +267,6 @@ export default function AnimeFeedContent() {
               key={index} // append-only list; the full-list fallback can repeat clip ids
               clip={clip}
               soundOn={soundOn}
-              volume={volume}
-              onVolumeChange={setVolume}
               onView={markViewed}
             />
           ))}
@@ -184,7 +281,10 @@ export default function AnimeFeedContent() {
         <button
           type="button"
           aria-label="소리 켜기"
-          onClick={() => setSoundOn(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setSoundOn(true);
+          }}
           className="fixed left-1/2 top-6 z-10 -translate-x-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur"
         >
           <svg
