@@ -6,6 +6,35 @@ import { useQuery } from "@tanstack/react-query";
 import { listClips, recordView, type ClipResponse } from "@/lib/anime/api";
 import { useAuth } from "@/lib/context/auth-context";
 
+// Fake but stable engagement numbers — seeded by clip id so a clip keeps the
+// same counts across renders and reloads.
+function seededCounts(id: number) {
+  const rand = (n: number) => {
+    const x = Math.sin(id * 7919 + n * 104729) * 10000;
+    return x - Math.floor(x);
+  };
+  const likes = Math.floor(800 + rand(1) * 90000);
+  return {
+    likes,
+    comments: Math.floor(likes * (0.01 + rand(2) * 0.04)),
+    bookmarks: Math.floor(likes * (0.02 + rand(3) * 0.06)),
+    shares: Math.floor(likes * (0.005 + rand(4) * 0.025)),
+  };
+}
+
+/**
+ * Compact count, TikTok style: 843 → "843", 1520 → "1.5K", 2340000 → "2.3M".
+ *
+ * @param count - raw number
+ * @returns display string
+ */
+function formatCount(count: number): string {
+  if (count >= 1_000_000)
+    return (count / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (count >= 1000) return (count / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(count);
+}
+
 function ClipSlide({
   clip,
   soundOn,
@@ -18,6 +47,7 @@ function ClipSlide({
   const videoRef = useRef<HTMLVideoElement>(null);
   const backdropRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
+  const counts = seededCounts(clip.id);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -125,7 +155,7 @@ function ClipSlide({
           <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z" />
           </svg>
-          <span className="text-xs">0</span>
+          <span className="text-xs">{formatCount(counts.likes)}</span>
         </button>
         <button
           type="button"
@@ -135,7 +165,7 @@ function ClipSlide({
           <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
             <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.3 8.9 8.9 0 0 1-3.8-.8L3 20l1.1-4.1a8.1 8.1 0 0 1-1.1-4.4A8.38 8.38 0 0 1 11.5 3.2 8.38 8.38 0 0 1 21 11.5z" />
           </svg>
-          <span className="text-xs">0</span>
+          <span className="text-xs">{formatCount(counts.comments)}</span>
         </button>
         <button
           type="button"
@@ -145,7 +175,7 @@ function ClipSlide({
           <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
           </svg>
-          <span className="text-xs">0</span>
+          <span className="text-xs">{formatCount(counts.bookmarks)}</span>
         </button>
         <button
           type="button"
@@ -161,7 +191,7 @@ function ClipSlide({
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-xs">0</span>
+          <span className="text-xs">{formatCount(counts.shares)}</span>
         </button>
       </div>
       <div className="absolute bottom-6 left-4 right-20 z-10 text-white drop-shadow">
