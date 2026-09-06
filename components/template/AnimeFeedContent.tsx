@@ -20,6 +20,7 @@ function ClipSlide({
   onView: (id: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const backdropRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -51,17 +52,30 @@ function ClipSlide({
   }, [soundOn, volume]);
 
   return (
-    <section className="flex h-dvh w-full snap-start items-center justify-center">
+    <section className="relative flex h-dvh w-full snap-start items-center justify-center overflow-hidden">
+      <video
+        ref={backdropRef}
+        src={clip.url as string}
+        className="absolute inset-0 h-full w-full scale-125 object-cover blur-3xl brightness-75"
+        playsInline
+        muted
+        loop
+        preload="metadata"
+        aria-hidden
+      />
+      <div className="absolute inset-0 bg-white/10" aria-hidden />
       <video
         ref={videoRef}
         src={clip.url as string}
-        className="h-full w-full object-contain"
+        className="relative h-full w-full object-contain"
         playsInline
         muted
         loop
         controls
         preload="metadata"
         onVolumeChange={(e) => onVolumeChange(e.currentTarget.volume)}
+        onPlay={() => backdropRef.current?.play().catch(() => {})}
+        onPause={() => backdropRef.current?.pause()}
       />
     </section>
   );
