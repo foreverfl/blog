@@ -67,11 +67,30 @@ function ClipSlide({
   );
 }
 
+function LoadMoreSentinel({ onHit }: { onHit: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) onHit();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onHit]);
+
+  return <div ref={ref} className="h-px" />;
+}
+
 export default function AnimeFeedContent() {
   const { isReady, isAdmin } = useAuth();
   const [soundOn, setSoundOn] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [extraClips, setExtraClips] = useState<ClipResponse[]>([]);
   const viewedIds = useRef(new Set<number>());
+  const feedIds = useRef(new Set<number>());
+  const loadingMore = useRef(false);
 
   // Once per clip per page load — re-entering a slide doesn't recount.
   const markViewed = useCallback((id: number) => {
@@ -82,10 +101,36 @@ export default function AnimeFeedContent() {
 
   const { data: clips, isLoading } = useQuery({
     queryKey: ["anime", "clips"],
-    queryFn: () => listClips(false, 50),
+    // Everything can be already-viewed — fall back to the full list.
+    queryFn: async () => {
+      const unviewed = await listClips(false, 50);
+      return unviewed.some((clip) => clip.url)
+        ? unviewed
+        : listClips(undefined, 50);
+    },
     enabled: isReady && isAdmin,
     refetchOnWindowFocus: false, // random order: a refetch would reshuffle mid-scroll
   });
+
+  // Reaching the end appends another unviewed batch; when nothing unviewed is
+  // left, fall back to the full list so the feed wraps around instead of ending.
+  const loadMore = useCallback(async () => {
+    if (loadingMore.current) return;
+    loadingMore.current = true;
+    try {
+      let batch = (await listClips(false, 50)).filter(
+        (clip) => clip.url && !feedIds.current.has(clip.id),
+      );
+      if (!batch.length) {
+        batch = (await listClips(undefined, 50)).filter((clip) => clip.url);
+      }
+      if (batch.length) setExtraClips((prev) => [...prev, ...batch]);
+    } catch {
+      // next sentinel hit retries
+    } finally {
+      loadingMore.current = false;
+    }
+  }, []);
 
   if (!isReady) return null;
 
@@ -97,27 +142,31 @@ export default function AnimeFeedContent() {
     );
   }
 
-  const playable = (clips ?? []).filter((clip) => clip.url);
+  const feed = [...(clips ?? []), ...extraClips].filter((clip) => clip.url);
+  feedIds.current = new Set(feed.map((clip) => clip.id));
 
   return (
     <div className="relative h-dvh w-full snap-y snap-mandatory overflow-y-auto bg-black">
-      {isLoading ? null : playable.length ? (
-        playable.map((clip) => (
-          <ClipSlide
-            key={clip.id}
-            clip={clip}
-            soundOn={soundOn}
-            volume={volume}
-            onVolumeChange={setVolume}
-            onView={markViewed}
-          />
-        ))
+      {isLoading ? null : feed.length ? (
+        <>
+          {feed.map((clip, index) => (
+            <ClipSlide
+              key={index} // append-only list; the full-list fallback can repeat clip ids
+              clip={clip}
+              soundOn={soundOn}
+              volume={volume}
+              onVolumeChange={setVolume}
+              onView={markViewed}
+            />
+          ))}
+          <LoadMoreSentinel onHit={loadMore} />
+        </>
       ) : (
         <p className="flex h-dvh items-center justify-center text-white">
           No clips
         </p>
       )}
-      {!soundOn && !isLoading && playable.length > 0 && (
+      {!soundOn && !isLoading && feed.length > 0 && (
         <button
           type="button"
           aria-label="소리 켜기"
