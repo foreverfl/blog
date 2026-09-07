@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -241,6 +242,61 @@ function BottomNav() {
         </svg>
       </NavButton>
     </nav>
+  );
+}
+
+// Drag anywhere on the bar to scrub. The padded top is the touch target — a
+// 2px line is too thin to grab.
+function SeekBar({
+  videoRef,
+  progress,
+}: {
+  videoRef: RefObject<HTMLVideoElement | null>;
+  progress: number;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [dragRatio, setDragRatio] = useState<number | null>(null);
+
+  const seekTo = (clientX: number) => {
+    const track = trackRef.current;
+    const video = videoRef.current;
+    if (!track) return;
+    const { left, width } = track.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - left) / width));
+    setDragRatio(ratio);
+    if (video?.duration) video.currentTime = ratio * video.duration;
+  };
+
+  const dragging = dragRatio !== null;
+  const shown = dragRatio ?? progress;
+
+  return (
+    <div
+      className={`absolute inset-x-0 z-10 flex touch-none items-end pt-5 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
+      style={{ bottom: NAV_HEIGHT }}
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        seekTo(e.clientX);
+      }}
+      onPointerMove={(e) => dragging && seekTo(e.clientX)}
+      onPointerUp={() => setDragRatio(null)}
+      onPointerCancel={() => setDragRatio(null)}
+    >
+      <div
+        ref={trackRef}
+        className={`relative w-full rounded-full bg-white/25 ${dragging ? "h-1" : "h-0.5"}`}
+      >
+        <div
+          className="h-full rounded-full bg-white"
+          style={{ width: `${shown * 100}%` }}
+        />
+        <span
+          className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white ${dragging ? "h-3 w-3" : "h-1.5 w-1.5"}`}
+          style={{ left: `${shown * 100}%` }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -480,15 +536,7 @@ function ClipSlide({
           {clip.episode} · from {formatTimestamp(clip.start_sec)}
         </p>
       </div>
-      <div
-        className="absolute left-0 z-10 h-0.5 w-full bg-white/20"
-        style={{ bottom: NAV_HEIGHT }}
-      >
-        <div
-          className="h-full bg-white/80"
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
+      <SeekBar videoRef={videoRef} progress={progress} />
     </section>
   );
 }
