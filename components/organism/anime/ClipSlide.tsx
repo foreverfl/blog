@@ -139,6 +139,7 @@ export default function ClipSlide({
     tilt: number;
   } | null>(null);
   const [likeTapCount, setLikeTapCount] = useState(0);
+  const [copied, setCopied] = useState(false);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -209,6 +210,18 @@ export default function ClipSlide({
     (next ? likeClip(clip.id) : unlikeClip(clip.id)).catch(() =>
       setLiked(!next),
     );
+  };
+
+  // The link is a signed one that dies in an hour or two, so handing it out is
+  // as far as sharing goes.
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(clip.url as string);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // blocked on an insecure origin — nothing useful to say in the rail
+    }
   };
 
   // Single tap pauses, double tap likes — the pause waits 250ms to see
@@ -377,6 +390,7 @@ export default function ClipSlide({
         <button
           type="button"
           aria-label="공유"
+          onClick={copyLink}
           className="flex flex-col items-center gap-1"
         >
           <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
@@ -388,7 +402,9 @@ export default function ClipSlide({
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-xs">{formatCount(counts.shares)}</span>
+          <span className="text-xs">
+            {copied ? "Copied" : formatCount(counts.shares)}
+          </span>
         </button>
       </div>
       <div
