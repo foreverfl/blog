@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { rememberReturnPath } from "@/lib/auth/return-path";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
@@ -66,6 +67,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   }, [lan, i18n]);
 
   const handleLogin = () => {
+    rememberReturnPath(window.location.pathname + window.location.search);
     window.location.href = `${API_AUTH_URL}/login/${provider.id}`;
   };
 

@@ -1,12 +1,13 @@
 "use client";
 
 import Providers from "@/components/Providers";
+import { takeReturnPath } from "@/lib/auth/return-path";
 import { useAuth } from "@/lib/context/auth-context";
 import { useEffect } from "react";
 
 // Handles the OAuth redirect: the backend sends the browser to
 // /auth/callback?access_token=...&expires_in=..., we persist the token,
-// refresh the auth state, then bounce to the home page.
+// refresh the auth state, then bounce back to the page login started from.
 function CallbackHandler() {
   const { refreshAuth } = useAuth();
 
@@ -25,7 +26,7 @@ function CallbackHandler() {
         await refreshAuth();
       }
 
-      window.location.href = "/";
+      window.location.href = takeReturnPath();
     };
 
     run();
