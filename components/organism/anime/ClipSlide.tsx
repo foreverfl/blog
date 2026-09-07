@@ -330,7 +330,12 @@ export default function ClipSlide({
           <a
             href={`${JELLYFIN_URL}/web/#/details?id=${clip.jellyfin_item}`}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              // iOS ignores target="_blank" once installed to the home screen.
+              event.preventDefault();
+              window.open(event.currentTarget.href, "_blank", "noopener");
+            }}
             aria-label="원작 보기"
             className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white/20 text-lg font-bold uppercase"
           >
