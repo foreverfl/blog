@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
+import { listClips } from "@/lib/anime/api";
 
 // Nothing here is real — the numbers and the bio are set dressing so the screen
 // reads as TikTok's profile.
@@ -33,7 +37,7 @@ const TAB_ICONS = [
   "M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z",
 ];
 
-const ACTIVE_TAB = 0;
+const HEART_TAB = 4;
 
 function Icon({ path, size = 26 }: { path: string; size?: number }) {
   return (
@@ -44,6 +48,18 @@ function Icon({ path, size = 26 }: { path: string; size?: number }) {
 }
 
 export default function AnimeProfileContent() {
+  const [tab, setTab] = useState(0);
+
+  // The list API has no liked filter, so the whole list comes back and the
+  // filtering happens here.
+  const { data: likedClips } = useQuery({
+    queryKey: ["anime", "liked"],
+    queryFn: () => listClips(undefined, 1000),
+    enabled: tab === HEART_TAB,
+    select: (rows) => rows.filter((clip) => clip.liked && clip.url),
+    refetchOnWindowFocus: false,
+  });
+
   return (
     <div
       className="no-scrollbar h-dvh w-full overflow-y-auto bg-black text-white"
@@ -117,12 +133,39 @@ export default function AnimeProfileContent() {
           <button
             key={path}
             type="button"
-            className={`flex flex-1 justify-center pb-2.5 ${index === ACTIVE_TAB ? "border-b-2 border-white text-white" : "text-white/40"}`}
+            onClick={() => setTab(index)}
+            className={`flex flex-1 justify-center pb-2.5 ${index === tab ? "border-b-2 border-white text-white" : "text-white/40"}`}
           >
             <Icon path={path} />
           </button>
         ))}
       </div>
+
+      {tab === HEART_TAB &&
+        (likedClips?.length ? (
+          <div className="grid grid-cols-3 gap-0.5 p-0.5">
+            {likedClips.map((clip) => (
+              <div
+                key={clip.id}
+                className="aspect-[9/16] overflow-hidden bg-white/5"
+              >
+                {/* No image thumbnails exist, so the clip's own first frame
+                    stands in for one. */}
+                <video
+                  src={`${clip.url}#t=0.1`}
+                  className="h-full w-full object-cover"
+                  preload="metadata"
+                  muted
+                  playsInline
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="p-8 text-center text-sm text-white/40">
+            No liked clips yet
+          </p>
+        ))}
     </div>
   );
 }
