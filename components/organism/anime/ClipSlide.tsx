@@ -78,18 +78,28 @@ function SeekBar({
   const dragging = dragRatio !== null;
   const shown = dragRatio ?? progress;
 
+  // Follow the finger on the window instead of capturing the pointer on the
+  // element — iOS drops the capture partway through a touch drag.
+  useEffect(() => {
+    if (!dragging) return;
+    const move = (event: PointerEvent) => seekTo(event.clientX);
+    const stop = () => setDragRatio(null);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+    window.addEventListener("pointercancel", stop);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+    };
+  });
+
   return (
     <div
-      className={`absolute inset-x-0 z-10 flex touch-none items-end pt-5 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
+      className={`absolute inset-x-0 z-10 flex touch-none items-end pt-8 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
       style={{ bottom: NAV_HEIGHT }}
       onClick={(e) => e.stopPropagation()}
-      onPointerDown={(e) => {
-        e.currentTarget.setPointerCapture(e.pointerId);
-        seekTo(e.clientX);
-      }}
-      onPointerMove={(e) => dragging && seekTo(e.clientX)}
-      onPointerUp={() => setDragRatio(null)}
-      onPointerCancel={() => setDragRatio(null)}
+      onPointerDown={(e) => seekTo(e.clientX)}
     >
       <div
         ref={trackRef}
