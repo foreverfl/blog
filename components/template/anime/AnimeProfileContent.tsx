@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
+import AnimeLikedFeedContent from "@/components/template/anime/AnimeLikedFeedContent";
 import { listClips } from "@/lib/anime/api";
 
 // Nothing here is real — the numbers and the bio are set dressing so the screen
@@ -11,18 +12,6 @@ import { listClips } from "@/lib/anime/api";
 const DISPLAY_NAME = "もぐもぐ";
 const BIO = "30-second cuts of the anime I have watched.";
 
-/**
- * A throwaway handle in TikTok's auto-generated shape, new on every load.
- *
- * @returns nine lowercase letters and digits, e.g. "2zapa24sg"
- */
-function randomHandle(): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  return Array.from(
-    { length: 9 },
-    () => chars[Math.floor(Math.random() * chars.length)],
-  ).join("");
-}
 const STATS = [
   { label: "フォロー中", value: "208" },
   { label: "フォロワー", value: "144" },
@@ -51,6 +40,19 @@ const TAB_ICONS = [
 
 const HEART_TAB = 4;
 
+/**
+ * A throwaway handle in TikTok's auto-generated shape, new on every load.
+ *
+ * @returns nine lowercase letters and digits, e.g. "2zapa24sg"
+ */
+function randomHandle(): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from(
+    { length: 9 },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join("");
+}
+
 function Icon({ path, size = 26 }: { path: string; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -62,6 +64,7 @@ function Icon({ path, size = 26 }: { path: string; size?: number }) {
 export default function AnimeProfileContent() {
   const [tab, setTab] = useState(0);
   const [handle] = useState(randomHandle); // once per mount, not per render
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   // The list API has no liked filter, so the whole list comes back and the
   // filtering happens here.
@@ -152,9 +155,11 @@ export default function AnimeProfileContent() {
       {tab === HEART_TAB &&
         (likedClips?.length ? (
           <div className="grid grid-cols-3 gap-0.5 p-0.5">
-            {likedClips.map((clip) => (
-              <div
+            {likedClips.map((clip, index) => (
+              <button
                 key={clip.id}
+                type="button"
+                onClick={() => setOpenIndex(index)}
                 className="aspect-[9/16] overflow-hidden bg-white/5"
               >
                 {/* No image thumbnails exist, so the clip's own first frame
@@ -166,7 +171,7 @@ export default function AnimeProfileContent() {
                   muted
                   playsInline
                 />
-              </div>
+              </button>
             ))}
           </div>
         ) : (
@@ -174,6 +179,14 @@ export default function AnimeProfileContent() {
             No liked clips yet
           </p>
         ))}
+
+      {openIndex !== null && likedClips && (
+        <AnimeLikedFeedContent
+          clips={likedClips}
+          startIndex={openIndex}
+          onClose={() => setOpenIndex(null)}
+        />
+      )}
     </div>
   );
 }
