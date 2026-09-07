@@ -131,10 +131,13 @@ export default function ClipSlide({
   const counts = seededCounts(clip.id);
   const [progress, setProgress] = useState(0);
   const [liked, setLiked] = useState(clip.liked);
-  // Where the double tap landed, so the heart pops there and not mid-screen.
-  const [heartBurst, setHeartBurst] = useState<{ x: number; y: number } | null>(
-    null,
-  );
+  // Where the double tap landed and how far to tip the heart, so it pops at the
+  // finger and never twice at the same angle.
+  const [heartBurst, setHeartBurst] = useState<{
+    x: number;
+    y: number;
+    tilt: number;
+  } | null>(null);
   const [likeTapCount, setLikeTapCount] = useState(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -212,7 +215,11 @@ export default function ClipSlide({
   // whether a second tap turns it into a like.
   const handleTap = (event: ReactMouseEvent<HTMLElement>) => {
     const { left, top } = event.currentTarget.getBoundingClientRect();
-    const point = { x: event.clientX - left, y: event.clientY - top };
+    const point = {
+      x: event.clientX - left,
+      y: event.clientY - top,
+      tilt: Math.random() * 50 - 25,
+    };
     if (tapTimer.current) {
       clearTimeout(tapTimer.current);
       tapTimer.current = null;
@@ -279,20 +286,27 @@ export default function ClipSlide({
         </svg>
       )}
       {heartBurst && (
-        <svg
-          className="pointer-events-none absolute text-red-500/90"
+        // The tilt needs its own wrapper: heart-pop rewrites transform on the
+        // element it animates, so a rotate there would be thrown away.
+        <span
+          className="pointer-events-none absolute"
           style={{
             left: heartBurst.x,
             top: heartBurst.y,
             animation: "heart-pop 600ms ease-out forwards",
           }}
-          width="96"
-          height="96"
-          viewBox="0 0 24 24"
-          fill="currentColor"
         >
-          <path d="M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z" />
-        </svg>
+          <svg
+            className="block text-red-500/90"
+            style={{ transform: `rotate(${heartBurst.tilt}deg)` }}
+            width="96"
+            height="96"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z" />
+          </svg>
+        </span>
       )}
       <div
         className="absolute right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
