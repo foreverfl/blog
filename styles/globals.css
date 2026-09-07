@@ -225,6 +225,15 @@ code[data-line-numbers-max-digits="4"] > [data-line]::before {
   @apply text-blue-500 hover:underline;
 }
 
+/* Anime feed: full-screen slides, so the global scrollbar above is only noise. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Anime feed: double-tap heart — pop up, drift slightly, shrink away. */
 @keyframes heart-pop {
   0% {

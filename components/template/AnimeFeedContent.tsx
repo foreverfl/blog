@@ -619,7 +619,7 @@ export default function AnimeFeedContent() {
   feedIds.current = new Set(feed.map((clip) => clip.id));
 
   return (
-    <div className="relative h-dvh w-full snap-y snap-mandatory overflow-y-auto bg-black">
+    <div className="no-scrollbar relative h-dvh w-full snap-y snap-mandatory overflow-y-auto bg-black">
       {isLoading ? null : feed.length ? (
         <>
           {feed.map((clip, index) => (
