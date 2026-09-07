@@ -8,9 +8,21 @@ import { listClips } from "@/lib/anime/api";
 
 // Nothing here is real — the numbers and the bio are set dressing so the screen
 // reads as TikTok's profile.
-const HANDLE = "mogumogu";
 const DISPLAY_NAME = "もぐもぐ";
-const BIO = "見たアニメを30秒に切って置いておく場所。";
+const BIO = "30-second cuts of the anime I have watched.";
+
+/**
+ * A throwaway handle in TikTok's auto-generated shape, new on every load.
+ *
+ * @returns nine lowercase letters and digits, e.g. "2zapa24sg"
+ */
+function randomHandle(): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from(
+    { length: 9 },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join("");
+}
 const STATS = [
   { label: "フォロー中", value: "208" },
   { label: "フォロワー", value: "144" },
@@ -49,6 +61,7 @@ function Icon({ path, size = 26 }: { path: string; size?: number }) {
 
 export default function AnimeProfileContent() {
   const [tab, setTab] = useState(0);
+  const [handle] = useState(randomHandle); // once per mount, not per render
 
   // The list API has no liked filter, so the whole list comes back and the
   // filtering happens here.
@@ -105,13 +118,8 @@ export default function AnimeProfileContent() {
           </span>
         </div>
 
-        <div className="mt-6 flex items-center gap-2">
-          <p className="text-xl font-bold">{DISPLAY_NAME}</p>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7 10l5 5 5-5z" />
-          </svg>
-        </div>
-        <p className="mt-1 text-sm text-white/50">@{HANDLE}</p>
+        <p className="mt-6 text-xl font-bold">{DISPLAY_NAME}</p>
+        <p className="mt-1 text-sm text-white/50">@{handle}</p>
 
         <div className="mt-5 flex items-stretch">
           {STATS.map((stat, index) => (
