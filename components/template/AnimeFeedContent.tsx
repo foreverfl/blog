@@ -416,7 +416,7 @@ function ClipSlide({
 
   return (
     <section
-      className="relative flex h-dvh w-full snap-start items-center justify-center overflow-hidden"
+      className="relative flex h-dvh w-full snap-start snap-always items-center justify-center overflow-hidden"
       onClick={handleTap}
     >
       {active && (
