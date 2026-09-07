@@ -6,6 +6,7 @@ import BottomNav, {
   type AnimeScreen,
 } from "@/components/organism/anime/BottomNav";
 import AnimeFeedContent from "@/components/template/AnimeFeedContent";
+import AnimeProfileContent from "@/components/template/AnimeProfileContent";
 import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 
@@ -49,7 +50,7 @@ export default function AnimeAppContent() {
       <div hidden={screen !== "feed"}>
         <AnimeFeedContent />
       </div>
-      {screen === "profile" && <div className="h-dvh w-full bg-black" />}
+      {screen === "profile" && <AnimeProfileContent />}
       <BottomNav screen={screen} onSelect={setScreen} />
     </>
   );
