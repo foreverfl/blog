@@ -18,6 +18,7 @@ import {
   type ClipResponse,
 } from "@/lib/anime/api";
 import { useAuth } from "@/lib/context/auth-context";
+import { useLoginModal } from "@/lib/context/login-modal-context";
 
 // Reachable from anywhere via Tailscale (phone included).
 const JELLYFIN_URL = "http://mogumogu-ubuntu:8096";
@@ -591,7 +592,8 @@ function LoadMoreSentinel({ onHit }: { onHit: () => void }) {
 }
 
 export default function AnimeFeedContent() {
-  const { isReady, isAdmin } = useAuth();
+  const { isReady, isLoggedIn, isAdmin } = useAuth();
+  const { openLoginModal } = useLoginModal();
   const [soundOn, setSoundOn] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [extraClips, setExtraClips] = useState<ClipResponse[]>([]);
@@ -640,6 +642,23 @@ export default function AnimeFeedContent() {
   }, []);
 
   if (!isReady) return null;
+
+  // Installed on the home screen, this opens with an expired session often
+  // enough that a dead end would read as a broken app.
+  if (!isLoggedIn) {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-black text-white">
+        <p className="text-sm text-white/70">Sign in to continue</p>
+        <button
+          type="button"
+          onClick={openLoginModal}
+          className="rounded-full bg-white px-6 py-2 font-semibold text-black"
+        >
+          Sign in
+        </button>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (
