@@ -11,7 +11,19 @@ import AnimeFeedIsland from "@/components/islands/AnimeFeedIsland";
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>anime</title>
+    <title>Anime</title>
+    <link rel="manifest" href="/anime.webmanifest" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Anime" />
+    <!-- translucent so the feed runs under the status bar; the bars already pad
+         themselves with env(safe-area-inset-*) -->
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
   </head>
   <body class="bg-black">
     <AnimeFeedIsland client:only="react" />
