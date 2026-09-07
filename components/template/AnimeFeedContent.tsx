@@ -50,6 +50,18 @@ function formatCount(count: number): string {
   return String(count);
 }
 
+/**
+ * Seconds into the episode as mm:ss — 425 → "07:05".
+ *
+ * @param seconds - offset from the episode start
+ * @returns display string
+ */
+function formatTimestamp(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const rest = Math.floor(seconds % 60);
+  return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+}
+
 // Height of the fixed bottom tab bar, so slide overlays can sit clear of it.
 const NAV_HEIGHT = "calc(3.5rem + env(safe-area-inset-bottom))";
 
@@ -63,10 +75,41 @@ function TopTabs() {
       className="fixed inset-x-0 top-0 z-20 text-white drop-shadow"
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
-      <div className="flex items-center gap-3.5 px-3 py-3 text-[17px]">
-        <span className="rounded border border-white px-1 text-[11px] font-bold leading-4">
-          LIVE
-        </span>
+      <div className="relative flex items-center justify-center gap-3.5 px-4 py-3 text-[17px]">
+        <button
+          type="button"
+          aria-label="LIVE"
+          className="absolute left-4 top-1/2 -translate-y-1/2"
+        >
+          <svg width="30" height="26" viewBox="0 0 30 26" fill="none">
+            <path
+              d="M10.5 5 13.5 1.5M19.5 5 16.5 1.5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+            <rect
+              x="2.1"
+              y="5.1"
+              width="25.8"
+              height="18.8"
+              rx="4.5"
+              stroke="currentColor"
+              strokeWidth="2.2"
+            />
+            <text
+              x="15"
+              y="17.8"
+              textAnchor="middle"
+              fontSize="8.5"
+              fontWeight="700"
+              letterSpacing="0.2"
+              fill="currentColor"
+            >
+              LIVE
+            </text>
+          </svg>
+        </button>
         {TOP_TABS.map((label) => (
           <span
             key={label}
@@ -80,7 +123,11 @@ function TopTabs() {
             )}
           </span>
         ))}
-        <button type="button" aria-label="검색" className="ml-auto">
+        <button
+          type="button"
+          aria-label="검색"
+          className="absolute right-4 top-1/2 -translate-y-1/2"
+        >
           <svg
             width="24"
             height="24"
@@ -430,8 +477,7 @@ function ClipSlide({
       >
         <p className="font-semibold">@{clip.series_slug}</p>
         <p className="mt-1 text-sm text-white/85">
-          {clip.episode} · {Math.floor(clip.start_sec / 60)}분{" "}
-          {Math.floor(clip.start_sec % 60)}초부터
+          {clip.episode} · from {formatTimestamp(clip.start_sec)}
         </p>
       </div>
       <div
