@@ -5,8 +5,8 @@ import { useState } from "react";
 import BottomNav, {
   type AnimeScreen,
 } from "@/components/organism/anime/BottomNav";
-import AnimeFeedContent from "@/components/template/AnimeFeedContent";
-import AnimeProfileContent from "@/components/template/AnimeProfileContent";
+import AnimeFeedContent from "@/components/template/anime/AnimeFeedContent";
+import AnimeProfileContent from "@/components/template/anime/AnimeProfileContent";
 import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 
