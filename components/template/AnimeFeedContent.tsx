@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -42,6 +48,153 @@ function formatCount(count: number): string {
     return (count / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
   if (count >= 1000) return (count / 1000).toFixed(1).replace(/\.0$/, "") + "K";
   return String(count);
+}
+
+// Height of the fixed bottom tab bar, so slide overlays can sit clear of it.
+const NAV_HEIGHT = "calc(3.5rem + env(safe-area-inset-bottom))";
+
+const TOP_TABS = ["フォロー中", "ショップ", "おすすめ"];
+const ACTIVE_TAB = "おすすめ";
+
+// Looks only — none of these tabs go anywhere.
+function TopTabs() {
+  return (
+    <div
+      className="fixed inset-x-0 top-0 z-20 text-white drop-shadow"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
+      <div className="flex items-center gap-3.5 px-3 py-3 text-[17px]">
+        <span className="rounded border border-white px-1 text-[11px] font-bold leading-4">
+          LIVE
+        </span>
+        {TOP_TABS.map((label) => (
+          <span
+            key={label}
+            className={
+              label === ACTIVE_TAB ? "relative font-semibold" : "text-white/60"
+            }
+          >
+            {label}
+            {label === ACTIVE_TAB && (
+              <span className="absolute -bottom-1.5 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-white" />
+            )}
+          </span>
+        ))}
+        <button type="button" aria-label="검색" className="ml-auto">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function NavButton({
+  label,
+  active,
+  badge,
+  children,
+}: {
+  label: string;
+  active?: boolean;
+  badge?: number;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      className={`flex w-[4.5rem] flex-col items-center gap-1 ${active ? "text-white" : "text-white/70"}`}
+    >
+      <span className="relative">
+        {children}
+        {badge !== undefined && (
+          <span className="absolute -right-2.5 -top-1 rounded-full bg-[#FE2C55] px-1.5 text-[10px] font-bold leading-4 text-white">
+            {badge}
+          </span>
+        )}
+      </span>
+      <span className="text-[10px]">{label}</span>
+    </button>
+  );
+}
+
+// Looks only — the plus keeps TikTok's cyan/red offset blocks.
+function BottomNav() {
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-around bg-black"
+      style={{
+        height: NAV_HEIGHT,
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+    >
+      <NavButton label="ホーム" active>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
+        </svg>
+      </NavButton>
+      <NavButton label="友達">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm0 1.8c-2.8 0-5.5 1.4-5.5 3.6V20h11v-3.6c0-2.2-2.7-3.6-5.5-3.6z" />
+          <path d="M16 11a3 3 0 1 0-1.6-5.5 4.9 4.9 0 0 1 0 5c.5.3 1 .5 1.6.5zm.6 1.8c-.5 0-1 0-1.4.1 1.2.8 2 2 2 3.4V20h4.3v-3.6c0-1.9-2.3-3.6-4.9-3.6z" />
+        </svg>
+      </NavButton>
+      <button type="button" aria-label="投稿">
+        <span className="relative flex h-7 w-11 items-center justify-center">
+          <span className="absolute inset-y-0 left-0 w-9 rounded-lg bg-[#25F4EE]" />
+          <span className="absolute inset-y-0 right-0 w-9 rounded-lg bg-[#FE2C55]" />
+          <span className="absolute inset-x-1 inset-y-0 rounded-lg bg-white" />
+          <svg
+            className="relative text-black"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" />
+          </svg>
+        </span>
+      </button>
+      <NavButton label="メッセージ" badge={48}>
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        >
+          <path d="M20.5 11.4c0 3.9-3.8 7-8.5 7-.9 0-1.8-.1-2.6-.3L4.5 20l1.4-3.2a6.6 6.6 0 0 1-2.4-5.4c0-3.9 3.8-7 8.5-7s8.5 3.1 8.5 7z" />
+        </svg>
+      </NavButton>
+      <NavButton label="プロフィール">
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        >
+          <circle cx="12" cy="8" r="3.6" />
+          <path d="M5 20.5c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6" />
+        </svg>
+      </NavButton>
+    </nav>
+  );
 }
 
 function ClipSlide({
@@ -189,7 +342,8 @@ function ClipSlide({
         </svg>
       )}
       <div
-        className="absolute bottom-24 right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
+        className="absolute right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
+        style={{ bottom: `calc(${NAV_HEIGHT} + 1.25rem)` }}
         onClick={(e) => e.stopPropagation()}
       >
         {clip.jellyfin_item ? (
@@ -270,14 +424,20 @@ function ClipSlide({
           <span className="text-xs">{formatCount(counts.shares)}</span>
         </button>
       </div>
-      <div className="absolute bottom-6 left-4 right-20 z-10 text-white drop-shadow">
+      <div
+        className="absolute left-4 right-20 z-10 text-white drop-shadow"
+        style={{ bottom: `calc(${NAV_HEIGHT} + 0.75rem)` }}
+      >
         <p className="font-semibold">@{clip.series_slug}</p>
         <p className="mt-1 text-sm text-white/85">
           {clip.episode} · {Math.floor(clip.start_sec / 60)}분{" "}
           {Math.floor(clip.start_sec % 60)}초부터
         </p>
       </div>
-      <div className="absolute bottom-0 left-0 h-0.5 w-full bg-white/20">
+      <div
+        className="absolute left-0 z-10 h-0.5 w-full bg-white/20"
+        style={{ bottom: NAV_HEIGHT }}
+      >
         <div
           className="h-full bg-white/80"
           style={{ width: `${progress * 100}%` }}
@@ -391,7 +551,8 @@ export default function AnimeFeedContent() {
             e.stopPropagation();
             setSoundOn(true);
           }}
-          className="fixed left-1/2 top-6 z-10 -translate-x-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur"
+          className="fixed left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur"
+          style={{ top: "calc(env(safe-area-inset-top) + 3.5rem)" }}
         >
           <svg
             width="22"
@@ -413,6 +574,8 @@ export default function AnimeFeedContent() {
           </svg>
         </button>
       )}
+      <TopTabs />
+      <BottomNav />
     </div>
   );
 }
