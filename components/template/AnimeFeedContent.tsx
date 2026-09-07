@@ -302,11 +302,19 @@ function SeekBar({
 
 function ClipSlide({
   clip,
+  index,
+  active,
+  near,
   soundOn,
+  onActive,
   onView,
 }: {
   clip: ClipResponse;
+  index: number;
+  active: boolean;
+  near: boolean;
   soundOn: boolean;
+  onActive: (index: number) => void;
   onView: (id: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -325,21 +333,44 @@ function ClipSlide({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          onActive(index);
           onView(clip.id);
-          video.play().catch(() => {
-            // sound autoplay blocked: play this one muted
-            video.muted = true;
-            video.play().catch(() => {});
-          });
-        } else {
-          video.pause();
         }
       },
       { threshold: 0.6 },
     );
     observer.observe(video);
     return () => observer.disconnect();
-  }, [clip.id, onView]);
+  }, [clip.id, index, onActive, onView]);
+
+  // Dropping the attribute alone keeps the decoder — load() is what frees it.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const url = clip.url as string;
+    if (near) {
+      if (video.getAttribute("src") === url) return;
+      video.src = url;
+      video.load();
+    } else if (video.hasAttribute("src")) {
+      video.removeAttribute("src");
+      video.load();
+    }
+  }, [near, clip.url]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (!active) {
+      video.pause();
+      return;
+    }
+    video.play().catch(() => {
+      // sound autoplay blocked: play this one muted
+      video.muted = true;
+      video.play().catch(() => {});
+    });
+  }, [active]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -388,20 +419,22 @@ function ClipSlide({
       className="relative flex h-dvh w-full snap-start items-center justify-center overflow-hidden"
       onClick={handleTap}
     >
-      <video
-        ref={backdropRef}
-        src={clip.url as string}
-        className="absolute inset-0 h-full w-full scale-125 object-cover blur-3xl brightness-75"
-        playsInline
-        muted
-        loop
-        preload="metadata"
-        aria-hidden
-      />
+      {active && (
+        <video
+          ref={backdropRef}
+          src={clip.url as string}
+          className="absolute inset-0 h-full w-full scale-125 object-cover blur-3xl brightness-75"
+          playsInline
+          autoPlay
+          muted
+          loop
+          preload="metadata"
+          aria-hidden
+        />
+      )}
       <div className="absolute inset-0 bg-white/10" aria-hidden />
       <video
         ref={videoRef}
-        src={clip.url as string}
         className="relative h-full w-full object-contain"
         playsInline
         muted
@@ -560,6 +593,7 @@ function LoadMoreSentinel({ onHit }: { onHit: () => void }) {
 export default function AnimeFeedContent() {
   const { isReady, isAdmin } = useAuth();
   const [soundOn, setSoundOn] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [extraClips, setExtraClips] = useState<ClipResponse[]>([]);
   const viewedIds = useRef(new Set<number>());
   const feedIds = useRef(new Set<number>());
@@ -626,7 +660,11 @@ export default function AnimeFeedContent() {
             <ClipSlide
               key={index} // append-only list; the full-list fallback can repeat clip ids
               clip={clip}
+              index={index}
+              active={index === activeIndex}
+              near={Math.abs(index - activeIndex) <= 1}
               soundOn={soundOn}
+              onActive={setActiveIndex}
               onView={markViewed}
             />
           ))}
