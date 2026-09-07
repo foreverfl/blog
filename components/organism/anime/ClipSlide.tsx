@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type RefObject,
+} from "react";
 
 import { likeClip, unlikeClip, type ClipResponse } from "@/lib/anime/api";
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
@@ -125,7 +131,10 @@ export default function ClipSlide({
   const counts = seededCounts(clip.id);
   const [progress, setProgress] = useState(0);
   const [liked, setLiked] = useState(clip.liked);
-  const [heartBurst, setHeartBurst] = useState(false);
+  // Where the double tap landed, so the heart pops there and not mid-screen.
+  const [heartBurst, setHeartBurst] = useState<{ x: number; y: number } | null>(
+    null,
+  );
   const [likeTapCount, setLikeTapCount] = useState(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -201,13 +210,15 @@ export default function ClipSlide({
 
   // Single tap pauses, double tap likes — the pause waits 250ms to see
   // whether a second tap turns it into a like.
-  const handleTap = () => {
+  const handleTap = (event: ReactMouseEvent<HTMLElement>) => {
+    const { left, top } = event.currentTarget.getBoundingClientRect();
+    const point = { x: event.clientX - left, y: event.clientY - top };
     if (tapTimer.current) {
       clearTimeout(tapTimer.current);
       tapTimer.current = null;
       if (!liked) toggleLike();
-      setHeartBurst(true);
-      setTimeout(() => setHeartBurst(false), 600);
+      setHeartBurst(point);
+      setTimeout(() => setHeartBurst(null), 600);
     } else {
       tapTimer.current = setTimeout(() => {
         tapTimer.current = null;
@@ -269,8 +280,12 @@ export default function ClipSlide({
       )}
       {heartBurst && (
         <svg
-          className="absolute left-1/2 top-1/2 text-red-500/90"
-          style={{ animation: "heart-pop 600ms ease-out forwards" }}
+          className="pointer-events-none absolute text-red-500/90"
+          style={{
+            left: heartBurst.x,
+            top: heartBurst.y,
+            animation: "heart-pop 600ms ease-out forwards",
+          }}
           width="96"
           height="96"
           viewBox="0 0 24 24"
