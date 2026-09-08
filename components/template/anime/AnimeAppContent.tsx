@@ -48,7 +48,7 @@ export default function AnimeAppContent() {
       {/* Kept mounted rather than swapped out, so leaving the feed does not
           lose the scroll position and restart the clip. */}
       <div hidden={screen !== "feed"}>
-        <AnimeFeedContent />
+        <AnimeFeedContent visible={screen === "feed"} />
       </div>
       {screen === "profile" && <AnimeProfileContent />}
       <BottomNav screen={screen} onSelect={setScreen} />

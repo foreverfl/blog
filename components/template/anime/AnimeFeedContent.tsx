@@ -103,7 +103,7 @@ function LoadMoreSentinel({ onHit }: { onHit: () => void }) {
   return <div ref={ref} className="h-px" />;
 }
 
-export default function AnimeFeedContent() {
+export default function AnimeFeedContent({ visible }: { visible: boolean }) {
   const [soundOn, setSoundOn] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [extraClips, setExtraClips] = useState<ClipResponse[]>([]);
@@ -162,7 +162,7 @@ export default function AnimeFeedContent() {
               key={index} // append-only list; the full-list fallback can repeat clip ids
               clip={clip}
               index={index}
-              active={index === activeIndex}
+              active={visible && index === activeIndex}
               near={Math.abs(index - activeIndex) <= 1}
               soundOn={soundOn}
               onActive={setActiveIndex}
