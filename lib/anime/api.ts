@@ -13,6 +13,7 @@ export interface ClipResponse {
   jellyfin_item: string | null;
   is_opening: boolean;
   liked: boolean;
+  liked_at: string | null;
   view_count: number;
   last_viewed_at: string | null;
   created_at: string;

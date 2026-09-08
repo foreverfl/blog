@@ -66,13 +66,15 @@ export default function AnimeProfileContent() {
   const [handle] = useState(randomHandle); // once per mount, not per render
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  // The list API has no liked filter, so the whole list comes back and the
-  // filtering happens here.
+  // The list API has no liked filter and hands back the feed's random order.
   const { data: likedClips } = useQuery({
     queryKey: ["anime", "liked"],
     queryFn: () => listClips(undefined, 1000),
     enabled: tab === HEART_TAB,
-    select: (rows) => rows.filter((clip) => clip.liked && clip.url),
+    select: (rows) =>
+      rows
+        .filter((clip) => clip.liked && clip.url)
+        .sort((a, b) => (b.liked_at ?? "").localeCompare(a.liked_at ?? "")),
     refetchOnWindowFocus: false,
   });
 
