@@ -8,10 +8,67 @@ import {
   type RefObject,
 } from "react";
 
-import { likeClip, unlikeClip, type ClipResponse } from "@/lib/anime/api";
+import {
+  likeClip,
+  reportPlaybackEvent,
+  unlikeClip,
+  type ClipResponse,
+} from "@/lib/anime/api";
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
 // Reachable from anywhere via Tailscale (phone included).
 const JELLYFIN_URL = "http://mogumogu-ubuntu:8096";
+
+// One id per app open, so a night's problems group together in the log.
+const SESSION_ID = Math.random().toString(36).slice(2, 10);
+
+// Shorter than this is a normal hiccup, not something worth a log line.
+const STALL_REPORT_MS = 3000;
+
+/**
+ * Seconds since the clip's signed link was issued — X-Amz-Date rides in the url.
+ *
+ * @param url - signed R2 link, null once the media is gone
+ * @returns age in seconds, or null when the url carries no date
+ */
+function urlAgeSec(url: string | null): number | null {
+  const stamp = url && new URL(url).searchParams.get("X-Amz-Date");
+  if (!stamp) return null;
+  const issued = Date.parse(
+    stamp.replace(
+      /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/,
+      "$1-$2-$3T$4:$5:$6Z",
+    ),
+  );
+  return Number.isNaN(issued) ? null : Math.round((Date.now() - issued) / 1000);
+}
+
+/**
+ * What the player could tell us the moment something went wrong.
+ *
+ * @param video - the element that stalled or failed
+ * @param url - the clip's signed link
+ * @returns log fields; buffer_left_sec near zero is the download failing to
+ *          keep up, which is the one thing the phone cannot fix
+ */
+function playerState(video: HTMLVideoElement, url: string | null) {
+  const { buffered, currentTime } = video;
+  const bufferedEnd = buffered.length
+    ? buffered.end(buffered.length - 1)
+    : currentTime;
+  const { connection } = navigator as Navigator & {
+    connection?: { downlink?: number; effectiveType?: string };
+  };
+  return {
+    session_id: SESSION_ID,
+    buffer_left_sec: Number((bufferedEnd - currentTime).toFixed(2)),
+    downlink: connection?.downlink ?? null,
+    effective_type: connection?.effectiveType ?? null,
+    error_code: video.error?.code ?? null,
+    url_age_sec: urlAgeSec(url),
+    muted: video.muted,
+    volume: video.volume,
+  };
+}
 
 // Seeded by clip id, so everything fake about a clip survives a reload.
 function seededRandom(id: number, n: number): number {
@@ -168,6 +225,8 @@ export default function ClipSlide({
   const [likeTapCount, setLikeTapCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stallTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stallStart = useRef<number | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -209,7 +268,13 @@ export default function ClipSlide({
     }
     video.play().catch(() => {
       // sound autoplay blocked: play this one muted
-      video.muted = true;
+      if (!video.muted) {
+        video.muted = true;
+        reportPlaybackEvent(clip.id, {
+          event: "muted",
+          ...playerState(video, clip.url),
+        });
+      }
       video.play().catch(() => {});
     });
   }, [active]);
@@ -218,6 +283,43 @@ export default function ClipSlide({
     const video = videoRef.current;
     if (video) video.muted = !soundOn;
   }, [soundOn]);
+
+  useEffect(() => {
+    return () => {
+      if (stallTimer.current) clearTimeout(stallTimer.current);
+    };
+  }, []);
+
+  // waiting fires on every small hiccup, so the line waits out STALL_REPORT_MS
+  // first; the recovery line then carries how long the stall actually ran.
+  const startStall = () => {
+    if (stallTimer.current) return;
+    stallStart.current = Date.now();
+    stallTimer.current = setTimeout(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      reportPlaybackEvent(clip.id, {
+        event: "stall",
+        ...playerState(video, clip.url),
+      });
+    }, STALL_REPORT_MS);
+  };
+
+  const endStall = () => {
+    if (stallTimer.current) {
+      clearTimeout(stallTimer.current);
+      stallTimer.current = null;
+    }
+    const started = stallStart.current;
+    stallStart.current = null;
+    const video = videoRef.current;
+    if (!started || !video || Date.now() - started < STALL_REPORT_MS) return;
+    reportPlaybackEvent(clip.id, {
+      event: "recovered",
+      stall_ms: Date.now() - started,
+      ...playerState(video, clip.url),
+    });
+  };
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -308,6 +410,14 @@ export default function ClipSlide({
           setPaused(true);
           backdropRef.current?.pause();
         }}
+        onWaiting={startStall}
+        onPlaying={endStall}
+        onError={(e) =>
+          reportPlaybackEvent(clip.id, {
+            event: "error",
+            ...playerState(e.currentTarget, clip.url),
+          })
+        }
         onTimeUpdate={(e) =>
           setProgress(
             e.currentTarget.currentTime / (e.currentTarget.duration || 1),

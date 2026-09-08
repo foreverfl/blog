@@ -85,3 +85,27 @@ export async function unlikeClip(id: number): Promise<ClipResponse> {
     headers: await authHeader(),
   });
 }
+
+/**
+ * Report one playback problem. Fire-and-forget: keepalive keeps the request
+ * alive while the page is being hidden, and sendBeacon is not an option here
+ * because it cannot carry the Authorization header.
+ *
+ * @param id - clip the problem happened on
+ * @param event - event name plus whatever the player could read
+ */
+export async function reportPlaybackEvent(
+  id: number,
+  event: Record<string, unknown>,
+): Promise<void> {
+  try {
+    await fetch(`${RUST_API}/anime/clips/${id}/playback-event`, {
+      method: "POST",
+      keepalive: true,
+      headers: { "Content-Type": "application/json", ...(await authHeader()) },
+      body: JSON.stringify(event),
+    });
+  } catch {
+    // the clip is already misbehaving — a failed report must not add to it
+  }
+}
