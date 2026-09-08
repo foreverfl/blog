@@ -7,6 +7,7 @@ export interface ClipResponse {
   id: number;
   r2_key: string | null;
   series_slug: string;
+  series_title: string | null;
   episode: string;
   start_sec: number;
   duration_sec: number;

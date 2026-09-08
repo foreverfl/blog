@@ -13,13 +13,15 @@ import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
 // Reachable from anywhere via Tailscale (phone included).
 const JELLYFIN_URL = "http://mogumogu-ubuntu:8096";
 
-// Fake but stable engagement numbers — seeded by clip id so a clip keeps the
-// same counts across renders and reloads.
+// Seeded by clip id, so everything fake about a clip survives a reload.
+function seededRandom(id: number, n: number): number {
+  const x = Math.sin(id * 7919 + n * 104729) * 10000;
+  return x - Math.floor(x);
+}
+
+// Fake but stable engagement numbers.
 function seededCounts(id: number) {
-  const rand = (n: number) => {
-    const x = Math.sin(id * 7919 + n * 104729) * 10000;
-    return x - Math.floor(x);
-  };
+  const rand = (n: number) => seededRandom(id, n);
   const likes = Math.floor(800 + rand(1) * 90000);
   return {
     likes,
@@ -27,6 +29,21 @@ function seededCounts(id: number) {
     bookmarks: Math.floor(likes * (0.02 + rand(3) * 0.06)),
     shares: Math.floor(likes * (0.005 + rand(4) * 0.025)),
   };
+}
+
+/**
+ * A TikTok-shaped handle standing in for the uploader, same on every visit.
+ *
+ * @param id - clip id, the seed
+ * @returns nine lowercase letters and digits, e.g. "2zapa24sg"
+ */
+function seededHandle(id: number): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from(
+    { length: 9 },
+    (_, index) =>
+      chars[Math.floor(seededRandom(id, index + 10) * chars.length)],
+  ).join("");
 }
 
 /**
@@ -426,7 +443,10 @@ export default function ClipSlide({
         className="absolute left-4 right-20 z-10 text-white drop-shadow"
         style={{ bottom: `calc(${NAV_HEIGHT} + 0.75rem)` }}
       >
-        <p className="font-semibold">@{clip.series_slug}</p>
+        <p className="font-semibold">@{seededHandle(clip.id)}</p>
+        {clip.series_title && (
+          <p className="mt-1 text-sm">#{clip.series_title}</p>
+        )}
         <p className="mt-1 text-sm text-white/85">
           {clip.episode} · from {formatTimestamp(clip.start_sec)}
         </p>
