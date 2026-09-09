@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { listClips, recordView, type ClipResponse } from "@/lib/anime/api";
 import ClipSlide from "@/components/organism/anime/ClipSlide";
+import LoadMoreSentinel from "@/components/molecules/LoadMoreSentinel";
 
 const TOP_TABS = ["フォロー中", "ショップ", "おすすめ"];
 const ACTIVE_TAB = "おすすめ";
@@ -85,22 +86,6 @@ function TopTabs() {
       </div>
     </div>
   );
-}
-
-function LoadMoreSentinel({ onHit }: { onHit: () => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) onHit();
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [onHit]);
-
-  return <div ref={ref} className="h-px" />;
 }
 
 export default function AnimeFeedContent({ visible }: { visible: boolean }) {
