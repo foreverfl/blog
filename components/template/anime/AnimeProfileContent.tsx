@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
 import AnimeSubFeedContent from "@/components/template/anime/AnimeSubFeedContent";
-import { listClips, type ClipResponse } from "@/lib/anime/api";
+import LoadMoreSentinel from "@/components/molecules/LoadMoreSentinel";
+import { listClips, listLikedClips, type ClipResponse } from "@/lib/anime/api";
 
 // Nothing here is real — the numbers and the bio are set dressing so the screen
 // reads as TikTok's profile.
@@ -40,6 +41,9 @@ const TAB_ICONS = [
 
 const ALBUM_TAB = 0;
 const HEART_TAB = 4;
+
+// Ten rows of three — enough that the sentinel starts off screen.
+const GRID_PAGE = 30;
 
 /**
  * Fold liked clips into one cell per series, most liked first.
@@ -90,17 +94,34 @@ export default function AnimeProfileContent() {
     startIndex: number;
   } | null>(null);
 
-  // The list API has no liked filter and hands back the feed's random order.
-  const { data: likedClips } = useQuery({
+  // The album tab counts likes per series, so it needs all of them at once —
+  // the feed list is random order, so filter and sort here.
+  const { data: albumClips } = useQuery({
     queryKey: ["anime", "liked"],
     queryFn: () => listClips(undefined, 1000),
-    enabled: tab === ALBUM_TAB || tab === HEART_TAB,
+    enabled: tab === ALBUM_TAB,
     select: (rows) =>
       rows
         .filter((clip) => clip.liked && clip.url)
         .sort((a, b) => (b.liked_at ?? "").localeCompare(a.liked_at ?? "")),
     refetchOnWindowFocus: false,
   });
+
+  // A short page means the server had nothing more to give.
+  const {
+    data: heartPages,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["anime", "liked", "paged"],
+    queryFn: ({ pageParam }) => listLikedClips(GRID_PAGE, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.length < GRID_PAGE ? undefined : pages.length * GRID_PAGE,
+    enabled: tab === HEART_TAB,
+    refetchOnWindowFocus: false,
+  });
+  const heartClips = heartPages?.pages.flat() ?? [];
 
   return (
     <div
@@ -179,9 +200,9 @@ export default function AnimeProfileContent() {
       </div>
 
       {tab === ALBUM_TAB &&
-        (likedClips?.length ? (
+        (albumClips?.length ? (
           <div className="grid grid-cols-3 gap-0.5 p-0.5">
-            {toAlbums(likedClips).map((album) => (
+            {toAlbums(albumClips).map((album) => (
               <button
                 key={album.title}
                 type="button"
@@ -213,29 +234,32 @@ export default function AnimeProfileContent() {
         ))}
 
       {tab === HEART_TAB &&
-        (likedClips?.length ? (
-          <div className="grid grid-cols-3 gap-0.5 p-0.5">
-            {likedClips.map((clip, index) => (
-              <button
-                key={clip.id}
-                type="button"
-                onClick={() =>
-                  setOpenFeed({ clips: likedClips, startIndex: index })
-                }
-                className="aspect-9/16 overflow-hidden bg-white/5"
-              >
-                {/* No image thumbnails exist, so the clip's own first frame
-                    stands in for one. */}
-                <video
-                  src={`${clip.url}#t=0.1`}
-                  className="h-full w-full object-cover"
-                  preload="metadata"
-                  muted
-                  playsInline
-                />
-              </button>
-            ))}
-          </div>
+        (heartClips.length ? (
+          <>
+            <div className="grid grid-cols-3 gap-0.5 p-0.5">
+              {heartClips.map((clip, index) => (
+                <button
+                  key={clip.id}
+                  type="button"
+                  onClick={() =>
+                    setOpenFeed({ clips: heartClips, startIndex: index })
+                  }
+                  className="aspect-9/16 overflow-hidden bg-white/5"
+                >
+                  {/* No image thumbnails exist, so the clip's own first frame
+                      stands in for one. */}
+                  <video
+                    src={`${clip.url}#t=0.1`}
+                    className="h-full w-full object-cover"
+                    preload="metadata"
+                    muted
+                    playsInline
+                  />
+                </button>
+              ))}
+            </div>
+            {hasNextPage && <LoadMoreSentinel onHit={fetchNextPage} />}
+          </>
         ) : (
           <p className="p-8 text-center text-sm text-white/40">
             No liked clips yet

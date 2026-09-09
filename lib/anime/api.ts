@@ -47,6 +47,27 @@ export async function listClips(
 }
 
 /**
+ * List liked clips, newest like first.
+ *
+ * @param limit - page size
+ * @param offset - rows to skip
+ * @returns one page of liked clips
+ */
+export async function listLikedClips(
+  limit: number,
+  offset: number,
+): Promise<ClipResponse[]> {
+  const params = new URLSearchParams({
+    liked: "true",
+    limit: String(limit),
+    offset: String(offset),
+  });
+  return apiGet<ClipResponse[]>(`${RUST_API}/anime/clips?${params}`, {
+    headers: await authHeader(),
+  });
+}
+
+/**
  * Count one viewing of a clip.
  *
  * @param id - clip id
