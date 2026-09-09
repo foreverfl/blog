@@ -267,15 +267,16 @@ export default function ClipSlide({
       video.currentTime = 0;
       return;
     }
-    video.play().catch(() => {
-      // sound autoplay blocked: play this one muted
-      if (!video.muted) {
-        video.muted = true;
-        reportPlaybackEvent(clip.id, {
-          event: "muted",
-          ...playerState(video, clip.url),
-        });
-      }
+    // Undo a mute an earlier clip forced on us, before this one plays.
+    video.muted = !soundOn;
+    video.play().catch((err: DOMException) => {
+      // Only the autoplay policy is fixed by muting — an AbortError is not.
+      if (err.name !== "NotAllowedError" || video.muted) return;
+      video.muted = true;
+      reportPlaybackEvent(clip.id, {
+        event: "muted",
+        ...playerState(video, clip.url),
+      });
       video.play().catch(() => {});
     });
   }, [active]);
