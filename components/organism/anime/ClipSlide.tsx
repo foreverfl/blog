@@ -24,6 +24,10 @@ const SESSION_ID = Math.random().toString(36).slice(2, 10);
 // Shorter than this is a normal hiccup, not something worth a log line.
 const STALL_REPORT_MS = 3000;
 
+// Long enough that a double tap (250ms apart) never grows into a hold.
+const HOLD_MS = 400;
+const HOLD_RATE = 2;
+
 /**
  * Seconds since the clip's signed link was issued — X-Amz-Date rides in the url.
  *
@@ -173,7 +177,10 @@ function SeekBar({
       className={`absolute inset-x-0 z-10 flex touch-none items-end pt-8 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
       style={{ bottom: NAV_HEIGHT }}
       onClick={(e) => e.stopPropagation()}
-      onPointerDown={(e) => seekTo(e.clientX)}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        seekTo(e.clientX);
+      }}
     >
       <div
         ref={trackRef}
@@ -224,7 +231,10 @@ export default function ClipSlide({
   } | null>(null);
   const [likeTapCount, setLikeTapCount] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [fast, setFast] = useState(false);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const held = useRef(false);
   const stallTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stallStart = useRef<number | null>(null);
 
@@ -289,6 +299,7 @@ export default function ClipSlide({
   useEffect(() => {
     return () => {
       if (stallTimer.current) clearTimeout(stallTimer.current);
+      if (holdTimer.current) clearTimeout(holdTimer.current);
     };
   }, []);
 
@@ -355,9 +366,34 @@ export default function ClipSlide({
     }
   };
 
+  // Scrolling the feed makes the browser fire pointercancel, so a hold that
+  // turned into a swipe ends itself.
+  const startHold = () => {
+    held.current = false;
+    holdTimer.current = setTimeout(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      held.current = true;
+      video.playbackRate = HOLD_RATE;
+      setFast(true);
+    }, HOLD_MS);
+  };
+
+  const endHold = () => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+    const video = videoRef.current;
+    if (video) video.playbackRate = 1;
+    setFast(false);
+  };
+
   // Single tap pauses, double tap likes — the pause waits 250ms to see
   // whether a second tap turns it into a like.
   const handleTap = (event: ReactMouseEvent<HTMLElement>) => {
+    // Letting go of a hold still fires a click; that one is not a tap.
+    if (held.current) return;
     const { left, top } = event.currentTarget.getBoundingClientRect();
     const point = {
       x: event.clientX - left,
@@ -382,6 +418,9 @@ export default function ClipSlide({
     <section
       className="relative flex h-dvh w-full snap-start snap-always items-center justify-center overflow-hidden"
       onClick={handleTap}
+      onPointerDown={startHold}
+      onPointerUp={endHold}
+      onPointerCancel={endHold}
     >
       {active && (
         <video
@@ -437,6 +476,14 @@ export default function ClipSlide({
           <polygon points="8 5 19 12 8 19 8 5" />
         </svg>
       )}
+      {fast && (
+        <span
+          className="absolute left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-4 py-1.5 font-semibold text-white"
+          style={{ top: "calc(env(safe-area-inset-top) + 1.5rem)" }}
+        >
+          2x
+        </span>
+      )}
       {heartBurst && (
         // The tilt needs its own wrapper: heart-pop rewrites transform on the
         // element it animates, so a rotate there would be thrown away.
@@ -464,6 +511,7 @@ export default function ClipSlide({
         className="absolute right-3 z-10 flex flex-col items-center gap-5 text-white drop-shadow"
         style={{ bottom: `calc(${NAV_HEIGHT} + 1.25rem)` }}
         onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
       >
         {clip.jellyfin_item ? (
           <a
