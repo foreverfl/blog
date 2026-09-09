@@ -131,8 +131,7 @@ function formatTimestamp(seconds: number): string {
   const rest = Math.floor(seconds % 60);
   return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
 }
-// Drag anywhere on the bar to scrub. The padded top is the touch target — a
-// 2px line is too thin to grab.
+// The padding is the touch target — measured presses land a few px below the line.
 function SeekBar({
   videoRef,
   progress,
@@ -174,8 +173,8 @@ function SeekBar({
 
   return (
     <div
-      className={`absolute inset-x-0 z-10 flex touch-none items-end pt-8 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
-      style={{ bottom: NAV_HEIGHT }}
+      className={`absolute inset-x-0 z-10 flex touch-none items-end pb-4 pt-8 ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
+      style={{ bottom: `calc(${NAV_HEIGHT} - 1rem)` }}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => {
         e.stopPropagation();
