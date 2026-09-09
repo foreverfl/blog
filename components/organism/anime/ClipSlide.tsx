@@ -264,6 +264,7 @@ export default function ClipSlide({
     if (!video) return;
     if (!active) {
       video.pause();
+      video.currentTime = 0;
       return;
     }
     video.play().catch(() => {
