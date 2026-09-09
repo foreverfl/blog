@@ -45,20 +45,20 @@ const HEART_TAB = 4;
  * Fold liked clips into one cell per series, most liked first.
  *
  * @param clips - liked clips, newest like first
- * @returns series with their like count and the clip that stands in as cover —
- *          the newest like, since that is the first one seen per series
+ * @returns each series with its liked clips in that same order, so clips[0] is
+ *          both the cover and where the series feed starts
  */
 function toAlbums(clips: ClipResponse[]) {
-  const bySeries = new Map<string, { cover: ClipResponse; count: number }>();
+  const bySeries = new Map<string, ClipResponse[]>();
   for (const clip of clips) {
     const title = clip.series_title ?? clip.series_slug;
     const album = bySeries.get(title);
-    if (album) album.count += 1;
-    else bySeries.set(title, { cover: clip, count: 1 });
+    if (album) album.push(clip);
+    else bySeries.set(title, [clip]);
   }
   return [...bySeries.entries()]
-    .map(([title, album]) => ({ title, ...album }))
-    .sort((a, b) => b.count - a.count);
+    .map(([title, clips]) => ({ title, clips }))
+    .sort((a, b) => b.clips.length - a.clips.length);
 }
 
 /**
@@ -85,7 +85,10 @@ function Icon({ path, size = 26 }: { path: string; size?: number }) {
 export default function AnimeProfileContent() {
   const [tab, setTab] = useState(0);
   const [handle] = useState(randomHandle); // once per mount, not per render
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openFeed, setOpenFeed] = useState<{
+    clips: ClipResponse[];
+    startIndex: number;
+  } | null>(null);
 
   // The list API has no liked filter and hands back the feed's random order.
   const { data: likedClips } = useQuery({
@@ -179,24 +182,28 @@ export default function AnimeProfileContent() {
         (likedClips?.length ? (
           <div className="grid grid-cols-3 gap-0.5 p-0.5">
             {toAlbums(likedClips).map((album) => (
-              <div
+              <button
                 key={album.title}
+                type="button"
+                onClick={() =>
+                  setOpenFeed({ clips: album.clips, startIndex: 0 })
+                }
                 className="relative aspect-9/16 overflow-hidden bg-white/5"
               >
                 <video
-                  src={`${album.cover.url}#t=0.1`}
+                  src={`${album.clips[0].url}#t=0.1`}
                   className="h-full w-full object-cover"
                   preload="metadata"
                   muted
                   playsInline
                 />
                 <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold">
-                  {album.count}
+                  {album.clips.length}
                 </span>
-                <p className="absolute inset-x-1 bottom-1 truncate pr-8 text-[11px] drop-shadow">
+                <p className="absolute inset-x-1 bottom-1 truncate pr-8 text-left text-[11px] drop-shadow">
                   #{album.title}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         ) : (
@@ -212,7 +219,9 @@ export default function AnimeProfileContent() {
               <button
                 key={clip.id}
                 type="button"
-                onClick={() => setOpenIndex(index)}
+                onClick={() =>
+                  setOpenFeed({ clips: likedClips, startIndex: index })
+                }
                 className="aspect-9/16 overflow-hidden bg-white/5"
               >
                 {/* No image thumbnails exist, so the clip's own first frame
@@ -233,11 +242,11 @@ export default function AnimeProfileContent() {
           </p>
         ))}
 
-      {openIndex !== null && likedClips && (
+      {openFeed && (
         <AnimeLikedFeedContent
-          clips={likedClips}
-          startIndex={openIndex}
-          onClose={() => setOpenIndex(null)}
+          clips={openFeed.clips}
+          startIndex={openFeed.startIndex}
+          onClose={() => setOpenFeed(null)}
         />
       )}
     </div>
