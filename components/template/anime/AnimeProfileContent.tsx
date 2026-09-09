@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
 import AnimeLikedFeedContent from "@/components/template/anime/AnimeLikedFeedContent";
-import { listClips } from "@/lib/anime/api";
+import { listClips, type ClipResponse } from "@/lib/anime/api";
 
 // Nothing here is real — the numbers and the bio are set dressing so the screen
 // reads as TikTok's profile.
@@ -38,7 +38,28 @@ const TAB_ICONS = [
   "M12 21s-6.7-4.3-9.3-8C.8 10.2 1.7 6.6 4.6 5.3 6.6 4.4 9 5 12 8c3-3 5.4-3.6 7.4-2.7 2.9 1.3 3.8 4.9 1.9 7.7-2.6 3.7-9.3 8-9.3 8z",
 ];
 
+const ALBUM_TAB = 0;
 const HEART_TAB = 4;
+
+/**
+ * Fold liked clips into one cell per series, most liked first.
+ *
+ * @param clips - liked clips, newest like first
+ * @returns series with their like count and the clip that stands in as cover —
+ *          the newest like, since that is the first one seen per series
+ */
+function toAlbums(clips: ClipResponse[]) {
+  const bySeries = new Map<string, { cover: ClipResponse; count: number }>();
+  for (const clip of clips) {
+    const title = clip.series_title ?? clip.series_slug;
+    const album = bySeries.get(title);
+    if (album) album.count += 1;
+    else bySeries.set(title, { cover: clip, count: 1 });
+  }
+  return [...bySeries.entries()]
+    .map(([title, album]) => ({ title, ...album }))
+    .sort((a, b) => b.count - a.count);
+}
 
 /**
  * A throwaway handle in TikTok's auto-generated shape, new on every load.
@@ -70,7 +91,7 @@ export default function AnimeProfileContent() {
   const { data: likedClips } = useQuery({
     queryKey: ["anime", "liked"],
     queryFn: () => listClips(undefined, 1000),
-    enabled: tab === HEART_TAB,
+    enabled: tab === ALBUM_TAB || tab === HEART_TAB,
     select: (rows) =>
       rows
         .filter((clip) => clip.liked && clip.url)
@@ -154,6 +175,36 @@ export default function AnimeProfileContent() {
         ))}
       </div>
 
+      {tab === ALBUM_TAB &&
+        (likedClips?.length ? (
+          <div className="grid grid-cols-3 gap-0.5 p-0.5">
+            {toAlbums(likedClips).map((album) => (
+              <div
+                key={album.title}
+                className="relative aspect-9/16 overflow-hidden bg-white/5"
+              >
+                <video
+                  src={`${album.cover.url}#t=0.1`}
+                  className="h-full w-full object-cover"
+                  preload="metadata"
+                  muted
+                  playsInline
+                />
+                <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold">
+                  {album.count}
+                </span>
+                <p className="absolute inset-x-1 bottom-1 truncate pr-8 text-[11px] drop-shadow">
+                  #{album.title}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="p-8 text-center text-sm text-white/40">
+            No liked clips yet
+          </p>
+        ))}
+
       {tab === HEART_TAB &&
         (likedClips?.length ? (
           <div className="grid grid-cols-3 gap-0.5 p-0.5">
@@ -162,7 +213,7 @@ export default function AnimeProfileContent() {
                 key={clip.id}
                 type="button"
                 onClick={() => setOpenIndex(index)}
-                className="aspect-[9/16] overflow-hidden bg-white/5"
+                className="aspect-9/16 overflow-hidden bg-white/5"
               >
                 {/* No image thumbnails exist, so the clip's own first frame
                     stands in for one. */}
