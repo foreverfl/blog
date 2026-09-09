@@ -7,7 +7,7 @@ import { recordView, type ClipResponse } from "@/lib/anime/api";
 
 // Sits under the tab bar rather than over it, so the slide's own bottom spacing
 // (which reserves the bar's height) lines up instead of leaving a gap.
-export default function AnimeLikedFeedContent({
+export default function AnimeSubFeedContent({
   clips,
   startIndex,
   onClose,

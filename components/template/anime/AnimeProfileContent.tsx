@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { NAV_HEIGHT } from "@/components/organism/anime/BottomNav";
-import AnimeLikedFeedContent from "@/components/template/anime/AnimeLikedFeedContent";
+import AnimeSubFeedContent from "@/components/template/anime/AnimeSubFeedContent";
 import { listClips, type ClipResponse } from "@/lib/anime/api";
 
 // Nothing here is real — the numbers and the bio are set dressing so the screen
@@ -243,7 +243,7 @@ export default function AnimeProfileContent() {
         ))}
 
       {openFeed && (
-        <AnimeLikedFeedContent
+        <AnimeSubFeedContent
           clips={openFeed.clips}
           startIndex={openFeed.startIndex}
           onClose={() => setOpenFeed(null)}
