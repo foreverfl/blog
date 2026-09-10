@@ -1,10 +1,9 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import React, { useEffect, useState } from "react";
 import AllCategory from "@/components/organism/AllCategory";
 import { resolveExistingThumbnail } from "@/lib/hackernews/resolveImage";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostItem {
   fileName?: string;

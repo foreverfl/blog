@@ -11,7 +11,8 @@ import {
   useState,
 } from "react";
 
-import { API_AUTH_URL, clearAuth, tryRefreshToken } from "@/lib/auth/token";
+import { API_AUTH_URL } from "@/lib/api-base";
+import { clearAuth, tryRefreshToken } from "@/lib/auth/token";
 
 const ADMIN_EMAILS =
   import.meta.env.PUBLIC_ADMIN_EMAILS?.split(",")

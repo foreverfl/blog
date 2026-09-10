@@ -1,5 +1,6 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import ConfirmModal from "@/components/modal/ConfirmModal";
 import PromptModal from "@/components/modal/PromptModal";
 import { getValidAccessToken } from "@/lib/auth/token";
@@ -10,8 +11,6 @@ import "@/lib/i18n";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface Comment {
   id: string;

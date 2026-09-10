@@ -1,5 +1,6 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 
@@ -8,8 +9,6 @@ import Menu from "./Menu";
 import Profile from "./Profile";
 import SetLanguage from "./SetLanguage";
 import SetMode from "./SetMode";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostInfo {
   title: string;

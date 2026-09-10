@@ -1,7 +1,6 @@
+import { RUST_API } from "@/lib/api-base";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { apiGet } from "@/lib/query/query";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 export interface ListBucketsResponse {
   buckets: string[];

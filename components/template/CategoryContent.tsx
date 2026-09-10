@@ -1,10 +1,9 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import React, { useEffect, useState } from "react";
 import LinkWithSpinning from "../molecules/LinkWithSpinning";
 import Pagination from "../molecules/Pagination";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostItem {
   slug: string;

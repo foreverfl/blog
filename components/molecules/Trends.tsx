@@ -1,5 +1,6 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import TrendItemActions from "@/components/atom/TrendItemActions";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
@@ -10,8 +11,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 type TrendItem = {
   id: string;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { API_AUTH_URL } from "@/lib/api-base";
 import { rememberReturnPath } from "@/lib/auth/return-path";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import "@/lib/i18n";
@@ -51,9 +52,6 @@ export const providers: ProviderConfig[] = [
 interface LoginButtonProps {
   provider: ProviderConfig;
 }
-
-const API_AUTH_URL =
-  import.meta.env.PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
 
 const LoginButton: React.FC<LoginButtonProps> = ({ provider }) => {
   const { t, i18n } = useTranslation();

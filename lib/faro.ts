@@ -1,5 +1,6 @@
 import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
 import { TracingInstrumentation } from "@grafana/faro-web-tracing";
+import { API_AUTH_URL, RUST_API } from "@/lib/api-base";
 
 // localhost fallback is dev-only: leaking it into a prod build would make
 // every visitor's browser POST telemetry to their own machine
@@ -21,13 +22,8 @@ if (collectorUrl) {
       new TracingInstrumentation({
         instrumentationOptions: {
           propagateTraceHeaderCorsUrls: [
-            new RegExp(
-              import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002",
-            ),
-            new RegExp(
-              import.meta.env.PUBLIC_API_AUTH_URL ||
-                "http://localhost:8001/auth",
-            ),
+            new RegExp(RUST_API),
+            new RegExp(API_AUTH_URL),
           ],
         },
       }),

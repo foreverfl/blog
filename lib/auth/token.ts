@@ -1,7 +1,6 @@
 "use client";
 
-export const API_AUTH_URL =
-  import.meta.env.PUBLIC_API_AUTH_URL || "http://localhost:8001/auth";
+import { API_AUTH_URL } from "@/lib/api-base";
 
 export function clearAuth() {
   localStorage.removeItem("access_token");

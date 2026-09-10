@@ -1,13 +1,12 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import CloudflareTurnstile from "@/components/atom/CloudflareTurnstile";
 import { useToast } from "@/lib/context/toast-context";
 import "@/lib/i18n";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface BugReportProps {
   isOpen: boolean;

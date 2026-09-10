@@ -1,5 +1,6 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import React, { useEffect, useState } from "react";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import ReactMarkdown from "react-markdown";
@@ -10,8 +11,6 @@ import CodeBlock from "@/components/atom/CodeBlock";
 import Comment from "@/components/molecules/Comment";
 import Good from "@/components/molecules/Good";
 import "github-markdown-css";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 interface PostContent {
   lang: string;

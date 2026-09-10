@@ -1,13 +1,12 @@
 "use client";
 
+import { RUST_API } from "@/lib/api-base";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { useAuth, useUserScopedState } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { useClientPathname } from "@/lib/hooks/useClientPathname";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
-
-const RUST_API = import.meta.env.PUBLIC_API_RUST_URL || "http://localhost:8002";
 
 const Good = () => {
   const { openLoginModal } = useLoginModal();
