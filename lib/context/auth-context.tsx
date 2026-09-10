@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 
-import { API_AUTH_URL } from "@/lib/api-base";
+import { API_AUTH_URL, DEV_USER } from "@/lib/api-base";
 import { clearAuth, tryRefreshToken } from "@/lib/auth/token";
 
 const ADMIN_EMAILS =
@@ -126,7 +126,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isReady, isLoggedIn, isAdmin, userData, refreshAuth, logout }}
+      value={{
+        isReady,
+        isLoggedIn: DEV_USER || isLoggedIn,
+        isAdmin: DEV_USER || isAdmin,
+        userData,
+        refreshAuth,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

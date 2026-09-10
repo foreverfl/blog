@@ -9,11 +9,15 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://mogumogu.dev",
   output: "static",
+  // Dev only: reachable from a phone on the LAN as http://MacBook-Pro.local:3000.
+  server: { host: true, allowedHosts: [".local"] },
   integrations: [
     react(),
     sitemap({
       filter: (page) =>
-        !page.includes("/auth/") && !page.includes("/assets") && !page.includes("/anime"),
+        !page.includes("/auth/") &&
+        !page.includes("/assets") &&
+        !page.includes("/anime"),
     }),
   ],
 });
