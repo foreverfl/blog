@@ -19,6 +19,7 @@ export interface ClipResponse {
   last_viewed_at: string | null;
   created_at: string;
   url: string | null;
+  thumbnail_url: string | null;
 }
 
 // Refresh the token if expired before every request, so a long-idle page

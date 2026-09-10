@@ -211,12 +211,11 @@ export default function AnimeProfileContent() {
                 }
                 className="relative aspect-9/16 overflow-hidden bg-white/5"
               >
-                <video
-                  src={`${album.clips[0].url}#t=0.1`}
+                <img
+                  src={album.clips[0].thumbnail_url ?? undefined}
+                  alt=""
                   className="h-full w-full object-cover"
-                  preload="metadata"
-                  muted
-                  playsInline
+                  loading="lazy"
                 />
                 <span className="absolute bottom-1 right-1 rounded bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold">
                   {album.clips.length}
@@ -246,14 +245,11 @@ export default function AnimeProfileContent() {
                   }
                   className="aspect-9/16 overflow-hidden bg-white/5"
                 >
-                  {/* No image thumbnails exist, so the clip's own first frame
-                      stands in for one. */}
-                  <video
-                    src={`${clip.url}#t=0.1`}
+                  <img
+                    src={clip.thumbnail_url ?? undefined}
+                    alt=""
                     className="h-full w-full object-cover"
-                    preload="metadata"
-                    muted
-                    playsInline
+                    loading="lazy"
                   />
                 </button>
               ))}
