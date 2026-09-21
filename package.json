@@ -17,13 +17,13 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@astrojs/react": "^6.0.5",
+    "@astrojs/react": "^6.0.6",
     "@astrojs/sitemap": "^3.7.4",
-    "@grafana/faro-web-sdk": "^2.11.0",
-    "@grafana/faro-web-tracing": "^2.11.0",
+    "@grafana/faro-web-sdk": "^2.12.0",
+    "@grafana/faro-web-tracing": "^2.12.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@tanstack/react-query": "^5.102.8",
-    "@tanstack/react-query-devtools": "^5.102.8",
+    "@tanstack/react-query": "^5.103.1",
+    "@tanstack/react-query-devtools": "^5.103.1",
     "@types/react-modal": "^3.16.3",
     "astro": "^6.4.8",
     "d3": "^7.9.0",
@@ -56,7 +56,7 @@
     "eslint-plugin-prettier": "^5.5.6",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "tailwindcss": "^4.3.1",
     "tsx": "^4.23.13",
     "typescript": "^6"
