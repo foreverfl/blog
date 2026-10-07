@@ -1,21 +1,8 @@
 ---
-import "../../styles/globals.css";
+import Base from "../layouts/Base.astro";
 import MapIsland from "@/components/islands/MapIsland";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>Map</title>
-    <meta name="robots" content="noindex" />
-    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
-  </head>
-  <body>
-    <MapIsland client:only="react" />
-  </body>
-</html>
+<Base lang="ko" title="Map | mogumogu's blog">
+  <MapIsland client:only="react" />
+</Base>
