@@ -1,24 +1,33 @@
 import MapLibreMap from "@/components/organism/map/MapLibreMap";
 import { useAuth } from "@/lib/context/auth-context";
+import { useLoginModal } from "@/lib/context/login-modal-context";
 
 // [lng, lat] over central Honshu; zoom 5 fits the whole country on a laptop.
 const JAPAN_CENTER: [number, number] = [137.5, 36.5];
 const JAPAN_ZOOM = 5;
 
 /**
- * Admin-only full-screen map of Japan with nothing on it yet.
+ * Full-screen map of Japan for anyone who is signed in, with nothing on it yet.
  *
- * @returns the map for an admin, a not-found line for everyone else
+ * @returns the map when signed in, otherwise a sign-in prompt
  */
 export default function MapContent() {
-  const { isReady, isAdmin } = useAuth();
+  const { isReady, isLoggedIn } = useAuth();
+  const { openLoginModal } = useLoginModal();
 
   if (!isReady) return null;
 
-  if (!isAdmin) {
+  if (!isLoggedIn) {
     return (
-      <div className="flex min-h-dvh items-center justify-center">
-        <p>Page not found</p>
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4">
+        <p className="text-sm opacity-70">Sign in to see the map</p>
+        <button
+          type="button"
+          onClick={openLoginModal}
+          className="rounded-full border px-6 py-2 font-semibold"
+        >
+          Sign in
+        </button>
       </div>
     );
   }
