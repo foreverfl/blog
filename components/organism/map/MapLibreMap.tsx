@@ -19,25 +19,21 @@ type MapLibreMapProps = {
   /** [lng, lat] the map opens on. */
   center: [number, number];
   zoom: number;
-  /** Called once the map is ready, so a caller can add markers or layers. */
-  onLoad?: (map: Map) => void;
+  /** Called right after the map is created, so a caller can add markers or move it. */
+  onMap?: (map: Map) => void;
 };
 
 /**
  * Japan basemap drawn from the pmtiles file on R2. Needs window (WebGL), so
  * mount it with client:only="react".
  *
- * @param props - { center: [139.7, 35.7], zoom: 5, onLoad }
+ * @param props - { center: [139.7, 35.7], zoom: 5, onMap }
  * @returns a full-size div the map renders into
  */
-export default function MapLibreMap({
-  center,
-  zoom,
-  onLoad,
-}: MapLibreMapProps) {
+export default function MapLibreMap({ center, zoom, onMap }: MapLibreMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // The map is built once; later moves are the caller's job through onLoad.
+  // The map is built once; later moves are the caller's job through onMap.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -61,7 +57,7 @@ export default function MapLibreMap({
       zoom,
     });
     map.addControl(new NavigationControl(), "top-right");
-    if (onLoad) map.once("load", () => onLoad(map));
+    onMap?.(map);
 
     return () => {
       map.remove();
