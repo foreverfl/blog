@@ -1,4 +1,4 @@
-import PlaceDetailTable from "@/components/organism/map/PlaceDetailTable";
+import PlaceDetailTable from "@/components/map/place/PlaceDetailTable";
 import type { Place } from "@/lib/map/places";
 import { useEffect, useRef } from "react";
 
