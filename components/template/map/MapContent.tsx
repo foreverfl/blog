@@ -1,5 +1,6 @@
 import MapLibreMap from "@/components/organism/map/MapLibreMap";
 import PlaceSelect from "@/components/organism/map/PlaceSelect";
+import ViewToggle, { type MapView } from "@/components/organism/map/ViewToggle";
 import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
 import { PLACES, type PlaceGroup } from "@/lib/map/places";
@@ -72,6 +73,7 @@ export default function MapContent() {
   const { openLoginModal } = useLoginModal();
   const [map, setMap] = useState<Map | null>(null);
   const [group, setGroup] = useState<PlaceGroup>("its");
+  const [view, setView] = useState<MapView>("map");
   usePlacePins(map, group);
 
   if (!isReady) return null;
@@ -94,8 +96,19 @@ export default function MapContent() {
   }
 
   return (
-    <MapPanel toolbar={<PlaceSelect value={group} onChange={setGroup} />}>
-      <MapLibreMap center={JAPAN_CENTER} zoom={JAPAN_ZOOM} onMap={setMap} />
+    <MapPanel
+      toolbar={
+        <>
+          <PlaceSelect value={group} onChange={setGroup} />
+          <ViewToggle value={view} onChange={setView} />
+        </>
+      }
+    >
+      {/* Both stay mounted; hiding instead of unmounting keeps the map tiles and position. */}
+      <div className={view === "map" ? "h-full" : "hidden"}>
+        <MapLibreMap center={JAPAN_CENTER} zoom={JAPAN_ZOOM} onMap={setMap} />
+      </div>
+      <div className={view === "table" ? "h-full" : "hidden"} />
     </MapPanel>
   );
 }
