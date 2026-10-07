@@ -9,10 +9,16 @@ const CELL =
  * Table of the given places. React owns the table shell; D3 owns the rows
  * inside tbody through a data join keyed by place id.
  *
- * @param props - { places: the group currently chosen on the map }
+ * @param props - { places: the group currently chosen on the map, onSelect }
  * @returns a 4-column table (name, group, lat, lng)
  */
-export default function PlaceTable({ places }: { places: Place[] }) {
+type PlaceTableProps = {
+  places: Place[];
+  /** Called with the row's place when the row is clicked. */
+  onSelect: (place: Place) => void;
+};
+
+export default function PlaceTable({ places, onSelect }: PlaceTableProps) {
   const bodyRef = useRef<HTMLTableSectionElement>(null);
 
   useEffect(() => {
@@ -25,6 +31,11 @@ export default function PlaceTable({ places }: { places: Place[] }) {
       .selectAll<HTMLTableRowElement, Place>("tr")
       .data(places, (place) => place.id)
       .join("tr")
+      .attr(
+        "class",
+        "cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800",
+      )
+      .on("click", (_event, place) => onSelect(place))
       .selectAll<HTMLTableCellElement, string>("td")
       .data((place) => [
         place.name,
@@ -35,7 +46,7 @@ export default function PlaceTable({ places }: { places: Place[] }) {
       .join("td")
       .attr("class", CELL)
       .text((cell) => cell);
-  }, [places]);
+  }, [places, onSelect]);
 
   return (
     <div className="h-full overflow-auto">

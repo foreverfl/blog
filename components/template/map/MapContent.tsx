@@ -1,10 +1,11 @@
+import PlaceModal from "@/components/modal/PlaceModal";
 import MapLibreMap from "@/components/organism/map/MapLibreMap";
 import PlaceSelect from "@/components/organism/map/PlaceSelect";
 import PlaceTable from "@/components/organism/map/PlaceTable";
 import ViewToggle, { type MapView } from "@/components/organism/map/ViewToggle";
 import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
-import { PLACES, type PlaceGroup } from "@/lib/map/places";
+import { PLACES, type Place, type PlaceGroup } from "@/lib/map/places";
 import { LngLatBounds, type Map, Marker } from "maplibre-gl";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -47,16 +48,26 @@ function MapPanel({
  *
  * @param map - the MapLibre map, or null until MapLibreMap hands it over
  * @param group - "its" | "ur" | "visited"
+ * @param onSelect - called with the place whose pin was clicked
  */
-function usePlacePins(map: Map | null, group: PlaceGroup) {
+function usePlacePins(
+  map: Map | null,
+  group: PlaceGroup,
+  onSelect: (place: Place) => void,
+) {
   useEffect(() => {
     if (!map) return;
     const places = PLACES.filter((place) => place.group === group);
-    const pins = places.map((place) =>
-      new Marker({ color: place.visited_on ? VISITED_PIN : UNVISITED_PIN })
+    const pins = places.map((place) => {
+      const pin = new Marker({
+        color: place.visited_on ? VISITED_PIN : UNVISITED_PIN,
+      })
         .setLngLat([place.lng, place.lat])
-        .addTo(map),
-    );
+        .addTo(map);
+      pin.getElement().style.cursor = "pointer";
+      pin.getElement().addEventListener("click", () => onSelect(place));
+      return pin;
+    });
     const bounds = places.reduce(
       (acc, place) => acc.extend([place.lng, place.lat]),
       new LngLatBounds(),
@@ -66,7 +77,7 @@ function usePlacePins(map: Map | null, group: PlaceGroup) {
     return () => {
       pins.forEach((pin) => pin.remove());
     };
-  }, [map, group]);
+  }, [map, group, onSelect]);
 }
 
 /**
@@ -81,7 +92,8 @@ export default function MapContent() {
   const [map, setMap] = useState<Map | null>(null);
   const [group, setGroup] = useState<PlaceGroup>("its");
   const [view, setView] = useState<MapView>("map");
-  usePlacePins(map, group);
+  const [selected, setSelected] = useState<Place | null>(null);
+  usePlacePins(map, group, setSelected);
 
   if (!isReady) return null;
 
@@ -116,8 +128,12 @@ export default function MapContent() {
         <MapLibreMap center={JAPAN_CENTER} zoom={JAPAN_ZOOM} onMap={setMap} />
       </div>
       <div className={view === "table" ? "h-full" : "hidden"}>
-        <PlaceTable places={PLACES.filter((place) => place.group === group)} />
+        <PlaceTable
+          places={PLACES.filter((place) => place.group === group)}
+          onSelect={setSelected}
+        />
       </div>
+      <PlaceModal place={selected} onClose={() => setSelected(null)} />
     </MapPanel>
   );
 }
