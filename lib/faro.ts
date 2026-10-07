@@ -2,11 +2,8 @@ import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
 import { TracingInstrumentation } from "@grafana/faro-web-tracing";
 import { API_AUTH_URL, RUST_API } from "@/lib/api-base";
 
-// localhost fallback is dev-only: leaking it into a prod build would make
-// every visitor's browser POST telemetry to their own machine
-const collectorUrl =
-  import.meta.env.PUBLIC_FARO_COLLECTOR_URL ||
-  (import.meta.env.DEV ? "http://localhost:12347/collect" : "");
+// No collector url, no telemetry: local dev stays quiet unless .env.local names one.
+const collectorUrl = import.meta.env.PUBLIC_FARO_COLLECTOR_URL;
 
 if (collectorUrl) {
   initializeFaro({
