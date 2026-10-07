@@ -134,6 +134,7 @@ export const PLACES: Place[] = [
     lat: 35.652985,
     lng: 139.558411,
     group: "visited",
+    visited_on: "2026-10-07",
   },
   {
     id: "visited-smbc-chofu",
@@ -141,5 +142,6 @@ export const PLACES: Place[] = [
     lat: 35.652668,
     lng: 139.544144,
     group: "visited",
+    visited_on: "2026-10-07",
   },
 ];

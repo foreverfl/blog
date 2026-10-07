@@ -12,6 +12,10 @@ import { useEffect, useState, type ReactNode } from "react";
 const JAPAN_CENTER: [number, number] = [137.5, 36.5];
 const JAPAN_ZOOM = 5;
 
+// Pin colors: visited places in the site blue, the rest gray.
+const VISITED_PIN = "#3b82f6";
+const UNVISITED_PIN = "#9ca3af";
+
 /**
  * Toolbar row plus a rounded panel under the fixed navbar (pt-20 like every
  * other page); the panel holds either the map or the sign-in prompt.
@@ -39,7 +43,7 @@ function MapPanel({
 }
 
 /**
- * Drops one pin per place of the chosen group and fits the map around them.
+ * Drops one pin per place of the chosen group, gray until visited, and fits the map around them.
  *
  * @param map - the MapLibre map, or null until MapLibreMap hands it over
  * @param group - "its" | "ur" | "visited"
@@ -49,7 +53,9 @@ function usePlacePins(map: Map | null, group: PlaceGroup) {
     if (!map) return;
     const places = PLACES.filter((place) => place.group === group);
     const pins = places.map((place) =>
-      new Marker().setLngLat([place.lng, place.lat]).addTo(map),
+      new Marker({ color: place.visited_on ? VISITED_PIN : UNVISITED_PIN })
+        .setLngLat([place.lng, place.lat])
+        .addTo(map),
     );
     const bounds = places.reduce(
       (acc, place) => acc.extend([place.lng, place.lat]),
