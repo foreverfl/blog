@@ -1,5 +1,6 @@
 import { layers, namedFlavor } from "@protomaps/basemaps";
-import { addProtocol, Map, NavigationControl } from "maplibre-gl";
+import { addProtocol, Map, NavigationControl, setWorkerUrl } from "maplibre-gl";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import { useEffect, useRef } from "react";
@@ -7,6 +8,9 @@ import { useEffect, useRef } from "react";
 const JAPAN_PMTILES_URL =
   "pmtiles://https://assets-map.mogumogu.dev/japan.pmtiles";
 const BASEMAP_ASSETS_URL = "https://protomaps.github.io/basemaps-assets";
+
+// Vite does not carry the worker file along when it pre-bundles maplibre, so hand it the url.
+setWorkerUrl(maplibreWorkerUrl);
 
 // One registration per page: the protocol turns pmtiles:// into Range requests.
 addProtocol("pmtiles", new Protocol().tile);

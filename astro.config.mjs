@@ -17,7 +17,8 @@ export default defineConfig({
       filter: (page) =>
         !page.includes("/auth/") &&
         !page.includes("/assets") &&
-        !page.includes("/anime"),
+        !page.includes("/anime") &&
+        !page.includes("/map"),
     }),
   ],
 });
