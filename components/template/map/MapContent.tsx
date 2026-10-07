@@ -1,5 +1,6 @@
 import MapLibreMap from "@/components/organism/map/MapLibreMap";
 import PlaceSelect from "@/components/organism/map/PlaceSelect";
+import PlaceTable from "@/components/organism/map/PlaceTable";
 import ViewToggle, { type MapView } from "@/components/organism/map/ViewToggle";
 import { useAuth } from "@/lib/context/auth-context";
 import { useLoginModal } from "@/lib/context/login-modal-context";
@@ -108,7 +109,9 @@ export default function MapContent() {
       <div className={view === "map" ? "h-full" : "hidden"}>
         <MapLibreMap center={JAPAN_CENTER} zoom={JAPAN_ZOOM} onMap={setMap} />
       </div>
-      <div className={view === "table" ? "h-full" : "hidden"} />
+      <div className={view === "table" ? "h-full" : "hidden"}>
+        <PlaceTable places={PLACES.filter((place) => place.group === group)} />
+      </div>
     </MapPanel>
   );
 }
