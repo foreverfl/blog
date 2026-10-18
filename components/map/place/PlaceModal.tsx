@@ -46,9 +46,9 @@ export default function PlaceModal({ place, onClose }: PlaceModalProps) {
           />
         )}
         <h2 className="text-lg font-bold">
-          {place?.site_url ? (
+          {place?.url ? (
             <a
-              href={place.site_url}
+              href={place.url}
               target="_blank"
               rel="noreferrer"
               className="underline"

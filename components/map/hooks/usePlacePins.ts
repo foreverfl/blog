@@ -1,4 +1,4 @@
-import { PLACES, type Place, type PlaceGroup } from "@/lib/map/places";
+import type { Place } from "@/lib/map/places";
 import { LngLatBounds, type Map, Marker } from "maplibre-gl";
 import { useEffect } from "react";
 
@@ -7,20 +7,19 @@ const VISITED_PIN = "#3b82f6";
 const UNVISITED_PIN = "#9ca3af";
 
 /**
- * Drops one pin per place of the chosen group, gray until visited, and fits the map around them.
+ * Drops one pin per place, gray until visited, and fits the map around them.
  *
  * @param map - the MapLibre map, or null until MapLibreMap hands it over
- * @param group - "its" | "ur" | "visited"
+ * @param places - the places of the chosen group; nothing is drawn while empty
  * @param onSelect - called with the place whose pin was clicked
  */
 export function usePlacePins(
   map: Map | null,
-  group: PlaceGroup,
+  places: Place[],
   onSelect: (place: Place) => void,
 ) {
   useEffect(() => {
-    if (!map) return;
-    const places = PLACES.filter((place) => place.group === group);
+    if (!map || places.length === 0) return;
     const pins = places.map((place) => {
       const pin = new Marker({
         color: place.visited_on ? VISITED_PIN : UNVISITED_PIN,
@@ -40,5 +39,5 @@ export function usePlacePins(
     return () => {
       pins.forEach((pin) => pin.remove());
     };
-  }, [map, group, onSelect]);
+  }, [map, places, onSelect]);
 }

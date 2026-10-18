@@ -3,7 +3,7 @@ import { select } from "d3";
 import { useEffect, useRef } from "react";
 
 // Shown as the title, the photo, or the title link, so not repeated as rows.
-const SKIPPED_KEYS = new Set(["id", "name", "group", "image_url", "site_url"]);
+const SKIPPED_KEYS = new Set(["id", "name", "image_url", "url"]);
 const CELL =
   "border-b border-gray-700 px-3 py-1.5 text-left dark:border-gray-600";
 

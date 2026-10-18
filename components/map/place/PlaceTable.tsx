@@ -1,4 +1,4 @@
-import { PLACE_GROUPS, type Place } from "@/lib/map/places";
+import type { Place } from "@/lib/map/places";
 import { select } from "d3";
 import { useEffect, useRef } from "react";
 
@@ -10,7 +10,7 @@ const CELL =
  * inside tbody through a data join keyed by place id.
  *
  * @param props - { places: the group currently chosen on the map, onSelect }
- * @returns a 4-column table (name, group, lat, lng)
+ * @returns a 4-column table (name, kind, lat, lng)
  */
 type PlaceTableProps = {
   places: Place[];
@@ -23,10 +23,6 @@ export default function PlaceTable({ places, onSelect }: PlaceTableProps) {
 
   useEffect(() => {
     if (!bodyRef.current) return;
-    const groupLabel = (place: Place) =>
-      PLACE_GROUPS.find((group) => group.value === place.group)?.label ??
-      place.group;
-
     select(bodyRef.current)
       .selectAll<HTMLTableRowElement, Place>("tr")
       .data(places, (place) => place.id)
@@ -39,7 +35,7 @@ export default function PlaceTable({ places, onSelect }: PlaceTableProps) {
       .selectAll<HTMLTableCellElement, string>("td")
       .data((place) => [
         place.name,
-        groupLabel(place),
+        place.subcategory ?? place.category,
         place.lat.toFixed(6),
         place.lng.toFixed(6),
       ])
@@ -54,7 +50,7 @@ export default function PlaceTable({ places, onSelect }: PlaceTableProps) {
         <thead>
           <tr>
             <th className={CELL}>Name</th>
-            <th className={CELL}>Group</th>
+            <th className={CELL}>Kind</th>
             <th className={CELL}>Lat</th>
             <th className={CELL}>Lng</th>
           </tr>
