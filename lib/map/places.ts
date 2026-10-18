@@ -1,4 +1,4 @@
-export type PlaceGroup = "its" | "ur" | "brewery" | "visited";
+export type PlaceGroup = "its" | "ur" | "brewery";
 
 export type PlaceCategory =
   "ur" | "brewery" | "food" | "cafe" | "stay" | "sight" | "other";
@@ -54,8 +54,20 @@ export const PLACE_GROUPS: { value: PlaceGroup; label: string }[] = [
   { value: "its", label: "ITS" },
   { value: "ur", label: "UR" },
   { value: "brewery", label: "Brewery" },
-  { value: "visited", label: "Visited" },
 ];
+
+/** The chip row under the dropdown; an empty subcategories list means every subcategory. */
+export type PlaceFilter = {
+  visitableOnly: boolean;
+  visitedOnly: boolean;
+  subcategories: string[];
+};
+
+export const NO_FILTER: PlaceFilter = {
+  visitableOnly: false,
+  visitedOnly: false,
+  subcategories: [],
+};
 
 /**
  * Copy my visit records onto the places they belong to.
@@ -81,12 +93,43 @@ export function mergeVisits(places: Place[], visits: PlaceVisit[]): Place[] {
 /**
  * Whether a place belongs to the dropdown group.
  *
- * @param group - "its" | "ur" | "brewery" | "visited"
+ * @param group - "its" | "ur" | "brewery"
  * @param place - a merged place
- * @returns true for the ITS subcategory, the ur / brewery category, or any place with visited_on
+ * @returns true for the ITS subcategory or the ur / brewery category
  */
 export function inGroup(group: PlaceGroup, place: Place): boolean {
   if (group === "its") return place.subcategory === "its";
-  if (group === "visited") return place.visited_on !== null;
   return place.category === group;
+}
+
+/**
+ * Whether a place passes every chip that is switched on.
+ *
+ * @param filter - the chip row state
+ * @param place - a merged place
+ * @returns false as soon as one chip rules the place out
+ */
+export function passesFilter(filter: PlaceFilter, place: Place): boolean {
+  if (filter.visitableOnly && place.visitable !== true) return false;
+  if (filter.visitedOnly && place.visited_on === null) return false;
+  if (
+    filter.subcategories.length > 0 &&
+    !filter.subcategories.includes(place.subcategory ?? "")
+  )
+    return false;
+  return true;
+}
+
+/**
+ * The distinct subcategories among the given places, for the chip row.
+ *
+ * @param places - the places of the chosen group
+ * @returns sorted names, e.g. ["gin", "whisky"]; [] when none has one
+ */
+export function subcategoriesOf(places: Place[]): string[] {
+  const names = new Set<string>();
+  for (const place of places) {
+    if (place.subcategory) names.add(place.subcategory);
+  }
+  return [...names].sort();
 }

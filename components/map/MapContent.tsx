@@ -1,6 +1,7 @@
 import PlaceModal from "@/components/map/place/PlaceModal";
 import MapLibreMap from "@/components/map/MapLibreMap";
 import MapPanel from "@/components/map/MapPanel";
+import FilterChips from "@/components/map/toolbar/FilterChips";
 import PlaceSelect from "@/components/map/toolbar/PlaceSelect";
 import PlaceTable from "@/components/map/place/PlaceTable";
 import ViewToggle, { type MapView } from "@/components/map/toolbar/ViewToggle";
@@ -9,7 +10,11 @@ import { listMyVisits, listPlaces } from "@/lib/map/api";
 import {
   inGroup,
   mergeVisits,
+  NO_FILTER,
+  passesFilter,
+  subcategoriesOf,
   type Place,
+  type PlaceFilter,
   type PlaceGroup,
   type PlaceVisit,
 } from "@/lib/map/places";
@@ -36,6 +41,7 @@ const NO_VISITS: PlaceVisit[] = [];
 export default function MapContent() {
   const [map, setMap] = useState<Map | null>(null);
   const [group, setGroup] = useState<PlaceGroup>("its");
+  const [filter, setFilter] = useState<PlaceFilter>(NO_FILTER);
   const [view, setView] = useState<MapView>("map");
   const [selected, setSelected] = useState<Place | null>(null);
   const { isLoggedIn } = useAuth();
@@ -48,10 +54,18 @@ export default function MapContent() {
     queryFn: listMyVisits,
     enabled: isLoggedIn,
   });
-  const shown = useMemo(
+  const grouped = useMemo(
     () => mergeVisits(places, visits).filter((place) => inGroup(group, place)),
     [places, visits, group],
   );
+  const shown = useMemo(
+    () => grouped.filter((place) => passesFilter(filter, place)),
+    [grouped, filter],
+  );
+  const changeGroup = (next: PlaceGroup) => {
+    setGroup(next);
+    setFilter(NO_FILTER);
+  };
   usePlacePins(map, shown, setSelected);
   // After a save the merged row changes; the modal must show that row, not the clicked snapshot.
   const selectedNow =
@@ -60,10 +74,17 @@ export default function MapContent() {
   return (
     <MapPanel
       toolbar={
-        <>
-          <PlaceSelect value={group} onChange={setGroup} />
-          <ViewToggle value={view} onChange={setView} />
-        </>
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <PlaceSelect value={group} onChange={changeGroup} />
+            <ViewToggle value={view} onChange={setView} />
+          </div>
+          <FilterChips
+            subcategories={subcategoriesOf(grouped)}
+            value={filter}
+            onChange={setFilter}
+          />
+        </div>
       }
     >
       {/* Both stay mounted; hiding instead of unmounting keeps the map tiles and position. */}

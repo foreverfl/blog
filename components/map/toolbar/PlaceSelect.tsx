@@ -9,7 +9,7 @@ type PlaceSelectProps = {
  * Native dropdown that picks which group of places the map shows.
  *
  * @param props - { value: "its", onChange }
- * @returns a select listing ITS · UR · Visited
+ * @returns a select listing ITS · UR · Brewery
  */
 export default function PlaceSelect({ value, onChange }: PlaceSelectProps) {
   return (
