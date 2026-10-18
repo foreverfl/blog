@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 export type MapView = "map" | "table";
 
 type ViewToggleProps = {
@@ -5,9 +7,9 @@ type ViewToggleProps = {
   onChange: (view: MapView) => void;
 };
 
-const VIEWS: { value: MapView; label: string }[] = [
-  { value: "map", label: "Map" },
-  { value: "table", label: "Table" },
+const VIEWS: { value: MapView; labelKey: string }[] = [
+  { value: "map", labelKey: "map_view_map" },
+  { value: "table", labelKey: "map_view_table" },
 ];
 
 /**
@@ -17,6 +19,7 @@ const VIEWS: { value: MapView; label: string }[] = [
  * @returns the button pair, the active one filled
  */
 export default function ViewToggle({ value, onChange }: ViewToggleProps) {
+  const { t } = useTranslation();
   return (
     <div className="flex overflow-hidden rounded-md border border-gray-400 text-sm dark:border-gray-600">
       {VIEWS.map((view) => (
@@ -30,7 +33,7 @@ export default function ViewToggle({ value, onChange }: ViewToggleProps) {
               : "px-3 py-1"
           }
         >
-          {view.label}
+          {t(view.labelKey)}
         </button>
       ))}
     </div>

@@ -1,4 +1,5 @@
 import type { PlaceFilter } from "@/lib/map/places";
+import { useTranslation } from "react-i18next";
 
 type FilterChipsProps = {
   /** Subcategory chips to offer; none are drawn when there is only one. */
@@ -24,6 +25,7 @@ export default function FilterChips({
   value,
   onChange,
 }: FilterChipsProps) {
+  const { t } = useTranslation();
   const toggleSubcategory = (name: string) => {
     const next = value.subcategories.includes(name)
       ? value.subcategories.filter((chosen) => chosen !== name)
@@ -41,14 +43,14 @@ export default function FilterChips({
           onChange({ ...value, visitableOnly: !value.visitableOnly })
         }
       >
-        Visitable
+        {t("map_chip_visitable")}
       </button>
       <button
         type="button"
         className={value.visitedOnly ? ON : OFF}
         onClick={() => onChange({ ...value, visitedOnly: !value.visitedOnly })}
       >
-        Visited
+        {t("map_chip_visited")}
       </button>
       {chips.map((name) => (
         <button

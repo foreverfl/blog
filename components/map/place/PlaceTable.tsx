@@ -1,6 +1,7 @@
 import type { Place, PlaceGroup } from "@/lib/map/places";
 import { select } from "d3";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const CELL =
   "border-b border-gray-700 px-3 py-2 text-left dark:border-gray-600";
@@ -9,6 +10,7 @@ const CELL =
 const ITS_MEMBER_PRICE_YEN = 6600;
 
 type Column = {
+  /** A locale key, resolved with t() when the head row is drawn. */
   header: string;
   cell: (place: Place) => string;
 };
@@ -25,26 +27,32 @@ function savedYen(place: Place): number | null {
 }
 
 const ITS_COLUMNS: Column[] = [
-  { header: "Name", cell: (place) => place.name },
+  { header: "map_col_name", cell: (place) => place.name },
   {
-    header: "Area",
+    header: "map_col_area",
     cell: (place) => [place.prefecture, place.city].filter(Boolean).join(" "),
   },
-  { header: "Min party", cell: (place) => place.min_party?.toString() ?? "—" },
-  { header: "Price", cell: (place) => yen(place.market_price_yen) },
-  { header: "Saved", cell: (place) => yen(savedYen(place)) },
-  { header: "Visited", cell: (place) => place.visited_on ?? "—" },
   {
-    header: "Applied",
+    header: "map_col_min_party",
+    cell: (place) => place.min_party?.toString() ?? "—",
+  },
+  { header: "map_col_price", cell: (place) => yen(place.market_price_yen) },
+  { header: "map_col_saved", cell: (place) => yen(savedYen(place)) },
+  { header: "map_col_visited", cell: (place) => place.visited_on ?? "—" },
+  {
+    header: "map_col_applied",
     cell: (place) => place.applied_count?.toString() ?? "—",
   },
 ];
 
 const DEFAULT_COLUMNS: Column[] = [
-  { header: "Name", cell: (place) => place.name },
-  { header: "Kind", cell: (place) => place.subcategory ?? place.category },
-  { header: "Lat", cell: (place) => place.lat.toFixed(6) },
-  { header: "Lng", cell: (place) => place.lng.toFixed(6) },
+  { header: "map_col_name", cell: (place) => place.name },
+  {
+    header: "map_col_kind",
+    cell: (place) => place.subcategory ?? place.category,
+  },
+  { header: "map_col_lat", cell: (place) => place.lat.toFixed(6) },
+  { header: "map_col_lng", cell: (place) => place.lng.toFixed(6) },
 ];
 
 type PlaceTableProps = {
@@ -68,6 +76,7 @@ export default function PlaceTable({
   onSelect,
 }: PlaceTableProps) {
   const bodyRef = useRef<HTMLTableSectionElement>(null);
+  const { t } = useTranslation();
   const columns = group === "its" ? ITS_COLUMNS : DEFAULT_COLUMNS;
   const savedSoFar = places
     .filter((place) => place.visited_on !== null)
@@ -94,14 +103,16 @@ export default function PlaceTable({
   return (
     <div className="h-full overflow-auto">
       {group === "its" && (
-        <p className="px-3 py-2 text-sm">Saved so far: ¥{yen(savedSoFar)}</p>
+        <p className="px-3 py-2 text-sm">
+          {t("map_saved_so_far")}: ¥{yen(savedSoFar)}
+        </p>
       )}
       <table className="w-full text-sm">
         <thead>
           <tr>
             {columns.map((column) => (
               <th key={column.header} className={CELL}>
-                {column.header}
+                {t(column.header)}
               </th>
             ))}
           </tr>

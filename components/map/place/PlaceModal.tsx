@@ -3,6 +3,7 @@ import PlaceDetailTable from "@/components/map/place/PlaceDetailTable";
 import { useAuth } from "@/lib/context/auth-context";
 import type { Place } from "@/lib/map/places";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 type PlaceModalProps = {
   /** The place to show, or null to keep the dialog closed. */
@@ -19,6 +20,7 @@ type PlaceModalProps = {
 export default function PlaceModal({ place, onClose }: PlaceModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { isLoggedIn } = useAuth();
+  const { t } = useTranslation();
 
   // Drive the native dialog imperatively from the declarative `place` prop.
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function PlaceModal({ place, onClose }: PlaceModalProps) {
             onClick={onClose}
             className="rounded px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800"
           >
-            Close
+            {t("close")}
           </button>
         </div>
       </div>

@@ -50,10 +50,11 @@ export type PlaceVisit = {
 /** The body of PUT /places/{id}/mine: a PlaceVisit without its place_id. */
 export type PlaceVisitBody = Omit<PlaceVisit, "place_id">;
 
-export const PLACE_GROUPS: { value: PlaceGroup; label: string }[] = [
-  { value: "its", label: "ITS" },
-  { value: "ur", label: "UR" },
-  { value: "brewery", label: "Brewery" },
+/** The dropdown groups; labelKey is a locale key. */
+export const PLACE_GROUPS: { value: PlaceGroup; labelKey: string }[] = [
+  { value: "its", labelKey: "map_group_its" },
+  { value: "ur", labelKey: "map_group_ur" },
+  { value: "brewery", labelKey: "map_group_brewery" },
 ];
 
 /** The chip row under the dropdown; an empty subcategories list means every subcategory. */

@@ -3,6 +3,7 @@ import type { Place, PlaceVisitBody } from "@/lib/map/places";
 import { queryClient } from "@/lib/query/query";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const LABEL = "w-32 shrink-0 py-1.5 text-gray-500 dark:text-gray-400";
 const INPUT =
@@ -23,6 +24,7 @@ function orNull(value: string): string | null {
  * @returns the form, read from and written to GET/PUT /places/{id}/mine
  */
 export default function MyRecordForm({ place }: { place: Place }) {
+  const { t } = useTranslation();
   const isIts = place.subcategory === "its";
   const [appliedCount, setAppliedCount] = useState(
     String(place.applied_count ?? 0),
@@ -56,7 +58,7 @@ export default function MyRecordForm({ place }: { place: Place }) {
     >
       {isIts && (
         <label className="flex gap-2">
-          <span className={LABEL}>applied_count</span>
+          <span className={LABEL}>{t("map_field_applied_count")}</span>
           <input
             type="number"
             min={0}
@@ -68,7 +70,7 @@ export default function MyRecordForm({ place }: { place: Place }) {
       )}
       {isIts && (
         <label className="flex gap-2">
-          <span className={LABEL}>last_applied_on</span>
+          <span className={LABEL}>{t("map_field_last_applied_on")}</span>
           <input
             type="date"
             className={INPUT}
@@ -78,7 +80,7 @@ export default function MyRecordForm({ place }: { place: Place }) {
         </label>
       )}
       <label className="flex gap-2">
-        <span className={LABEL}>visited_on</span>
+        <span className={LABEL}>{t("map_field_visited_on")}</span>
         <input
           type="date"
           className={INPUT}
@@ -87,7 +89,7 @@ export default function MyRecordForm({ place }: { place: Place }) {
         />
       </label>
       <label className="flex gap-2">
-        <span className={LABEL}>visited_with</span>
+        <span className={LABEL}>{t("map_field_visited_with")}</span>
         <input
           type="text"
           className={INPUT}
@@ -99,13 +101,15 @@ export default function MyRecordForm({ place }: { place: Place }) {
         {save.isError && (
           <span className="text-red-500">{save.error.message}</span>
         )}
-        {save.isSuccess && <span className="text-gray-500">Saved</span>}
+        {save.isSuccess && (
+          <span className="text-gray-500">{t("map_saved")}</span>
+        )}
         <button
           type="submit"
           disabled={save.isPending}
           className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
         >
-          Save
+          {t("map_save")}
         </button>
       </div>
     </form>

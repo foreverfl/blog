@@ -1,4 +1,5 @@
 import { PLACE_GROUPS, type PlaceGroup } from "@/lib/map/places";
+import { useTranslation } from "react-i18next";
 
 type PlaceSelectProps = {
   value: PlaceGroup;
@@ -12,6 +13,7 @@ type PlaceSelectProps = {
  * @returns a select listing ITS · UR · Brewery
  */
 export default function PlaceSelect({ value, onChange }: PlaceSelectProps) {
+  const { t } = useTranslation();
   return (
     <select
       aria-label="Place group"
@@ -21,7 +23,7 @@ export default function PlaceSelect({ value, onChange }: PlaceSelectProps) {
     >
       {PLACE_GROUPS.map((group) => (
         <option key={group.value} value={group.value}>
-          {group.label}
+          {t(group.labelKey)}
         </option>
       ))}
     </select>
