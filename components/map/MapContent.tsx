@@ -19,6 +19,7 @@ import {
   type PlaceGroup,
   type PlaceVisit,
 } from "@/lib/map/places";
+import { useFitToGroup } from "@/components/map/hooks/useFitToGroup";
 import { usePlacePins } from "@/components/map/hooks/usePlacePins";
 import { useQuery } from "@tanstack/react-query";
 import type { Map } from "maplibre-gl";
@@ -74,6 +75,7 @@ export default function MapContent({ lan }: { lan: string }) {
     setFilter(NO_FILTER);
   };
   usePlacePins(map, shown, setSelected);
+  useFitToGroup(map, group, grouped);
   // After a save the merged row changes; the modal must show that row, not the clicked snapshot.
   const selectedNow =
     shown.find((place) => place.id === selected?.id) ?? selected;
