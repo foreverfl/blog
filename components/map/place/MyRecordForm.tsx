@@ -14,14 +14,16 @@ function orNull(value: string): string | null {
 }
 
 /**
- * The five fields of my record for one place, with a Save button that
- * PUTs them and refreshes the mine query. Mount with key={place.id} so a
- * new place starts from its own values.
+ * My record for one place with a Save button that PUTs it and refreshes the
+ * mine query. ITS places get applied_count and last_applied_on on top of
+ * visited_on and visited_with; review has no input and is sent back as is.
+ * Mount with key={place.id} so a new place starts from its own values.
  *
  * @param props - { place: a merged place; its record fields seed the inputs }
  * @returns the form, read from and written to GET/PUT /places/{id}/mine
  */
 export default function MyRecordForm({ place }: { place: Place }) {
+  const isIts = place.subcategory === "its";
   const [appliedCount, setAppliedCount] = useState(
     String(place.applied_count ?? 0),
   );
@@ -30,7 +32,6 @@ export default function MyRecordForm({ place }: { place: Place }) {
   );
   const [visitedOn, setVisitedOn] = useState(place.visited_on ?? "");
   const [visitedWith, setVisitedWith] = useState(place.visited_with ?? "");
-  const [review, setReview] = useState(place.review ?? "");
 
   const save = useMutation({
     mutationFn: (body: PlaceVisitBody) => saveMyVisit(place.id, body),
@@ -45,33 +46,37 @@ export default function MyRecordForm({ place }: { place: Place }) {
       onSubmit={(event) => {
         event.preventDefault();
         save.mutate({
-          applied_count: Number(appliedCount),
-          last_applied_on: orNull(lastAppliedOn),
+          applied_count: isIts ? Number(appliedCount) : 0,
+          last_applied_on: isIts ? orNull(lastAppliedOn) : null,
           visited_on: orNull(visitedOn),
           visited_with: orNull(visitedWith),
-          review: orNull(review),
+          review: place.review ?? null,
         });
       }}
     >
-      <label className="flex gap-2">
-        <span className={LABEL}>applied_count</span>
-        <input
-          type="number"
-          min={0}
-          className={INPUT}
-          value={appliedCount}
-          onChange={(event) => setAppliedCount(event.target.value)}
-        />
-      </label>
-      <label className="flex gap-2">
-        <span className={LABEL}>last_applied_on</span>
-        <input
-          type="date"
-          className={INPUT}
-          value={lastAppliedOn}
-          onChange={(event) => setLastAppliedOn(event.target.value)}
-        />
-      </label>
+      {isIts && (
+        <label className="flex gap-2">
+          <span className={LABEL}>applied_count</span>
+          <input
+            type="number"
+            min={0}
+            className={INPUT}
+            value={appliedCount}
+            onChange={(event) => setAppliedCount(event.target.value)}
+          />
+        </label>
+      )}
+      {isIts && (
+        <label className="flex gap-2">
+          <span className={LABEL}>last_applied_on</span>
+          <input
+            type="date"
+            className={INPUT}
+            value={lastAppliedOn}
+            onChange={(event) => setLastAppliedOn(event.target.value)}
+          />
+        </label>
+      )}
       <label className="flex gap-2">
         <span className={LABEL}>visited_on</span>
         <input
@@ -88,15 +93,6 @@ export default function MyRecordForm({ place }: { place: Place }) {
           className={INPUT}
           value={visitedWith}
           onChange={(event) => setVisitedWith(event.target.value)}
-        />
-      </label>
-      <label className="flex gap-2">
-        <span className={LABEL}>review</span>
-        <textarea
-          rows={3}
-          className={INPUT}
-          value={review}
-          onChange={(event) => setReview(event.target.value)}
         />
       </label>
       <div className="flex items-center justify-end gap-3">
