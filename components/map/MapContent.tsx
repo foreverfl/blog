@@ -5,6 +5,7 @@ import FilterChips from "@/components/map/toolbar/FilterChips";
 import PlaceSelect from "@/components/map/toolbar/PlaceSelect";
 import PlaceTable from "@/components/map/place/PlaceTable";
 import ViewToggle, { type MapView } from "@/components/map/toolbar/ViewToggle";
+import "@/lib/i18n";
 import { useAuth } from "@/lib/context/auth-context";
 import { listMyVisits, listPlaces } from "@/lib/map/api";
 import {
@@ -21,7 +22,8 @@ import {
 import { usePlacePins } from "@/components/map/hooks/usePlacePins";
 import { useQuery } from "@tanstack/react-query";
 import type { Map } from "maplibre-gl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // [lng, lat] over central Honshu; zoom 5 fits the whole country on a laptop.
 const JAPAN_CENTER: [number, number] = [137.5, 36.5];
@@ -36,9 +38,14 @@ const NO_VISITS: PlaceVisit[] = [];
  * Places come from GET /places; when signed in, my records from GET /places/mine
  * are merged onto them.
  *
+ * @param props - { lan: "ko" | "en" | "ja" from the URL }
  * @returns the map panel with its toolbar, table view and place modal
  */
-export default function MapContent() {
+export default function MapContent({ lan }: { lan: string }) {
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    i18n.changeLanguage(lan);
+  }, [lan, i18n]);
   const [map, setMap] = useState<Map | null>(null);
   const [group, setGroup] = useState<PlaceGroup>("its");
   const [filter, setFilter] = useState<PlaceFilter>(NO_FILTER);

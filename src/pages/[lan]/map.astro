@@ -1,0 +1,14 @@
+---
+import Base from "../../layouts/Base.astro";
+import MapIsland from "@/components/islands/MapIsland";
+
+export function getStaticPaths() {
+  return ["en", "ko", "ja"].map((lan) => ({ params: { lan } }));
+}
+
+const { lan } = Astro.params;
+---
+
+<Base lang={lan} title="Map | mogumogu's blog">
+  <MapIsland client:only="react" lan={lan} />
+</Base>
