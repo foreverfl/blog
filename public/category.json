@@ -73,7 +73,8 @@
         "name_ja": "旅行地図",
         "name_en": "Travel Map",
         "emoji": "🗺️",
-        "link": "travel-map"
+        "link": "map",
+        "hasOwnPage": true
       },
       {
         "name_ko": "레시피",
