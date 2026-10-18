@@ -11,6 +11,7 @@ import {
   mergeVisits,
   type Place,
   type PlaceGroup,
+  type PlaceVisit,
 } from "@/lib/map/places";
 import { usePlacePins } from "@/components/map/hooks/usePlacePins";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +21,10 @@ import { useMemo, useState } from "react";
 // [lng, lat] over central Honshu; zoom 5 fits the whole country on a laptop.
 const JAPAN_CENTER: [number, number] = [137.5, 36.5];
 const JAPAN_ZOOM = 5;
+
+// One shared empty array: a fresh [] per render would recompute shown and refit the map on every click.
+const NO_PLACES: Place[] = [];
+const NO_VISITS: PlaceVisit[] = [];
 
 /**
  * Map of Japan for anyone, with a dropdown that picks which group of places to pin.
@@ -34,11 +39,11 @@ export default function MapContent() {
   const [view, setView] = useState<MapView>("map");
   const [selected, setSelected] = useState<Place | null>(null);
   const { isLoggedIn } = useAuth();
-  const { data: places = [] } = useQuery({
+  const { data: places = NO_PLACES } = useQuery({
     queryKey: ["places"],
     queryFn: listPlaces,
   });
-  const { data: visits = [] } = useQuery({
+  const { data: visits = NO_VISITS } = useQuery({
     queryKey: ["places", "mine"],
     queryFn: listMyVisits,
     enabled: isLoggedIn,
