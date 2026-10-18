@@ -63,7 +63,7 @@ export default function MapContent() {
         <MapLibreMap center={JAPAN_CENTER} zoom={JAPAN_ZOOM} onMap={setMap} />
       </div>
       <div className={view === "table" ? "h-full" : "hidden"}>
-        <PlaceTable places={shown} onSelect={setSelected} />
+        <PlaceTable group={group} places={shown} onSelect={setSelected} />
       </div>
       <PlaceModal place={selected} onClose={() => setSelected(null)} />
     </MapPanel>
