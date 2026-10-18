@@ -1,4 +1,6 @@
+import MyRecordForm from "@/components/map/place/MyRecordForm";
 import PlaceDetailTable from "@/components/map/place/PlaceDetailTable";
+import { useAuth } from "@/lib/context/auth-context";
 import type { Place } from "@/lib/map/places";
 import { useEffect, useRef } from "react";
 
@@ -9,13 +11,14 @@ type PlaceModalProps = {
 };
 
 /**
- * Native dialog for one place: photo on top, the name linking to the hotel site, then the field table.
+ * Native dialog for one place: photo on top, the name linking to the hotel site, the field table, and my record form when signed in.
  *
  * @param props - { place, onClose }
  * @returns the dialog, open whenever place is not null
  */
 export default function PlaceModal({ place, onClose }: PlaceModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { isLoggedIn } = useAuth();
 
   // Drive the native dialog imperatively from the declarative `place` prop.
   useEffect(() => {
@@ -62,6 +65,7 @@ export default function PlaceModal({ place, onClose }: PlaceModalProps) {
         {place && (
           <div className="mt-4">
             <PlaceDetailTable place={place} />
+            {isLoggedIn && <MyRecordForm key={place.id} place={place} />}
           </div>
         )}
         <div className="mt-4 flex justify-end">

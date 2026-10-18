@@ -53,6 +53,9 @@ export default function MapContent() {
     [places, visits, group],
   );
   usePlacePins(map, shown, setSelected);
+  // After a save the merged row changes; the modal must show that row, not the clicked snapshot.
+  const selectedNow =
+    shown.find((place) => place.id === selected?.id) ?? selected;
 
   return (
     <MapPanel
@@ -70,7 +73,7 @@ export default function MapContent() {
       <div className={view === "table" ? "h-full" : "hidden"}>
         <PlaceTable group={group} places={shown} onSelect={setSelected} />
       </div>
-      <PlaceModal place={selected} onClose={() => setSelected(null)} />
+      <PlaceModal place={selectedNow} onClose={() => setSelected(null)} />
     </MapPanel>
   );
 }

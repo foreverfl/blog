@@ -47,6 +47,9 @@ export type PlaceVisit = {
   review: string | null;
 };
 
+/** The body of PUT /places/{id}/mine: a PlaceVisit without its place_id. */
+export type PlaceVisitBody = Omit<PlaceVisit, "place_id">;
+
 export const PLACE_GROUPS: { value: PlaceGroup; label: string }[] = [
   { value: "its", label: "ITS" },
   { value: "ur", label: "UR" },

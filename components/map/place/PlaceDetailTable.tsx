@@ -2,8 +2,17 @@ import type { Place } from "@/lib/map/places";
 import { select } from "d3";
 import { useEffect, useRef } from "react";
 
-// Shown as the title, the photo, or the title link, so not repeated as rows.
-const SKIPPED_KEYS = new Set(["id", "name", "image_url", "url"]);
+// Shown as the title, photo or title link, or edited in MyRecordForm, so not repeated as rows.
+const SKIPPED_KEYS = new Set([
+  "id",
+  "name",
+  "image_url",
+  "url",
+  "applied_count",
+  "last_applied_on",
+  "visited_with",
+  "review",
+]);
 const CELL =
   "border-b border-gray-700 px-3 py-1.5 text-left dark:border-gray-600";
 
