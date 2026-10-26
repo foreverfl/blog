@@ -58,6 +58,14 @@
         "name_en": "Hacker News",
         "emoji": "🚀",
         "link": "hackernews"
+      },
+      {
+        "name_ko": "GitHub",
+        "name_ja": "GitHub",
+        "name_en": "GitHub",
+        "emoji": "🐙",
+        "link": "github",
+        "hasOwnPage": true
       }
     ]
   },
