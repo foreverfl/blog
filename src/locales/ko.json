@@ -77,5 +77,10 @@
   "map_field_visited_on": "방문일",
   "map_field_visited_with": "동행",
   "map_save": "저장",
-  "map_saved": "저장됨"
+  "map_saved": "저장됨",
+  "github_col_rank": "순위",
+  "github_col_name": "레포",
+  "github_col_stars": "스타",
+  "github_col_language": "언어",
+  "github_col_description": "설명"
 }

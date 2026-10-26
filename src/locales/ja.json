@@ -77,5 +77,10 @@
   "map_field_visited_on": "訪問日",
   "map_field_visited_with": "同行者",
   "map_save": "保存",
-  "map_saved": "保存しました"
+  "map_saved": "保存しました",
+  "github_col_rank": "順位",
+  "github_col_name": "リポジトリ",
+  "github_col_stars": "スター",
+  "github_col_language": "言語",
+  "github_col_description": "説明"
 }

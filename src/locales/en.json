@@ -77,5 +77,10 @@
   "map_field_visited_on": "Visited on",
   "map_field_visited_with": "Visited with",
   "map_save": "Save",
-  "map_saved": "Saved"
+  "map_saved": "Saved",
+  "github_col_rank": "Rank",
+  "github_col_name": "Repository",
+  "github_col_stars": "Stars",
+  "github_col_language": "Language",
+  "github_col_description": "Description"
 }

@@ -1,0 +1,14 @@
+---
+import Base from "../../../layouts/Base.astro";
+import GithubRankIsland from "@/components/islands/GithubRankIsland";
+
+export function getStaticPaths() {
+  return ["en", "ko", "ja"].map((lan) => ({ params: { lan } }));
+}
+
+const { lan } = Astro.params;
+---
+
+<Base lang={lan} title="GitHub | mogumogu's blog">
+  <GithubRankIsland client:only="react" lan={lan} />
+</Base>
