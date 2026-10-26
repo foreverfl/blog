@@ -82,5 +82,7 @@
   "github_col_name": "레포",
   "github_col_stars": "스타",
   "github_col_language": "언어",
-  "github_col_description": "설명"
+  "github_col_description": "설명",
+  "github_field_created_at": "생성일",
+  "github_field_kind": "카테고리"
 }

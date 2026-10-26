@@ -82,5 +82,7 @@
   "github_col_name": "Repository",
   "github_col_stars": "Stars",
   "github_col_language": "Language",
-  "github_col_description": "Description"
+  "github_col_description": "Description",
+  "github_field_created_at": "Created",
+  "github_field_kind": "Category"
 }
